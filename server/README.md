@@ -76,8 +76,8 @@ Nest is [MIT licensed](LICENSE).
 ## To create a docker image
 sudo docker build -t <image-name> <DockerFilePath>
 ## To create a docker container
-sudo docker create --name <container-name> -p 3000:3000 <image-name>
-## To see all docker images created
+sudo docker create --name <container-name> -p <application-port>:<redirection-port> <image-name>
+## To see all available docker images
 sudo docker images
 ## To see all docker containers
 sudo docker ps -a
