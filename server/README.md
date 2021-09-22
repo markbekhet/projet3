@@ -71,3 +71,25 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+---------------------------------------------------------------------------------------------
+## usefull Docker commands
+## To create a docker image
+sudo docker build -t <image-name> <DockerFilePath>
+## To create a docker container
+sudo docker create --name <container-name> -p 3000:3000 <image-name>
+## To see all docker images created
+sudo docker images
+## To see all docker containers
+sudo docker ps -a
+## To start a docker container
+sudo docker start <conatainer-name>
+## To stop a container
+sudo docker stop <container-name>
+## To remove a docker container
+sudo docker rm <container-name>
+## To remove a docker image
+sudo docker rmi <image-name>
+## To see the logs of a docker container 
+sudo docker logs <container-name>
+## To get a bash shell in the container
+sudo docker exec -it <container-name> /bin/bash
