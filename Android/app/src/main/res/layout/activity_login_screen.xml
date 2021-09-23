@@ -62,22 +62,11 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_marginBottom="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/rectangle_background"
-        android:backgroundTint="#000000"
-        android:drawableTint="#000000"
-        android:text="Log In"
-        android:textColorHighlight="#EDEDED"
-        android:textColorLink="#000000"
-        app:iconTint="#FAFAFA"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/username"
-        app:layout_constraintHorizontal_bias="0.61"
-        app:layout_constraintStart_toStartOf="@+id/username"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.755" />
+        android:text="Connexion"
+        app:backgroundTint="#D3D3D3"
+        />
 
 
 
