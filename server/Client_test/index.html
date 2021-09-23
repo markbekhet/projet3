@@ -17,7 +17,7 @@
             </form>
             <p>
                 <ul>
-                    <li v-for="msg of messages">{{msg}}</li>
+                    <li v-for="data of dataArray">{{data.client: data.message data.date.hour:data.date.minutes:data.date.seconds}}</li>
                 </ul>
             </p>
         </div>
@@ -27,7 +27,7 @@
                 data: {
                     title: 'Websockets Tester',
                     text: '',
-                    messages: [],
+                    dataArray: [{client, message, date:{hour, minutes, seconds}}],
                     socket : null,
                 },
                 methods: {
@@ -35,14 +35,15 @@
                         this.socket.emit('msgToServer', this.text);
                         this.text = "";
                     },
-                    receiveMessage(msg){
-                        this.messages.push(msg);
+                    receiveMessage(data){
+                        this.dataArray.push(data);
                     }
                 },
                 created(){
                     this.socket = io('http://localhost:3000/');
-                    this.socket.on('msgToClient', (msg) =>{
-                        this.receiveMessage(msg);
+                    this.socket.data = "user1";
+                    this.socket.on('msgToClient', (data) =>{
+                        this.receiveMessage(data);
                     });
                 }
             });
