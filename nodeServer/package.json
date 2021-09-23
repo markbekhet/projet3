@@ -1,0 +1,58 @@
+{
+  "name": "nodeserver",
+  "version": "1.0.0",
+  "description": "It is a stub server for 101 Team project 3 in case the nest server didn't work",
+  "private": true,
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "include": [
+      "app/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.spec.ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "all": true,
+    "cache": true,
+    "sourceMap": true,
+    "instrument": true
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "nodemon": "^2.0.12",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.12",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^16.9.6",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "http-status-codes": "^2.1.4",
+    "inversify": "^5.1.1",
+    "morgan": "^1.10.0",
+    "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.2.0",
+    "ts-node": "^10.2.1"
+  }
+}
