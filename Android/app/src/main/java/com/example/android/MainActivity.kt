@@ -10,18 +10,24 @@ import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.net.URISyntaxException
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mSocket : Socket
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        try {
-            mSocket = IO.socket("http://192.168.0.115:3000")
+        SocketHandler.setSocket()
+        val mSocket = SocketHandler.getMSocket()
+        mSocket?.connect()
+
+        /*try {
+            mSocket = IO.socket("http://192.168.0.112:3000")
+            mSocket.connect()
+            mSocket.emit("msgToServer", mSocket.id())
         } catch (e: URISyntaxException) {
         }
         val textMessage: EditText = findViewById(R.id.textView)
@@ -42,9 +48,23 @@ class MainActivity : AppCompatActivity() {
                     textView.setText(existingText.toString() + "/n$data")
                 }
             };
+        }*/
+        /*val options = IO.Options()
+        options.reconnection = true //reconnection
+        options.forceNew = true
+        runBlocking {
+            val chat: Chat = application as Chat
+            mSocket = chat.getMSocket()
+            chat.establishConnection()
+            mSocket?.on(Socket.EVENT_CONNECT){
+                Toast.makeText(applicationContext,"Socket is connected",Toast.LENGTH_SHORT).show()
+            }
         }
 
-
+        if(mSocket?.connected() == true)
+        {
+            Toast.makeText(this,"Socket is connected",Toast.LENGTH_SHORT).show()
+        }*/
 
 
     }
