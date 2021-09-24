@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import{MessageData, CustomDate} from'../../common/MessageMeta'
+import{ServerMessage, CustomDate, ClientMessage} from'../../common/MessageMeta'
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -23,8 +23,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, text: string): void {
-    this.logger.log("client: " +client.id+ "sent " + text);
+  handleMessage(client: Socket, data: ClientMessage): void {
+    this.logger.log("client: " + data.clientName + "sent " + data.message);
     //return {event: 'msgToClient', data: text};
     var date = new Date();
     var dateFormated : CustomDate = {
@@ -33,9 +33,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       seconds: date.getSeconds.toString()
     };
 
-    var metaData: MessageData = {
-      client: client.id,
-      message: text,
+    var metaData: ServerMessage = {
+      clientName: data.clientName,
+      message: data.message,
       date: dateFormated
     }
     this.wss.emit("msgToClient", metaData);
