@@ -1,0 +1,14 @@
+<div class="container">
+    <h1>COLORIMAGE</h1>
+    <form #form="ngForm" (ngSubmit)="submit(form.controls['usernameHTML'].value)">
+        <div class="form-group">
+            <label for="usernameHTML">Username: </label><br>
+            <input #usernameHTML="ngModel" required type="text" name="usernameHTML" class="form-control" placeholder="Username" ngModel>
+            
+            <pre></pre>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<h1 *ngIf="username"> Username is {{ username }}</h1>
