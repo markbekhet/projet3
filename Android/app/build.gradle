@@ -44,4 +44,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    apply plugin: 'com.android.application'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'
 }
