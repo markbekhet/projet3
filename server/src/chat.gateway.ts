@@ -30,8 +30,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     var date = new Date();
     var minutes = date.getMinutes.toString();
     var seconds = date.getSeconds.toString();
+    var hour = date.getHours().toString();
     var dateFormated : CustomDate = {
-      hour: date.getHours().toString(),
+      hour: hour,
       minutes: minutes,
       seconds: seconds,
     };
