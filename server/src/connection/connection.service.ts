@@ -1,7 +1,7 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ConnexionService {
+export class ConnectionService {
     private usernames : string[] = [];
     public IsvalidateClient(username: string):boolean{
         console.log(username)
