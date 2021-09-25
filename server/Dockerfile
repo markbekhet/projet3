@@ -2,15 +2,13 @@ FROM node:12.13-alpine
 
 WORKDIR /app
 
-COPY common/. ./common/
 
-COPY ./server/package*.json ./server/
+COPY package*.json ./
 
-WORKDIR server
 
 RUN npm install
 
-COPY ./server/. .
+COPY . .
 
 EXPOSE 3000
 
