@@ -1,23 +1,24 @@
-import { Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Controller, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { disconnect } from 'process';
 import { ConnexionService } from './connexion.service';
 
-@Controller('/Connexion')
+@Controller('/connexion')
 export class ConnexionController {
     constructor(private readonly connexionService: ConnexionService){}
 
-    @Post("/Connect")
-    validateUser(username: string){
+    @Post("/connect/:username")
+    validateUser(@Param('username') username:string){
         var valide = this.connexionService.IsvalidateClient(username);
-        console.log(username + (valide)? + " has joined": "is not valid");
+        var verdict:string = (valide)? "has joined": "is not valid";
+        console.log(`${username} ${verdict}`);
         if(valide){
             return HttpStatus.ACCEPTED;
         }
         throw new HttpException("A user with this username is connected", HttpStatus.FORBIDDEN);
     }
 
-    @Post("/Disconnect")
-    disonnectUser(username: string){
+    @Post("/disconnect/:username")
+    disonnectUser(@Param('username') username: string){
         this.connexionService.diconnectClient(username);
     }
 }

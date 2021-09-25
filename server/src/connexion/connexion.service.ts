@@ -4,6 +4,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 export class ConnexionService {
     private usernames : string[] = [];
     public IsvalidateClient(username: string):boolean{
+        console.log(username)
         if(this.usernames.length=== 0){
             this.usernames.push(username);
             return true;
