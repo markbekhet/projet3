@@ -18,12 +18,12 @@ import java.net.URISyntaxException
 
 
 class MainActivity : AppCompatActivity() {
-
+    private var mSocket: Socket ? =null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         SocketHandler.setSocket()
-        val mSocket = SocketHandler.getMSocket()
+        mSocket = SocketHandler.getMSocket()
         mSocket?.connect()
 
 
@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         val sendButton: Button = findViewById(R.id.button)
 
         sendButton.setOnClickListener {
-            Toast.makeText(this, textMessage.text, Toast.LENGTH_SHORT).show()
             val data = ClientMessage(clientName= "User",
                 message= textMessage.text.toString())
             mSocket?.emit("msgToServer", data.toJson())
@@ -52,8 +51,11 @@ class MainActivity : AppCompatActivity() {
                 }
             };
         }
+    }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        mSocket?.disconnect()
     }
 
 }
