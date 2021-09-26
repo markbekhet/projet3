@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-landing-page',
@@ -7,30 +8,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingPageComponent implements OnInit {
   
-  username: string = '';
+  usernameForm: FormGroup;
+  readonly DEFAULT_USERNAME: string = '';
 
-  constructor() { }
+  //Validators.minLength(1), Validators.maxLength(20), Validators.pattern('^[A-Za-z0-9_-]*$')
+  constructor(private formBuilder: FormBuilder) {
+    this.usernameForm = this.formBuilder.group({
+      username: formBuilder.control(this.DEFAULT_USERNAME, [ Validators.required ])
+    });
+  }
 
   ngOnInit(): void {
   }
 
-  submit(username: string): void {
-    if(this.verifyUsername(username)) {
-      console.log(username);
-      this.username = username;
-      //TODO: add server request to login to server
-      //TODO: reset form
+  // reference https://www.youtube.com/watch?v=9YuoQrvQ7R8
+  // adapted from https://loiane.com/2017/08/angular-reactive-forms-trigger-validation-on-submit/ 
+  public onSubmit():void {
+    if (this.usernameForm.valid) {
+      console.log(this.usernameForm.value['username']);
+      this.usernameForm.reset();
+    } else {
+      this.usernameForm.get(['username'])?.markAsTouched( {onlySelf: true});
     }
-  }
-
-  verifyUsername(username: string): boolean {
-    const usernameEmpty: boolean = username.length <= 0;
-    const usernameExistsOnServer: boolean = false; //TODO: add server request via service
-    
-    if (usernameEmpty) {
-      alert('ERREUR! Veuillez entrer un nom d\'utilisateur!');
-    }
-    
-    return !usernameEmpty && !usernameExistsOnServer;
   }
 }

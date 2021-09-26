@@ -1,14 +1,18 @@
-<div class="container">
+<!-- Reactive form (with validators) -->
+<div class="content">
     <h1>COLORIMAGE</h1>
-    <form #form="ngForm" (ngSubmit)="submit(form.controls['usernameHTML'].value)">
-        <div class="form-group">
-            <label for="usernameHTML">Username: </label><br>
-            <input #usernameHTML="ngModel" required type="text" name="usernameHTML" class="form-control" placeholder="Username" ngModel>
-            
-            <pre></pre>
+    <form [formGroup]='usernameForm' (ngSubmit)='onSubmit()'>
+        <div class="form-container">
+            <div>
+                Username: <br>
+                <input class='form-field' formControlName='username'>
+            </div>
+            <div>
+                <br>
+                <button class="button" type="submit" [disabled]='usernameForm.invalid'> <!--[disabled]='usernameForm.invalid'-->
+                    Submit
+                </button>
+            </div>
         </div>
-        <button type="submit">Submit</button>
     </form>
 </div>
-
-<h1 *ngIf="username"> Username is {{ username }}</h1>
