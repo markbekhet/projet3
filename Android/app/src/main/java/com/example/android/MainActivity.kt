@@ -25,6 +25,8 @@ import java.net.URLEncoder
 
 class MainActivity : AppCompatActivity() {
     private var mSocket: Socket ? =null
+    private var mClientService: ClientService ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         mSocket = SocketHandler.getMSocket()
         mSocket?.connect()
 
-
+        mClientService = ClientService()
         val textMessage: EditText = findViewById(R.id.textView)
         val sendButton: Button = findViewById(R.id.button)
 
@@ -65,35 +67,10 @@ class MainActivity : AppCompatActivity() {
         runBlocking{
             async {
                 launch {
-                    disconnect("User")
+                    mClientService!!.disconnect("User")
                 }
             }
         }
     }
 
-    private suspend fun disconnect(username:String){
-        withContext(Dispatchers.IO){
-            val endpoint: String = "/connection/disconnect/"
-            val mURL = URL(URL+endpoint+username)
-
-            with(mURL.openConnection() as HttpURLConnection) {
-                // optional default is GET
-                requestMethod = "POST"
-
-                println("URL : $url")
-                println("Response Code : $responseCode")
-                BufferedReader(InputStreamReader(inputStream)).use {
-                    val response = StringBuffer()
-
-                    var inputLine = it.readLine()
-                    while (inputLine != null) {
-                        response.append(inputLine)
-                        inputLine = it.readLine()
-                    }
-                    it.close()
-                    println("Response : $response")
-                }
-            }
-        }
-    }
 }
