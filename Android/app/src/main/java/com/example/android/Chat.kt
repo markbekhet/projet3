@@ -28,13 +28,12 @@ class Chat : AppCompatActivity() {
         val sendButton: Button = findViewById(R.id.button)
 
         sendButton.setOnClickListener {
-            val data = ClientMessage(clientName= "User",
+            val data = ClientMessage(clientName= ClientInfo.username,
                 message= textMessage.text.toString())
             mSocket?.emit("msgToServer", data.toJson())
             textMessage.text.clear()
         }
 
-        val textView: TextView = findViewById(R.id.textView2)
         mSocket?.on("msgToClient") { args ->
             if (args[0] != null) {
                 val data = args[0] as JSONObject

@@ -5,43 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Chat">
-    <EditText
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="20"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:hint="Name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/button"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_marginStart="50dp"
-        tools:layout_marginTop="1050dp"
-        android:autofillHints="namw" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_marginTop="1050dp"
-        tools:layout_marginEnd="50dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/textView"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <TextView
-        android:id="@+id/textView2"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1080dp"
-        android:hint="TextView"
-        tools:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="500dp" />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send"
+                app:layout_constraintRight_toLeftOf="@+id/textView"/>
+            <EditText
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="90"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:hint="@string/enter_message"
+                app:layout_constraintLeft_toLeftOf="@+id/button"
+                tools:margin_left="20dp"
+                android:autofillHints="@string/enter_message" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
