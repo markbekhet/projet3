@@ -14,7 +14,12 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URISyntaxException
+import java.net.URL
+import java.net.URLEncoder
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,6 +61,35 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mSocket?.disconnect()
+        var thread = Thread(disconnect("User"))
+        thread.start()
     }
 
+    private fun disconnect(username:String):Runnable{
+        var mRunnable = Runnable{
+            val usernameEncoded =URLEncoder.encode(username, "UTF-8")
+            val endpoint: String = "/connection/disconnect/"
+            val mURL = URL(URL+endpoint+usernameEncoded)
+
+            with(mURL.openConnection() as HttpURLConnection) {
+                // optional default is GET
+                requestMethod = "POST"
+
+                println("URL : $url")
+                println("Response Code : $responseCode")
+                BufferedReader(InputStreamReader(inputStream)).use {
+                    val response = StringBuffer()
+
+                    var inputLine = it.readLine()
+                    while (inputLine != null) {
+                        response.append(inputLine)
+                        inputLine = it.readLine()
+                    }
+                    it.close()
+                    println("Response : $response")
+                }
+            }
+        }
+        return mRunnable
+    }
 }
