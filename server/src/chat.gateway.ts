@@ -28,8 +28,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log("client: " + formattedData.clientName + " sent " + formattedData.message);
     //return {event: 'msgToClient', data: text};
     var date = new Date();
-    var minutes = date.getMinutes.toString();
-    var seconds = date.getSeconds.toString();
+    var minutes = date.getMinutes().toString();
+    var seconds = date.getSeconds().toString();
     var hour = date.getHours().toString();
     var dateFormated : CustomDate = {
       hour: hour,
