@@ -6,7 +6,7 @@ import java.lang.Exception
 import java.lang.RuntimeException
 
 
-const val URL = "http://10.200.41.34:3000"
+const val URL = "http://192.168.0.112:3000"
 object SocketHandler {
     private lateinit var mSocket: Socket
 

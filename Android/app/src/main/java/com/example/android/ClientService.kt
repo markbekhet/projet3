@@ -19,7 +19,7 @@ class ClientService : Service() {
         ClientInfo.username = username_
     }
 
-    suspend fun disconnect(username:String){
+    suspend fun disconnect(username:String?){
         withContext(Dispatchers.IO){
             val endpoint: String = "/connection/disconnect/${username}"
             val mURL = URL(URL+endpoint)

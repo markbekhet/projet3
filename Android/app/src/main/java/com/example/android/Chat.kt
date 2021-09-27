@@ -56,7 +56,7 @@ class Chat : AppCompatActivity() {
         runBlocking{
             async {
                 launch {
-                    mClientService!!.disconnect("User")
+                    mClientService!!.disconnect(ClientInfo.username)
                 }
             }
         }
