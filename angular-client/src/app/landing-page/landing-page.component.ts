@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { RequestService } from 'src/request.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -15,7 +16,7 @@ export class LandingPageComponent implements OnInit {
   //usernameListStub: string[] = [ 'abc123', 'paul', 'batikan-iscan' ];
 
   //Validators.minLength(1), Validators.maxLength(20), Validators.pattern('^[A-Za-z0-9_-]*$')
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private request: RequestService) {
     this.usernameList = [ 'abc123', 'paul', 'batikan-iscan' ];
         
     this.usernameForm = this.formBuilder.group({
@@ -29,11 +30,20 @@ export class LandingPageComponent implements OnInit {
   // reference https://www.youtube.com/watch?v=R1JWdvD0dv8
   // reference https://www.youtube.com/watch?v=9YuoQrvQ7R8
   // adapted from https://loiane.com/2017/08/angular-reactive-forms-trigger-validation-on-submit/
-  public onSubmit():void {
+  public async onSubmit() {
+    
     let username = this.usernameForm.value['username'];
+    try {
+      await this.request.connectClient(username);
+      debugger;
+      console.log('try');
+    } catch (e: any) {
+      console.log('erreur: ' + e);
+    }
     
     console.log(username);
     this.usernameForm.reset();
+    
     this.username = username; 
   }
 
