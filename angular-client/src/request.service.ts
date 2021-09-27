@@ -16,11 +16,10 @@ export class RequestService {
 
   }
 
-  async connectClient(username: string) {
+  connectClient(username: string):Observable<string> {
     //http://localhost:3000/connection/connect/
-    console.log('request: ' + username);
-    let username_encoded = encodeURI(username);
-    console.log(username_encoded);
-    return this.httpClient.post('http://localhost:3000/connection/connect/' + username_encoded, null);
+    //let username_encoded = encodeURI(username);
+    //console.log(username_encoded);
+    return this.httpClient.post<string>('http://localhost:3000/connection/connect/' + username, username);
   }
 }

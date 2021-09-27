@@ -8,10 +8,10 @@
                 Username: 
                 <input class='form-field' formControlName='username'>
                 <div *ngIf='usernameForm.controls["username"].dirty && usernameForm.hasError("required", "username")' class='error'> <!--*ngIf='usernameForm.get("username")?.errors?.required'-->
-                    Un nom d'utilisateur est requis!
+                    Un nom d'utilisateur est requis !
                 </div>
-                <div *ngIf='usernameForm.get("username")?.errors?.usernameAlreadyExists' class='error'>
-                    Cet utilisateur est déjà connecté au serveur!
+                <div *ngIf='staticUsernameExists' class='error'>
+                    Cet utilisateur est déjà connecté au serveur !
                 </div>
             </div>
             <div>

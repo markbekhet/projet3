@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
+import { RequestService } from 'src/request.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,9 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    RequestService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

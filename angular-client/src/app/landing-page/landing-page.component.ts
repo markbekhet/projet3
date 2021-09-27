@@ -12,15 +12,12 @@ export class LandingPageComponent implements OnInit {
   username: string = '';
   usernameForm: FormGroup;
   usernameList: string[] = [];
-
-  //usernameListStub: string[] = [ 'abc123', 'paul', 'batikan-iscan' ];
+  static usernameExists: boolean = false;
 
   //Validators.minLength(1), Validators.maxLength(20), Validators.pattern('^[A-Za-z0-9_-]*$')
   constructor(private formBuilder: FormBuilder, private request: RequestService) {
-    this.usernameList = [ 'abc123', 'paul', 'batikan-iscan' ];
-        
     this.usernameForm = this.formBuilder.group({
-      username: formBuilder.control('', [ Validators.required, this.usernameNotLoggedIn ])
+      username: formBuilder.control('', [ Validators.required])
     });
   }
 
@@ -33,18 +30,18 @@ export class LandingPageComponent implements OnInit {
   public async onSubmit() {
     
     let username = this.usernameForm.value['username'];
+    let response = '';
     try {
-      await this.request.connectClient(username);
-      debugger;
-      console.log('try');
-    } catch (e: any) {
-      console.log('erreur: ' + e);
-    }
+      this.request.connectClient(username)
+      .subscribe(
+        code => this.username = username,
+        err => LandingPageComponent.usernameExists = true); //LandingPageComponent.usernameExists = true
     
-    console.log(username);
-    this.usernameForm.reset();
-    
-    this.username = username; 
+      LandingPageComponent.usernameExists = false;
+    } catch (e: any) { } 
+    finally {
+      this.usernameForm.reset();
+    }    
   }
 
   private usernameNotLoggedIn(control: AbstractControl): ValidationErrors | null {
@@ -52,10 +49,15 @@ export class LandingPageComponent implements OnInit {
       return null;
     }
 
-    if ([ 'abc123', 'paul', 'batikan-iscan' ].indexOf(control.value) >= 0) {
+    if (LandingPageComponent.usernameExists) {
+      LandingPageComponent.usernameExists = false;
       return { 'usernameAlreadyExists' : true };
     }
 
     return null;
+  }
+
+  get staticUsernameExists() {
+    return LandingPageComponent.usernameExists;
   }
 }
