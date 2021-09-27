@@ -12,10 +12,11 @@ import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
 import java.net.URL
@@ -61,12 +62,17 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mSocket?.disconnect()
-        var thread = Thread(disconnect("User"))
-        thread.start()
+        runBlocking{
+            async {
+                launch {
+                    disconnect("User")
+                }
+            }
+        }
     }
 
-    private fun disconnect(username:String):Runnable{
-        var mRunnable = Runnable{
+    private suspend fun disconnect(username:String){
+        withContext(Dispatchers.IO){
             val usernameEncoded =URLEncoder.encode(username, "UTF-8")
             val endpoint: String = "/connection/disconnect/"
             val mURL = URL(URL+endpoint+usernameEncoded)
@@ -90,6 +96,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        return mRunnable
     }
 }
