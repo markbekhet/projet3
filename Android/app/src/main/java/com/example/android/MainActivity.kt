@@ -73,9 +73,8 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun disconnect(username:String){
         withContext(Dispatchers.IO){
-            val usernameEncoded =URLEncoder.encode(username, "UTF-8")
             val endpoint: String = "/connection/disconnect/"
-            val mURL = URL(URL+endpoint+usernameEncoded)
+            val mURL = URL(URL+endpoint+username)
 
             with(mURL.openConnection() as HttpURLConnection) {
                 // optional default is GET

@@ -9,11 +9,12 @@ import android.widget.Button
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
+    private var clientService: ClientService ?= null
     private var texte : Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
-
+        clientService = ClientService()
         fun showError() {
             if (ErrorLogIn == null) {
                 ErrorLogIn = Dialog(this)
@@ -32,7 +33,8 @@ class LoginScreen : AppCompatActivity() {
                     if (username.text.toString()
                             .isNotEmpty() && username.text.toString() != "Nom d'utilisateur"
                     ) {
-                        println(username.text.toString())
+                        clientService!!.setClientUsername(username.text.toString())
+                        println(ClientInfo.username)
                         startActivity(Intent(this, MainActivity::class.java))
                         print(username.toString())
                     } else {
