@@ -12,10 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".Chat"
+            android:exported="true" />
+
         <service
             android:name=".ClientService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".LoginScreen"
@@ -28,7 +32,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

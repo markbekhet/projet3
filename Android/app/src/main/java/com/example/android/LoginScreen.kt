@@ -42,7 +42,7 @@ class LoginScreen : AppCompatActivity() {
 
             if (!verifyAuth(clientService!!.authentify)) {
                 println(clientService!!.authentify)
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, Chat::class.java))
                 print(username.toString())
 
             } else {
