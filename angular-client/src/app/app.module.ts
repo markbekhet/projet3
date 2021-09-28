@@ -11,8 +11,8 @@ import { RequestService } from 'src/request.service';
 import { CommunicationPageComponent } from './communication-page/communication-page.component';
 
 const appRoutes: Routes = [
-  { path: '', component: LandingPageComponent },
-  { path: 'user', component: CommunicationPageComponent }
+  { path: ':username', component: CommunicationPageComponent },
+  { path: '**', component: LandingPageComponent },
 ];
 
 @NgModule({

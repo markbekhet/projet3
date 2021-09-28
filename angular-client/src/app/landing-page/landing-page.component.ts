@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RequestService } from 'src/request.service';
 
 @Component({
@@ -15,7 +16,7 @@ export class LandingPageComponent implements OnInit {
   static usernameExists: boolean = false;
 
   //Validators.minLength(1), Validators.maxLength(20), Validators.pattern('^[A-Za-z0-9_-]*$')
-  constructor(private formBuilder: FormBuilder, private request: RequestService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private request: RequestService) {
     this.usernameForm = this.formBuilder.group({
       username: formBuilder.control('', [ Validators.required])
     });
@@ -34,14 +35,14 @@ export class LandingPageComponent implements OnInit {
     try {
       this.request.connectClient(username)
       .subscribe(
-        code => this.username = username,
+        code => this.router.navigate(['/' + username]), //this.username = username
         err => LandingPageComponent.usernameExists = true); //LandingPageComponent.usernameExists = true
     
       LandingPageComponent.usernameExists = false;
-    } catch (e: any) { } 
+  } catch (e: any) { } 
     finally {
       this.usernameForm.reset();
-    }    
+    } 
   }
 
   private usernameNotLoggedIn(control: AbstractControl): ValidationErrors | null {

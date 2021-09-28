@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-communication-page',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CommunicationPageComponent implements OnInit {
 
-  constructor() { }
+  username: string = '';
+
+  constructor(private activeRoute: ActivatedRoute) {
+    
+  }
 
   ngOnInit(): void {
+    this.username = this.activeRoute.snapshot.params['username'];
   }
 
 }
