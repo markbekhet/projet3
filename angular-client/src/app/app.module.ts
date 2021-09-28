@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { RequestService } from 'src/request.service';
 import { CommunicationPageComponent } from './communication-page/communication-page.component';
+import { UserMessageComponent } from './user-message/user-message.component';
 
 const appRoutes: Routes = [
   { path: ':username', component: CommunicationPageComponent },
@@ -19,7 +20,8 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     LandingPageComponent,
-    CommunicationPageComponent
+    CommunicationPageComponent,
+    UserMessageComponent
   ],
   imports: [
     BrowserModule,

@@ -22,4 +22,9 @@ export class RequestService {
     //console.log(username_encoded);
     return this.httpClient.post<string>('http://localhost:3000/connection/connect/' + username, username);
   }
+
+  disconnectClient(username: string):Observable<string> {
+    //http://localhost:3000/connection/connect/
+    return this.httpClient.post<string>('http://localhost:3000/connection/disconnect/' + username, username);
+  }
 }

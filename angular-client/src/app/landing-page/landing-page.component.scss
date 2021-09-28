@@ -1,9 +1,6 @@
 div {
     text-align: center;
 }
-label {
-    text-align: left;
-}
 .error {
     color: rgb(206, 70, 70);
 }
@@ -12,5 +9,14 @@ label {
   }
 .fix-error-icon {
     top: 27px;
+}
+input {
+    text-align: left;
+    padding: 4px 20px;
+    box-sizing: border-box;    
+}
+button {
+    padding: 4px 10px;
+    box-sizing: border-box;
 }
   
