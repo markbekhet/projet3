@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android">
         <activity
-            android:name=".LoginScreen"
+            android:name=".New_Message"
             android:exported="true" >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -19,11 +19,13 @@
         </intent-filter>
         </activity>
         <activity
+            android:name=".LoginScreen"
+            android:exported="true">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
-            android:exported="true"/>
-
-
-
+            android:exported="true" />
     </application>
 
 </manifest>
