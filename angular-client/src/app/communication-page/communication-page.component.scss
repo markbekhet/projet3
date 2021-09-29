@@ -1,6 +1,12 @@
 div {
     text-align: center;
 }
+
+.chat {
+    overflow: auto;
+    height: 600px;
+    border: solid black;
+}
 label {
     text-align: left;
 }

@@ -2,8 +2,22 @@
     <h2>Utilisateur connecté : {{username}}</h2>
     <button (click)='disconnect()'>Disconnect</button>
 
+    <div class='chat'>
+        <p *ngFor='let msg of messages'> {{msg.clientName}} : {{ msg.message }} </p>
+    </div>
     
-    <app-user-message></app-user-message>
+    <div class="content">
+        <form [formGroup]='messageForm' (ngSubmit)='onSubmit()'>
+            <div class="form-container">
+                <div>
+                    <input class='form-field' formControlName='message'>
+                    <button class='button' type='submit' [disabled]='messageForm.invalid'>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 
