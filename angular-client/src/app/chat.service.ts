@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-//import { ClientMessage } from './MessageMeta';
+import { ClientMessage, ServerMessage } from './MessageMeta';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 import { io } from "socket.io-client";
@@ -9,15 +9,25 @@ import { io } from "socket.io-client";
 })
 export class ChatService {
 
-  public message$: BehaviorSubject<string> = new BehaviorSubject('');
+  public message$: BehaviorSubject<ServerMessage> = new BehaviorSubject<ServerMessage>({
+    clientName: '',
+    message: '',
+    date: {
+      hour: '',
+      minutes: '',
+      seconds: ''
+    }
+  });
   socket = io('http://localhost:3000');
 
-  public sendMessage(message: string) {
-    this.socket.emit('message', message);
+  public sendMessage(message: ClientMessage) {
+    console.log('chat service sent: ' + message.message);
+    this.socket.emit('msgToServer', JSON.stringify(message));
   }
 
   public getNewMessage = () => {
-    this.socket.on('message', (message) =>{
+    this.socket.on('msgToClient', (message: ServerMessage) => {
+      console.log('chat service received: ' + message.message);
       this.message$.next(message);
     });
     

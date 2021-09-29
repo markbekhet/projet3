@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { RequestService } from 'src/request.service';
-import { ServerMessage } from '../MessageMeta';
+import { ClientMessage, ServerMessage } from '../MessageMeta';
 import { ChatService } from '../chat.service';
 
 @Component({
@@ -28,17 +28,10 @@ export class CommunicationPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.username = this.activeRoute.snapshot.params['username'];
-    
-    this.chat.getNewMessage().subscribe((message: string) => {
-      this.messages.push({
-        clientName: this.username,
-        message: message,
-        date: {
-          hour: '',
-          minutes: '',
-          seconds: ''
-        }
-      });
+  
+    this.chat.getNewMessage().subscribe((message: ServerMessage) => {
+      this.messages.push(message);
+      console.log('client received: ' + message.message);
     })
   }
 
@@ -57,8 +50,12 @@ export class CommunicationPageComponent implements OnInit {
   }
 
   onSubmit() {
-    let message = this.messageForm.value['message'];
+    let message: ClientMessage = {
+      clientName: this.username,
+      message: this.messageForm.value['message']
+    };
     this.chat.sendMessage(message);
+    console.log('client sent: ' + message);
 
     this.messageForm.reset();
   }

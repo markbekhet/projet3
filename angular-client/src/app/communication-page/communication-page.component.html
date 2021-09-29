@@ -3,7 +3,7 @@
     <button (click)='disconnect()'>Disconnect</button>
 
     <div class='chat'>
-        <p *ngFor='let msg of messages'> {{msg.clientName}} : {{ msg.message }} </p>
+        <p *ngFor='let msg of messages'> {{msg.clientName}} | {{msg.date.hour}} : {{ msg.message }}  </p>
     </div>
     
     <div class="content">
