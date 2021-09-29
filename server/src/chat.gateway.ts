@@ -3,7 +3,7 @@ import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessa
 import { Server, Socket } from 'socket.io';
 import{ServerMessage, CustomDate, ClientMessage} from'./MessageMeta'
 
-@WebSocketGateway()
+@WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
