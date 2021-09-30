@@ -17,11 +17,11 @@ class New_Message : AppCompatActivity() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val displaymessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycleView)
+        setContentView(R.layout.activity_chat)
+        val displaymessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycle_view)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         displaymessage?.layoutManager = linearLayoutManager
-        setContentView(R.layout.message_chat)
 
         fun setmessage(){
             messageDisplay = GroupAdapter<GroupieViewHolder>()
@@ -43,24 +43,4 @@ class New_Message : AppCompatActivity() {
     }
 
 
-}
-class UserMessage : Item<GroupieViewHolder>() {
-    private var message = "bonjour"
-    private var author = "auteur"
-    private var date = "date"
-    override fun getLayout():Int {
-        return R.layout.message
-    }
-
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.message.text = message
-        viewHolder.itemView.date.text = "bonjour"
-        viewHolder.itemView.user.text = "bonjour"
-
-    }
-    fun set(message :String, user : String, date : String){
-        this.message = message
-        this.author = user
-        this.date = date
-    }
 }
