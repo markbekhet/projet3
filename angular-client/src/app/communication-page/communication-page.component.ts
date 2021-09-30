@@ -28,7 +28,10 @@ export class CommunicationPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.username = this.activeRoute.snapshot.params['username'];
-  
+    this.chat.connect();
+
+    this.messages = [];
+
     this.chat.getNewMessage().subscribe((message: ServerMessage) => {
       if (message.clientName) {
         this.messages.unshift(message);
@@ -38,13 +41,18 @@ export class CommunicationPageComponent implements OnInit {
     })
   }
 
+  ngOnDestroy() {
+    this.chat.disconnect();
+  }
+
   disconnect(): void {
-    console.log('disconnect');
     //disconnect user
     try {
       this.request.disconnectClient(this.username)
       .subscribe(
-        code => this.router.navigate(['/']), //this.username = username
+        code => {
+          this.router.navigate(['/']);
+        }, //this.username = username
         err => console.log(err)); //LandingPageComponent.usernameExists = true
     } catch (e: any) { 
 

@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
   providedIn: 'root'
 })
 export class ChatService {
+  PATH = 'http://localhost:3000';
 
   public message$: BehaviorSubject<ServerMessage> = new BehaviorSubject<ServerMessage>({
     clientName: '',
@@ -18,8 +19,8 @@ export class ChatService {
       seconds: ''
     }
   });
-  socket = io('http://localhost:3000');
-
+  socket = io(this.PATH);
+  
   public sendMessage(message: ClientMessage) {
     console.log('chat service sent: ' + message.message);
     this.socket.emit('msgToServer', JSON.stringify(message));
@@ -30,9 +31,17 @@ export class ChatService {
       console.log('chat service received: ' + message.message);
       this.message$.next(message);
     });
-    
+
     return this.message$.asObservable();
   };
+
+  public connect(): void {
+    this.socket = io(this.PATH);
+  }
+
+  public disconnect(): void {
+    this.socket.disconnect();
+  }
 
   public getSocketID(): string {
     return this.socket.id;
