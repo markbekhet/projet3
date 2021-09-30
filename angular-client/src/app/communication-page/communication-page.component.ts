@@ -30,7 +30,10 @@ export class CommunicationPageComponent implements OnInit {
     this.username = this.activeRoute.snapshot.params['username'];
   
     this.chat.getNewMessage().subscribe((message: ServerMessage) => {
-      this.messages.push(message);
+      if (message.clientName) {
+        this.messages.unshift(message);
+      }
+      console.log(this.messages);
       console.log('client received: ' + message.message);
     })
   }
@@ -45,7 +48,8 @@ export class CommunicationPageComponent implements OnInit {
         err => console.log(err)); //LandingPageComponent.usernameExists = true
     } catch (e: any) { 
 
-    } 
+    }
+    this.messages = []; 
     
   }
 
@@ -56,7 +60,7 @@ export class CommunicationPageComponent implements OnInit {
     };
     this.chat.sendMessage(message);
     console.log('client sent: ' + message);
-
+    
     this.messageForm.reset();
   }
 

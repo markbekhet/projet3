@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ChatService } from './app/chat.service';
 
 const HTTP_OPTIONS = {
   headers: new HttpHeaders({
@@ -12,7 +13,7 @@ const HTTP_OPTIONS = {
   providedIn: 'root'
 })
 export class RequestService {
-  constructor(private httpClient: HttpClient) { 
+  constructor(private httpClient: HttpClient, private chat: ChatService) { 
 
   }
 
@@ -26,6 +27,12 @@ export class RequestService {
 
   disconnectClient(username: string):Observable<string> {
     //http://localhost:3000/connection/connect/
+    //passer socket id et username
+    /*{
+      socket_id: this.chat.getSocketID(),
+      username: username,
+    }*/
+    
     return this.httpClient.post<string>('http://localhost:3000/connection/disconnect/' + username, username);
   }
 }

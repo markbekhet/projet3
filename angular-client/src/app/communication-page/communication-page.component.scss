@@ -4,8 +4,13 @@ div {
 
 .chat {
     overflow: auto;
-    height: 600px;
+    height: 80vh;
+    width: 80%;
     border: solid black;
+    display: flex;
+    flex-direction: column-reverse;
+    margin: auto auto;
+    vertical-align: middle;
 }
 label {
     text-align: left;
@@ -14,4 +19,16 @@ button {
     padding: 4px 20px;
     margin: 8px 20px;
     box-sizing: border-box;
+}
+
+.username {
+    display: inline;
+}
+
+.date {
+    display: inline;
+}
+
+.message {
+    display: inline;
 }

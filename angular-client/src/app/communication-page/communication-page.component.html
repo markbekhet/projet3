@@ -3,7 +3,11 @@
     <button (click)='disconnect()'>Disconnect</button>
 
     <div class='chat'>
-        <p *ngFor='let msg of messages'> {{msg.clientName}} | {{msg.date.hour}} : {{ msg.message }}  </p>
+        <div *ngFor='let msg of messages'> 
+            <h3 class='username'>[{{ msg.clientName }}]</h3>
+            <h4 class='date'>[{{ msg.date.hour }} : {{ msg.date.minutes }} : {{ msg.date.seconds}}]</h4>
+            <h2 class='message'> {{ msg.message }} </h2>
+        </div>
     </div>
     
     <div class="content">

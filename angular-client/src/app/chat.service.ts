@@ -34,5 +34,9 @@ export class ChatService {
     return this.message$.asObservable();
   };
 
+  public getSocketID(): string {
+    return this.socket.id;
+  }
+
   constructor() { }
 }
