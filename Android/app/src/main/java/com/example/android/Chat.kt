@@ -13,7 +13,6 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.message.view.*
-import kotlinx.android.synthetic.main.message_chat.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -21,7 +20,6 @@ import org.json.JSONObject
 
 class Chat : AppCompatActivity() {
     private var mSocket: Socket? =null
-    private val messages : Array<String> = arrayOf("bonjour","salut")
     private var mClientService: ClientService ?= null
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,32 +39,32 @@ class Chat : AppCompatActivity() {
         val sendButton: Button = findViewById(R.id.button)
 
         sendButton.setOnClickListener {
-            val data = ClientMessage(clientName= ClientInfo.username,
+            val data = ClientMessage(clientName= "User",
                 message= textMessage.text.toString())
             mSocket?.emit("msgToServer", data.toJson())
             textMessage.text.clear()
         }
-
-        fun setmessage(){
+        fun setmessage(serverMessage: ServerMessage){
             messageDisplay = GroupAdapter<GroupieViewHolder>()
-            for (message in messages){
-                val UserMessage = UserMessage()
-                UserMessage.set(message , "user", "date")
-                messageDisplay?.add(UserMessage)
+            val UserMessage = UserMessage()
+            serverMessage.message?.let { serverMessage.clientName?.let { it1 ->
+                UserMessage.set(it,
+                    it1, serverMessage.date.toString())
+            } }
+            messageDisplay?.add(UserMessage)
 
-                println(UserMessage)
+            println(UserMessage)
+            runOnUiThread {
+                displaymessage?.adapter = messageDisplay
             }
-            displaymessage?.adapter = messageDisplay
 
-        }
-        button.setOnClickListener(){
-            setmessage()
         }
 
         mSocket?.on("msgToClient") { args ->
             if (args[0] != null) {
                 val data = args[0] as JSONObject
                 val serverMessage = ServerMessage().fromJson(data)
+                setmessage(serverMessage)
                 println("Data received from user" +
                     " ${serverMessage.clientName} at ${serverMessage.date?.hour}:" +
                     "${serverMessage.date?.minutes}:${serverMessage.date?.seconds}" +
@@ -100,8 +98,8 @@ class UserMessage : Item<GroupieViewHolder>() {
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.message.text = message
-        viewHolder.itemView.date.text = "bonjour"
-        viewHolder.itemView.user.text = "bonjour"
+        viewHolder.itemView.date.text = date
+        viewHolder.itemView.user.text = author
 
     }
 
