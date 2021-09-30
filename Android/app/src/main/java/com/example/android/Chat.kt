@@ -25,10 +25,11 @@ class Chat : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-        val displaymessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycle_view)
+
+        val displayMessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycle_view)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        displaymessage?.layoutManager = linearLayoutManager
+        displayMessage?.layoutManager = linearLayoutManager
 
         SocketHandler.setSocket()
         mSocket = SocketHandler.getMSocket()
@@ -44,18 +45,20 @@ class Chat : AppCompatActivity() {
             mSocket?.emit("msgToServer", data.toJson())
             textMessage.text.clear()
         }
-        fun setmessage(serverMessage: ServerMessage){
-            messageDisplay = GroupAdapter<GroupieViewHolder>()
-            val UserMessage = UserMessage()
-            serverMessage.message?.let { serverMessage.clientName?.let { it1 ->
-                UserMessage.set(it,
-                    it1, serverMessage.date.toString())
-            } }
-            messageDisplay?.add(UserMessage)
 
-            println(UserMessage)
+        val serverMessagesArray = ArrayList<ServerMessage>()
+        fun setmessage(){
+            messageDisplay = GroupAdapter<GroupieViewHolder>()
+            for(serverMessage in serverMessagesArray){
+                val userMessage = UserMessage()
+                serverMessage.message?.let { serverMessage.clientName?.let { it1 ->
+                    userMessage.set(it,
+                        it1, serverMessage.date.toString())
+                } }
+                messageDisplay?.add(userMessage)
+            }
             runOnUiThread {
-                displaymessage?.adapter = messageDisplay
+                displayMessage?.adapter = messageDisplay
             }
 
         }
@@ -64,14 +67,12 @@ class Chat : AppCompatActivity() {
             if (args[0] != null) {
                 val data = args[0] as JSONObject
                 val serverMessage = ServerMessage().fromJson(data)
-                setmessage(serverMessage)
+                serverMessagesArray.add(serverMessage)
+                setmessage()
                 println("Data received from user" +
                     " ${serverMessage.clientName} at ${serverMessage.date?.hour}:" +
                     "${serverMessage.date?.minutes}:${serverMessage.date?.seconds}" +
                     " ${serverMessage.message}")
-                runOnUiThread {
-                    Toast.makeText(this, serverMessage.toString(), Toast.LENGTH_SHORT).show()
-                }
             };
         }
     }
