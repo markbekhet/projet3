@@ -13,7 +13,7 @@ const HTTP_OPTIONS = {
   providedIn: 'root'
 })
 export class RequestService {
-  constructor(private httpClient: HttpClient, private chat: ChatService) { 
+  constructor(private httpClient: HttpClient, private chat: ChatService) {
 
   }
 
