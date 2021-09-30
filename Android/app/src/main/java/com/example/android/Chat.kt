@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xwray.groupie.GroupAdapter
@@ -38,7 +39,17 @@ class Chat : AppCompatActivity() {
         mClientService = ClientService()
         val textMessage: EditText = findViewById(R.id.textView)
         val sendButton: Button = findViewById(R.id.button)
+        textMessage.doAfterTextChanged {
+            if(textMessage.text.isNotEmpty()){
+                sendButton.isEnabled = true
+                sendButton.isClickable = true
+            }
+            else{
+                sendButton.isEnabled = false
+                sendButton.isClickable = false
+            }
 
+        }
         sendButton.setOnClickListener {
             val data = ClientMessage(clientName= "User",
                 message= textMessage.text.toString())
