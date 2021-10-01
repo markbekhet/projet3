@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
+import android.view.KeyEvent
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -44,6 +46,15 @@ class LoginScreen : AppCompatActivity() {
                 button.isEnabled = false
             }
         }
+
+        username.setOnEditorActionListener ( TextView.OnEditorActionListener{
+                textView, i, keyEvent ->
+            if(keyEvent != null && keyEvent.keyCode.equals(KeyEvent.KEYCODE_ENTER)
+                && button.isEnabled){
+                button.performClick()
+            }
+            return@OnEditorActionListener false
+        })
 
         button.setOnClickListener() {
             clientService!!.setClientUsername(username.text.toString())
