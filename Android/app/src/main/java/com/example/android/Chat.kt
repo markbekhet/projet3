@@ -2,6 +2,8 @@ package com.example.android
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -39,6 +41,8 @@ class Chat : AppCompatActivity() {
         mClientService = ClientService()
         val textMessage: EditText = findViewById(R.id.textView)
         val sendButton: Button = findViewById(R.id.button)
+
+
         textMessage.doAfterTextChanged {
             if(textMessage.text.isNotEmpty()){
                 sendButton.isEnabled = true
@@ -50,6 +54,18 @@ class Chat : AppCompatActivity() {
             }
 
         }
+
+        textMessage.setOnEditorActionListener ( TextView.OnEditorActionListener{
+                textView, i, keyEvent ->
+            if(keyEvent != null && keyEvent.keyCode.equals(KeyEvent.KEYCODE_ENTER)
+                && sendButton.isEnabled){
+                sendButton.performClick()
+            }
+            return@OnEditorActionListener false
+        })
+
+
+
         sendButton.setOnClickListener {
             val data = ClientMessage(clientName= ClientInfo.username,
                 message= textMessage.text.toString())
