@@ -42,10 +42,8 @@ export class CommunicationPageComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.disconnect();
-    //alert('1');
     this.chat.disconnect();
-   // alert('2');
+    this.disconnect();
   }
 
   disconnect(): void {
@@ -65,10 +63,20 @@ export class CommunicationPageComponent implements OnInit {
   }
 
   onSubmit() {
-    let message: ClientMessage = {
+    let currentDate: Date = new Date();
+    
+    let message: ServerMessage = {
       clientName: this.username,
-      message: this.messageForm.value['message']
+      message: this.messageForm.value['message'],
+      date: {
+        hour: currentDate.getHours().toString(),
+        minutes: currentDate.getMinutes().toString(),
+        seconds: currentDate.getSeconds().toString()
+      }
     };
+
+    console.log(message.date.hour + ' ' + message.date.minutes + ' ' + message.date.seconds)
+
     this.chat.sendMessage(message);
     console.log('client sent: ' + message);
     

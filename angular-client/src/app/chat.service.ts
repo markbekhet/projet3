@@ -9,6 +9,7 @@ import { io } from "socket.io-client";
 })
 export class ChatService {
   PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+  //PATH = 'localhost:3000';
 
   public message$: BehaviorSubject<ServerMessage> = new BehaviorSubject<ServerMessage>({
     clientName: '',
@@ -21,7 +22,7 @@ export class ChatService {
   });
   socket = io(this.PATH);
   
-  public sendMessage(message: ClientMessage) {
+  public sendMessage(message: ServerMessage) {
     console.log('chat service sent: ' + message.message);
     this.socket.emit('msgToServer', JSON.stringify(message));
   }
