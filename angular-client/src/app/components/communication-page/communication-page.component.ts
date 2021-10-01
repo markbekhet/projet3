@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ChatService } from 'src/app/services/chat.service';
 import { RequestService } from 'src/app/services/request.service';
-import { Message } from 'src/app/models/MessageMeta';
+import { Message, CustomDate } from 'src/app/models/MessageMeta';
 
 @Component({
   selector: 'app-communication-page',
   templateUrl: './communication-page.component.html',
   styleUrls: ['./communication-page.component.scss']
 })
-export class CommunicationPageComponent implements OnInit {
+export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   username: string = '';
   messages: Message[] = [];
@@ -46,17 +46,17 @@ export class CommunicationPageComponent implements OnInit {
   onSubmit() {
     const currentDate: Date = new Date();
 
+    const date: CustomDate = {
+      hour: currentDate.getHours().toString(),
+      minutes: currentDate.getMinutes().toString(),
+      seconds: currentDate.getSeconds().toString()
+    };
+
     const message: Message = {
       clientName: this.username,
       message: this.messageForm.value['message'],
-      date: {
-        hour: currentDate.getHours().toString(),
-        minutes: currentDate.getMinutes().toString(),
-        seconds: currentDate.getSeconds().toString()
-      }
+      date: date
     };
-
-    console.log(message.date.hour + ' ' + message.date.minutes + ' ' + message.date.seconds)
 
     this.chat.sendMessage(message);
     console.log('client sent: ' + message);
@@ -68,6 +68,7 @@ export class CommunicationPageComponent implements OnInit {
     return this.username === clientName;
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy() {
     this.messages = [];
     this.chat.disconnect();
@@ -75,7 +76,6 @@ export class CommunicationPageComponent implements OnInit {
   }
 
   disconnect(): void {
-    //disconnect user
     try {
       this.request.disconnectClient(this.username)
       .subscribe(
@@ -87,6 +87,5 @@ export class CommunicationPageComponent implements OnInit {
 
     }
     this.messages = [];
-
   }
 }

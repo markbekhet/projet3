@@ -43,3 +43,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Fichier production du client lourd
+/Colorimage-win32-x64
