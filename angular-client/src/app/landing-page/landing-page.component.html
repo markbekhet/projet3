@@ -1,11 +1,11 @@
 <!-- Reactive form (with validators) -->
 <div class="content">
     <h1>COLORIMAGE</h1>
-    <h3 *ngIf='username'>Connected user: {{ username }}</h3>
+    
     <form [formGroup]='usernameForm' (ngSubmit)='onSubmit()'>
         <div class="form-container">
             <div>
-                Username: 
+                Nom d'utilisateur : 
                 <input class='form-field' formControlName='username'>
                 <div *ngIf='usernameForm.controls["username"].dirty && usernameForm.hasError("required", "username")' class='error'> <!--*ngIf='usernameForm.get("username")?.errors?.required'-->
                     Un nom d'utilisateur est requis !
@@ -17,7 +17,7 @@
             <div>
                 <br>
                 <button class='button' type='submit' [disabled]='usernameForm.invalid'> <!--[disabled]='usernameForm.invalid'-->
-                    Submit
+                    Connexion
                 </button>
             </div>
         </div>
