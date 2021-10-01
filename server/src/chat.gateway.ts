@@ -25,6 +25,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('msgToServer')
   handleMessage(client: Socket, data: any): void {
     var formattedData: ServerMessage = JSON.parse(data)
+    formattedData.date = {
+        hour: ('0' + formattedData.date.hour).slice(-2),
+        minutes: ('0' + formattedData.date.minutes).slice(-2),
+        seconds: ('0' + formattedData.date.seconds).slice(-2)
+    }
     this.logger.log("client: " + formattedData.clientName + " sent " + formattedData.message + " at" + formattedData.date.hour + ":" + formattedData.date.minutes + ":" +formattedData.date.seconds);
     //return {event: 'msgToClient', data: text}
     this.wss.emit("msgToClient", formattedData);
