@@ -65,7 +65,6 @@ export class CommunicationPageComponent implements OnInit {
   onSubmit() {
     let currentDate: Date = new Date();
     
-    alert(currentDate.getHours().toString());
     let message: ServerMessage = {
       clientName: this.username,
       message: this.messageForm.value['message'],
