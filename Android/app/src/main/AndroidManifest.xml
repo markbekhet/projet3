@@ -14,7 +14,8 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".Chat"
-            android:exported="true" >
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
         </activity>
 
         <service
@@ -24,7 +25,8 @@
 
         <activity
             android:name=".LoginScreen"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

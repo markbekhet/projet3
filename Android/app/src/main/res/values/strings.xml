@@ -4,6 +4,7 @@
     <string name="username">Nom d\'utilisateur</string>
     <string name="send">envoyé</string>
     <string name="enter_message">Entrez votre message</string>
+    <string name="user_error">Ce nom est utilise par un autre client. Veuillez saisir un autre nom.</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

@@ -26,7 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:text="Veuillez entrer un nom d'utilisateur"
+            android:text="@string/user_error"
             android:textSize="24sp" />
 
         <Button
@@ -38,7 +38,6 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:text="ok"
-            app:backgroundTint="#D3D3D3" />
+            android:text="ok" />
     </LinearLayout>
 </RelativeLayout>
