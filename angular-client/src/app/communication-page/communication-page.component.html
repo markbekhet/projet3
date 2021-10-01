@@ -4,9 +4,13 @@
 
     <div class='chat'>
         <div *ngFor='let msg of messages'> 
-            <h3 class='username'>[{{ msg.clientName }}]</h3>
-            <h4 class='date'>[{{ msg.date.hour }} : {{ msg.date.minutes }} : {{ msg.date.seconds}}]</h4>
-            <h2 class='message'> {{ msg.message }} </h2>
+            <div [ngStyle]='{"float":self(msg.clientName) ? "right" : "left"}' class='message-bubble'>
+                <h2 class='username'>[{{ msg.clientName }}]</h2>
+                <h2 class='date'>[{{ msg.date.hour }}:{{ msg.date.minutes }}:{{ msg.date.seconds}}]</h2>
+                <div class='message-div'>
+                    <h2 class='message'> {{ msg.message }} </h2>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -14,7 +18,7 @@
         <form [formGroup]='messageForm' (ngSubmit)='onSubmit()'>
             <div class="form-container">
                 <div>
-                    <input class='form-field' formControlName='message'>
+                    <input class='form-field message-input' formControlName='message'>
                     <button class='button' type='submit' [disabled]='messageForm.invalid'>
                         Send
                     </button>

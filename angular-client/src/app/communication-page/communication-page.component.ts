@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -42,7 +42,10 @@ export class CommunicationPageComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.disconnect();
+    alert('1');
     this.chat.disconnect();
+    alert('2');
   }
 
   disconnect(): void {
@@ -70,6 +73,10 @@ export class CommunicationPageComponent implements OnInit {
     console.log('client sent: ' + message);
     
     this.messageForm.reset();
+  }
+
+  public self(clientName: string):boolean {
+    return this.username === clientName; 
   }
 
 }

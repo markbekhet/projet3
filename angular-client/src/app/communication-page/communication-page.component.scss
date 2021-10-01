@@ -1,5 +1,6 @@
 div {
     text-align: center;
+    font: normal 12px Verdana, Arial, sans-serif;
 }
 
 .chat {
@@ -15,6 +16,7 @@ div {
 label {
     text-align: left;
 }
+
 button {
     padding: 4px 20px;
     margin: 8px 20px;
@@ -31,4 +33,21 @@ button {
 
 .message {
     display: inline;
+}
+
+.message-div {
+    overflow-wrap: break-word;
+    width: 900px;
+}
+
+.message-bubble {
+    border: solid rgb(136, 205, 218);
+    border-radius: 20px;
+    background-color:rgb(192, 235, 243);
+    padding: 5px;
+}
+
+.message-input {
+    width: 75%;
+    margin: auto auto;
 }
