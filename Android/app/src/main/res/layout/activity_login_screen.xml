@@ -18,7 +18,7 @@
         android:layout_marginLeft="5sp"
         android:layout_marginRight="5sp"
         android:layout_marginBottom="50sp"
-        android:text="Application"
+        android:text="@string/application_name"
         android:textColor="@color/black"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -48,9 +48,10 @@
         android:drawablePadding="10dp"
         android:ems="10"
         android:padding="10dp"
-        android:text="Nom d'utilisateur"
+        android:hint="@string/username"
         android:textColor="#808080"
         android:textSize="20sp"
+        android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="@+id/nom_app"
         app:layout_constraintHorizontal_bias="0.478"
@@ -65,7 +66,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connexion"
-        app:backgroundTint="#D3D3D3"
+        android:enabled="false"
+        android:clickable="false"
         />
 
 
