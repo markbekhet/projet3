@@ -68,10 +68,10 @@ export class CommunicationPageComponent implements OnInit {
     let message: ServerMessage = {
       clientName: this.username,
       message: this.messageForm.value['message'],
-      date: { //('0'+this).slice(-2);
-        hour: ('0' + currentDate.getHours().toString()).slice(-2),
-        minutes: ('0' + currentDate.getMinutes().toString()).slice(-2),
-        seconds: ('0' + currentDate.getSeconds().toString()).slice(-2)
+      date: {
+        hour: currentDate.getHours().toString(),
+        minutes: currentDate.getMinutes().toString(),
+        seconds: currentDate.getSeconds().toString()
       }
     };
 
