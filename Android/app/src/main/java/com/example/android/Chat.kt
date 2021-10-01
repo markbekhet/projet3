@@ -3,11 +3,9 @@ package com.example.android
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +18,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Chat : AppCompatActivity() {
     private var mSocket: Socket? =null
@@ -65,10 +65,19 @@ class Chat : AppCompatActivity() {
         })
 
 
+        fun getCurrentDateTime(): Date {
+            return Calendar.getInstance().time
+        }
 
         sendButton.setOnClickListener {
-            val data = ClientMessage(clientName= ClientInfo.username,
-                message= textMessage.text.toString())
+
+            val c = Calendar.getInstance()
+            val hour = c.get(Calendar.HOUR_OF_DAY).toString()
+            val minute=c.get(Calendar.MINUTE).toString()
+            val second =c.get(Calendar.SECOND).toString()
+            val date :CustomDate = CustomDate(hour,minute,second)
+            val data = ServerMessage(clientName= ClientInfo.username,
+                message= textMessage.text.toString(),date)
             mSocket?.emit("msgToServer", data.toJson())
             textMessage.text.clear()
         }

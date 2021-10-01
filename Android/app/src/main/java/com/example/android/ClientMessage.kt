@@ -30,7 +30,7 @@ data class ServerMessage(
 }
 
 data class CustomDate(
-    var hour: String ?= null,
+    var hour: String = null,
     var minutes: String ?= null,
     var seconds: String ?= null
 ){
