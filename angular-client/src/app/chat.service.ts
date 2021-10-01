@@ -21,7 +21,7 @@ export class ChatService {
   });
   socket = io(this.PATH);
   
-  public sendMessage(message: ClientMessage) {
+  public sendMessage(message: ServerMessage) {
     console.log('chat service sent: ' + message.message);
     this.socket.emit('msgToServer', JSON.stringify(message));
   }
