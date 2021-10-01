@@ -1,8 +1,6 @@
 div {
     text-align: center;
-}
-label {
-    text-align: left;
+    font: normal 12px Verdana, Arial, sans-serif;
 }
 .error {
     color: rgb(206, 70, 70);
@@ -10,7 +8,16 @@ label {
 .error-msg {
     color: #a94442;
   }
-  .fix-error-icon {
+.fix-error-icon {
     top: 27px;
-  }
+}
+input {
+    text-align: left;
+    padding: 2px 2px;
+    box-sizing: border-box;    
+}
+button {
+    padding: 2px 20px;
+    box-sizing: border-box;
+}
   

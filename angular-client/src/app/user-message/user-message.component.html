@@ -1,0 +1,12 @@
+<div class="content">
+    <form [formGroup]='messageForm' (ngSubmit)='onSubmit()'>
+        <div class="form-container">
+            <div>
+                <input class='form-field' formControlName='message'>
+                <button class='button' type='submit' [disabled]='messageForm.invalid'>
+                    Send
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
