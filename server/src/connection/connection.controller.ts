@@ -20,6 +20,5 @@ export class ConnectionController {
     @Post("/disconnect/:username")
     disonnectUser(@Param('username') username: string){
         this.connectionService.diconnectClient(username);
-        console.log(`${username} has left`);
     }
 }

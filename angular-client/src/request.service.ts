@@ -13,16 +13,15 @@ const HTTP_OPTIONS = {
   providedIn: 'root'
 })
 export class RequestService {
-  constructor(private httpClient: HttpClient, private chat: ChatService) {
+  constructor(private httpClient: HttpClient, private chat: ChatService) { }
 
-  }
+  PATH = 'http://localhost:3000/';
+  // PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+  CONNECTION_PATH = 'connection/connect/';
+  DISCONNECTION_PATH = 'connection/disconnect/';
 
   connectClient(username: string):Observable<string> {
-    //http://localhost:3000/connection/connect/
-    //http://azureuser@projet3-101.eastus.cloudapp.azure.com:3000/connection/connect/
-    //let username_encoded = encodeURI(username);
-    //console.log(username_encoded);
-    return this.httpClient.post<string>('http://projet3-101.eastus.cloudapp.azure.com:3000/connection/connect/' + username, username);
+    return this.httpClient.post<string>(this.PATH + this.CONNECTION_PATH + username, username);
   }
 
   disconnectClient(username: string):Observable<string> {
@@ -32,7 +31,7 @@ export class RequestService {
       socket_id: this.chat.getSocketID(),
       username: username,
     }*/
-    
-    return this.httpClient.post<string>('http://projet3-101.eastus.cloudapp.azure.com:3000/connection/disconnect/' + username, username);
+
+    return this.httpClient.post<string>(this.PATH + this.DISCONNECTION_PATH + username, username);
   }
 }
