@@ -51,7 +51,7 @@ class Chat : AppCompatActivity() {
 
         }
         sendButton.setOnClickListener {
-            val data = ClientMessage(clientName= "User",
+            val data = ClientMessage(clientName= ClientInfo.username,
                 message= textMessage.text.toString())
             mSocket?.emit("msgToServer", data.toJson())
             textMessage.text.clear()
