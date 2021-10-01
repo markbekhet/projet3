@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
   providedIn: 'root'
 })
 export class ChatService {
-  PATH = 'http://localhost:3000';
+  PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 
   public message$: BehaviorSubject<ServerMessage> = new BehaviorSubject<ServerMessage>({
     clientName: '',

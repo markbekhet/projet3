@@ -43,9 +43,9 @@ export class CommunicationPageComponent implements OnInit {
 
   ngOnDestroy() {
     this.disconnect();
-    alert('1');
+    //alert('1');
     this.chat.disconnect();
-    alert('2');
+   // alert('2');
   }
 
   disconnect(): void {

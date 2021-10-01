@@ -22,7 +22,7 @@ export class RequestService {
     //http://azureuser@projet3-101.eastus.cloudapp.azure.com:3000/connection/connect/
     //let username_encoded = encodeURI(username);
     //console.log(username_encoded);
-    return this.httpClient.post<string>('http://localhost:3000/connection/connect/' + username, username);
+    return this.httpClient.post<string>('http://projet3-101.eastus.cloudapp.azure.com:3000/connection/connect/' + username, username);
   }
 
   disconnectClient(username: string):Observable<string> {
@@ -33,6 +33,6 @@ export class RequestService {
       username: username,
     }*/
     
-    return this.httpClient.post<string>('http://localhost:3000/connection/disconnect/' + username, username);
+    return this.httpClient.post<string>('http://projet3-101.eastus.cloudapp.azure.com:3000/connection/disconnect/' + username, username);
   }
 }
