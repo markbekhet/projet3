@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { RequestService } from 'src/request.service';
-import { ClientMessage, ServerMessage } from '../MessageMeta';
+import { ClientMessage, ServerMessage, CustomDate } from '../MessageMeta';
 import { ChatService } from '../chat.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ChatService } from '../chat.service';
   templateUrl: './communication-page.component.html',
   styleUrls: ['./communication-page.component.scss']
 })
-export class CommunicationPageComponent implements OnInit {
+export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   username: string = '';
   messages: ServerMessage[] = [];
@@ -40,10 +40,11 @@ export class CommunicationPageComponent implements OnInit {
       console.log('client received: ' + message.message);
     })
   }
-
+  
+  @HostListener('window:beforeunload')
   ngOnDestroy() {
-    this.chat.disconnect();
     this.disconnect();
+    this.chat.disconnect();
   }
 
   disconnect(): void {
@@ -64,15 +65,16 @@ export class CommunicationPageComponent implements OnInit {
 
   onSubmit() {
     let currentDate: Date = new Date();
+    let date: CustomDate = {
+      hour: currentDate.getHours().toString(),
+      minutes: currentDate.getMinutes().toString(),
+      seconds: currentDate.getSeconds().toString()
+    };
     
     let message: ServerMessage = {
       clientName: this.username,
       message: this.messageForm.value['message'],
-      date: {
-        hour: currentDate.getHours().toString(),
-        minutes: currentDate.getMinutes().toString(),
-        seconds: currentDate.getSeconds().toString()
-      }
+      date: date
     };
 
     console.log(message.date.hour + ' ' + message.date.minutes + ' ' + message.date.seconds)
