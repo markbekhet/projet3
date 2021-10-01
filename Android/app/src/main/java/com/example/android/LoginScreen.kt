@@ -6,6 +6,8 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
 import android.widget.Button
+import androidx.core.widget.doAfterTextChanged
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -31,12 +33,26 @@ class LoginScreen : AppCompatActivity() {
                 }
             }
         }
+
+        username.doAfterTextChanged {
+            if(username.text.isNotEmpty()){
+                button.isClickable = true
+                button.isEnabled = true
+            }
+            else{
+                button.isClickable = false
+                button.isEnabled = false
+            }
+        }
+
         button.setOnClickListener() {
             clientService!!.setClientUsername(username.text.toString())
             println(ClientInfo.username)
             runBlocking {
-                launch {
-                    clientService!!.connect(ClientInfo.username)
+                async{
+                    launch {
+                        clientService!!.connect(ClientInfo.username)
+                    }
                 }
             }
 

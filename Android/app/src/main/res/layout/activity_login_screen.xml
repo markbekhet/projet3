@@ -65,7 +65,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connexion"
-        app:backgroundTint="#D3D3D3"
+        android:enabled="false"
+        android:clickable="false"
         />
 
 
