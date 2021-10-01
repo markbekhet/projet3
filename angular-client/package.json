@@ -1,12 +1,16 @@
 {
   "name": "angular-client",
   "version": "0.0.0",
+  "description": "Windows Application pour project 3",
+  "main": "main.js",
+  "author": "Équipe 101",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "electron": "ng build --base-href ./ && electron ."
   },
   "private": true,
   "dependencies": {
@@ -30,6 +34,8 @@
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "@types/socket.io-client": "^3.0.0",
+    "electron": "^15.0.0",
+    "electron-packager": "^15.4.0",
     "jasmine-core": "~3.7.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
