@@ -27,10 +27,13 @@ data class ServerMessage(
     override fun toString(): String{
         return "${clientName} ${message} ${date.toString()}"
     }
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
 }
 
 data class CustomDate(
-    var hour: String = null,
+    var hour: String ?= null,
     var minutes: String ?= null,
     var seconds: String ?= null
 ){
@@ -43,5 +46,9 @@ data class CustomDate(
 
     override fun toString(): String{
         return "${hour}:${minutes}:${seconds}"
+    }
+
+    fun toJson(): String{
+        return Gson().toJson(this)
     }
 }
