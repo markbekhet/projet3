@@ -2,23 +2,28 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ConnectionService {
-    private usernames : string[] = [];
+    private static usernames : string[] = [];
     public IsvalidateClient(username: string):boolean{
         console.log(username)
-        if(this.usernames.length=== 0){
-            this.usernames.push(username);
+        if(ConnectionService.usernames.length=== 0){
+            ConnectionService.usernames.push(username);
             return true;
         }
-        var index = this.usernames.indexOf(username);
+        var index = ConnectionService.usernames.indexOf(username);
         if(index === -1){
-            this.usernames.push(username);
+            ConnectionService.usernames.push(username);
             return true;
         }
         return false;
     }
 
     public diconnectClient(username: string){
-        var index = this.usernames.indexOf(username);
-        this.usernames.splice(index,1);
+        var index = ConnectionService.usernames.indexOf(username);
+        if(index !== -1){
+            ConnectionService.usernames.splice(index,1);
+            console.log(`There is ${ConnectionService.usernames.length} clients connected to the server`);
+            console.log(`${username} has left`);
+            console.log(`The users connected are ${ConnectionService.usernames}`)
+        }
     }
 }
