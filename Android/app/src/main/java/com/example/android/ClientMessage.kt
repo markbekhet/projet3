@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 data class ClientMessage(
-    var clientName: String,
+    var clientName: String?,
     var message: String
 ){
     fun toJson(): String{
