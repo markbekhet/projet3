@@ -75,6 +75,7 @@ class LoginScreen : AppCompatActivity() {
             } else {
                 showError()
             }
+            username.text.clear()
         }
     }
     fun verifyAuth(integer : Int): Boolean {
