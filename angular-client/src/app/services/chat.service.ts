@@ -9,7 +9,7 @@ import { Message } from '../models/MessageMeta';
 })
 export class ChatService {
   PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-  //PATH = 'localhost:3000';
+  // PATH = 'localhost:3000';
 
   socket = io(this.PATH);
 

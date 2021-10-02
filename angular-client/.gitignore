@@ -44,5 +44,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# Fichier production du client lourd
+# Fichiers générés pour l'éxécutable du client lourd
 /Colorimage-win32-x64
+/Colorimage-win32-x64.zip
+/Colorimage-darwin-x64
+/Colorimage-darwin-x64.zip
