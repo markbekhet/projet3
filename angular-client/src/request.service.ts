@@ -15,8 +15,8 @@ const HTTP_OPTIONS = {
 export class RequestService {
   constructor(private httpClient: HttpClient, private chat: ChatService) { }
 
-  PATH = 'http://localhost:3000/';
-  // PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+  PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+  // PATH = 'http://localhost:3000/';
   CONNECTION_PATH = 'connection/connect/';
   DISCONNECTION_PATH = 'connection/disconnect/';
 
