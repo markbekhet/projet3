@@ -5,11 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { LandingPageComponent } from './landing-page/landing-page.component';
-import { RequestService } from 'src/request.service';
-import { CommunicationPageComponent } from './communication-page/communication-page.component';
-import { UserMessageComponent } from './user-message/user-message.component';
+import { AppComponent } from './components/app-component/app.component';
+import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
+import { ChatService } from './services/chat.service';
+import { RequestService } from './services/request.service';
 
 const appRoutes: Routes = [
   { path: ':username', component: CommunicationPageComponent },
@@ -21,7 +21,6 @@ const appRoutes: Routes = [
     AppComponent,
     LandingPageComponent,
     CommunicationPageComponent,
-    UserMessageComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +30,8 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
   ],
   providers: [
-    RequestService
+    RequestService,
+    ChatService
   ],
   bootstrap: [AppComponent]
 })

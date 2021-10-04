@@ -1,4 +1,4 @@
-package com.example.android
+package com.example.android.chat
 
 import com.google.gson.Gson
 import org.json.JSONObject

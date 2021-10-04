@@ -1,4 +1,4 @@
-package com.example.android
+package com.example.android.chat
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -23,7 +24,7 @@ import kotlin.collections.ArrayList
 
 class Chat : AppCompatActivity() {
     private var mSocket: Socket? =null
-    private var mClientService: ClientService ?= null
+    private var mClientService: ClientService?= null
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +76,7 @@ class Chat : AppCompatActivity() {
             val hour = c.get(Calendar.HOUR_OF_DAY).toString()
             val minute=c.get(Calendar.MINUTE).toString()
             val second =c.get(Calendar.SECOND).toString()
-            val date :CustomDate = CustomDate(hour,minute,second)
+            val date : CustomDate = CustomDate(hour,minute,second)
             val data = ServerMessage(clientName= ClientInfo.username,
                 message= textMessage.text.toString(),date)
             mSocket?.emit("msgToServer", data.toJson())

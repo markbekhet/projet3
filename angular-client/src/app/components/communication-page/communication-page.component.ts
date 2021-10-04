@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { RequestService } from 'src/request.service';
-import { ClientMessage, ServerMessage, CustomDate } from '../MessageMeta';
-import { ChatService } from '../chat.service';
+import { ChatService } from 'src/app/services/chat.service';
+import { RequestService } from 'src/app/services/request.service';
+import { Message, CustomDate } from 'src/app/models/MessageMeta';
 
 @Component({
   selector: 'app-communication-page',
@@ -14,13 +14,16 @@ import { ChatService } from '../chat.service';
 export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   username: string = '';
-  messages: ServerMessage[] = [];
-
+  messages: Message[] = [];
   messageForm: FormGroup;
 
-  constructor(private router: Router, private activeRoute: ActivatedRoute, 
-    private request: RequestService, private formBuilder: FormBuilder, 
-    private chat: ChatService) {
+  constructor(
+    private router: Router,
+    private activeRoute: ActivatedRoute,
+    private formBuilder: FormBuilder,
+    private chat: ChatService,
+    private request: RequestService
+  ) {
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [ Validators.required])
     });
@@ -28,11 +31,10 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.username = this.activeRoute.snapshot.params['username'];
-    this.chat.connect();
-
     this.messages = [];
+    // this.chat.connect();
 
-    this.chat.getNewMessage().subscribe((message: ServerMessage) => {
+    this.chat.getNewMessage().subscribe((message: Message) => {
       if (message.clientName) {
         this.messages.unshift(message);
       }
@@ -40,15 +42,40 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
       console.log('client received: ' + message.message);
     })
   }
-  
+
+  onSubmit() {
+    const currentDate: Date = new Date();
+
+    const date: CustomDate = {
+      hour: currentDate.getHours().toString(),
+      minutes: currentDate.getMinutes().toString(),
+      seconds: currentDate.getSeconds().toString()
+    };
+
+    const message: Message = {
+      clientName: this.username,
+      message: this.messageForm.value['message'],
+      date: date
+    };
+
+    this.chat.sendMessage(message);
+    console.log('client sent: ' + message);
+
+    this.messageForm.reset();
+  }
+
+  public self(clientName: string): boolean {
+    return this.username === clientName;
+  }
+
   @HostListener('window:beforeunload')
   ngOnDestroy() {
-    this.disconnect();
+    this.messages = [];
     this.chat.disconnect();
+    this.disconnect();
   }
 
   disconnect(): void {
-    //disconnect user
     try {
       this.request.disconnectClient(this.username)
       .subscribe(
@@ -56,37 +83,9 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
         }, //this.username = username
         err => console.log(err)); //LandingPageComponent.usernameExists = true
-    } catch (e: any) { 
+    } catch (e: any) {
 
     }
-    this.messages = []; 
-    
+    this.messages = [];
   }
-
-  onSubmit() {
-    let currentDate: Date = new Date();
-    let date: CustomDate = {
-      hour: currentDate.getHours().toString(),
-      minutes: currentDate.getMinutes().toString(),
-      seconds: currentDate.getSeconds().toString()
-    };
-    
-    let message: ServerMessage = {
-      clientName: this.username,
-      message: this.messageForm.value['message'],
-      date: date
-    };
-
-    console.log(message.date.hour + ' ' + message.date.minutes + ' ' + message.date.seconds)
-
-    this.chat.sendMessage(message);
-    console.log('client sent: ' + message);
-    
-    this.messageForm.reset();
-  }
-
-  public self(clientName: string):boolean {
-    return this.username === clientName; 
-  }
-
 }
