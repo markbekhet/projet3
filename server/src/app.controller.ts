@@ -18,7 +18,7 @@ export class AppController {
   }
 
   @Post(REGISTRATION_URL)
-  async registerUser(@Body() registrationInfo: UserRegistrationInfo){
+  async registerUser(@Body() registrationInfo: string){
     await this.databaseService.createUser(registrationInfo)
   }
 }

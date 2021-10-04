@@ -6,7 +6,8 @@ export class DatabaseService {
     constructor(){
 
     }
-    async createUser(registrationInfo: UserRegistrationInfo){
-        
+    async createUser(registrationInfo: string){
+        // emailAdressUnique
+        //PseudonymeUnique
     }
 }
