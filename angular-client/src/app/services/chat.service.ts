@@ -4,14 +4,14 @@ import { io } from "socket.io-client";
 
 import { Message } from '../models/MessageMeta';
 
+const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+// const PATH = 'localhost:3000';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-  // PATH = 'localhost:3000';
-
-  socket = io(this.PATH);
+  socket = io(PATH);
 
   public message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
     clientName: '',
@@ -38,7 +38,7 @@ export class ChatService {
   };
 
   public connect(): void {
-    this.socket = io(this.PATH);
+    this.socket = io(PATH);
   }
 
   public disconnect(): void {
@@ -48,6 +48,4 @@ export class ChatService {
   public getSocketID(): string {
     return this.socket.id;
   }
-
-  constructor() { }
 }

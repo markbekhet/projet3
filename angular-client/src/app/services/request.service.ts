@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-//http://azureuser@projet3-101.eastus.cloudapp.azure.com:3000/connection/connect/
-
 const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 // const PATH = 'http://localhost:3000/';
 const CONNECTION_PATH = 'connection/connect/';
