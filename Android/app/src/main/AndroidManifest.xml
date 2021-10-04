@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".Chat"
+            android:name=".chat.Chat"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
         </activity>
