@@ -12,7 +12,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "electron": "ng build --base-href ./ && electron .",
-    "package": "npx electron-packager ./ Colorimage  --platform=win32 --arch=x64"
+    "package-windows": "npx electron-packager ./ Colorimage  --platform=win32 --arch=x64",
+    "package-mac": "npx electron-packager ./ Colorimage  --platform=darwin --arch=x64"
   },
   "private": true,
   "dependencies": {
