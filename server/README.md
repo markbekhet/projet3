@@ -71,35 +71,3 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
----------------------------------------------------------------------------------------------
-## usefull Docker commands
-## To create a docker image
-sudo docker build -t <image-name> <DockerFilePath>
-## To create a docker container
-sudo docker create --name <container-name> -p <application-port>:<redirection-port> <image-name>
-## To see all available docker images
-sudo docker images
-## To see all docker containers
-sudo docker ps -a
-## To start a docker container
-sudo docker start <conatainer-name>
-## To stop a container
-sudo docker stop <container-name>
-## To remove a docker container
-sudo docker rm <container-name>
-## To remove a docker image
-sudo docker rmi <image-name>
-## To see the logs of a docker container 
-sudo docker logs <container-name>
-## To get a bash shell in the container
-sudo docker exec -it <container-name> /bin/bash
-## To login docker to gitlab registry
-docker login registry.gitlab.com
-## To create docker image following gitlab convention
-example: sudo docker build -t registry.gitlab.com/polytechnique-montr-al/log3900/21-3/equipe-101/log3900-101/server:prototype .
-## To push docker image in the gitlab registry
-sudo docker push registry.gitlab.com/polytechnique-montr-al/log3900/21-3/equipe-101/log3900-101/server:prototype
-## To pull docker image to gitlab registry
-sudo docker pull registry.gitlab.com/polytechnique-montr-al/log3900/21-3/equipe-101/log3900-101/server:prototype
-## To watch what the docker image does in real time
-sudo watch -n1 docker logs server
