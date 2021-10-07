@@ -18,7 +18,10 @@ export class AppController {
   }
 
   @Post(REGISTRATION_URL)
-  async registerUser(@Body() registrationInfo: any){
+  async registerUser(@Body() registrationInfo: UserRegistrationInfo){
+    console.log(registrationInfo);
+    debugger
+    //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
     return await this.databaseService.createUser(registrationInfo)
   }
 }

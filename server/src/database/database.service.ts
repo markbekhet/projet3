@@ -12,9 +12,10 @@ export class DatabaseService {
         ){
             this.logger.log("Initialized");
         }
-    async createUser(registrationInfo: any){
-        let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
-        let userProfile = UserProfile.createUserProfile(userInfo);
+    async createUser(registrationInfo: UserRegistrationInfo){
+        console.log(registrationInfo)
+        //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
+        let userProfile = UserProfile.createUserProfile(registrationInfo);
         return await this.userRepo.save(userProfile)
     }
 }

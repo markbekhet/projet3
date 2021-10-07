@@ -26,7 +26,9 @@ export class UserProfile extends BaseEntity{
     @Column({default: 0})
     nbAuthoredDrawings: number;
 
-    @Column()
+    @Column({
+        default: Status.ONLINE
+    })
     status: Status;
 
     @Column()
