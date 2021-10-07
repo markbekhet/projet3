@@ -92,4 +92,9 @@ export class LoginPageComponent implements OnInit {
   private checkIfEmail(usernameInput: string): boolean {
     return this.EMAIL_REGEX.test(usernameInput);
   }
+
+  public checkError(control: string, error: string) {
+    return this.inputForm.controls[control].dirty && 
+    this.inputForm.controls[control].hasError(error);
+  }
 }
