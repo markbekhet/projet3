@@ -42,6 +42,8 @@ export class LoginPageComponent implements OnInit {
     this.username = form.value['username'];
     this.password = form.value['password'];
 
+    console.log(form.value);
+
     try {
       this.request.connectClient(this.username, this.password)
         .subscribe(

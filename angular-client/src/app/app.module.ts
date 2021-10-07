@@ -10,6 +10,13 @@ import { CommunicationPageComponent } from './components/communication-page/comm
 import { LoginPageComponent } from './components/login-page/login-page.component';
 import { ChatService } from './services/chat.service';
 import { RequestService } from './services/request.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+ 
 
 const appRoutes: Routes = [
   { path: ':username', component: CommunicationPageComponent },
@@ -28,6 +35,11 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes),
+    BrowserAnimationsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   providers: [
     RequestService,
