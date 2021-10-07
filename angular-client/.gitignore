@@ -1,20 +1,24 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+### Angular ###
+
 # compiled output
-/dist
-/tmp
-/out-tsc
+dist/
+tmp/
+app/**/*.js
+app/**/*.js.map
+out-tsc/
 # Only exists if Bazel was run
-/bazel-out
+bazel-out/
 
 # dependencies
-/node_modules
+node_modules/
 
 # profiling files
 chrome-profiler-events*.json
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
@@ -31,15 +35,25 @@ chrome-profiler-events*.json
 .history/*
 
 # misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log/
 npm-debug.log
 yarn-error.log
 testem.log
-/typings
+typings/
+
+# e2e
+e2e/*.js
+e2e/*.map
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# Fichiers générés pour l'éxécutable du client lourd
+/Colorimage-win32-x64
+/Colorimage-win32-x64.zip
+/Colorimage-darwin-x64
+/Colorimage-darwin-x64.zip
