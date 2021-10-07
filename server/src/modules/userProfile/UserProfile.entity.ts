@@ -27,12 +27,22 @@ export class UserProfile extends BaseEntity{
     nbAuthoredDrawings: number;
 
     @Column()
-    status: Status
+    status: Status;
 
+    @Column()
+    pseudo: string;
     //@Column()
     //connectionHistory: Date[]
 
     //@Column()
     //disconnectionHistory: Date[]
-
+    public static createUserProfile(UserRegistrationInfo):UserProfile{
+        let newUserProfile = new UserProfile();
+        newUserProfile.firstName = UserRegistrationInfo.firstName;
+        newUserProfile.lastName = UserRegistrationInfo.lastName;
+        newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;
+        newUserProfile.pseudo = UserRegistrationInfo.pseudo;
+        newUserProfile.password = UserRegistrationInfo.password;
+        return newUserProfile;
+    }
 }
