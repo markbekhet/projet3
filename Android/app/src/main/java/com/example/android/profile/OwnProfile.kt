@@ -26,9 +26,12 @@ class ModifyParams(context: Context) : Dialog(context){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.popup_modify_parameters)
-        var okButton:Button = findViewById(R.id.popup)
+        var okButton:Button = findViewById(R.id.confirm)
         okButton.setOnClickListener {
-            super.hide()
+            //The request to update the information will be sent before hiing the pop up
+            super.dismiss()
         }
+
+        setCanceledOnTouchOutside(true)
     }
 }
