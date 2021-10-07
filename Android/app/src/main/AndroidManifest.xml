@@ -13,18 +13,21 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".Profile.ownProfile"
-            android:exported="true" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:name=".profile.VisitorProfileView"
+            android:exported="true" />
+        <activity
+            android:name=".profile.OwnProfile"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".chat.Chat"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name=".ClientService"
@@ -34,7 +37,7 @@
         <activity
             android:name=".LoginScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
