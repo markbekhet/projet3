@@ -1,50 +1,24 @@
 div {
   text-align: center;
-  font: normal 12px Verdana, Arial, sans-serif;
+  font: normal 15px Verdana, Arial, sans-serif;
 }
 
 .test {
-  position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -50px;
-    margin-left: -50px;
-    width: 100px;
-    height: 100px;
-    width:fit-content;
-    height:fit-content;
-}
-
-.error {
-  color: rgb(206, 70, 70);
-}
-
-.error-msg {
-  color: #a94442;
-}
-
-.fix-error-icon {
-  top: 27px;
-}
-
-mat-label {
-  font-size: 20px;
-}
-
-h1 {
-  font-size: 30px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 input {
   text-align: left;
   padding: 2px 2px;
   box-sizing: border-box;
-  font-size: 20px;
+  //font-size: 20px;
 }
 
 button {
   width:50%;
   margin-left:25%;
   margin-right:25%;
-  font-size: 20px;
+  //font-size: 20px;
 }
