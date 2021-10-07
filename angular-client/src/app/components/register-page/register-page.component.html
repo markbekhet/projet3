@@ -1,0 +1,54 @@
+<div>
+    <h1>Créer votre compte!</h1>
+    <form [formGroup]='registerForm' (ngSubmit)='onSubmit(registerForm)'>
+        <div class='form-container'>
+            <mat-form-field>
+                <mat-label>Prénom</mat-label>
+                <input type='text' matInput placeholder='Prenom' formControlName='firstName'>
+                <mat-error *ngIf="checkError('firstName', 'required')">*ERREUR : Un prenom est requis!</mat-error> 
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Nom</mat-label>
+                <input type='text' matInput placeholder='Nom' formControlName='lastName'>
+                <mat-error *ngIf="checkError('lastName', 'required')">*ERREUR : Un nom est requis!</mat-error> 
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Nom d'utilisateur</mat-label>
+                <input type='text' matInput placeholder="Nom d'utilisateur" formControlName='username'>
+                <mat-error *ngIf="checkError('username', 'required')">*ERREUR : Un nom d'utilisateur est requis!</mat-error> 
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Adresse courriel</mat-label>
+                <input type='email' matInput placeholder='Adresse courriel' formControlName='email'>
+                <mat-error *ngIf="checkError('email', 'required')">*ERREUR : Un adresse courriel est requis!</mat-error>
+                <mat-error *ngIf="checkError('email', 'pattern')">*ERREUR : Ceci n'est pas un adresse courriel!</mat-error> 
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Mot de passe</mat-label>
+                <input type='password' matInput placeholder='Mot de passe' formControlName='password'>
+                <mat-error *ngIf="checkError('password', 'required')">*ERREUR : Un mot de passe est requis!</mat-error> 
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Avatar</mat-label>
+                <input type='text' matInput placeholder='Avatar' formControlName='avatar'>
+                <mat-error *ngIf="checkError('avatar', 'required')">*ERREUR : Un avatar est requis!</mat-error> 
+            </mat-form-field>
+            <br>
+            <button mat-icon-button [disabled]='registerForm.invalid'>
+                Creer <mat-icon>add</mat-icon>
+            </button>
+            <br>
+            <div>
+                Si vous avez deja un compte,
+                <a matLine routerLink='/login'>cliquez ici</a>
+                pour vous connecter!
+            </div>
+        </div>
+
+    </form>
+</div>

@@ -8,6 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app-component/app.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
 import { LoginPageComponent } from './components/login-page/login-page.component';
+import { RegisterPageComponent } from './components/register-page/register-page.component';
 import { ChatService } from './services/chat.service';
 import { RequestService } from './services/request.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -19,6 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
  
 
 const appRoutes: Routes = [
+  { path: 'login', component: LoginPageComponent },
+  { path: 'register', component: RegisterPageComponent },
   { path: ':username', component: CommunicationPageComponent },
   { path: '**', component: LoginPageComponent },
 ];
@@ -28,6 +31,7 @@ const appRoutes: Routes = [
     AppComponent,
     LoginPageComponent,
     CommunicationPageComponent,
+    RegisterPageComponent,
   ],
   imports: [
     BrowserModule,
