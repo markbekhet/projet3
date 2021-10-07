@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RequestService } from 'src/app/services/request.service';
 
+import { UserRegistrationInfo } from '../../../../../common/user';  
+
 @Component({
   selector: 'app-register-page',
   templateUrl: './register-page.component.html',
@@ -33,6 +35,16 @@ export class RegisterPageComponent implements OnInit {
 
   public async onSubmit(form: FormGroup) {
     console.log(form.value);
+
+    let user: UserRegistrationInfo = {
+      firstName: form.controls['firstName'].value,
+      lastName: form.controls['lastName'].value,
+      pseudo: form.controls['username'].value,
+      emailAddress: form.controls['email'].value,
+      password: form.controls['password'].value
+    }
+
+    
   }
 
   public checkError(control: string, error: string) {
