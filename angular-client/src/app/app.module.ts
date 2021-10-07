@@ -7,19 +7,19 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app-component/app.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
-import { LandingPageComponent } from './components/landing-page/landing-page.component';
+import { LoginPageComponent } from './components/login-page/login-page.component';
 import { ChatService } from './services/chat.service';
 import { RequestService } from './services/request.service';
 
 const appRoutes: Routes = [
   { path: ':username', component: CommunicationPageComponent },
-  { path: '**', component: LandingPageComponent },
+  { path: '**', component: LoginPageComponent },
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
-    LandingPageComponent,
+    LoginPageComponent,
     CommunicationPageComponent,
   ],
   imports: [

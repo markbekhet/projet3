@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { RequestService } from 'src/app/services/request.service';
 
 @Component({
-  selector: 'app-landing-page',
-  templateUrl: './landing-page.component.html',
-  styleUrls: ['./landing-page.component.scss']
+  selector: 'app-login-page',
+  templateUrl: './login-page.component.html',
+  styleUrls: ['./login-page.component.scss']
 })
-export class LandingPageComponent implements OnInit {
+export class LoginPageComponent implements OnInit {
 
   username: string = '';
   usernameForm: FormGroup;
