@@ -29,14 +29,14 @@ export class User extends BaseEntity{
     nbAuthoredDrawings: number;
 
     @Column({
-        default: Status.ONLINE
+        default: Status.OFFLINE
     })
     status: Status;
 
     @Column()
     pseudo: string;
 
-    @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user)
+    @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
     connectionHistories: ConnectionHistory[]
 
     @OneToMany(()=> DisconnectionHistory, disconnectionHistory => disconnectionHistory.user, {nullable: true})

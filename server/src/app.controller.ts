@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
-import { UserRegistrationInfo } from './interfaces/user';
+import { UserCredentials, UserRegistrationInfo } from './interfaces/user';
 
 const LOGIN_URL = "/login";
 const REGISTRATION_URL = "/register";
@@ -29,5 +29,10 @@ export class AppController {
   async getUserProfile(@Param("userId") userId: number){
     console.log(`Controller received ${userId} to get the user profile`)
     return await this.databaseService.getUser(userId);
+  }
+
+  @Post(LOGIN_URL)
+  async login(@Body() userCredentials: UserCredentials, @Res() response){
+      return await this.databaseService.login(userCredentials)
   }
 }
