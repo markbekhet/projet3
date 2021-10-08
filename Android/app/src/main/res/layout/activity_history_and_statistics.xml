@@ -119,17 +119,10 @@
                     android:text="Historique de connexions"
                     android:textSize="36sp"
                     android:textStyle="bold"/>
-
-                <ScrollView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_view_connection"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
-
-                    <LinearLayout
-                        android:id="@+id/connectionLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
+                    android:layout_height="150dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -145,16 +138,10 @@
                     android:textSize="36sp"
                     android:textStyle="bold"/>
 
-                <ScrollView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_view_disconnection"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
-
-                    <LinearLayout
-                        android:id="@+id/disconnectionLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
+                    android:layout_height="150dp" />
                 </LinearLayout>
         </LinearLayout>
         <TextView
@@ -165,15 +152,10 @@
             android:textSize="36sp"
             android:textStyle="bold"/>
 
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycle_view_collaborations"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
