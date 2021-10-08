@@ -3,8 +3,8 @@ import { BaseEntity, BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from
 //import * as uuidv4from "uuid";
 //import * as bcrypt from 'bcryptjs';
 
-@Entity('UserProfile')
-export class UserProfile extends BaseEntity{
+@Entity('User')
+export class User extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: string;
 
@@ -38,8 +38,8 @@ export class UserProfile extends BaseEntity{
 
     //@Column()
     //disconnectionHistory: Date[]
-    public static createUserProfile(UserRegistrationInfo):UserProfile{
-        let newUserProfile = new UserProfile();
+    public static createUserProfile(UserRegistrationInfo):User{
+        let newUserProfile = new User();
         newUserProfile.firstName = UserRegistrationInfo.firstName;
         newUserProfile.lastName = UserRegistrationInfo.lastName;
         newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;

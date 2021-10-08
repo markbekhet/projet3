@@ -8,13 +8,13 @@ import { DatabaseService } from './database/database.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dirname } from 'path/posix';
 import { typeormConfig } from './config/typeorm.config';
-import { UserProfileRespository } from './modules/userProfile/userProfile.repository';
+import { UserRespository } from './modules/user/user.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
     TypeOrmModule.forFeature([
-      UserProfileRespository,
+      UserRespository,
       
     ])
   ],
