@@ -9,13 +9,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dirname } from 'path/posix';
 import { typeormConfig } from './config/typeorm.config';
 import { UserRespository } from './modules/user/user.repository';
+import { ConnectionHistoryRespository } from './modules/connectionHistory/connectionHistory.repository';
+import { DisconnectionHistoryRespository } from './modules/disconnectionHistory/disconnectionHistory.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
     TypeOrmModule.forFeature([
       UserRespository,
-      
+      ConnectionHistoryRespository,
+      DisconnectionHistoryRespository,
     ])
   ],
   controllers: [AppController, ConnectionController],

@@ -1,5 +1,7 @@
 import { Status } from "src/interfaces/user";
-import { BaseEntity, BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ConnectionHistory } from "../connectionHistory/connectionHistory.entity";
+import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHistory.entity";
 //import * as uuidv4from "uuid";
 //import * as bcrypt from 'bcryptjs';
 
@@ -33,11 +35,13 @@ export class User extends BaseEntity{
 
     @Column()
     pseudo: string;
-    //@Column()
-    //connectionHistory: Date[]
 
-    //@Column()
-    //disconnectionHistory: Date[]
+    @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user)
+    connectionHistory: ConnectionHistory[]
+
+    @OneToMany(()=> DisconnectionHistory, disconnectionHistory => disconnectionHistory.user)
+    disconnectionHistory: DisconnectionHistory[]
+
     public static createUserProfile(UserRegistrationInfo):User{
         let newUserProfile = new User();
         newUserProfile.firstName = UserRegistrationInfo.firstName;
