@@ -19,6 +19,10 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
         }
+
+        //Nous allons avoir besoin d<update les informations de l'utilisateur
+        // suite à la fermeture de la modale
+
     }
 }
 
@@ -28,7 +32,11 @@ class ModifyParams(context: Context) : Dialog(context){
         setContentView(R.layout.popup_modify_parameters)
         var okButton:Button = findViewById(R.id.confirm)
         okButton.setOnClickListener {
-            //The request to update the information will be sent before hiing the pop up
+            //The request to update the information will be sent before hiding the pop up
+            super.dismiss()
+        }
+        val cancelButton: Button = findViewById(R.id.cancel)
+        cancelButton.setOnClickListener {
             super.dismiss()
         }
 
