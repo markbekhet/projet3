@@ -1,12 +1,11 @@
-package com.example.android
+package com.example.android.client
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.example.android.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -22,7 +21,7 @@ class ClientService : Service() {
     suspend fun disconnect(username:String?){
         withContext(Dispatchers.IO){
             val endpoint: String = "/connection/disconnect/${username}"
-            val mURL = URL(URL+endpoint)
+            val mURL = URL(URL +endpoint)
 
             with(mURL.openConnection() as HttpURLConnection) {
                 // optional default is GET
@@ -36,7 +35,7 @@ class ClientService : Service() {
     suspend fun connect(username:String?){
         withContext(Dispatchers.IO){
             val endpoint: String = "/connection/connect/${username}"
-            val mURL = URL(URL+endpoint)
+            val mURL = URL(URL +endpoint)
 
             with(mURL.openConnection() as HttpURLConnection) {
                 // optional default is GET

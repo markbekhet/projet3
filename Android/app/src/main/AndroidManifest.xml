@@ -33,7 +33,7 @@
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name=".ClientService"
+            android:name=".client.ClientService"
             android:enabled="true"
             android:exported="true" />
 

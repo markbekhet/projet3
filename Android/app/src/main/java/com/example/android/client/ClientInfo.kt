@@ -1,4 +1,4 @@
-package com.example.android
+package com.example.android.client
 
 object ClientInfo {
     var username:String ?= null

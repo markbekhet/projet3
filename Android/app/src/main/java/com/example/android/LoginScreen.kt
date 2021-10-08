@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.chat.Chat
+import com.example.android.client.ClientInfo
+import com.example.android.client.ClientService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
