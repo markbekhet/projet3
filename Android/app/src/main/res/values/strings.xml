@@ -12,8 +12,9 @@
     <string name="lastName">Nom</string>
     <string name="firstName">Prénom</string>
     <string name="nickname">Pseudonyme</string>
-    <string name="modifyParams">Modifiez les paramètres</string>
-    <string name="viewHistoryAndStatistics">Voir l\'historique et les statistiques</string>
+    <string name="modifyParams">Modifier les paramètres du compte</string>
+    <string name="viewHistoryAndStatistics">Consulter l\'historique et les statistiques</string>
+    <string name="userProfileTitle">Profil utilisateur</string>
 
 
 </resources>
