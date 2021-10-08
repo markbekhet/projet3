@@ -1,7 +1,7 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
-import { UserCredentials, UserRegistrationInfo } from './interfaces/user';
+import { ModificationParameters, UserCredentials, UserRegistrationInfo } from './interfaces/user';
 
 const LOGIN_URL = "/login";
 const REGISTRATION_URL = "/register";
@@ -38,6 +38,12 @@ export class AppController {
   @Post(DISCONNECT_URL+"/:userId")
   async disconnectUser(@Param("userId") userId: number){
     await this.databaseService.disconnect(userId);
+    return HttpStatus.OK
+  }
+
+  @Put(PROFILE_URL+ "/:userId")
+  async modifyProfile(@Param("userId") userId: number, @Body() newParameters: ModificationParameters){
+    await this.databaseService.modifyUserProfile(userId, newParameters);
     return HttpStatus.OK
   }
 }

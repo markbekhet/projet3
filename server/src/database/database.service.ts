@@ -1,7 +1,8 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WsException } from '@nestjs/websockets';
-import { Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
+import { identity } from 'rxjs';
+import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnectionHistory.entity';
@@ -11,7 +12,6 @@ import { UserRespository } from 'src/modules/user/user.repository';
 
 @Injectable()
 export class DatabaseService {
-    
     private logger: Logger = new Logger("DatabaseServiceLogger")
     constructor(
         @InjectRepository(UserRespository) private userRepo: UserRespository,
@@ -71,6 +71,22 @@ export class DatabaseService {
             newDisconnection.user = user
             this.userRepo.update(userId, {status: Status.OFFLINE})
             this.disconnectionRepo.save(newDisconnection)
+        }
+    }
+    async modifyUserProfile(userId: number, newParameters: ModificationParameters) {
+        console.log(newParameters.newPassword, newParameters.newPseudo)
+        
+        if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
+            this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
+        }
+        else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            this.userRepo.update(userId,{password: newParameters.newPassword})
+        }
+        else{
+            this.userRepo.update(userId,{
+                password: newParameters.newPassword,
+                pseudo: newParameters.newPseudo
+            })
         }
     }
 }

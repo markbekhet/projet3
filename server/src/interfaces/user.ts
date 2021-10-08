@@ -16,3 +16,8 @@ export interface UserCredentials{
     username: string,
     password: string,
 }
+
+export interface ModificationParameters{
+    newPassword: string,
+    newPseudo: string,
+}
