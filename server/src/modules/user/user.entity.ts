@@ -8,7 +8,7 @@ import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHisto
 @Entity('User')
 export class User extends BaseEntity{
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     firstName: string;

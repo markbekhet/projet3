@@ -23,16 +23,19 @@ export class DatabaseService {
     async createUser(registrationInfo: UserRegistrationInfo){
         console.log(registrationInfo)
         let user = User.createUserProfile(registrationInfo);
-        //let connection = new ConnectionHistory()
+        let connection = new ConnectionHistory()
         await this.userRepo.save(user)
-        //connection.user = user
-        //await this.connectionRepo.save(connection)
+        connection.user = user
+        await this.connectionRepo.save(connection)
         return user;
     }
 
     async getUser(userId: number) {
-        let user = await this.userRepo.findOne(userId, {relations: ["connectionHistories", "disconnectionHistories"]})
-        return user;
+        
+        return await this.userRepo.findOne(userId, {
+            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status"],
+            relations:["connectionHistories", "disconnectionHistories"]
+        })
     }
     
     async login(userCredentials: UserCredentials){
