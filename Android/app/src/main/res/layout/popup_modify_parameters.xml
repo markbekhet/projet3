@@ -128,7 +128,7 @@
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:ems="20"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:minHeight="48dp"
             android:hint="Entrez votre nouveau pseudonyme" />
 
