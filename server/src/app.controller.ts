@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
 import { UserCredentials, UserRegistrationInfo } from './interfaces/user';
@@ -32,7 +32,12 @@ export class AppController {
   }
 
   @Post(LOGIN_URL)
-  async login(@Body() userCredentials: UserCredentials, @Res() response){
+  async login(@Body() userCredentials: UserCredentials){
       return await this.databaseService.login(userCredentials)
+  }
+  @Post(DISCONNECT_URL+"/:userId")
+  async disconnectUser(@Param("userId") userId: number){
+    await this.databaseService.disconnect(userId);
+    return HttpStatus.OK
   }
 }

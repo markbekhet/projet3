@@ -4,6 +4,7 @@ import { WsException } from '@nestjs/websockets';
 import { Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
+import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnectionHistory.entity';
 import { DisconnectionHistoryRespository } from 'src/modules/disconnectionHistory/disconnectionHistory.repository';
 import { User } from 'src/modules/user/user.entity';
 import { UserRespository } from 'src/modules/user/user.repository';
@@ -43,19 +44,33 @@ export class DatabaseService {
             ]
         });
         if(user !== undefined){
-            if(user.status !== Status.OFFLINE){
-                throw new HttpException("User already logged in", HttpStatus.FORBIDDEN);
-            }
-            else{
+            if(user.status === Status.OFFLINE){
                 let newConnection = new ConnectionHistory()
                 newConnection.user = user;
                 await this.connectionRepo.save(newConnection);
                 await this.userRepo.update(user.id, {status: Status.ONLINE});
                 return user.id;
             }
+            else{
+                throw new HttpException("User already logged in", HttpStatus.FORBIDDEN);
+            }
         }
         else{
             throw new HttpException("username or password is incorrect", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    async disconnect(userId: number) {
+        const user = await this.userRepo.findOne({
+            where: [
+                {id: userId}
+            ]
+        })
+        if(user !== undefined){
+            const newDisconnection = new DisconnectionHistory()
+            newDisconnection.user = user
+            this.userRepo.update(userId, {status: Status.OFFLINE})
+            this.disconnectionRepo.save(newDisconnection)
         }
     }
 }
