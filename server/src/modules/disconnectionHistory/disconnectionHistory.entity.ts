@@ -10,13 +10,9 @@ export class DisconnectionHistory extends BaseEntity{
         type: 'timestamp',
         default: ()=> "CURRENT_TIMESTAMP"
     })
-    date:number
+    date:string
 
     @ManyToOne(()=> User, user => user.disconnectionHistory)
     user: User
 
-    @BeforeInsert()
-    addTime(){
-        this.date = new Date().getTime()
-    }
 }
