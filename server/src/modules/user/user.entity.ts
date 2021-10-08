@@ -37,10 +37,10 @@ export class User extends BaseEntity{
     pseudo: string;
 
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user)
-    connectionHistory: ConnectionHistory[]
+    connectionHistories: ConnectionHistory[]
 
-    @OneToMany(()=> DisconnectionHistory, disconnectionHistory => disconnectionHistory.user)
-    disconnectionHistory: DisconnectionHistory[]
+    @OneToMany(()=> DisconnectionHistory, disconnectionHistory => disconnectionHistory.user, {nullable: true})
+    disconnectionHistories: DisconnectionHistory[]
 
     public static createUserProfile(UserRegistrationInfo):User{
         let newUserProfile = new User();

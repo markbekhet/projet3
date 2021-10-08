@@ -9,6 +9,7 @@ import { UserRespository } from 'src/modules/user/user.repository';
 
 @Injectable()
 export class DatabaseService {
+    
     private logger: Logger = new Logger("DatabaseServiceLogger")
     constructor(
         @InjectRepository(UserRespository) private userRepo: UserRespository,
@@ -27,4 +28,9 @@ export class DatabaseService {
         await this.connectionRepo.save(connection)
         return user;
     }
+
+    async getUser(userId: number) {
+        let user = this.userRepo.findOne(userId, {relations: ["connectionHistories", "disconnectionHistories"]})
+        return user;
+      }
 }
