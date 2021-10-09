@@ -34,3 +34,16 @@ data class ConnectionDisconnectionHistories(
     var id: Int? = null,
     var date: String? = null
 )
+
+data class UserRegistrationInfo(
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var pseudo: String? = null,
+    var emailAddress: String? = null,
+    var password: String? = null,
+    var passwordConfirm: String? = null
+){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}

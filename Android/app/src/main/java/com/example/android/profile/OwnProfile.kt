@@ -27,8 +27,8 @@ class OwnProfile : AppCompatActivity() {
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
 
+        val clientService = ClientService()
         fun updateUI() {
-            val clientService = ClientService()
             runBlocking {
                 async {
                     launch {
@@ -46,6 +46,9 @@ class OwnProfile : AppCompatActivity() {
 
         updateUI()
 
+        runBlocking{
+            clientService.createUser()
+        }
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
 

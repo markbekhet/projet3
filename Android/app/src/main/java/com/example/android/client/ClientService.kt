@@ -8,8 +8,10 @@ import com.example.android.localUrl
 import com.example.android.profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
 import java.net.HttpURLConnection
 import java.net.URL
@@ -74,8 +76,21 @@ class ClientService : Service() {
     }
 
     suspend fun createUser(){
-        withContext(Dispatchers.IO){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(localUrl)
+            .build()
 
+        val user = UserRegistrationInfo("Tom","Brady",
+            "Tomy", "tom@gmail.com",
+            "Football_for_life98", "Football_for_life98")
+        val service = retrofit.create(RestAPI::class.java)
+
+        val requestBody = user.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        withContext(Dispatchers.IO){
+            val response = service.createUser(requestBody)
+            if(response.isSuccessful){
+                println(response.body()?.string())
+            }
         }
     }
 
