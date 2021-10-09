@@ -11,4 +11,5 @@ export const typeormConfig: TypeOrmModuleOptions = {
         __dirname + '/../**/*.entity{.ts,.js}',
     ],
     synchronize: true,
+    uuidExtension: 'pgcrypto'
 }

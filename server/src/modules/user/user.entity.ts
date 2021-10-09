@@ -2,13 +2,13 @@ import { Status } from "src/interfaces/user";
 import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ConnectionHistory } from "../connectionHistory/connectionHistory.entity";
 import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHistory.entity";
-//import * as uuidv4from "uuid";
+import {v4 as uuidv4} from 'uuid';
 import * as bcrypt from 'bcrypt';
 
 @Entity('User')
 export class User extends BaseEntity{
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column()
     firstName: string;
@@ -51,6 +51,10 @@ export class User extends BaseEntity{
         const salt = 10;
         this.password = await bcrypt.hash(this.password, salt)
     }
+    /*@BeforeInsert()
+    async setId(){
+        this.id = uuidv4();
+    }*/
 
     public static createUserProfile(UserRegistrationInfo):User{
         let newUserProfile = new User();
