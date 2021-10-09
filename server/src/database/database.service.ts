@@ -99,8 +99,8 @@ export class DatabaseService {
         }
     }
     IsPasswordValide(password: string){
-        if(password.length < 8 || password.length > 20){
-            throw new HttpException("The password length must be between 8 and 20 charachters long", HttpStatus.BAD_REQUEST);
+        if(password.length < 8){
+            throw new HttpException("The password must be longer than or equal to 8 characters", HttpStatus.BAD_REQUEST);
         }
         const FORMAT = new RegExp(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
         if(!FORMAT.test(password)){

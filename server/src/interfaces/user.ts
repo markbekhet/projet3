@@ -15,7 +15,7 @@ export class UserRegistrationInfo
     emailAddress: string;
 
     @IsNotEmpty()
-    @Length(8,20)
+    @Length(8)
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
     password: string;
 
