@@ -10,13 +10,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
+
         <TextView
             android:id="@+id/nom_app"
-            android:layout_width="162dp"
-            android:layout_height="52dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginLeft="5sp"
             android:layout_marginRight="5sp"
-            android:layout_marginBottom="50sp"
+            android:layout_marginBottom="20sp"
             android:text="@string/application_name"
             android:textColor="@color/black"
             android:textSize="30sp"
@@ -26,7 +27,7 @@
             app:layout_constraintHorizontal_bias="0.472"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.308"/>
+            app:layout_constraintVertical_bias="0.308" />
 
 
         <include
@@ -35,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:layout_marginBottom="50dp"/>
+            android:layout_marginBottom="10dp"/>
 
 
 
@@ -50,9 +51,9 @@
 
         <EditText
             android:id="@+id/username"
-            android:layout_width="214dp"
-            android:layout_height="43dp"
-            android:layout_marginBottom="50dp"
+            android:layout_width="229dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
             android:width="40sp"
             android:background="@drawable/rectangle_background"
             android:drawableStart="@drawable/ic_user"
@@ -73,10 +74,34 @@
             app:layout_constraintVertical_bias="0.504" />
 
         <EditText
+            android:id="@+id/pseudonyme"
+            android:layout_width="229dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:width="40sp"
+            android:background="@drawable/rectangle_background"
+            android:drawableStart="@drawable/ic_user"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:padding="10dp"
+            android:hint="pseudonyme"
+            android:textColor="#808080"
+            android:textSize="20sp"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintEnd_toEndOf="@+id/nom_app"
+            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/nom_app"
+            app:layout_constraintTop_toBottomOf="@+id/nom_app"
+            app:layout_constraintVertical_bias="0.504" />
+
+        <EditText
             android:id="@+id/password"
-            android:layout_width="214dp"
+            android:layout_width="229dp"
             android:layout_height="43dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="10dp"
             android:width="40sp"
             android:background="@drawable/rectangle_background"
             android:ems="10"
@@ -96,13 +121,13 @@
 
         <EditText
             android:id="@+id/confirm_password"
-            android:layout_width="266dp"
-            android:layout_height="43dp"
-            android:layout_marginBottom="50dp"
+            android:layout_width="229dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
             android:width="40sp"
             android:background="@drawable/rectangle_background"
             android:ems="10"
-            android:hint="confirmer le mot de passe"
+            android:hint="confirmer mot de passe"
             android:inputType="textPersonName"
             android:padding="10dp"
             android:textColor="#808080"
@@ -119,11 +144,11 @@
 
         <EditText
             android:id="@+id/editTextTextEmailAddress"
-            android:layout_width="309dp"
-            android:layout_height="43dp"
+            android:layout_width="229dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
-            android:hint="email"
-            android:layout_marginBottom="50dp"
+            android:hint="   email"
+            android:layout_marginBottom="20dp"
             android:width="40sp"
             android:background="@drawable/rectangle_background"
             android:ems="10"
