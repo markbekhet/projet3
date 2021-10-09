@@ -31,7 +31,7 @@ export class AppController {
   }
 
   @Get(PROFILE_URL+"/:userId")
-  async getUserProfile(@Param("userId") userId: number){
+  async getUserProfile(@Param("userId") userId: string){
     console.log(`Controller received ${userId} to get the user profile`)
     return await this.databaseService.getUser(userId);
   }
@@ -47,7 +47,7 @@ export class AppController {
   }
 
   @Put(PROFILE_URL+ "/:userId")
-  async modifyProfile(@Param("userId") userId: number, @Body() newParameters: ModificationParameters){
+  async modifyProfile(@Param("userId") userId: string, @Body() newParameters: ModificationParameters){
     await this.databaseService.modifyUserProfile(userId, newParameters);
     return HttpStatus.OK
   }

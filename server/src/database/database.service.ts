@@ -35,7 +35,7 @@ export class DatabaseService {
         
     }
 
-    async getUser(userId: number) {
+    async getUser(userId: string) {
         
         return await this.userRepo.findOne(userId, {
             select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status", "emailAddress"],
@@ -76,19 +76,27 @@ export class DatabaseService {
             this.disconnectionRepo.save(newDisconnection)
         }
     }
-    async modifyUserProfile(userId: number, newParameters: ModificationParameters) {
+    async modifyUserProfile(userId: string, newParameters: ModificationParameters) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
-        
+        const user = await this.userRepo.findOne(userId);
         if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
             await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
+            if(samePassword){
+                throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+            }
             if(this.IsPasswordValide(newParameters.newPassword)){
                 const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
                 await this.userRepo.update(userId,{password: hashedPassword})
             }
         }
         else{
+            const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
+            if(samePassword){
+                throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+            }
             if(this.IsPasswordValide(newParameters.newPassword)){
                 const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
                 await this.userRepo.update(userId,{
