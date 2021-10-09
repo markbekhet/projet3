@@ -65,9 +65,9 @@ class ClientService : Service() {
         val service = retrofit.create(RestAPI::class.java)
 
         withContext(Dispatchers.IO){
-            val response = service.getProfile(1)
+            val response = ClientInfo.userInformation.id?.let { service.getProfile(it) }
 
-            if (response.isSuccessful){
+            if (response!!.isSuccessful){
                 var responseBody = response.body()?.string()
                 val userInformation = ClientInfo.userInformation.fromJson(responseBody)
                 ClientInfo.userInformation = userInformation
@@ -89,7 +89,10 @@ class ClientService : Service() {
         withContext(Dispatchers.IO){
             val response = service.createUser(requestBody)
             if(response.isSuccessful){
+                var responseBody = response.body()?.string()
+                ClientInfo.userInformation.id = responseBody
                 println(response.body()?.string())
+
             }
         }
     }

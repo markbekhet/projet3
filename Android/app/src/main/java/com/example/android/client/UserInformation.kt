@@ -7,7 +7,7 @@ enum class Status{
 }
 
 data class UserProfileInformation(
-    var id: Int? = null,
+    var id: String? = null,
     var firstName: String? = null,
     var lastName: String? = null,
     var pseudo: String? = null,

@@ -16,6 +16,6 @@ interface RestAPI {
     suspend fun createUser(@Body requestBody: RequestBody): Response<ResponseBody>
 
     @GET("$profile/{Id}")
-    suspend fun getProfile(@Path("Id") userId: Int): Response<ResponseBody>
+    suspend fun getProfile(@Path("Id") userId: String): Response<ResponseBody>
 
 }
