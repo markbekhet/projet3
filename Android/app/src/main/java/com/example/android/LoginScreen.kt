@@ -23,6 +23,9 @@ class LoginScreen : AppCompatActivity() {
         setContentView(R.layout.activity_login_screen)
         clientService = ClientService()
 
+        register.setOnClickListener(){
+            startActivity(Intent(this, RegisterScreen::class.java))
+        }
         fun showError() {
             if (ErrorLogIn == null) {
                 ErrorLogIn = Dialog(this)
