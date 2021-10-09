@@ -1,6 +1,7 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WsException } from '@nestjs/websockets';
+import { Validator } from 'class-validator';
 import { identity } from 'rxjs';
 import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
@@ -23,17 +24,17 @@ export class DatabaseService {
     async createUser(registrationInfo: UserRegistrationInfo){
         console.log(registrationInfo)
         let user = User.createUserProfile(registrationInfo);
-        let connection = new ConnectionHistory()
+        //let connection = new ConnectionHistory()
         await this.userRepo.save(user)
-        connection.user = user
-        await this.connectionRepo.save(connection)
+        //connection.user = user
+        //await this.connectionRepo.save(connection)
         return user;
     }
 
     async getUser(userId: number) {
         
         return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status"],
+            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status", "emailAddress"],
             relations:["connectionHistories", "disconnectionHistories"]
         })
     }
@@ -83,13 +84,27 @@ export class DatabaseService {
             this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
-            this.userRepo.update(userId,{password: newParameters.newPassword})
+            if(this.IsPasswordValide(newParameters.newPassword)){
+                this.userRepo.update(userId,{password: newParameters.newPassword})
+            }
         }
         else{
-            this.userRepo.update(userId,{
-                password: newParameters.newPassword,
-                pseudo: newParameters.newPseudo
-            })
+            if(this.IsPasswordValide(newParameters.newPassword)){
+                this.userRepo.update(userId,{
+                    password: newParameters.newPassword,
+                    pseudo: newParameters.newPseudo
+                })
         }
+        }
+    }
+    IsPasswordValide(password: string){
+        if(password.length < 8 || password.length > 20){
+            throw new HttpException("The password length must be between 8 and 20 charachters long", HttpStatus.BAD_REQUEST);
+        }
+        const FORMAT = new RegExp(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
+        if(!FORMAT.test(password)){
+            throw new HttpException("Password is too weak", HttpStatus.BAD_REQUEST);
+        }
+        return true;
     }
 }

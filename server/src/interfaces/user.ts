@@ -1,10 +1,26 @@
-export interface UserRegistrationInfo
+import { Contains, IsEmail, IsEmpty, IsNotEmpty, Length, Matches, NotContains } from "class-validator";
+
+export class UserRegistrationInfo
 {
+    @IsNotEmpty()
     firstName: string;
+
+    @IsNotEmpty()
     lastName: string;
+
+    @IsNotEmpty()
     pseudo: string;
+
+    @IsEmail()
     emailAddress: string;
+
+    @IsNotEmpty()
+    @Length(8,20)
+    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
     password: string;
+
+    @Matches('password')
+    passwordConfirm: string;
 }
 
 export enum Status{
@@ -12,12 +28,15 @@ export enum Status{
     BUSY,
     OFFLINE,
 }
-export interface UserCredentials{
-    username: string,
-    password: string,
+export class UserCredentials{
+    @IsNotEmpty()
+    username: string;
+    @IsNotEmpty()
+    password: string;
 }
 
-export interface ModificationParameters{
-    newPassword: string,
-    newPseudo: string,
+export class ModificationParameters{
+    newPassword: string;
+
+    newPseudo: string;
 }
