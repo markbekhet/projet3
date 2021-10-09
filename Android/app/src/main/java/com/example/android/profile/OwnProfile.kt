@@ -7,13 +7,29 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import com.example.android.R
+import com.example.android.client.ClientService
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class OwnProfile : AppCompatActivity() {
+
     var modifyParamsDialog : Dialog? =null
-    var viewHistoryDialog : Dialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
+
+        var response: Any? = null
+        val clientService = ClientService()
+        runBlocking {
+            async {
+                launch {
+                    clientService.getUserProfileInformation()
+                }
+            }
+        }
+
         val modifyParams: Button = findViewById(R.id.modifyParams)
 
         modifyParams.setOnClickListener{
