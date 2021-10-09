@@ -13,10 +13,12 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".RegisterScreen"
+            android:exported="true" />
+        <activity
             android:name=".chat.Chat"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
 
         <service
             android:name=".ClientService"
@@ -32,7 +34,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".MainActivity"
