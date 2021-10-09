@@ -2,6 +2,7 @@ package com.example.android.profile
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -9,10 +10,11 @@ import com.example.android.R
 
 class OwnProfile : AppCompatActivity() {
     var modifyParamsDialog : Dialog? =null
+    var viewHistoryDialog : Dialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
-        var modifyParams: Button = findViewById(R.id.modifyParams)
+        val modifyParams: Button = findViewById(R.id.modifyParams)
 
         modifyParams.setOnClickListener{
             modifyParamsDialog = ModifyParams(this)
@@ -23,6 +25,12 @@ class OwnProfile : AppCompatActivity() {
         //Nous allons avoir besoin d<update les informations de l'utilisateur
         // suite à la fermeture de la modale
 
+        val viewHistory: Button = findViewById(R.id.viewHistory)
+
+        viewHistory.setOnClickListener {
+            startActivity(Intent(this,HistoryAndStatistics::class.java))
+
+        }
     }
 }
 
