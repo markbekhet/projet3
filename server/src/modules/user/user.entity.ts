@@ -3,7 +3,7 @@ import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedCo
 import { ConnectionHistory } from "../connectionHistory/connectionHistory.entity";
 import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHistory.entity";
 //import * as uuidv4from "uuid";
-//import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 @Entity('User')
 export class User extends BaseEntity{
@@ -41,6 +41,12 @@ export class User extends BaseEntity{
 
     @OneToMany(()=> DisconnectionHistory, disconnectionHistory => disconnectionHistory.user, {nullable: true})
     disconnectionHistories: DisconnectionHistory[]
+
+    @BeforeInsert()
+    async setPassword(){
+        const salt = 10;
+        this.password = await bcrypt.hash(this.password, salt)
+    }
 
     public static createUserProfile(UserRegistrationInfo):User{
         let newUserProfile = new User();

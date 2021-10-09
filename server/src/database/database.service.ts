@@ -10,6 +10,7 @@ import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnec
 import { DisconnectionHistoryRespository } from 'src/modules/disconnectionHistory/disconnectionHistory.repository';
 import { User } from 'src/modules/user/user.entity';
 import { UserRespository } from 'src/modules/user/user.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class DatabaseService {
@@ -43,24 +44,19 @@ export class DatabaseService {
         let user: User;
         user = await this.userRepo.findOne({
             where: [
-                { emailAddress: userCredentials.username, password: userCredentials.password},
-                {pseudo: userCredentials.username, password: userCredentials.password},
+                {emailAddress: userCredentials.username},
+                {pseudo: userCredentials.username}
             ]
-        });
-        if(user !== undefined){
-            if(user.status === Status.OFFLINE){
-                let newConnection = new ConnectionHistory()
-                newConnection.user = user;
-                await this.connectionRepo.save(newConnection);
-                await this.userRepo.update(user.id, {status: Status.ONLINE});
-                return user.id;
-            }
-            else{
-                throw new HttpException("User already logged in", HttpStatus.FORBIDDEN);
-            }
+        })
+        if(user === undefined){
+            throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
         }
         else{
-            throw new HttpException("username or password is incorrect", HttpStatus.FORBIDDEN);
+            let userExist = await bcrypt.compare(userCredentials.password, user.password);
+            if(!userExist){
+                throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
+            }
+            return user.id;
         }
     }
 
@@ -81,17 +77,19 @@ export class DatabaseService {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         
         if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
-            this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
+            await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
             if(this.IsPasswordValide(newParameters.newPassword)){
-                this.userRepo.update(userId,{password: newParameters.newPassword})
+                const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
+                await this.userRepo.update(userId,{password: hashedPassword})
             }
         }
         else{
             if(this.IsPasswordValide(newParameters.newPassword)){
-                this.userRepo.update(userId,{
-                    password: newParameters.newPassword,
+                const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
+                await this.userRepo.update(userId,{
+                    password: hashedPassword,
                     pseudo: newParameters.newPseudo
                 })
         }
@@ -105,6 +103,7 @@ export class DatabaseService {
         if(!FORMAT.test(password)){
             throw new HttpException("Password is too weak", HttpStatus.BAD_REQUEST);
         }
+
         return true;
     }
 }
