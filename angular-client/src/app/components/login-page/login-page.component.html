@@ -7,6 +7,7 @@
         <mat-label>Nom d'utilisateur</mat-label>
         <input type="text" matInput placeholder="Nom d'utilisateur" formControlName='username'>
         <mat-error *ngIf="checkError('username', 'required')">*ERREUR : Le nom d'utilisateur est requis!</mat-error>
+        <mat-error *ngIf="checkError('username', 'invalidUsername') && !checkError('username', 'required')">*ERREUR : Le nom d'utilisateur n'est pas valide!</mat-error>
       </mat-form-field>
       <br>
       <mat-form-field>

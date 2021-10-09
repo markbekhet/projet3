@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RequestService } from 'src/app/services/request.service';
 
+import { ValidationService } from 'src/app/services/validation.service';
+
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
@@ -11,25 +13,19 @@ import { RequestService } from 'src/app/services/request.service';
 export class LoginPageComponent implements OnInit {
 
   username: string = '';
-  readonly DEFAULT_USERNAME: string = '';
   password: string = '';
-  readonly DEFAULT_PASSWORD: string = '';
-
-  //https://stackoverflow.com/questions/742451/what-is-the-simplest-regular-expression-to-validate-emails-to-not-accept-them-bl
-  readonly EMAIL_REGEX: RegExp = new RegExp('^[^@\s]+@[^@\s]+\.[^@\s]+$'); 
 
   inputForm: FormGroup;
   usernameExists: boolean = false;
-
-  //Validators.minLength(1), Validators.maxLength(20), Validators.pattern('^[A-Za-z0-9_-]*$')
+  
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private request: RequestService
   ) {
     this.inputForm = this.formBuilder.group({
-      username: formBuilder.control(this.DEFAULT_USERNAME, [ Validators.required ]),
-      password: formBuilder.control(this.DEFAULT_PASSWORD, [ Validators.required ])
+      username: formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
+      password: formBuilder.control('', [ Validators.required ])
     });
   }
 
@@ -87,10 +83,6 @@ export class LoginPageComponent implements OnInit {
         this.inputForm.reset();
       }
       */
-  }
-
-  private checkIfEmail(usernameInput: string): boolean {
-    return this.EMAIL_REGEX.test(usernameInput);
   }
 
   public checkError(control: string, error: string) {

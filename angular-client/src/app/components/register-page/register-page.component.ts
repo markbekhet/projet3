@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RequestService } from 'src/app/services/request.service';
+import { ValidationService } from 'src/app/services/validation.service';
 
 import { UserRegistrationInfo } from '../../../../../common/user';  
 
@@ -14,8 +15,6 @@ export class RegisterPageComponent implements OnInit {
 
   registerForm: FormGroup;
 
-  readonly EMAIL_REGEX: RegExp = new RegExp('^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -23,14 +22,15 @@ export class RegisterPageComponent implements OnInit {
       this.registerForm = this.formBuilder.group({
         firstName: formBuilder.control('', [ Validators.required ]),
         lastName: formBuilder.control('', [ Validators.required ]),
-        username: formBuilder.control('', [ Validators.required ]),
-        email: formBuilder.control('', [ Validators.required, Validators.pattern(this.EMAIL_REGEX) ]),
-        password: formBuilder.control('', [ Validators.required ]),
+        username: formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
+        email: formBuilder.control('', [ Validators.required, ValidationService.emailValidator ]),
+        password: formBuilder.control('', [ Validators.required, ValidationService.passwordValidator ]),
         avatar: formBuilder.control('', [ Validators.required ])
       });
     }
 
   ngOnInit(): void {
+    
   }
 
   public async onSubmit(form: FormGroup) {
