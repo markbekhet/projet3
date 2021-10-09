@@ -23,13 +23,16 @@ export class DatabaseService {
             this.logger.log("Initialized");
         }
     async createUser(registrationInfo: UserRegistrationInfo){
+        
         console.log(registrationInfo)
+        
         let user = User.createUserProfile(registrationInfo);
-        //let connection = new ConnectionHistory()
+        let connection = new ConnectionHistory()
         await this.userRepo.save(user)
-        //connection.user = user
-        //await this.connectionRepo.save(connection)
-        return user;
+        connection.user = user
+        await this.connectionRepo.save(connection)
+        return user.id;
+        
     }
 
     async getUser(userId: number) {
@@ -106,4 +109,5 @@ export class DatabaseService {
 
         return true;
     }
+    
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
 import { ModificationParameters, UserCredentials, UserRegistrationInfo } from './interfaces/user';
@@ -22,7 +22,12 @@ export class AppController {
     console.log(registrationInfo);
     debugger
     //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
-    return await this.databaseService.createUser(registrationInfo)
+    try{
+      let userId=  await this.databaseService.createUser(registrationInfo)
+      return userId;
+    }catch(ex){
+      throw new HttpException(ex.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get(PROFILE_URL+"/:userId")

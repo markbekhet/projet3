@@ -19,10 +19,6 @@ export class UserRegistrationInfo
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
     password: string;
 
-    @IsNotEmpty()
-    @Length(8,20)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
-    passwordConfirm: string;
 }
 
 export enum Status{

@@ -16,7 +16,9 @@ export class User extends BaseEntity{
     @Column()
     lastName: string;
 
-    @Column()
+    @Column({
+        unique: true,
+    })
     emailAddress: string;
 
     @Column()
@@ -29,11 +31,13 @@ export class User extends BaseEntity{
     nbAuthoredDrawings: number;
 
     @Column({
-        default: Status.OFFLINE
+        default: Status.ONLINE
     })
     status: Status;
 
-    @Column()
+    @Column({
+        unique: true,
+    })
     pseudo: string;
 
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
