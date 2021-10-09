@@ -6,7 +6,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import com.example.android.R
+import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -20,15 +22,30 @@ class OwnProfile : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
 
-        var response: Any? = null
-        val clientService = ClientService()
-        runBlocking {
-            async {
-                launch {
-                    clientService.getUserProfileInformation()
+        val email: TextView = findViewById(R.id.emailValue)
+        val lastName: TextView = findViewById(R.id.lastNameValue)
+        val firstName: TextView = findViewById(R.id.firstNameValue)
+        val nickname: TextView = findViewById(R.id.nicknameValue)
+
+        fun updateUI() {
+            val clientService = ClientService()
+            runBlocking {
+                async {
+                    launch {
+                        clientService.getUserProfileInformation()
+                    }
                 }
             }
+
+           val userInformation = ClientInfo.userInformation
+            email.text = userInformation.emailAddress
+            lastName.text = userInformation.lastName
+            nickname.text = userInformation.pseudo
+            firstName.text = userInformation.firstName
         }
+
+        updateUI()
+
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
 
@@ -36,6 +53,10 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog = ModifyParams(this)
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
+        }
+
+        modifyParamsDialog?.setOnDismissListener {
+            updateUI()
         }
 
         //Nous allons avoir besoin d<update les informations de l'utilisateur

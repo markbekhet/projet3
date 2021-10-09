@@ -9,6 +9,7 @@ enum class Status{
 data class UserProfileInformation(
     var id: Int? = null,
     var firstName: String? = null,
+    var lastName: String? = null,
     var pseudo: String? = null,
     var emailAddress: String? = null,
     var nbAuthorDrawings: String? = null,
