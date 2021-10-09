@@ -1,8 +1,5 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WsException } from '@nestjs/websockets';
-import { Validator } from 'class-validator';
-import { identity } from 'rxjs';
 import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
@@ -18,7 +15,7 @@ export class DatabaseService {
     constructor(
         @InjectRepository(UserRespository) private userRepo: UserRespository,
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
-        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository
+        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         ){
             this.logger.log("Initialized");
         }
@@ -38,7 +35,7 @@ export class DatabaseService {
     async getUser(userId: string) {
         
         return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status", "emailAddress"],
+            select: ["firstName", "lastName", "pseudo", "status", "emailAddress"],
             relations:["connectionHistories", "disconnectionHistories"]
         })
     }
