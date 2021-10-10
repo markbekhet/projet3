@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/avatarOwner"
+                android:layout_width="323dp"
+                android:layout_height="150dp"
+                app:cardCornerRadius="45dp"
+                app:srcCompat="@drawable/ic_user" />
+            <Button
+                android:id="@+id/takeAPicture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="prendre une photo"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/predefined1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="8dp"
+                app:srcCompat="@drawable/ic_user" />
+            <ImageView
+                android:id="@+id/predefined2"
+                android:layout_width="100dp"
+                android:layout_marginStart="10dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="8dp"
+                app:srcCompat="@drawable/ic_user" />
+            <ImageView
+                android:id="@+id/predefined3"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="8dp"
+                app:srcCompat="@drawable/ic_user" />
+            <ImageView
+                android:id="@+id/predefined4"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="8dp"
+                app:srcCompat="@drawable/ic_user" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/bannerPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:text="Changement du mot de passe" />
+
+
+        <EditText
+            android:id="@+id/oldPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:ems="20"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:hint="Entrez votre mot de passe" />
+
+        <EditText
+            android:id="@+id/newPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:ems="20"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:hint="Entrez votre nouveau mot de passe" />
+
+        <EditText
+            android:id="@+id/confirmNewPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:ems="20"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:hint="Confirmez votre nouveau mot de passe" />
+
+
+        <TextView
+            android:id="@+id/bannerNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:text="Changement du pseudonyme" />
+
+        <EditText
+            android:id="@+id/newNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:ems="20"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:hint="Entrez votre nouveau pseudonyme" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+            <Button
+                android:id="@+id/confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mettre à jour" />
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:backgroundTint="@color/red"
+                android:text="Annuler" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

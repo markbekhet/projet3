@@ -37,11 +37,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
-        <Button
-            android:id="@+id/modifyParams"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/modifyParams" />
+            <Button
+                android:id="@+id/modifyParams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/modifyParams"
+                android:clickable="true"
+                android:enabled="true"/>
             <Button
                 android:id="@+id/viewHistory"
                 android:layout_width="wrap_content"
