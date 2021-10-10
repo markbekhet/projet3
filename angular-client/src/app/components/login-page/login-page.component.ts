@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RequestService } from 'src/app/services/request.service';
 
 import { ValidationService } from 'src/app/services/validation.service';
+import { UserCredentials } from '../../../../../common/user';
 
 @Component({
   selector: 'app-login-page',
@@ -38,13 +39,19 @@ export class LoginPageComponent implements OnInit {
     this.username = form.value['username'];
     this.password = form.value['password'];
 
-    console.log(form.value);
+    let user: UserCredentials = {
+      username: form.value['username'],
+      password: form.value['password'],
+    };
+
+    let token: string = '8d7eaf18-9350-4b27-be01-222d76f82883';
 
     try {
-      this.request.connectClient(this.username, this.password)
+      this.request.login(user)
         .subscribe(
-          () => {
-            this.router.navigate(['/' + this.username]);
+          accepted => {
+            //this.router.navigate(['/' + this.username]);
+            console.log(this.username + ' is logged in');
           },
           error => {
             console.log(error);

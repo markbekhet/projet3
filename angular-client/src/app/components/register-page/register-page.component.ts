@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
 import { RequestService } from 'src/app/services/request.service';
 import { ValidationService } from 'src/app/services/validation.service';
 
@@ -42,6 +43,24 @@ export class RegisterPageComponent implements OnInit {
       pseudo: form.controls['username'].value,
       emailAddress: form.controls['email'].value,
       password: form.controls['password'].value
+    }
+
+    try {
+      this.request.register(user)
+        .subscribe(
+          token => {
+            console.log(token);
+            console.log(user.pseudo + ' created in DB');
+            //this.router.navigate(['/' + this.username]);
+          },
+          error => {
+            console.log((error as HttpErrorResponse));
+            console.log((error as HttpErrorResponse).message);
+          }
+        )
+      
+    } catch(e: any) {
+
     }
 
     
