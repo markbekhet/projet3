@@ -57,6 +57,9 @@ export class DatabaseService {
             if(!userExist){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
+            let newConnection = new ConnectionHistory();
+            newConnection.user = user;
+            this.connectionRepo.save(newConnection);
             return user.id;
         }
     }
