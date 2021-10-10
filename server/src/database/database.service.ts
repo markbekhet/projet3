@@ -81,6 +81,10 @@ export class DatabaseService {
             await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
@@ -91,6 +95,10 @@ export class DatabaseService {
             }
         }
         else{
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)

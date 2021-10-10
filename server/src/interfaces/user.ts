@@ -37,4 +37,6 @@ export class ModificationParameters{
     newPassword: string;
 
     newPseudo: string;
+
+    oldPassword: string;
 }
