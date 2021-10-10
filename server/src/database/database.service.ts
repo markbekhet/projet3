@@ -35,7 +35,7 @@ export class DatabaseService {
     async getUser(userId: string) {
         
         return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "pseudo", "status", "emailAddress"],
+            select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "avatar"],
             relations:["connectionHistories", "disconnectionHistories"]
         })
     }

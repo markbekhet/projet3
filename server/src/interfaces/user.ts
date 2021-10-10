@@ -1,4 +1,4 @@
-import { Contains, IsEmail, IsEmpty, IsNotEmpty, Length, Matches, NotContains } from "class-validator";
+import { Contains, IsEmail, IsEmpty, IsNotEmpty, IsNotEmptyObject, IsOptional, Length, Matches, NotContains } from "class-validator";
 
 export class UserRegistrationInfo
 {
@@ -19,6 +19,9 @@ export class UserRegistrationInfo
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
     password: string;
 
+    @IsOptional()
+    readonly avatar?: string
+
 }
 
 export enum Status{
@@ -37,4 +40,6 @@ export class ModificationParameters{
     newPassword: string;
 
     newPseudo: string;
+
+    avatar: string;
 }

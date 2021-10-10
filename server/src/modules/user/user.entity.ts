@@ -58,6 +58,9 @@ export class User extends BaseEntity{
     })
     numberAuthoredDrawings: number;
 
+    @Column({nullable: true})
+    avatar: string;
+
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
     connectionHistories: ConnectionHistory[]
 
@@ -78,6 +81,7 @@ export class User extends BaseEntity{
         newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;
         newUserProfile.pseudo = UserRegistrationInfo.pseudo;
         newUserProfile.password = UserRegistrationInfo.password;
+        newUserProfile.avatar = UserRegistrationInfo.avatar;
         return newUserProfile;
     }
 }
