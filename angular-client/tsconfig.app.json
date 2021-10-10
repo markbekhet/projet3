@@ -3,7 +3,22 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "paths": {
+      "@src/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/app/components/*"],
+      "@models/*": ["src/app/models/*"],
+      "@services/*": ["src/app/services/*"],
+      // "@tools/*": ["src/app/services/tools/*"],
+      // "@common/*": ["../common/*"],
+      // "@environments/*": ["src/environments/*"],
+    }
   },
   "files": [
     "src/main.ts",
@@ -13,3 +28,8 @@
     "src/**/*.d.ts"
   ]
 }
+
+// "@modules/*": ["src/app/modules/*"],
+// "@maps/*": ["src/app/maps/*"],
+// "@enums/*": ["src/app/enums/*"],
+// "@classes/*": ["src/app/classes/*"],
