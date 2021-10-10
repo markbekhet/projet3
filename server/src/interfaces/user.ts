@@ -42,4 +42,5 @@ export class ModificationParameters{
     newPseudo: string;
 
     avatar: string;
+    oldPassword: string;
 }
