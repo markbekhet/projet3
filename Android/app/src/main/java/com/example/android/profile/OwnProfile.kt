@@ -60,12 +60,13 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.show()
         }
 
+        //Nous allons avoir besoin de mettre a jour les
+        //informations de l'utilisateur suite à la fermeture de la modale
+
         modifyParamsDialog?.setOnDismissListener {
             updateUI()
         }
 
-        //Nous allons avoir besoin d<update les informations de l'utilisateur
-        // suite à la fermeture de la modale
 
         val viewHistory: Button = findViewById(R.id.viewHistory)
 

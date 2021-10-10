@@ -15,7 +15,7 @@ data class UserProfileInformation(
     var averageCollaborationTime: Int? = null,
     var totalCollaborationTime: Int? = null,
     var numberCollaborationTeams: Int? = null,
-    var numberCollaborationDrawings: String? = null,
+    var numberCollaboratedDrawings: Int? = null,
     var numberAuthoredDrawings: Int? = null,
     private var connectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
     private var disconnectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,

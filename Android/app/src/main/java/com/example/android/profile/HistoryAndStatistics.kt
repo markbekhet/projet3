@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.R
 import com.example.android.client.ClientInfo
+import com.example.android.client.ConnectionDisconnectionHistories
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -20,8 +21,8 @@ import kotlin.collections.ArrayList
 class HistoryAndStatistics : AppCompatActivity() {
 
     private var connectionAdapter : GroupAdapter<GroupieViewHolder>? = null
-    private var connectionArray: ArrayList<ConnectionDisconnectionEntry>?= null
-    private var disconnectionArray: ArrayList<ConnectionDisconnectionEntry>?= null
+    private var connectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
+    private var disconnectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
     private var disconnectionAdapter: GroupAdapter<GroupieViewHolder>? = null
     private var collaborationAdapter: GroupAdapter<GroupieViewHolder>? = null
 
@@ -45,7 +46,7 @@ class HistoryAndStatistics : AppCompatActivity() {
         drawingAuthorCount.text =
             userInfo.numberAuthoredDrawings.toString()
         drawingCollaborationCount.text =
-            userInfo.numberCollaborationDrawings.toString()
+            userInfo.numberCollaboratedDrawings.toString()
 
         val connectionRecycleView: RecyclerView? =
             findViewById(R.id.recycle_view_connection)
@@ -54,8 +55,7 @@ class HistoryAndStatistics : AppCompatActivity() {
         val connectionLayoutManager = LinearLayoutManager(this)
         connectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
         connectionRecycleView?.layoutManager = connectionLayoutManager
-        connectionArray = ArrayList()
-        userInfo.getConnectionHistory()
+        connectionArray = userInfo.getConnectionHistory()
 
         fun setConnectionHistory(){
             connectionAdapter = GroupAdapter<GroupieViewHolder>()
