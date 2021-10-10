@@ -32,11 +32,6 @@ class OwnProfile : AppCompatActivity() {
 
         val clientService = ClientService()
 
-        runBlocking{
-            launch{
-                clientService.createUser()
-            }
-        }
 
         fun updateUI() {
             runBlocking {

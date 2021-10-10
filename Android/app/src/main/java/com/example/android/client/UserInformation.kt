@@ -12,8 +12,11 @@ data class UserProfileInformation(
     var lastName: String? = null,
     var pseudo: String? = null,
     var emailAddress: String? = null,
-    var nbAuthorDrawings: String? = null,
-    var nbCollaborationDrawings: String? = null,
+    var averageCollaborationTime: Int? = null,
+    var totalCollaborationTime: Int? = null,
+    var numberCollaborationTeams: Int? = null,
+    var numberCollaborationDrawings: String? = null,
+    var numberAuthoredDrawings: Int? = null,
     private var connectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
     private var disconnectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
 ){
@@ -41,7 +44,6 @@ data class UserRegistrationInfo(
     var pseudo: String? = null,
     var emailAddress: String? = null,
     var password: String? = null,
-    var passwordConfirm: String? = null
 ){
     fun toJson(): String{
         return Gson().toJson(this)

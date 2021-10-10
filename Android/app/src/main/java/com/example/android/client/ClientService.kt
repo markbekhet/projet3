@@ -12,6 +12,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.Retrofit
 import java.net.HttpURLConnection
 import java.net.URL
@@ -75,26 +77,20 @@ class ClientService : Service() {
         }
     }
 
-    suspend fun createUser(){
+    suspend fun createUser(userRegistration: UserRegistrationInfo): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(localUrl)
             .build()
 
-        val user = UserRegistrationInfo("Tom","Brady",
-            "Tomy", "tom@gmail.com",
-            "Football_for_life98", "Football_for_life98")
         val service = retrofit.create(RestAPI::class.java)
 
-        val requestBody = user.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        val requestBody = userRegistration.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
         withContext(Dispatchers.IO){
-            val response = service.createUser(requestBody)
-            if(response.isSuccessful){
-                var responseBody = response.body()?.string()
-                ClientInfo.userInformation.id = responseBody
-                println(response.body()?.string())
-
-            }
+            response = service.createUser(requestBody)
+            return@withContext response
         }
+        return response
     }
 
 }
