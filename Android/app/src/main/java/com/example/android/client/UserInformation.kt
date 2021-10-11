@@ -48,4 +48,12 @@ data class UserRegistrationInfo(
     fun toJson(): String{
         return Gson().toJson(this)
     }
+
+}
+
+data class LoginInfo(var username: String? = null, var password: String? = null)
+{
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
 }

@@ -22,12 +22,11 @@ import java.net.URL
 
 class ClientService : Service() {
     var authentify:Int =0
+    var userInfo : LoginInfo?= null
+
 
     override fun onBind(p0: Intent?): IBinder? {
         TODO("Not yet implemented")
-    }
-    fun setClientUsername(username_:String){
-        ClientInfo.username = username_
     }
     ///This methods needs to be changed///
 
@@ -95,12 +94,25 @@ class ClientService : Service() {
         return response
     }
 
-    suspend fun modifyProfile(jsonObject: JSONObject): Response<ResponseBody>?{
+
+    suspend fun login(userInfo: LoginInfo): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(localUrl)
             .build()
 
         val service = retrofit.create(RestAPI::class.java)
+        val requestBody = userInfo.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response = service.login(requestBody)
+            authentify = (response!!.code())
+            println( (response!!.code()))
+            return@withContext response
+        }
+        return response
+    }
+
+    suspend fun modifyProfile(jsonObject: JSONObject): Response<ResponseBody>?{
         val requestBody = jsonObject.toString()
             .toRequestBody("application/json".toMediaTypeOrNull())
         var response: Response<ResponseBody>? = null
@@ -108,7 +120,6 @@ class ClientService : Service() {
         response = ClientInfo.userInformation.id?.
         let { service.modifyProfile(it, requestBody) }
         return response
-
     }
 
 }

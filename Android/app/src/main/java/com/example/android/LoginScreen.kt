@@ -12,6 +12,8 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.chat.Chat
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
+import com.example.android.client.LoginInfo
+import kotlinx.android.synthetic.main.message.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,6 +22,7 @@ class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
     private var clientService: ClientService? = null
     private var texte: Button? = null
+    var userdata : LoginInfo ?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
@@ -43,7 +46,7 @@ class LoginScreen : AppCompatActivity() {
         }
 
         username.doAfterTextChanged {
-            if(username.text.isNotEmpty()){
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
                 button.isClickable = true
                 button.isEnabled = true
             }
@@ -62,13 +65,22 @@ class LoginScreen : AppCompatActivity() {
             return@OnEditorActionListener false
         })
 
+        password.doAfterTextChanged {
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
+                button.isClickable = true
+                button.isEnabled = true
+            }
+            else{
+                button.isClickable = false
+                button.isEnabled = false
+            }
+        }
         button.setOnClickListener() {
-            clientService!!.setClientUsername(username.text.toString())
-            println(ClientInfo.username)
             runBlocking {
                 async{
                     launch {
-                        clientService!!.connect(ClientInfo.username)
+                        userdata = LoginInfo(username!!.text.toString(),password!!.text.toString())
+                        clientService!!.login(userdata!!)
                     }
                 }
             }
