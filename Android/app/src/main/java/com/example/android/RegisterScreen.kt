@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
+import android.text.TextUtils
+import android.util.Patterns
+
 
 class RegisterScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +36,7 @@ class RegisterScreen : AppCompatActivity() {
         var clientService = ClientService()
 
         firstName.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                 pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
@@ -42,7 +45,7 @@ class RegisterScreen : AppCompatActivity() {
         }
 
         lastName.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
@@ -51,7 +54,7 @@ class RegisterScreen : AppCompatActivity() {
         }
 
         pseudo.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
@@ -60,7 +63,7 @@ class RegisterScreen : AppCompatActivity() {
         }
 
         password.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
@@ -69,10 +72,9 @@ class RegisterScreen : AppCompatActivity() {
         }
 
         confirmPassword.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())
-                && password.text.equals(confirmPassword.text)){
+                    confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
                 button.isClickable = true
             }
@@ -80,7 +82,7 @@ class RegisterScreen : AppCompatActivity() {
 
 
         email.doAfterTextChanged {
-            if(!validateAnyValuesIsEmpty(firstName.text.toString(), lastName.text.toString(),
+            if(validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())){
                 button.isEnabled = true
@@ -112,17 +114,24 @@ class RegisterScreen : AppCompatActivity() {
         }
     }
 
-    private fun validateAnyValuesIsEmpty(firstName : String,
+    private fun validater(firstName : String,
                                          lastName : String,
                                          pseudo : String,
                                          password : String,
                                          confirmPassword : String,
                                          email : String): Boolean{
 
-        return (firstName.isEmpty() ||
-            lastName.isEmpty() || pseudo.isEmpty()
-            || password.isEmpty() || confirmPassword.isEmpty()
-            || email.isEmpty())
+        return ((firstName.isNotEmpty() &&
+            lastName.isNotEmpty() && pseudo.isNotEmpty()
+                && password.isNotEmpty() && confirmPassword.isNotEmpty()
+                && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword))
     }
 
+    fun isValidEmail(target: CharSequence?): Boolean {
+        return if (TextUtils.isEmpty(target)) {
+            false
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        }
+    }
 }
