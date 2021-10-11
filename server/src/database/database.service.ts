@@ -87,6 +87,9 @@ export class DatabaseService {
             await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
             const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
             if(!validOldPassword){
                 throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
@@ -101,6 +104,9 @@ export class DatabaseService {
             }
         }
         else{
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
             const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
             if(!validOldPassword){
                 throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);

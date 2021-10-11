@@ -8,8 +8,7 @@ import { UpdateUserDto } from './modules/user/update-user.dto';
 
 const LOGIN_URL = "/login";
 const REGISTRATION_URL = "/register";
-const PROFILE_URL = "/profile";
-const DISCONNECT_URL = "/disconnect";
+
 
 @Controller()
 export class AppController {
@@ -32,26 +31,9 @@ export class AppController {
       throw new HttpException(ex.message, HttpStatus.BAD_REQUEST);
     }
   }
-
-  @Get(PROFILE_URL+"/:userId")
-  async getUserProfile(@Param("userId") userId: string){
-    console.log(`Controller received ${userId} to get the user profile`)
-    return await this.databaseService.getUser(userId);
-  }
-
   @Post(LOGIN_URL)
-  async login(@Body() userCredentials: LoginDto){
-      return await this.databaseService.login(userCredentials)
-  }
-  @Post(DISCONNECT_URL+"/:userId")
-  async disconnectUser(@Param("userId") userId: number){
-    await this.databaseService.disconnect(userId);
-    return HttpStatus.OK
-  }
-
-  @Put(PROFILE_URL+ "/:userId")
-  async modifyProfile(@Param("userId") userId: string, @Body() newParameters: UpdateUserDto){
-    await this.databaseService.modifyUserProfile(userId, newParameters);
-    return HttpStatus.OK
-  }
+    async login(@Body() userCredentials: LoginDto){
+        return await this.databaseService.login(userCredentials)
+    }
+  
 }
