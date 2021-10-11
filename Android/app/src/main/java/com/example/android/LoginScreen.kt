@@ -43,7 +43,7 @@ class LoginScreen : AppCompatActivity() {
         }
 
         username.doAfterTextChanged {
-            if(username.text.isNotEmpty()){
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
                 button.isClickable = true
                 button.isEnabled = true
             }
@@ -62,6 +62,16 @@ class LoginScreen : AppCompatActivity() {
             return@OnEditorActionListener false
         })
 
+        password.doAfterTextChanged {
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
+                button.isClickable = true
+                button.isEnabled = true
+            }
+            else{
+                button.isClickable = false
+                button.isEnabled = false
+            }
+        }
         button.setOnClickListener() {
             clientService!!.setClientUsername(username.text.toString())
             println(ClientInfo.username)

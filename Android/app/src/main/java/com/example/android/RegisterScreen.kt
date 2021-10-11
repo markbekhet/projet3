@@ -36,58 +36,40 @@ class RegisterScreen : AppCompatActivity() {
         var clientService = ClientService()
 
         firstName.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            (validater(firstName.text.toString(), lastName.text.toString(),
                 pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString()))
         }
 
         lastName.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString()))
         }
 
         pseudo.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString())
         }
 
         password.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString()))
         }
 
         confirmPassword.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString()))
         }
 
 
         email.doAfterTextChanged {
-            if(validater(firstName.text.toString(), lastName.text.toString(),
+            (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())){
-                button.isEnabled = true
-                button.isClickable = true
-            }
+                    confirmPassword.text.toString(), email.text.toString()))
         }
 
 
@@ -120,11 +102,19 @@ class RegisterScreen : AppCompatActivity() {
                                          password : String,
                                          confirmPassword : String,
                                          email : String): Boolean{
+        if(((firstName.isNotEmpty() &&
+                    lastName.isNotEmpty() && pseudo.isNotEmpty()
+                    && password.isNotEmpty() && confirmPassword.isNotEmpty()
+                    && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword)))
+        {button.isEnabled = true
+        button.isClickable = true
+            return true}
 
-        return ((firstName.isNotEmpty() &&
-            lastName.isNotEmpty() && pseudo.isNotEmpty()
-                && password.isNotEmpty() && confirmPassword.isNotEmpty()
-                && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword))
+            else{
+            button.isEnabled = false
+            button.isClickable = false
+            return false
+        }
     }
 
     fun isValidEmail(target: CharSequence?): Boolean {
