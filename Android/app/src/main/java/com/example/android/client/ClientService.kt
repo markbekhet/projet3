@@ -13,8 +13,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -91,6 +93,22 @@ class ClientService : Service() {
             return@withContext response
         }
         return response
+    }
+
+    suspend fun modifyProfile(jsonObject: JSONObject): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(localUrl)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        val requestBody = jsonObject.toString()
+            .toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+
+        response = ClientInfo.userInformation.id?.
+        let { service.modifyProfile(it, requestBody) }
+        return response
+
     }
 
 }

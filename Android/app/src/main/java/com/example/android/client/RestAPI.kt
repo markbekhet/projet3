@@ -5,10 +5,8 @@ import com.example.android.register
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
+import java.net.ResponseCache
 
 interface RestAPI {
 
@@ -17,5 +15,9 @@ interface RestAPI {
 
     @GET("$profile/{Id}")
     suspend fun getProfile(@Path("Id") userId: String): Response<ResponseBody>
+
+    @PUT("$profile/{Id}")
+    suspend fun modifyProfile(@Path("Id") userId: String,
+                              @Body requestBody: RequestBody): Response<ResponseBody>
 
 }
