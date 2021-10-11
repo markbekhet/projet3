@@ -20,12 +20,11 @@ import java.net.URL
 
 class ClientService : Service() {
     var authentify:Int =0
+    var userInfo : LoginInfo?= null
+
 
     override fun onBind(p0: Intent?): IBinder? {
         TODO("Not yet implemented")
-    }
-    fun setClientUsername(username_:String){
-        ClientInfo.username = username_
     }
     ///This methods needs to be changed///
 
@@ -88,6 +87,23 @@ class ClientService : Service() {
         var response: Response<ResponseBody>? = null
         withContext(Dispatchers.IO){
             response = service.createUser(requestBody)
+            return@withContext response
+        }
+        return response
+    }
+
+    suspend fun login(userInfo: LoginInfo): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(localUrl)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        val requestBody = userInfo.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response = service.login(requestBody)
+            authentify = (response!!.code())
+            println( (response!!.code()))
             return@withContext response
         }
         return response

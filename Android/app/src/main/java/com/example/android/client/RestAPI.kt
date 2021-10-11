@@ -1,5 +1,6 @@
 package com.example.android.client
 
+import com.example.android.login
 import com.example.android.profile
 import com.example.android.register
 import okhttp3.RequestBody
@@ -17,5 +18,8 @@ interface RestAPI {
 
     @GET("$profile/{Id}")
     suspend fun getProfile(@Path("Id") userId: String): Response<ResponseBody>
+
+    @POST(login)
+    suspend fun login(@Body requestBody: RequestBody): Response<ResponseBody>
 
 }
