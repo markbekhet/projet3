@@ -1,7 +1,10 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
-import { ModificationParameters, UserCredentials, UserRegistrationInfo } from './interfaces/user';
+import { CreateUserDto } from './modules/user/create-user.dto';
+import { LoginDto } from './modules/user/login.dto';
+import { UpdateUserDto } from './modules/user/update-user.dto';
+
 
 const LOGIN_URL = "/login";
 const REGISTRATION_URL = "/register";
@@ -18,7 +21,7 @@ export class AppController {
   }
 
   @Post(REGISTRATION_URL)
-  async registerUser(@Body() registrationInfo: UserRegistrationInfo){
+  async registerUser(@Body() registrationInfo: CreateUserDto){
     console.log(registrationInfo);
     debugger
     //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
@@ -37,7 +40,7 @@ export class AppController {
   }
 
   @Post(LOGIN_URL)
-  async login(@Body() userCredentials: UserCredentials){
+  async login(@Body() userCredentials: LoginDto){
       return await this.databaseService.login(userCredentials)
   }
   @Post(DISCONNECT_URL+"/:userId")
@@ -47,7 +50,7 @@ export class AppController {
   }
 
   @Put(PROFILE_URL+ "/:userId")
-  async modifyProfile(@Param("userId") userId: string, @Body() newParameters: ModificationParameters){
+  async modifyProfile(@Param("userId") userId: string, @Body() newParameters: UpdateUserDto){
     await this.databaseService.modifyUserProfile(userId, newParameters);
     return HttpStatus.OK
   }

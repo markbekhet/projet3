@@ -1,4 +1,4 @@
-import { Status } from "src/interfaces/user";
+import { Status } from "src/enumerators/user-status";
 import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ConnectionHistory } from "../connectionHistory/connectionHistory.entity";
 import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHistory.entity";

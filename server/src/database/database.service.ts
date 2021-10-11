@@ -1,6 +1,6 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
+import { Status} from 'src/enumerators/user-status';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnectionHistory.entity';
@@ -8,6 +8,9 @@ import { DisconnectionHistoryRespository } from 'src/modules/disconnectionHistor
 import { User } from 'src/modules/user/user.entity';
 import { UserRespository } from 'src/modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/modules/user/create-user.dto';
+import { LoginDto } from 'src/modules/user/login.dto';
+import { UpdateUserDto } from 'src/modules/user/update-user.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -19,7 +22,7 @@ export class DatabaseService {
         ){
             this.logger.log("Initialized");
         }
-    async createUser(registrationInfo: UserRegistrationInfo){
+    async createUser(registrationInfo: CreateUserDto){
         
         console.log(registrationInfo)
         
@@ -41,7 +44,7 @@ export class DatabaseService {
         })
     }
     
-    async login(userCredentials: UserCredentials){
+    async login(userCredentials: LoginDto){
         let user: User;
         user = await this.userRepo.findOne({
             where: [
@@ -77,7 +80,7 @@ export class DatabaseService {
             this.disconnectionRepo.save(newDisconnection)
         }
     }
-    async modifyUserProfile(userId: string, newParameters: ModificationParameters) {
+    async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         const user = await this.userRepo.findOne(userId);
         if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
