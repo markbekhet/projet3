@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".profile.HistoryAndStatistics"
+            android:exported="true" />
+        <activity
             android:name=".profile.VisitorProfileView"
             android:exported="true" />
         <activity

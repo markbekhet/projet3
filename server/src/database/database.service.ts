@@ -1,9 +1,6 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WsException } from '@nestjs/websockets';
-import { Validator } from 'class-validator';
-import { identity } from 'rxjs';
-import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
+import { Status} from 'src/enumerators/user-status';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnectionHistory.entity';
@@ -11,6 +8,9 @@ import { DisconnectionHistoryRespository } from 'src/modules/disconnectionHistor
 import { User } from 'src/modules/user/user.entity';
 import { UserRespository } from 'src/modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/modules/user/create-user.dto';
+import { LoginDto } from 'src/modules/user/login.dto';
+import { UpdateUserDto } from 'src/modules/user/update-user.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -18,11 +18,11 @@ export class DatabaseService {
     constructor(
         @InjectRepository(UserRespository) private userRepo: UserRespository,
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
-        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository
+        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         ){
             this.logger.log("Initialized");
         }
-    async createUser(registrationInfo: UserRegistrationInfo){
+    async createUser(registrationInfo: CreateUserDto){
         
         console.log(registrationInfo)
         
@@ -38,12 +38,13 @@ export class DatabaseService {
     async getUser(userId: string) {
         
         return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status", "emailAddress"],
+            select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+                "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
             relations:["connectionHistories", "disconnectionHistories"]
         })
     }
     
-    async login(userCredentials: UserCredentials){
+    async login(userCredentials: LoginDto){
         let user: User;
         user = await this.userRepo.findOne({
             where: [
@@ -59,6 +60,9 @@ export class DatabaseService {
             if(!userExist){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
+            let newConnection = new ConnectionHistory();
+            newConnection.user = user;
+            this.connectionRepo.save(newConnection);
             return user.id;
         }
     }
@@ -76,13 +80,20 @@ export class DatabaseService {
             this.disconnectionRepo.save(newDisconnection)
         }
     }
-    async modifyUserProfile(userId: string, newParameters: ModificationParameters) {
+    async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         const user = await this.userRepo.findOne(userId);
         if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
             await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
@@ -93,6 +104,13 @@ export class DatabaseService {
             }
         }
         else{
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)

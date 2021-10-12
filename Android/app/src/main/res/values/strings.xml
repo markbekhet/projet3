@@ -14,7 +14,7 @@
     <string name="nickname">Pseudonyme</string>
     <string name="modifyParams">Modifier les paramètres du compte</string>
     <string name="viewHistoryAndStatistics">Consulter l\'historique et les statistiques</string>
-    <string name="userProfileTitle">Profil utilisateur</string>
+    <string name="userProfileTitle">Profile utilisateur</string>
 
 
 </resources>
