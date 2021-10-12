@@ -13,6 +13,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.R
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
+import com.example.android.client.ProfileModification
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
@@ -38,10 +39,8 @@ class OwnProfile : AppCompatActivity() {
 
         fun updateUI() {
             runBlocking {
-                async {
-                    launch {
-                        clientService.getUserProfileInformation()
-                    }
+                launch {
+                    clientService.getUserProfileInformation()
                 }
             }
 
@@ -92,7 +91,7 @@ class ModifyParams(context: Context) : Dialog(context){
         val newNickname: EditText = findViewById(R.id.newNickname)
         val passwordErrors: TextView = findViewById(R.id.passwordErrors)
 
-        var clientService = ClientService()
+        val clientService = ClientService()
 
         newPassword.doAfterTextChanged {
             passwordErrors.text = ""
@@ -191,9 +190,10 @@ class ModifyParams(context: Context) : Dialog(context){
         okButton.setOnClickListener {
             //The request to update the information will be sent before hiding the pop up
             var canProcessQuery = true
-            var jsonObject = JSONObject()
+            var modification = ProfileModification()
+
             if(newNickname.text.isNotEmpty()){
-                jsonObject.put("newPseudo", newNickname.text.toString())
+                modification.newPseudo = newNickname.text.toString()
             }
             if(newPassword.text.isNotEmpty()){
                 passwordErrors.text = ""
@@ -218,22 +218,24 @@ class ModifyParams(context: Context) : Dialog(context){
                     canProcessQuery = false
                 }
                 if(canProcessQuery){
-                    jsonObject.put("newPassword", newPassword.text.toString())
-                    jsonObject.put("oldPassword", oldPassword.text.toString())
+                    modification.newPassword = newPassword.text.toString()
+                    modification.oldPassword = oldPassword.text.toString()
                 }
             }
             if(canProcessQuery){
                 var response: Response<ResponseBody>? = null
                 runBlocking {
-                    withContext(Dispatchers.IO){
-                        launch{
-                            try{
-                                response = clientService.modifyProfile(jsonObject)
-                            } catch(e: Exception){
-                                println(e.message)
-                            }
-                        }
+                    launch{
+                        response = clientService.modifyProfile(modification)
+                        println(response)
                     }
+                }
+                if(response!!.isSuccessful){
+                    dismiss()
+                }
+                else{
+                    passwordErrors.text = "Erreur en executant la demande." +
+                        " Essayez un autre pseudonyme."
                 }
             }
         }

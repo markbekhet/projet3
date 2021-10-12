@@ -68,7 +68,7 @@ class ClientService : Service() {
         val service = retrofit.create(RestAPI::class.java)
 
         withContext(Dispatchers.IO){
-            val response = ClientInfo.userInformation.id?.let { service.getProfile(it) }
+            val response =  service.getProfile(ClientInfo.userId)
 
             if (response!!.isSuccessful){
                 var responseBody = response.body()?.string()
@@ -112,13 +112,25 @@ class ClientService : Service() {
         return response
     }
 
-    suspend fun modifyProfile(jsonObject: JSONObject): Response<ResponseBody>?{
-        val requestBody = jsonObject.toString()
-            .toRequestBody("application/json".toMediaTypeOrNull())
-        var response: Response<ResponseBody>? = null
+    suspend fun modifyProfile(modification: ProfileModification): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(localUrl)
+            .build()
 
-        response = ClientInfo.userInformation.id?.
-        let { service.modifyProfile(it, requestBody) }
+        val service = retrofit.create(RestAPI::class.java)
+        val jsonString = modification.toJson()
+        println(jsonString)
+        val requestBody = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        println(ClientInfo.userId)
+        withContext(Dispatchers.IO){
+            response =
+                    service.modifyProfileParams(ClientInfo.userId, requestBody)
+            if(response != null){
+                println(response!!.code())
+            }
+            return@withContext response
+        }
         return response
     }
 

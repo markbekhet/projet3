@@ -7,7 +7,6 @@ enum class Status{
 }
 
 data class UserProfileInformation(
-    var id: String? = null,
     var firstName: String? = null,
     var lastName: String? = null,
     var pseudo: String? = null,
@@ -53,6 +52,16 @@ data class UserRegistrationInfo(
 
 data class LoginInfo(var username: String? = null, var password: String? = null)
 {
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
+
+data class ProfileModification(
+    var newPassword: String? = null,
+    var newPseudo: String? = null,
+    var oldPassword: String? = null
+){
     fun toJson(): String{
         return Gson().toJson(this)
     }

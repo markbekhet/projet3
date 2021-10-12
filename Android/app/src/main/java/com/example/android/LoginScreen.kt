@@ -13,10 +13,13 @@ import com.example.android.chat.Chat
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.client.LoginInfo
+import com.example.android.profile.OwnProfile
 import kotlinx.android.synthetic.main.message.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
@@ -75,24 +78,28 @@ class LoginScreen : AppCompatActivity() {
                 button.isEnabled = false
             }
         }
+
+        var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
             runBlocking {
                 async{
                     launch {
                         userdata = LoginInfo(username!!.text.toString(),password!!.text.toString())
-                        clientService!!.login(userdata!!)
+                        response = clientService!!.login(userdata!!)
                     }
                 }
             }
 
             if (!verifyAuth(clientService!!.authentify)) {
                 println(clientService!!.authentify)
-                startActivity(Intent(this, Chat::class.java))
+                ClientInfo.userId = response?.body()?.string().toString()
+                startActivity(Intent(this, OwnProfile::class.java))
                 print(username.toString())
 
             } else {
                 showError()
             }
+            password.text.clear()
             username.text.clear()
         }
     }

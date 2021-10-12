@@ -87,7 +87,7 @@ class RegisterScreen : AppCompatActivity() {
                     }
                 }
             }
-            ClientInfo.userInformation.id = response?.body()?.string()
+            ClientInfo.userId = response?.body()?.string().toString()
             startActivity(Intent(this, OwnProfile::class.java))
         }
 
