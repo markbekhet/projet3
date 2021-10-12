@@ -3,6 +3,7 @@ package com.example.android.profile
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,26 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 
+
+val clientService = ClientService()
+
+fun getProfile(){
+    runBlocking {
+        launch {
+            clientService.getUserProfileInformation()
+        }
+    }
+}
+
+fun updateUI(email:TextView, lastName: TextView,
+             firstName: TextView, nickname: TextView) {
+    val userInformation = ClientInfo.userInformation
+    email.text = userInformation.emailAddress
+    lastName.text = userInformation.lastName
+    nickname.text = userInformation.pseudo
+    firstName.text = userInformation.firstName
+}
+
 class OwnProfile : AppCompatActivity() {
 
     var modifyParamsDialog : Dialog? =null
@@ -34,30 +55,17 @@ class OwnProfile : AppCompatActivity() {
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
 
-        val clientService = ClientService()
+        getProfile()
 
 
-        fun updateUI() {
-            runBlocking {
-                launch {
-                    clientService.getUserProfileInformation()
-                }
-            }
-
-           val userInformation = ClientInfo.userInformation
-            email.text = userInformation.emailAddress
-            lastName.text = userInformation.lastName
-            nickname.text = userInformation.pseudo
-            firstName.text = userInformation.firstName
-        }
-
-        updateUI()
+        updateUI(email, lastName, firstName, nickname)
 
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
 
         modifyParams.setOnClickListener{
-            modifyParamsDialog = ModifyParams(this)
+            modifyParamsDialog = ModifyParams(this, email,
+                lastName, firstName, nickname)
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
         }
@@ -65,9 +73,6 @@ class OwnProfile : AppCompatActivity() {
         //Nous allons avoir besoin de mettre a jour les
         //informations de l'utilisateur suite à la fermeture de la modale
 
-        modifyParamsDialog?.setOnDismissListener {
-            updateUI()
-        }
 
 
         val viewHistory: Button = findViewById(R.id.viewHistory)
@@ -79,7 +84,14 @@ class OwnProfile : AppCompatActivity() {
     }
 }
 
-class ModifyParams(context: Context) : Dialog(context){
+class ModifyParams(context: Context, email: TextView,
+                   lastName: TextView, firstName: TextView, nickname: TextView) : Dialog(context){
+
+    private var emailValue = email
+    private var lastNameValue = lastName
+    private var firstNameValue = firstName
+    private var nicknameValue = nickname
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -231,11 +243,23 @@ class ModifyParams(context: Context) : Dialog(context){
                     }
                 }
                 if(response!!.isSuccessful){
+                    getProfile()
+                    updateUI(this.emailValue, this.lastNameValue,
+                        firstNameValue, nicknameValue)
                     dismiss()
                 }
                 else{
-                    passwordErrors.text = "Erreur en executant la demande." +
-                        " Essayez un autre pseudonyme."
+                    println(response!!.errorBody()!!.string())
+                    passwordErrors.text = ""
+                    if (newPassword.text.isNotEmpty()){
+                        passwordErrors.append("Assurez-vous que l'ancien mot de passe" +
+                            " est correcte et que votre nouveau mot de passe n'est pas" +
+                            " la même que l'ancienne. " )
+                    }
+                    if(newNickname.text.isNotEmpty()){
+                        passwordErrors.append("Un autre utilisateur utilise le même pseudonyme." +
+                            " Veuillez saisir un autre pseudonyme.")
+                    }
                 }
             }
         }
@@ -251,4 +275,5 @@ class ModifyParams(context: Context) : Dialog(context){
         return newPass == confirmPass
 
     }
+
 }
