@@ -11,6 +11,10 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/modules/user/create-user.dto';
 import { LoginDto } from 'src/modules/user/login.dto';
 import { UpdateUserDto } from 'src/modules/user/update-user.dto';
+import { DrawingRepository } from 'src/modules/drawing/drawing.repository';
+import { CreateDrawingDto } from 'src/modules/drawing/create-drawing.dto';
+import { visibility } from 'src/enumerators/visibility';
+import { Drawing } from 'src/modules/drawing/drawing.entity';
 
 @Injectable()
 export class DatabaseService {
@@ -19,9 +23,11 @@ export class DatabaseService {
         @InjectRepository(UserRespository) private userRepo: UserRespository,
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
         @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
+        @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
         ){
             this.logger.log("Initialized");
         }
+        //-------------------------------------------------- User services ---------------------------------------------------------------------
     async createUser(registrationInfo: CreateUserDto){
         
         console.log(registrationInfo)
@@ -123,6 +129,17 @@ export class DatabaseService {
                 })
         }
         }
+    }
+    //------------------------------Drawing services----------------------------------------------------------------------------------------
+    async createDrawing(drawingInformation: CreateDrawingDto){
+        if(drawingInformation.visibility === visibility.PROTECTED){
+            if(drawingInformation.password === undefined || drawingInformation.password === null){
+                throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
+            } 
+        }
+        const drawing = Drawing.createDrawing(drawingInformation);
+        await this.drawingRepo.save(drawing);
+        return drawing.id;
     }
     IsPasswordValide(password: string){
         if(password.length < 8){
