@@ -16,6 +16,7 @@ import { CreateDrawingDto } from 'src/modules/drawing/create-drawing.dto';
 import { visibility } from 'src/enumerators/visibility';
 import { Drawing } from 'src/modules/drawing/drawing.entity';
 import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
+import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -167,7 +168,7 @@ export class DatabaseService {
         return drawingCollection;
 
     }
-    //------------------------------Drawing services----------------------------------------------------------------------------------------
+    //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
         if(drawingInformation.visibility === visibility.PROTECTED){
             if(drawingInformation.password === undefined || drawingInformation.password === null){
@@ -178,6 +179,17 @@ export class DatabaseService {
         await this.drawingRepo.save(drawing);
         return drawing.id;
     }
+    async getDrawingById(drawingId: number, password: string){
+
+    }
+    async deleteDrawing(deleteInformation: DeleteDrawingDto){
+        const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
+        if(drawing.ownerId !== deleteInformation.userId){
+            throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
+        }
+        await this.drawingRepo.delete(drawing.id)
+    }
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){
         if(password.length < 8){
             throw new HttpException("The password must be longer than or equal to 8 characters", HttpStatus.BAD_REQUEST);

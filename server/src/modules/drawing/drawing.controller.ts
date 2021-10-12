@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateDrawingDto } from './create-drawing.dto';
 import { DeleteDrawingDto } from './delete-drawing.dto';
@@ -13,13 +13,14 @@ export class DrawingController {
         return await this.databaseService.createDrawing(drawingInformation);
     }
 
-    @Get("/user/:userId")
-    async getUserDrawings(@Param("userId") userId: string){
+    @Get("/:drawingId")
+    async getUserDrawings(@Param("drawingId") drawingId: number){
 
     }
 
     @Delete()
     async deleteDrawing(@Body() deleteInformation: DeleteDrawingDto){
-
+        await this.databaseService.deleteDrawing(deleteInformation);
+        return HttpStatus.OK;
     }
 }
