@@ -15,6 +15,7 @@ import { DrawingRepository } from 'src/modules/drawing/drawing.repository';
 import { CreateDrawingDto } from 'src/modules/drawing/create-drawing.dto';
 import { visibility } from 'src/enumerators/visibility';
 import { Drawing } from 'src/modules/drawing/drawing.entity';
+import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
 
 @Injectable()
 export class DatabaseService {
@@ -127,8 +128,44 @@ export class DatabaseService {
                     password: hashedPassword,
                     pseudo: newParameters.newPseudo
                 })
+            }
         }
-        }
+    }
+    async getUserDrawings(userId: string){
+        const drawings = await this.drawingRepo.find({
+            where: [
+                {visibility: visibility.PUBLIC},
+                {ownerId: userId},
+                {visibility: visibility.PROTECTED},
+            ]
+        })
+        return await this.getGallery(drawings);
+    }
+    async getGallery(drawings: Drawing[]){
+        let drawingCollection: GalleryDrawing[] = []
+        for(const drawing of drawings){
+            let username: string = null;
+            let firstName: string = null;
+            let lastName: string = null;
+            let email: string = null;
+            // to change with collaboration team
+            const user = await this.userRepo.findOne(drawing.ownerId);
+            if(drawing.useOwnerPrivateInformation){
+                firstName = user.firstName;
+                lastName = user.lastName;
+                email = user.emailAddress;
+            }
+            username = user.pseudo;
+            const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
+                                        ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
+                                        ownerLastName: lastName, content: drawing.content}
+            if(drawingCollection.indexOf(galleryDrawing) === -1){
+                drawingCollection.push(galleryDrawing);
+            }
+        };
+        console.log(drawingCollection)
+        return drawingCollection;
+
     }
     //------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){

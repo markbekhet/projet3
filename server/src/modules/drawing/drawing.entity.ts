@@ -38,10 +38,21 @@ export class Drawing extends BaseEntity{
     @Column({ nullable: true})
     content: string;
 
+    @Column({type:"boolean"})
+    useOwnerPrivateInformation: boolean;
+
     @BeforeInsert()
     async setPassword(){
-        const salt = 10;
-        this.password = await bcrypt.hash(this.password, salt)
+        if(this.password !== undefined){
+            const salt = 10;
+            this.password = await bcrypt.hash(this.password, salt)
+        }
+    }
+    @BeforeInsert()
+    setUsagePrivateInfo(){
+        if(this.useOwnerPrivateInformation=== undefined){
+            this.useOwnerPrivateInformation = false;
+        }
     }
 
     static createDrawing(drawingInformation: CreateDrawingDto) {
@@ -52,6 +63,7 @@ export class Drawing extends BaseEntity{
         newDrawing.height = drawingInformation.height;
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
+        newDrawing.useOwnerPrivateInformation = drawingInformation.useOwnerPrivateInformation;
         return newDrawing;
     }
 }

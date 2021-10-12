@@ -27,4 +27,8 @@ export class UserController {
         await this.databaseService.modifyUserProfile(userId, newParameters);
         return HttpStatus.OK
     }
+    @Get("/gallery/:userId")
+    async getUserGallery(@Param("userId") userId: string){
+        return await this.databaseService.getUserDrawings(userId);
+    }
 }

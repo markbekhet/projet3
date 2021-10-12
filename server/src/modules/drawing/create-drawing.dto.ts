@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { visibility } from "src/enumerators/visibility";
 
 export class CreateDrawingDto{
@@ -18,4 +18,7 @@ export class CreateDrawingDto{
 
     @IsNotEmpty()
     name: string;
+
+    @IsOptional()
+    useOwnerPrivateInformation: boolean;
 }
