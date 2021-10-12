@@ -16,6 +16,8 @@ export class ValidationService {
   static usernameValidator(control: FormControl) {
     if (control.value.match(ValidationService.USERNAME_REGEX)) {
       return null;
+    } else if (control.value.match(ValidationService.EMAIL_REGEX)) {
+      return null;
     } else {
       return { invalidUsername: true };
     }

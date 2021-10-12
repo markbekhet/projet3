@@ -49,9 +49,8 @@ export class RegisterPageComponent implements OnInit {
       this.auth.register(user)
         .subscribe(
           token => {
-            console.log(token);
-            console.log(user.pseudo + ' created in DB');
-            //this.router.navigate(['/' + this.username]);
+            console.log(this.auth.authentifiedUser);
+            this.router.navigate(['/' + user.pseudo]);
           },
           error => {
             console.log((error as HttpErrorResponse));

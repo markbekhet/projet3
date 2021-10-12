@@ -77,7 +77,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   disconnect(): void {
     try {
-      this.auth.disconnectClient(this.username)
+      this.auth.disconnect()
       .subscribe(
         code => {
           this.router.navigate(['/']);

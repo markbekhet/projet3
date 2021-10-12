@@ -43,9 +43,7 @@ export class LoginPageComponent implements OnInit {
       username: form.value['username'],
       password: form.value['password'],
     };
-
-    let token: string = '8d7eaf18-9350-4b27-be01-222d76f82883';
-
+    
     try {
       this.auth.login(user)
         .subscribe(

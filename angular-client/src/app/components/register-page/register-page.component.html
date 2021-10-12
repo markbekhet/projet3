@@ -30,7 +30,7 @@
             <br>
             <mat-form-field>
                 <mat-label>Mot de passe</mat-label>
-                <input type='text' matInput placeholder='Mot de passe' formControlName='password'>
+                <input type='password' matInput placeholder='Mot de passe' formControlName='password'>
                 <mat-error *ngIf="checkError('password', 'required')">*ERREUR : Un mot de passe est requis!</mat-error>
                 <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">*ERREUR : Ceci n'est pas un mot de passe valide!</mat-error>
             </mat-form-field>
