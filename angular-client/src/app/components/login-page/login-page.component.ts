@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RequestService } from 'src/app/services/request.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserCredentials } from '../../../../../common/user';
@@ -22,7 +22,7 @@ export class LoginPageComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private request: RequestService
+    private auth: AuthService
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
@@ -47,7 +47,7 @@ export class LoginPageComponent implements OnInit {
     let token: string = '8d7eaf18-9350-4b27-be01-222d76f82883';
 
     try {
-      this.request.login(user)
+      this.auth.login(user)
         .subscribe(
           accepted => {
             //this.router.navigate(['/' + this.username]);

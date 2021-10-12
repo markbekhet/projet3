@@ -1,8 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
-import { RequestService } from 'src/app/services/request.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { ValidationService } from 'src/app/services/validation.service';
 
 import { UserRegistrationInfo } from '../../../../../common/user';  
@@ -19,7 +19,7 @@ export class RegisterPageComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private request: RequestService) {
+    private auth: AuthService) {
       this.registerForm = this.formBuilder.group({
         firstName: formBuilder.control('', [ Validators.required ]),
         lastName: formBuilder.control('', [ Validators.required ]),
@@ -46,7 +46,7 @@ export class RegisterPageComponent implements OnInit {
     }
 
     try {
-      this.request.register(user)
+      this.auth.register(user)
         .subscribe(
           token => {
             console.log(token);

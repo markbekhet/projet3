@@ -10,7 +10,7 @@ import { CommunicationPageComponent } from './components/communication-page/comm
 import { LoginPageComponent } from './components/login-page/login-page.component';
 import { RegisterPageComponent } from './components/register-page/register-page.component';
 import { ChatService } from './services/chat.service';
-import { RequestService } from './services/request.service';
+import { AuthService } from './services/auth.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,7 +46,7 @@ const appRoutes: Routes = [
     MatIconModule,
   ],
   providers: [
-    RequestService,
+    AuthService,
     ChatService
   ],
   bootstrap: [AppComponent]

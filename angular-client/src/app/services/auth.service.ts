@@ -21,7 +21,7 @@ const HTTP_OPTIONS = {
 @Injectable({
   providedIn: 'root'
 })
-export class RequestService {
+export class AuthService {
   constructor(private httpClient: HttpClient) {}
 
   login(user: UserCredentials): Observable<string> {
