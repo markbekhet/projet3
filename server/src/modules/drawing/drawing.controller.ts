@@ -13,9 +13,9 @@ export class DrawingController {
         return await this.databaseService.createDrawing(drawingInformation);
     }
 
-    @Get("/:drawingId")
-    async getUserDrawings(@Param("drawingId") drawingId: number){
-
+    @Get("/:drawingId/:password")
+    async getDrawing(@Param("drawingId") drawingId: number, @Param("password") password: string){
+        return await this.databaseService.getDrawingById(drawingId, password);
     }
 
     @Delete()

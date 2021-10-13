@@ -180,7 +180,14 @@ export class DatabaseService {
         return drawing.id;
     }
     async getDrawingById(drawingId: number, password: string){
-
+        const drawing = await this.drawingRepo.findOne(drawingId);
+        if(drawing.visibility === visibility.PROTECTED){
+            const passwordMatch = await bcrypt.compare(password, drawing.password);
+            if(!passwordMatch){
+                throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return drawing.content;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
