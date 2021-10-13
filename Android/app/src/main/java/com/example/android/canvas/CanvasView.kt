@@ -48,7 +48,7 @@ class CanvasView(context: Context): View(context) {
     private val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     // Get the root element (the 'svg' element).
-    var svgRoot = doc.documentElement
+    var svgRoot = doc.documentElement as SVGElement
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,14 +91,13 @@ class CanvasView(context: Context): View(context) {
         super.onDraw(canvas)
         /*canvas?.drawColor(backgroundColor)
         canvas?.drawBitmap(bitmap, 0f, 0f, null)*/
-        val randomSvg = "<svg width=${svgRoot.getAttribute("width")} height=${svgRoot.getAttribute("height")}>\n" +
+        println(svgRoot.getAttribute("width"))
+        println(svgRoot.getAttribute("height"))
+        val randomSvg = "<svg>\n" +
             "  <circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"green\" stroke-width=\"4\" fill=\"yellow\" />\n" +
             "</svg>"
         val svg = SVG.getFromString(randomSvg)
         svg.renderToCanvas(canvas)
-        println(svgRoot)
-        println(doc.inputEncoding)
-        println(doc.xmlEncoding)
     }
 
 }
