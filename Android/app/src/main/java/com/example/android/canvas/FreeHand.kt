@@ -7,10 +7,9 @@ import android.graphics.Path
 import android.view.View
 import android.view.ViewConfiguration
 
-class FreeHand : Tool {
+class FreeHand : Tool{
 
     private var path = Path()
-
     override var currentX = 0f
     override var currentY = 0f
 

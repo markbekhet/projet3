@@ -6,7 +6,19 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
+import com.caverock.androidsvg.SVG
 import com.example.android.R
+import org.apache.batik.anim.dom.*
+import org.apache.batik.dom.svg.AbstractSVGTransformList
+import org.apache.batik.dom.svg.SVGSVGContext
+import org.apache.batik.util.SVGFeatureStrings
+import org.w3c.dom.Document
+import org.w3c.dom.svg.GetSVGDocument
+import org.w3c.dom.svg.SVGAnimatedString
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGTransform
+import org.xml.sax.helpers.XMLReaderFactory
+import org.xmlpull.v1.XmlSerializer
 
 private const val STROKE_WIDTH = 12f // has to be float
 
@@ -32,30 +44,61 @@ class CanvasView(context: Context): View(context) {
         strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
     }
 
+    private var impl = SVGDOMImplementation.getDOMImplementation()
+    private val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
+    private val doc: Document= impl.createDocument(svgNS, "svg", null)
+    // Get the root element (the 'svg' element).
+    var svgRoot = doc.documentElement
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
-            MotionEvent.ACTION_DOWN -> tool.touchStart(event!!.x, event!!.y)
-            MotionEvent.ACTION_MOVE -> tool.touchMove(canvas, this, context,
+            MotionEvent.ACTION_DOWN -> drawRandomRect()
+            /*MotionEvent.ACTION_MOVE -> tool.touchMove(canvas, this, context,
                 event!!.x, event!!.y, paint)
-            MotionEvent.ACTION_UP -> tool.touchUp()
+            MotionEvent.ACTION_UP -> tool.touchUp()*/
         }
+
         return true
+    }
+
+    fun drawRandomRect(){
+        var rectangle = doc.createElementNS(svgNS, "rect");
+        rectangle.setAttributeNS(null, "x", "10");
+        rectangle.setAttributeNS(null, "y", "20");
+        rectangle.setAttributeNS(null, "width", "100");
+        rectangle.setAttributeNS(null, "height", "50");
+        rectangle.setAttributeNS(null, "fill", "red");
+
+        // Attach the rectangle to the root 'svg' element.
+        svgRoot.appendChild(rectangle);
+        invalidate()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if(::bitmap.isInitialized) bitmap.recycle()
-         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-         canvas = Canvas(bitmap)
-         canvas.drawColor(backgroundColor)
+        /*if(::bitmap.isInitialized) bitmap.recycle()
+        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        canvas = Canvas(bitmap)
+        canvas.drawColor(backgroundColor)*/
+        svgRoot.setAttribute("width", w.toString())
+        svgRoot.setAttribute("height", h.toString())
+
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawColor(backgroundColor)
-        canvas?.drawBitmap(bitmap, 0f, 0f, null)
+        /*canvas?.drawColor(backgroundColor)
+        canvas?.drawBitmap(bitmap, 0f, 0f, null)*/
+        val randomSvg = "<svg width=${svgRoot.getAttribute("width")} height=${svgRoot.getAttribute("height")}>\n" +
+            "  <circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"green\" stroke-width=\"4\" fill=\"yellow\" />\n" +
+            "</svg>"
+        val svg = SVG.getFromString(randomSvg)
+        svg.renderToCanvas(canvas)
+        println(svgRoot)
+        println(doc.inputEncoding)
+        println(doc.xmlEncoding)
     }
 
 }

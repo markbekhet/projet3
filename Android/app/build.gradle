@@ -29,6 +29,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    packagingOptions {
+        resources.excludes.add("license/*")
+    }
 }
 
 dependencies {
@@ -52,4 +55,7 @@ dependencies {
     apply plugin: 'kotlin-android-extensions'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.apache.xmlgraphics:batik-svg-dom:1.14'
+    implementation 'org.apache.xmlgraphics:batik-anim:1.14'
+    implementation 'com.caverock:androidsvg:1.4'
 }
