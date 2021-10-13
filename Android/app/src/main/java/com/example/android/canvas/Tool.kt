@@ -6,6 +6,9 @@ import android.graphics.Paint
 import android.view.View
 
 interface Tool {
+    var currentX: Float
+    var currentY: Float
+
     fun touchStart(eventX: Float, eventY: Float)
     fun touchMove(canvas: Canvas?, view: View, context: Context,
                   eventX: Float, eventY: Float, paint: Paint)

@@ -14,7 +14,7 @@ class CanvasView(context: Context): View(context) {
     private lateinit var bitmap: Bitmap
     private lateinit var canvas: Canvas
 
-    private var tool: Tool = FreeHand()
+    private var tool: Tool = Rectangle()
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.white
         ,null)
 

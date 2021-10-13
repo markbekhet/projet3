@@ -11,8 +11,8 @@ class FreeHand : Tool {
 
     private var path = Path()
 
-    private var currentX = 0f
-    private var currentY = 0f
+    override var currentX = 0f
+    override var currentY = 0f
 
 
     override fun touchStart(eventX: Float, eventY: Float) {
