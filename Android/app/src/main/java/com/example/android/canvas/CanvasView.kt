@@ -107,7 +107,7 @@ class CanvasView(context: Context): View(context) {
     }
 
     fun getSvgString(): String{
-        var str = "<svg width=\"${width}\" height=\"${height}\">\n"
+        var str = "<svg width=\"${width}\" height=\"${height}\" xmlns=\"http://www.w3.org/2000/svg\">\n"
         var i = 0
         if(svgRoot.childNodes.length > 0){
             while(i < svgRoot.childNodes.length){

@@ -19,21 +19,21 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPathElement
 
     override var currentX = 0f
     override var currentY = 0f
-    override var str = "<path d="
+    override var str = "<polyline "
     override lateinit var node: SVGElement
 
     override fun touchStart(doc: Document, eventX: Float, eventY:Float){
         node = doc.createElementNS(svgNS,"path") as SVGOMPathElement
-        node.setAttribute("M", "$eventX $eventY")
+        node.setAttribute("points", "$eventX $eventY")
         node.setAttribute("fill", "red")
-        node.setAttribute("L", "")
+        //node.setAttribute("L", "")
     }
 
     override fun touchMove(view: View,
                            context: Context, eventX: Float, eventY: Float, paint: Paint
     ) {
-        val existingPoints = node.getAttribute("L")
-        node.setAttribute("L", "$existingPoints L $eventX $eventY")
+        val existingPoints = node.getAttribute("points")
+        node.setAttribute("points", "$existingPoints, $eventX $eventY")
         view.invalidate()
     }
 
@@ -41,13 +41,14 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPathElement
     }
 
     override fun getString(): String {
-        if (node.getAttribute("M") != null){
-            val startPoint = node.getAttribute("M")
-            str += "\"M $startPoint "
-            val progressPoints = node.getAttribute("L")
+        str = "<polyline "
+        if (node.getAttribute("points") != null){
+            val startPoint = node.getAttribute("points")
+            str += "points=\"$startPoint "
+            /*val progressPoints = node.getAttribute("L")
             progressPoints?.let{
                 str += it
-            }
+            }*/
             str += "\""
             str += " stroke=\"#000000\""
             str += " stroke-width=\"3\""
