@@ -31,22 +31,6 @@ class CanvasView(context: Context): View(context) {
     private var height: String = "100"
 
     private lateinit var tool: Tool
-    private val backgroundColor = ResourcesCompat.getColor(resources, R.color.white
-        ,null)
-
-    private val drawColor = ResourcesCompat.getColor(resources, R.color.black, null)
-
-    private val paint = Paint().apply {
-        color = drawColor
-        // Smooths out edges of what is drawn without affecting shape.
-        isAntiAlias = true
-        // Dithering affects how colors with higher-precision than the device are down-sampled.
-        isDither = true
-        style = Paint.Style.STROKE // default: FILL
-        strokeJoin = Paint.Join.ROUND // default: MITER
-        strokeCap = Paint.Cap.ROUND // default: BUTT
-        strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
-    }
 
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
@@ -63,7 +47,7 @@ class CanvasView(context: Context): View(context) {
                 svgRoot.appendChild(tool)
             }
             MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
-                event!!.x, event!!.y, paint)
+                event!!.x, event!!.y)
             MotionEvent.ACTION_UP -> tool.touchUp()
         }
 
@@ -85,10 +69,6 @@ class CanvasView(context: Context): View(context) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        /*if(::bitmap.isInitialized) bitmap.recycle()
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        canvas = Canvas(bitmap)
-        canvas.drawColor(backgroundColor)*/
         svgRoot.setAttribute("width", w.toString())
         svgRoot.setAttribute("height", h.toString())
         width = w.toString()
@@ -97,10 +77,6 @@ class CanvasView(context: Context): View(context) {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        /*canvas?.drawColor(backgroundColor)
-        canvas?.drawBitmap(bitmap, 0f, 0f, null)*/
-        var width1 = svgRoot.getAttribute("width")
-        var height1 = svgRoot.getAttribute("height")
         val svgString = getSvgString()
         val svg = SVG.getFromString(svgString)
         svg.renderToCanvas(canvas)
