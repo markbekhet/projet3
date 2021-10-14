@@ -42,7 +42,7 @@ class CanvasView(context: Context): View(context) {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                tool = FreeHand("path", doc as AbstractDocument)
+                tool = Rectangle("rect", doc as AbstractDocument)
                 tool.touchStart(doc, event.x, event.y)
                 svgRoot.appendChild(tool)
             }
@@ -52,19 +52,6 @@ class CanvasView(context: Context): View(context) {
         }
 
         return true
-    }
-
-    fun drawRandomRect(){
-        var rectangle = doc.createElementNS(svgNS, "rect");
-        rectangle.setAttributeNS(null, "x", "10");
-        rectangle.setAttributeNS(null, "y", "20");
-        rectangle.setAttributeNS(null, "width", "100");
-        rectangle.setAttributeNS(null, "height", "50");
-        rectangle.setAttributeNS(null, "fill", "red");
-
-        // Attach the rectangle to the root 'svg' element.
-        svgRoot.appendChild(rectangle);
-        invalidate()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
