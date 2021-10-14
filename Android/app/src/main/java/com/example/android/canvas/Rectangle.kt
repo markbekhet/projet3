@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
 
-class Rectangle: Tool {
+/*class Rectangle: Tool {
 
     override var currentX = 0f
     override var currentY = 0f
@@ -42,3 +42,4 @@ class Rectangle: Tool {
 
 
 }
+*/

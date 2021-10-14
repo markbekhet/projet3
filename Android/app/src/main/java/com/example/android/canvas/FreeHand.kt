@@ -6,43 +6,62 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.view.View
 import android.view.ViewConfiguration
+import com.caverock.androidsvg.SVG
+import org.apache.batik.anim.dom.SVGOMMPathElement
+import org.apache.batik.anim.dom.SVGOMPathElement
+import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.*
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGPathElement
+import org.w3c.dom.svg.SVGPathSegList
 
-class FreeHand : Tool{
+class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPathElement(prefix, owner) {
 
-    private var path = Path()
     override var currentX = 0f
     override var currentY = 0f
+    override var str = "<path d="
+    override lateinit var node: SVGElement
 
-
-    override fun touchStart(eventX: Float, eventY: Float) {
-        path.reset()
-        path.moveTo(eventX, eventY)
-        currentX = eventX
-        currentY = eventY
-
+    override fun touchStart(doc: Document, eventX: Float, eventY:Float){
+        node = doc.createElementNS(svgNS,"path") as SVGOMPathElement
+        node.setAttribute("M", "$eventX $eventY")
+        node.setAttribute("fill", "red")
+        node.setAttribute("L", "")
     }
 
-    override fun touchMove(canvas: Canvas?, view: View,
+    override fun touchMove(view: View,
                            context: Context, eventX: Float, eventY: Float, paint: Paint
     ) {
-        val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
-        val dx = Math.abs(eventX - currentX)
-        val dy = Math.abs(eventY - currentY)
-        if (dx >= touchTolerance || dy >= touchTolerance) {
-            // QuadTo() adds a quadratic bezier from the last point,
-            // approaching control point (x1,y1), and ending at (x2,y2).
-            path.quadTo(currentX, currentY, (eventX + currentX) / 2,
-                (eventY + currentY) / 2)
-            currentX = eventX
-            currentY = eventY
-            // Draw the path in the extra bitmap to cache it.
-            canvas?.drawPath(path, paint)
-        }
+        val existingPoints = node.getAttribute("L")
+        node.setAttribute("L", "$existingPoints L $eventX $eventY")
         view.invalidate()
     }
 
     override fun touchUp() {
-        path.reset()
     }
+
+    override fun getString(): String {
+        if (node.getAttribute("M") != null){
+            val startPoint = node.getAttribute("M")
+            str += "\"M $startPoint "
+            val progressPoints = node.getAttribute("L")
+            progressPoints?.let{
+                str += it
+            }
+            str += "\""
+            str += " stroke=\"#000000\""
+            str += " stroke-width=\"3\""
+            str += " fill=\"none\"";
+            str += " stroke-linecap=\"round\""
+            str += " stroke-linejoin=\"round\""
+            str += "/>\n"
+            return str
+        }
+        else{
+            return ""
+        }
+
+    }
+
 
 }
