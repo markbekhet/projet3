@@ -21,4 +21,7 @@ export class CreateDrawingDto{
 
     @IsOptional()
     useOwnerPrivateInformation: boolean;
+
+    @IsNotEmpty()
+    color: string;
 }
