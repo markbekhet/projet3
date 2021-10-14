@@ -41,6 +41,9 @@ export class Drawing extends BaseEntity{
     @Column({type:"boolean"})
     useOwnerPrivateInformation: boolean;
 
+    @Column()
+    bgColor: string;
+
     @BeforeInsert()
     async setPassword(){
         if(this.password !== undefined){
@@ -64,6 +67,7 @@ export class Drawing extends BaseEntity{
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
         newDrawing.useOwnerPrivateInformation = drawingInformation.useOwnerPrivateInformation;
+        newDrawing.bgColor = drawingInformation.color;
         return newDrawing;
     }
 }

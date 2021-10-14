@@ -20,7 +20,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
 
   notifyAllUsers(drawing: Drawing){
     this.logger.log(drawing.id);
-    const drawingInformations = {id: drawing.id, height: drawing.height, width: drawing.width};
+    const drawingInformations = {id: drawing.id, height: drawing.height, width: drawing.width, color: drawing.bgColor};
     this.wss.emit("drawingCreated", drawingInformations);
   }
 }
