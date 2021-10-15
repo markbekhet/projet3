@@ -42,7 +42,7 @@ class CanvasView(context: Context): View(context) {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                tool = Rectangle("rect", doc as AbstractDocument)
+                tool = Ellipse("ellipse", doc as AbstractDocument)
                 tool.touchStart(doc, event.x, event.y)
                 svgRoot.appendChild(tool)
             }
