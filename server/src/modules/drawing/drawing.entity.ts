@@ -36,9 +36,6 @@ export class Drawing extends BaseEntity{
     @Column()
     name: string;
 
-    @Column({ nullable: true})
-    content: string;
-
     @Column({type:"boolean"})
     useOwnerPrivateInformation: boolean;
 

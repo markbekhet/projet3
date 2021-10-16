@@ -11,6 +11,6 @@ export class DrawingContent extends BaseEntity{
     })
     content: string;
 
-    @ManyToOne(()=> Drawing, drawing=>drawing.contents)
+    @ManyToOne(()=> Drawing, drawing=>drawing.contents, {onDelete:'CASCADE'})
     drawing: Drawing;
 }

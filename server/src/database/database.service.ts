@@ -145,9 +145,10 @@ export class DatabaseService {
         const drawings = await this.drawingRepo.find({
             where: [
                 {visibility: visibility.PUBLIC},
-                {ownerId: userId},
+                {ownerId: userId, visibility:visibility.PRIVATE},
                 {visibility: visibility.PROTECTED},
-            ]
+            ],
+            relations:["contents"],
         })
         return await this.getGallery(drawings);
     }
@@ -168,7 +169,7 @@ export class DatabaseService {
             username = user.pseudo;
             const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
                                         ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
-                                        ownerLastName: lastName, content: drawing.content}
+                                        ownerLastName: lastName, contents: drawing.contents}
             if(drawingCollection.indexOf(galleryDrawing) === -1){
                 drawingCollection.push(galleryDrawing);
             }
@@ -190,14 +191,14 @@ export class DatabaseService {
         return newDrawing.id;
     }
     async getDrawingById(drawingId: number, password: string){
-        const drawing = await this.drawingRepo.findOne(drawingId);
+        const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
         if(drawing.visibility === visibility.PROTECTED){
             const passwordMatch = await bcrypt.compare(password, drawing.password);
             if(!passwordMatch){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
         }
-        return drawing.content;
+        return drawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
