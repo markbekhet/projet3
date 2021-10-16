@@ -96,4 +96,16 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         str += "/>\n"
     }
 
+    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
+        val width = this.getAttribute("width").toFloat()
+        val height = this.getAttribute("height").toFloat()
+
+        val isInXAxes = eventX <= x + width
+            && eventX >= x
+        val isInYAxes = eventY <= y + height
+            && eventY >= y
+        return isInXAxes && isInYAxes
+    }
 }

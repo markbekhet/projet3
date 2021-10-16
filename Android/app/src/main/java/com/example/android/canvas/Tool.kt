@@ -21,4 +21,5 @@ interface Tool: SVGElement {
 
     fun getString(): String
     fun getString(selectionActive: Boolean)
+    fun containsPoint(eventX: Float, eventY:Float): Boolean
 }

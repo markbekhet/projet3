@@ -44,11 +44,11 @@ class Ellipse(prefix: String, owner: AbstractDocument):
 
     override fun touchUp(view: View) {
         if(startingPositionY > currentY){
-            val cy = currentY + this.getAttribute("cy").toFloat()
+            val cy = currentY + this.getAttribute("ry").toFloat()
             this.setAttribute("cy", cy.toString())
         }
         if(startingPositionX > currentX){
-            val cx = currentX + this.getAttribute("cx").toFloat()
+            val cx = currentX + this.getAttribute("rx").toFloat()
             this.setAttribute("cx", cx.toString())
         }
         selected = true
@@ -102,5 +102,17 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         str += "/>\n"
     }
 
+    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+
+        val isInXAxes = eventX <= cx + rx
+            && eventX >= cx - rx
+        val isInYAxes = eventY <= cy + ry
+            && eventY >= cy - ry
+        return isInXAxes && isInYAxes
+    }
 
 }

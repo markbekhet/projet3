@@ -1,12 +1,7 @@
 package com.example.android.canvas
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
 import android.view.View
-import android.view.ViewConfiguration
-import com.caverock.androidsvg.SVG
 import org.apache.batik.anim.dom.SVGOMMPathElement
 import org.apache.batik.anim.dom.SVGOMPathElement
 import org.apache.batik.anim.dom.SVGOMPolylineElement
@@ -42,6 +37,7 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun touchUp(view: View) {
+        selected = true
         view.invalidate()
     }
 
@@ -65,10 +61,29 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
             str += " stroke-dasharray=\"4\""
             str += " stroke=\"#0000FF\""
         }
-
         str += "/>\n"
-
     }
 
+    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
+        val points = this.getAttribute("points")
+        val pointsArray = this.points.points
+        var i = 0
+        if(pointsArray.numberOfItems > 0) {
+            while(i < pointsArray.numberOfItems){
+                val point = pointsArray.getItem(i)
+                val isInY = isInIncludeRange(point.y, eventY)
+                val isInX = isInIncludeRange(point.x, eventX)
 
+                if(isInX && isInY){
+                    return true
+                }
+                i++
+            }
+        }
+        return false
+    }
+
+    private fun isInIncludeRange(actualPoint: Float, curserPoint: Float):Boolean{
+        return curserPoint >= actualPoint - 50 && curserPoint <= actualPoint + 50
+    }
 }

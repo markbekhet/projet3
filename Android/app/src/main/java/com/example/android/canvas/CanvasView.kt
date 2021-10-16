@@ -42,10 +42,15 @@ class CanvasView(context: Context): View(context) {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                unSelectAllChildren()
-                tool = Ellipse("ellipse", doc as AbstractDocument)
-                tool.touchStart(this, event.x, event.y)
-                svgRoot.appendChild(tool)
+                if(!isInsideTheSelection(event.x , event.y)){
+                    unSelectAllChildren()
+                    tool = Rectangle("rect", doc as AbstractDocument)
+                    tool.touchStart(this, event.x, event.y)
+                    svgRoot.appendChild(tool)
+                }
+                else{
+                    println("Error")
+                }
             }
             MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
                 event!!.x, event!!.y)
@@ -70,7 +75,7 @@ class CanvasView(context: Context): View(context) {
         svg.renderToCanvas(canvas)
     }
 
-    fun getSVGString(): String{
+    private fun getSVGString(): String{
         var str = "<svg width=\"${width}\" height=\"${height}\" xmlns=\"http://www.w3.org/2000/svg\">\n"
         var i = 0
         if(svgRoot.childNodes.length > 0){
@@ -86,9 +91,21 @@ class CanvasView(context: Context): View(context) {
         return str
     }
 
-    fun isInsideTheDrawnContent(): Boolean{ return false}
+    private fun isInsideTheSelection(eventX: Float, eventY: Float): Boolean{
+        var i = 0
+        if(svgRoot.childNodes.length > 0) {
+            while (i < svgRoot.childNodes.length) {
+                val tool = svgRoot.childNodes.item(i) as Tool
+                if(tool.selected && tool.containsPoint(eventX, eventY)){
+                    return true;
+                }
+                i++
+            }
+        }
+        return false
+    }
 
-    fun unSelectAllChildren(){
+    private fun unSelectAllChildren(){
         var i = 0
         if(svgRoot.childNodes.length > 0) {
             while (i < svgRoot.childNodes.length) {
