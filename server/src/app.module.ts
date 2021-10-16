@@ -15,6 +15,7 @@ import { UserController } from './modules/user/user.controller';
 import { DrawingRepository } from './modules/drawing/drawing.repository';
 import { DrawingController } from './modules/drawing/drawing.controller';
 import { DrawingGateway } from './modules/drawing/drawing.gateway';
+import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DrawingGateway } from './modules/drawing/drawing.gateway';
       ConnectionHistoryRespository,
       DisconnectionHistoryRespository,
       DrawingRepository,
+      DrawingContentRepository,
     ])
   ],
   controllers: [AppController, ConnectionController, UserController, DrawingController],
