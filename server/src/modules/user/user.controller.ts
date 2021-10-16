@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, Post, Put, Body } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Post, Put, Body, HttpException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateUserDto } from './update-user.dto';
 
@@ -24,8 +24,13 @@ export class UserController {
 
     @Put(PROFILE_URL+ "/:userId")
     async modifyProfile(@Param("userId") userId: string, @Body() newParameters: UpdateUserDto){
-        await this.databaseService.modifyUserProfile(userId, newParameters);
-        return HttpStatus.OK
+        try{
+            await this.databaseService.modifyUserProfile(userId, newParameters);
+            return HttpStatus.OK
+        }
+        catch(e: any){
+            throw new HttpException("Username already used", HttpStatus.BAD_REQUEST);
+        }
     }
     @Get("/gallery/:userId")
     async getUserGallery(@Param("userId") userId: string){
