@@ -1,8 +1,15 @@
-import { IsNotEmpty } from "class-validator";
+import { DrawingStatus } from "src/enumerators/drawing-status";
 
 export interface SocketDrawing{
     drawingId: number;
 
     content: string[];
 
+}
+
+export interface ContentDrawingSocket{
+    drawingId: number;
+    contentId: number;
+    drawing: string;
+    status: DrawingStatus;
 }
