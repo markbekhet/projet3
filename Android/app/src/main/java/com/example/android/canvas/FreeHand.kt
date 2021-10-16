@@ -23,12 +23,10 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override var currentX = 0f
     override var currentY = 0f
     override var str = "<polyline "
-    override lateinit var node: SVGElement
 
-    override fun touchStart(doc: Document, eventX: Float, eventY:Float){
-        node = doc.createElementNS(svgNS,"polyline") as SVGOMPolylineElement
-        node.setAttribute("points", "$eventX $eventY")
-        node.setAttribute("fill", "red")
+    override fun touchStart(eventX: Float, eventY:Float){
+        this.setAttribute("points", "$eventX $eventY")
+        this.setAttribute("fill", "red")
     }
 
     override fun touchMove(view: View,
@@ -36,8 +34,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                            eventX: Float,
                            eventY: Float)
     {
-        val existingPoints = node.getAttribute("points")
-        node.setAttribute("points", "$existingPoints, $eventX $eventY")
+        val existingPoints = this.getAttribute("points")
+        this.setAttribute("points", "$existingPoints, $eventX $eventY")
         view.invalidate()
     }
 
@@ -46,8 +44,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
 
     override fun getString(): String {
         str = "<polyline "
-        if (node.getAttribute("points") != null){
-            val startPoint = node.getAttribute("points")
+        if (this.getAttribute("points") != null){
+            val startPoint = this.getAttribute("points")
             str += "points=\"$startPoint "
             str += "\""
             str += " stroke=\"#000000\""

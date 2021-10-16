@@ -42,8 +42,8 @@ class CanvasView(context: Context): View(context) {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                tool = Ellipse("ellipse", doc as AbstractDocument)
-                tool.touchStart(doc, event.x, event.y)
+                tool = FreeHand("polyline", doc as AbstractDocument)
+                tool.touchStart(event.x, event.y)
                 svgRoot.appendChild(tool)
             }
             MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
@@ -62,6 +62,7 @@ class CanvasView(context: Context): View(context) {
         height = h.toString()
     }
 
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         val svgString = getSvgString()

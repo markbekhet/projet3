@@ -16,47 +16,43 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var currentX = 0f
     override var currentY = 0f
     override var str = "<rect "
-    override lateinit var node: SVGElement
 
-
-    override fun touchStart(doc: Document,
-                            eventX: Float,
+    override fun touchStart(eventX: Float,
                             eventY: Float) {
-        node = doc.createElementNS(svgNS,"rect") as SVGOMRectElement
-        node.setAttribute("x", eventX.toString())
-        node.setAttribute("y", eventY.toString())
-        node.setAttribute("width", "0")
-        node.setAttribute("height", "0")
+        this.setAttribute("x", eventX.toString())
+        this.setAttribute("y", eventY.toString())
+        this.setAttribute("width", "0")
+        this.setAttribute("height", "0")
 
     }
 
     override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
-        val width = abs(eventX - node.getAttribute("x").toFloat())
-        val height = abs(eventY - node.getAttribute("y").toFloat())
-        node.setAttribute("width", width.toString())
-        node.setAttribute("height", height.toString())
+        val width = abs(eventX - this.getAttribute("x").toFloat())
+        val height = abs(eventY - this.getAttribute("y").toFloat())
+        this.setAttribute("width", width.toString())
+        this.setAttribute("height", height.toString())
         currentY = eventY
         currentX = eventX
         view.invalidate()
     }
 
     override fun touchUp() {
-        var x = node.getAttribute("x").toFloat()
-        var y = node.getAttribute("y").toFloat()
+        var x = this.getAttribute("x").toFloat()
+        var y = this.getAttribute("y").toFloat()
         if(y > currentY){
-            node.setAttribute("y", currentY.toString())
+            this.setAttribute("y", currentY.toString())
         }
         if(x > currentX){
-            node.setAttribute("x", currentX.toString())
+            this.setAttribute("x", currentX.toString())
         }
     }
 
     override fun getString(): String {
         str = "<rect "
-        val x = node.getAttribute("x")
-        val y = node.getAttribute("y")
-        val width = node.getAttribute("width")
-        val height = node.getAttribute("height")
+        val x = this.getAttribute("x")
+        val y = this.getAttribute("y")
+        val width = this.getAttribute("width")
+        val height = this.getAttribute("height")
         x?.let{
             if(it.toFloat() > currentX){
                 str += "x=\"$currentX\" "

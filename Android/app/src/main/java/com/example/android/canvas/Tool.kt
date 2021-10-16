@@ -12,8 +12,7 @@ interface Tool: SVGElement {
     var currentX: Float
     var currentY: Float
     var str: String
-    var node: SVGElement
-    fun touchStart(doc: Document, eventX: Float, eventY:Float)
+    fun touchStart(eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
                   eventX: Float, eventY: Float)
     fun touchUp()

@@ -16,14 +16,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override var currentX = 0f
     override var currentY = 0f
     override var str = "<ellipse "
-    override lateinit var node: SVGElement
     private var startingPositionX = 0f
     private var startingPositionY = 0f
 
-    override fun touchStart(doc: Document,
-                            eventX: Float,
-                            eventY: Float) {
-        node = doc.createElementNS(svgNS,"ellipse") as SVGOMEllipseElement
+    override fun touchStart(eventX: Float, eventY: Float) {
         startingPositionX = eventX
         startingPositionY = eventY
 
@@ -32,10 +28,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
         val rx = abs(eventX - startingPositionX)/2
         val ry = abs(eventY - startingPositionY)/2
-        node.setAttribute("rx", rx.toString())
-        node.setAttribute("ry", ry.toString())
-        node.setAttribute("cx",(startingPositionX+rx).toString())
-        node.setAttribute("cy",(startingPositionY+ry).toString())
+        this.setAttribute("rx", rx.toString())
+        this.setAttribute("ry", ry.toString())
+        this.setAttribute("cx",(startingPositionX+rx).toString())
+        this.setAttribute("cy",(startingPositionY+ry).toString())
         currentY = eventY
         currentX = eventX
         view.invalidate()
@@ -43,19 +39,19 @@ class Ellipse(prefix: String, owner: AbstractDocument):
 
     override fun touchUp() {
         if(startingPositionY > currentY){
-            val cy = currentY + node.getAttribute("cy").toFloat()
-            node.setAttribute("cy", cy.toString())
+            val cy = currentY + this.getAttribute("cy").toFloat()
+            this.setAttribute("cy", cy.toString())
         }
         if(startingPositionX > currentX){
-            val cx = currentX + node.getAttribute("cx").toFloat()
-            node.setAttribute("cx", cx.toString())
+            val cx = currentX + this.getAttribute("cx").toFloat()
+            this.setAttribute("cx", cx.toString())
         }
     }
 
     override fun getString(): String {
         str = "<ellipse "
-        val rx = node.getAttribute("rx")
-        val ry = node.getAttribute("ry")
+        val rx = this.getAttribute("rx")
+        val ry = this.getAttribute("ry")
         var cx = 0f
         if(startingPositionX > currentX){
             cx = currentX + rx.toFloat()
