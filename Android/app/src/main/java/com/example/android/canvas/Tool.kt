@@ -12,10 +12,13 @@ interface Tool: SVGElement {
     var currentX: Float
     var currentY: Float
     var str: String
-    fun touchStart(eventX: Float, eventY:Float)
+    var selected: Boolean
+
+    fun touchStart(view: View, eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
                   eventX: Float, eventY: Float)
-    fun touchUp()
+    fun touchUp(view: View)
 
     fun getString(): String
+    fun getString(selectionActive: Boolean)
 }

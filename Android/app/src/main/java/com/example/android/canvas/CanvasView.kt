@@ -42,13 +42,14 @@ class CanvasView(context: Context): View(context) {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                tool = FreeHand("polyline", doc as AbstractDocument)
-                tool.touchStart(event.x, event.y)
+                unSelectAllChildren()
+                tool = Ellipse("ellipse", doc as AbstractDocument)
+                tool.touchStart(this, event.x, event.y)
                 svgRoot.appendChild(tool)
             }
             MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
                 event!!.x, event!!.y)
-            MotionEvent.ACTION_UP -> tool.touchUp()
+            MotionEvent.ACTION_UP -> tool.touchUp(this)
         }
 
         return true
@@ -62,15 +63,14 @@ class CanvasView(context: Context): View(context) {
         height = h.toString()
     }
 
-    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val svgString = getSvgString()
+        val svgString = getSVGString()
         val svg = SVG.getFromString(svgString)
         svg.renderToCanvas(canvas)
     }
 
-    fun getSvgString(): String{
+    fun getSVGString(): String{
         var str = "<svg width=\"${width}\" height=\"${height}\" xmlns=\"http://www.w3.org/2000/svg\">\n"
         var i = 0
         if(svgRoot.childNodes.length > 0){
@@ -84,5 +84,19 @@ class CanvasView(context: Context): View(context) {
         str += "</svg>"
         println(str)
         return str
+    }
+
+    fun isInsideTheDrawnContent(): Boolean{ return false}
+
+    fun unSelectAllChildren(){
+        var i = 0
+        if(svgRoot.childNodes.length > 0) {
+            while (i < svgRoot.childNodes.length) {
+                val tool = svgRoot.childNodes.item(i) as Tool
+                tool.selected = false
+                i++
+            }
+            invalidate()
+        }
     }
 }

@@ -15,15 +15,16 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     SVGOMRectElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
+    override var selected = false
     override var str = "<rect "
 
-    override fun touchStart(eventX: Float,
+    override fun touchStart(view: View, eventX: Float,
                             eventY: Float) {
         this.setAttribute("x", eventX.toString())
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
-
+        view.invalidate()
     }
 
     override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
@@ -36,7 +37,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         view.invalidate()
     }
 
-    override fun touchUp() {
+    override fun touchUp(view: View) {
         var x = this.getAttribute("x").toFloat()
         var y = this.getAttribute("y").toFloat()
         if(y > currentY){
@@ -45,9 +46,16 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         if(x > currentX){
             this.setAttribute("x", currentX.toString())
         }
+        selected = true
+        view.invalidate()
     }
 
     override fun getString(): String {
+        getString(selected)
+        return str
+    }
+
+    override fun getString(selectionActive: Boolean) {
         str = "<rect "
         val x = this.getAttribute("x")
         val y = this.getAttribute("y")
@@ -79,9 +87,13 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         str += " stroke=\"#000000\""
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
-        str += "/>\n"
-        return str
-    }
 
+        if(selectionActive){
+            str += " stroke-dasharray=\"4\""
+            str += " stroke=\"#0000FF\""
+        }
+
+        str += "/>\n"
+    }
 
 }

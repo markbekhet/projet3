@@ -22,11 +22,13 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
 
     override var currentX = 0f
     override var currentY = 0f
+    override var selected = false
     override var str = "<polyline "
 
-    override fun touchStart(eventX: Float, eventY:Float){
+    override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
         this.setAttribute("fill", "red")
+        view.invalidate()
     }
 
     override fun touchMove(view: View,
@@ -39,26 +41,32 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         view.invalidate()
     }
 
-    override fun touchUp() {
+    override fun touchUp(view: View) {
+        view.invalidate()
     }
 
     override fun getString(): String {
+        getString(selected)
+        return str
+    }
+
+    override fun getString(selectionActive: Boolean){
         str = "<polyline "
-        if (this.getAttribute("points") != null){
-            val startPoint = this.getAttribute("points")
-            str += "points=\"$startPoint "
-            str += "\""
-            str += " stroke=\"#000000\""
-            str += " stroke-width=\"3\""
-            str += " fill=\"none\"";
-            str += " stroke-linecap=\"round\""
-            str += " stroke-linejoin=\"round\""
-            str += "/>\n"
-            return str
+        val startPoint = this.getAttribute("points")
+        str += "points=\"$startPoint "
+        str += "\""
+        str += " stroke=\"#000000\""
+        str += " stroke-width=\"3\""
+        str += " fill=\"none\"";
+        str += " stroke-linecap=\"round\""
+        str += " stroke-linejoin=\"round\""
+
+        if(selectionActive){
+            str += " stroke-dasharray=\"4\""
+            str += " stroke=\"#0000FF\""
         }
-        else{
-            return ""
-        }
+
+        str += "/>\n"
 
     }
 
