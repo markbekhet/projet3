@@ -10,14 +10,22 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.chat.Chat
+import com.example.android.client.ClientInfo
+import com.example.android.client.ClientService
+import com.example.android.client.LoginInfo
+import com.example.android.profile.OwnProfile
+import kotlinx.android.synthetic.main.message.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
     private var clientService: ClientService? = null
     private var texte: Button? = null
+    var userdata : LoginInfo ?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
@@ -41,7 +49,7 @@ class LoginScreen : AppCompatActivity() {
         }
 
         username.doAfterTextChanged {
-            if(username.text.isNotEmpty()){
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
                 button.isClickable = true
                 button.isEnabled = true
             }
@@ -60,25 +68,38 @@ class LoginScreen : AppCompatActivity() {
             return@OnEditorActionListener false
         })
 
+        password.doAfterTextChanged {
+            if(username.text.isNotEmpty() && password.text.isNotEmpty()){
+                button.isClickable = true
+                button.isEnabled = true
+            }
+            else{
+                button.isClickable = false
+                button.isEnabled = false
+            }
+        }
+
+        var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
-            clientService!!.setClientUsername(username.text.toString())
-            println(ClientInfo.username)
             runBlocking {
                 async{
                     launch {
-                        clientService!!.connect(ClientInfo.username)
+                        userdata = LoginInfo(username!!.text.toString(),password!!.text.toString())
+                        response = clientService!!.login(userdata!!)
                     }
                 }
             }
 
             if (!verifyAuth(clientService!!.authentify)) {
                 println(clientService!!.authentify)
-                startActivity(Intent(this, Chat::class.java))
+                ClientInfo.userId = response?.body()?.string().toString()
+                startActivity(Intent(this, OwnProfile::class.java))
                 print(username.toString())
 
             } else {
                 showError()
             }
+            password.text.clear()
             username.text.clear()
         }
     }
