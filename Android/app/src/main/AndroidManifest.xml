@@ -13,6 +13,15 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".canvas.CanvasActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".profile.HistoryAndStatistics"
             android:exported="true" />
         <activity
@@ -20,18 +29,15 @@
             android:exported="true" />
         <activity
             android:name=".profile.OwnProfile"
-            android:exported="true">
-        </activity>
-
+            android:exported="true" />
         <activity
             android:name=".chat.Chat"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".RegisterScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name=".client.ClientService"
@@ -42,11 +48,6 @@
             android:name=".LoginScreen"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
