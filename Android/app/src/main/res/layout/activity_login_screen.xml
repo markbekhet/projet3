@@ -48,7 +48,7 @@
         android:drawablePadding="10dp"
         android:ems="10"
         android:padding="10dp"
-        android:hint="@string/username"
+        android:hint="pseudo ou email"
         android:textColor="#808080"
         android:textSize="20sp"
         android:inputType="textPersonName"

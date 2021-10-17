@@ -20,20 +20,21 @@
             android:exported="true" />
         <activity
             android:name=".profile.OwnProfile"
-            android:exported="true"/>
-            
+            android:exported="true">
+        </activity>
+
         <activity
             android:name=".chat.Chat"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
-            
+
         <activity
             android:name=".RegisterScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan"/>
 
         <service
-            android:name=".ClientService"
+            android:name=".client.ClientService"
             android:enabled="true"
             android:exported="true" />
 
