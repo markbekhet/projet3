@@ -19,6 +19,8 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override var str = "<ellipse "
     private var startingPositionX = 0f
     private var startingPositionY = 0f
+    override lateinit var startTransformPoint: Point
+    override var totalTranslation = Point(0f, 0f)
 
     override fun touchStart(view: View, eventX: Float, eventY: Float) {
         startingPositionX = eventX
@@ -27,6 +29,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         this.setAttribute("ry", "0")
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
+        this.setAttribute("transformTranslate","")
         view.invalidate()
     }
 
@@ -37,6 +40,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         this.setAttribute("ry", ry.toString())
         this.setAttribute("cx",(startingPositionX+rx).toString())
         this.setAttribute("cy",(startingPositionY+ry).toString())
+        this.setAttribute("transform", "")
         currentY = eventY
         currentX = eventX
         view.invalidate()
@@ -65,6 +69,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         str = "<ellipse "
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
+        val transform = this.getAttribute("transformTranslate")
         var cx = 0f
         if(startingPositionX > currentX){
             cx = currentX + rx.toFloat()
@@ -89,6 +94,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         ry?.let{
             str += "ry=\"$it\" "
         }
+
+        transform?.let{
+            str += "transform=\"$it\""
+        }
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
 
@@ -109,11 +118,22 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val rx = this.getAttribute("rx").toFloat()
         val ry = this.getAttribute("ry").toFloat()
 
-        val isInXAxes = eventX <= cx + rx
-            && eventX >= cx - rx
-        val isInYAxes = eventY <= cy + ry
-            && eventY >= cy - ry
+        val isInXAxes = eventX <= cx + rx + totalTranslation.x
+            && eventX >= cx - rx + totalTranslation.x
+        val isInYAxes = eventY <= cy + ry + totalTranslation.y
+            && eventY >= cy - ry + totalTranslation.y
         return isInXAxes && isInYAxes
+    }
+
+    override fun translate(view:View, eventX: Float, eventY: Float){
+        totalTranslation.x = eventX - startTransformPoint.x
+        totalTranslation.y = eventY - startTransformPoint.y
+        //val transformString = this.getAttribute("transform")
+        this.setAttribute("transformTranslate",
+            "translate(${totalTranslation.x}," +
+            "${totalTranslation.y})")
+
+        view.invalidate()
     }
 
 }

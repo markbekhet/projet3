@@ -19,10 +19,12 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override var currentY = 0f
     override var selected = false
     override var str = "<polyline "
+    override lateinit var startTransformPoint: Point
+    override var totalTranslation = Point(0f,0f)
 
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
-        this.setAttribute("fill", "red")
+        this.setAttribute("transformTranslate", "")
         view.invalidate()
     }
 
@@ -50,8 +52,9 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override fun getString(selectionActive: Boolean){
         str = "<polyline "
         val startPoint = this.getAttribute("points")
-        str += "points=\"$startPoint "
-        str += "\""
+        val translate = this.getAttribute("transformTranslate")
+        str += "points=\"$startPoint\" "
+        str += "transform=\"$translate\" "
         str += " stroke=\"#000000\""
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
@@ -66,14 +69,15 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun containsPoint(eventX: Float, eventY: Float): Boolean{
-        val points = this.getAttribute("points")
         val pointsArray = this.points.points
         var i = 0
         if(pointsArray.numberOfItems > 0) {
             while(i < pointsArray.numberOfItems){
                 val point = pointsArray.getItem(i)
-                val isInY = isInIncludeRange(point.y, eventY)
-                val isInX = isInIncludeRange(point.x, eventX)
+                val isInY = isInIncludeRange(
+                    point.y + totalTranslation.y, eventY)
+                val isInX = isInIncludeRange(
+                    point.x + totalTranslation.x, eventX)
 
                 if(isInX && isInY){
                     return true
@@ -82,6 +86,15 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
             }
         }
         return false
+    }
+
+    override fun translate(view:View, eventX: Float, eventY: Float){
+        totalTranslation.x = eventX - startTransformPoint.x
+        totalTranslation.y = eventY - startTransformPoint.y
+        this.setAttribute("transformTranslate",
+            "translate(${totalTranslation.x}," +
+            "${totalTranslation.y})")
+        view.invalidate()
     }
 
     private fun isInIncludeRange(actualPoint: Float, curserPoint: Float):Boolean{

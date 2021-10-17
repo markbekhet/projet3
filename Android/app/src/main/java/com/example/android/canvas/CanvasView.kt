@@ -36,8 +36,8 @@ class CanvasView(context: Context): View(context) {
     // Get the root element (the 'svg' element).
     private var svgRoot = doc.createElementNS(svgNS, "g")
 
+    private var selectionMode = true
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
@@ -46,13 +46,25 @@ class CanvasView(context: Context): View(context) {
                     tool = Rectangle("rect", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
+                    selectionMode = false
                 }
                 else{
-                    println("Error")
+                    if(tool!!.totalTranslation.equals(Point(0f,0f))){
+                        tool!!.startTransformPoint = Point(x=event.x, y=event.y)
+                    }
+                    selectionMode = true
                 }
             }
-            MotionEvent.ACTION_MOVE -> tool!!.touchMove(this, context,
-                event!!.x, event!!.y)
+            MotionEvent.ACTION_MOVE ->{
+                if(!selectionMode){
+                    tool!!.touchMove(this, context,
+                        event.x, event.y)
+                }
+                else{
+                    tool!!.translate(this, event.x, event.y)
+                    //tool!!.startTransformPoint = Point(x=event.x, y=event.y)
+                }
+            }
             MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
         }
 
@@ -91,9 +103,10 @@ class CanvasView(context: Context): View(context) {
     }
 
     private fun isInsideTheSelection(eventX: Float, eventY: Float): Boolean{
-        if(tool != null && tool!!.selected
-            && tool!!.containsPoint(eventX, eventY)){
-                return true;
+        for(tool in selectedTools){
+            if(tool.containsPoint(eventX, eventY)){
+                return true
+            }
         }
         return false
     }

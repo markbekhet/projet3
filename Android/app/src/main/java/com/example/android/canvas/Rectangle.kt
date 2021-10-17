@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.view.View
 import org.apache.batik.anim.dom.SVGOMRectElement
 import org.apache.batik.dom.AbstractDocument
+import org.apache.batik.dom.svg.SVGOMTransform
 import org.w3c.dom.Document
 import org.w3c.dom.svg.SVGElement
 import kotlin.math.abs
@@ -17,6 +18,9 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var currentY = 0f
     override var selected = false
     override var str = "<rect "
+    override lateinit var startTransformPoint: Point
+    override var totalTranslation = Point(0f,0f)
+    //var abstractTool = AbstractTool(this)
 
     override fun touchStart(view: View, eventX: Float,
                             eventY: Float) {
@@ -24,6 +28,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
+        this.setAttribute("transform", "")
         view.invalidate()
     }
 
@@ -38,8 +43,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     }
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
-        var x = this.getAttribute("x").toFloat()
-        var y = this.getAttribute("y").toFloat()
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
         if(y > currentY){
             this.setAttribute("y", currentY.toString())
         }
@@ -62,6 +67,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val y = this.getAttribute("y")
         val width = this.getAttribute("width")
         val height = this.getAttribute("height")
+        val transform = this.getAttribute("transformTranslate")
+
         x?.let{
             if(it.toFloat() > currentX){
                 str += "x=\"$currentX\" "
@@ -85,6 +92,10 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         height?.let{
             str += "height=\"$it\" "
         }
+        transform?.let{
+            str += "transform=\"$it\""
+        }
+
         str += " stroke=\"#000000\""
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
@@ -108,5 +119,15 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val isInYAxes = eventY <= y + height
             && eventY >= y
         return isInXAxes && isInYAxes
+    }
+
+    override fun translate(view: View, eventX: Float, eventY: Float) {
+        totalTranslation.x = eventX - startTransformPoint.x
+        totalTranslation.y = eventY - startTransformPoint.y
+        this.setAttribute("transformTranslate",
+            "translate(${totalTranslation.x}," +
+                "${totalTranslation.y})")
+
+        view.invalidate()
     }
 }
