@@ -41,6 +41,9 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     if(drawing.status === DrawingStatus.Done){
       await this.drawingContentRepo.update(drawing.contentId,{content:drawing.drawing})
     }
+    if(drawing.status === DrawingStatus.Deleted){
+      await this.drawingContentRepo.delete(drawing.contentId);
+    }
     //let parsedDrawing:SocketDrawing = JSON.parse(drawing)
     //console.log(drawing.drawingId,drawing.contentId, drawing.drawing)
     this.wss.emit("drawingToClient", drawing);
