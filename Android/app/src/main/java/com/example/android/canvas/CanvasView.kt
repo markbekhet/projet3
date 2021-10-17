@@ -25,12 +25,11 @@ private const val STROKE_WIDTH = 12f // has to be float
 val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
 
 class CanvasView(context: Context): View(context) {
-    private lateinit var bitmap: Bitmap
-    private lateinit var canvas: Canvas
+    private var selectedTools = ArrayList<Tool>()
     private var width: String = "100"
     private var height: String = "100"
 
-    private lateinit var tool: Tool
+    private var tool: Tool? = null
 
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
@@ -45,16 +44,16 @@ class CanvasView(context: Context): View(context) {
                 if(!isInsideTheSelection(event.x , event.y)){
                     unSelectAllChildren()
                     tool = Rectangle("rect", doc as AbstractDocument)
-                    tool.touchStart(this, event.x, event.y)
+                    tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
                 }
                 else{
                     println("Error")
                 }
             }
-            MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
+            MotionEvent.ACTION_MOVE -> tool!!.touchMove(this, context,
                 event!!.x, event!!.y)
-            MotionEvent.ACTION_UP -> tool.touchUp(this)
+            MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
         }
 
         return true
@@ -92,28 +91,17 @@ class CanvasView(context: Context): View(context) {
     }
 
     private fun isInsideTheSelection(eventX: Float, eventY: Float): Boolean{
-        var i = 0
-        if(svgRoot.childNodes.length > 0) {
-            while (i < svgRoot.childNodes.length) {
-                val tool = svgRoot.childNodes.item(i) as Tool
-                if(tool.selected && tool.containsPoint(eventX, eventY)){
-                    return true;
-                }
-                i++
-            }
+        if(tool != null && tool!!.selected
+            && tool!!.containsPoint(eventX, eventY)){
+                return true;
         }
         return false
     }
 
     private fun unSelectAllChildren(){
-        var i = 0
-        if(svgRoot.childNodes.length > 0) {
-            while (i < svgRoot.childNodes.length) {
-                val tool = svgRoot.childNodes.item(i) as Tool
-                tool.selected = false
-                i++
-            }
-            invalidate()
+        for(tool in selectedTools){
+            tool.selected = false
         }
+        invalidate()
     }
 }

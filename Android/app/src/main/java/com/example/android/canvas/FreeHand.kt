@@ -36,8 +36,9 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         view.invalidate()
     }
 
-    override fun touchUp(view: View) {
+    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
+        selectedTools.add(this)
         view.invalidate()
     }
 

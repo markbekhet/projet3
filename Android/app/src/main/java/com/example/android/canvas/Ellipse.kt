@@ -42,7 +42,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         view.invalidate()
     }
 
-    override fun touchUp(view: View) {
+    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         if(startingPositionY > currentY){
             val cy = currentY + this.getAttribute("ry").toFloat()
             this.setAttribute("cy", cy.toString())
@@ -52,6 +52,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             this.setAttribute("cx", cx.toString())
         }
         selected = true
+        selectedTools.add(this)
         view.invalidate()
     }
 

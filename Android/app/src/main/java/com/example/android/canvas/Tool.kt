@@ -17,7 +17,7 @@ interface Tool: SVGElement {
     fun touchStart(view: View, eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
                   eventX: Float, eventY: Float)
-    fun touchUp(view: View)
+    fun touchUp(view: View, selectedTools: ArrayList<Tool>)
 
     fun getString(): String
     fun getString(selectionActive: Boolean)

@@ -37,7 +37,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         view.invalidate()
     }
 
-    override fun touchUp(view: View) {
+    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         var x = this.getAttribute("x").toFloat()
         var y = this.getAttribute("y").toFloat()
         if(y > currentY){
@@ -47,6 +47,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
             this.setAttribute("x", currentX.toString())
         }
         selected = true
+        selectedTools.add(this)
         view.invalidate()
     }
 
