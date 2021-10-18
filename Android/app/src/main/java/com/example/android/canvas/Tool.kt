@@ -25,5 +25,6 @@ interface Tool: SVGElement{
     fun getString(): String
     fun getString(selectionActive: Boolean)
     fun containsPoint(eventX: Float, eventY:Float): Boolean
-    fun translate(view:View, eventX: Float, eventY: Float)
+    fun translate(view:View, translationPoint: Point)
+    fun scale(view: View, scalePoint: Point)
 }

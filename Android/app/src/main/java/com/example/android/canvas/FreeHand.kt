@@ -19,7 +19,7 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override var currentY = 0f
     override var selected = false
     override var str = "<polyline "
-    override lateinit var startTransformPoint: Point
+    override  var startTransformPoint = Point(0f,0f)
     override var totalTranslation = Point(0f,0f)
 
     override fun touchStart(view: View, eventX: Float, eventY:Float){
@@ -41,6 +41,9 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
         selectedTools.add(this)
+        val halfPointNumber = this.points.points.numberOfItems/2
+        val midPoint = this.points.points.getItem(halfPointNumber)
+        startTransformPoint = Point(midPoint.x, midPoint.y)
         view.invalidate()
     }
 
@@ -88,9 +91,11 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         return false
     }
 
-    override fun translate(view:View, eventX: Float, eventY: Float){
-        totalTranslation.x = eventX - startTransformPoint.x
-        totalTranslation.y = eventY - startTransformPoint.y
+    override fun scale(view: View, scalePoint: Point) {
+        TODO("Not yet implemented")
+    }
+    override fun translate(view:View, translationPoint: Point){
+        totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}," +
             "${totalTranslation.y})")

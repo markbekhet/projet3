@@ -19,7 +19,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override var str = "<ellipse "
     private var startingPositionX = 0f
     private var startingPositionY = 0f
-    override lateinit var startTransformPoint: Point
+    override var startTransformPoint = Point(0f, 0f)
     override var totalTranslation = Point(0f, 0f)
 
     override fun touchStart(view: View, eventX: Float, eventY: Float) {
@@ -55,6 +55,9 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             val cx = currentX + this.getAttribute("rx").toFloat()
             this.setAttribute("cx", cx.toString())
         }
+        val cxCert = this.getAttribute("cx").toFloat()
+        val cyCert = this.getAttribute("cy").toFloat()
+        startTransformPoint = Point(cxCert, cyCert)
         selected = true
         selectedTools.add(this)
         view.invalidate()
@@ -125,13 +128,11 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         return isInXAxes && isInYAxes
     }
 
-    override fun translate(view:View, eventX: Float, eventY: Float){
-        totalTranslation.x = eventX - startTransformPoint.x
-        totalTranslation.y = eventY - startTransformPoint.y
-        //val transformString = this.getAttribute("transform")
+    override fun translate(view:View, translationPoint: Point){
+        totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}," +
-            "${totalTranslation.y})")
+            "translate(${translationPoint.x}," +
+            "${translationPoint.y})")
 
         view.invalidate()
     }

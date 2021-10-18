@@ -43,15 +43,12 @@ class CanvasView(context: Context): View(context) {
             MotionEvent.ACTION_DOWN -> {
                 if(!isInsideTheSelection(event.x , event.y)){
                     unSelectAllChildren()
-                    tool = Rectangle("rect", doc as AbstractDocument)
+                    tool = FreeHand("polyline", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
                     selectionMode = false
                 }
                 else{
-                    if(tool!!.totalTranslation.equals(Point(0f,0f))){
-                        tool!!.startTransformPoint = Point(x=event.x, y=event.y)
-                    }
                     selectionMode = true
                 }
             }
@@ -61,8 +58,9 @@ class CanvasView(context: Context): View(context) {
                         event.x, event.y)
                 }
                 else{
-                    tool!!.translate(this, event.x, event.y)
-                    //tool!!.startTransformPoint = Point(x=event.x, y=event.y)
+                    val translation:Point = tool!!.startTransformPoint
+                        .difference(Point(event.x, event.y))
+                    tool!!.translate(this, translation)
                 }
             }
             MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)

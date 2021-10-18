@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.view.View
 import org.apache.batik.anim.dom.SVGOMRectElement
 import org.apache.batik.dom.AbstractDocument
+import org.apache.batik.dom.svg.SVGOMMatrix
 import org.apache.batik.dom.svg.SVGOMTransform
 import org.w3c.dom.Document
 import org.w3c.dom.svg.SVGElement
@@ -18,7 +19,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var currentY = 0f
     override var selected = false
     override var str = "<rect "
-    override lateinit var startTransformPoint: Point
+    override var startTransformPoint = Point(0f, 0f)
     override var totalTranslation = Point(0f,0f)
     //var abstractTool = AbstractTool(this)
 
@@ -53,6 +54,12 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         }
         selected = true
         selectedTools.add(this)
+        val xCert = this.getAttribute("x").toFloat()
+        val yCert = this.getAttribute("y").toFloat()
+        val widthCert = this.getAttribute("width").toFloat()
+        val heightCert = this.getAttribute("height").toFloat()
+        startTransformPoint.x = xCert + (widthCert/2)
+        startTransformPoint.y = yCert + (heightCert/2)
         view.invalidate()
     }
 
@@ -114,20 +121,20 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val width = this.getAttribute("width").toFloat()
         val height = this.getAttribute("height").toFloat()
 
-        val isInXAxes = eventX <= x + width
-            && eventX >= x
-        val isInYAxes = eventY <= y + height
-            && eventY >= y
+        val isInXAxes = eventX <= x + width + totalTranslation.x
+            && eventX >= x + totalTranslation.x
+        val isInYAxes = eventY <= y + height + totalTranslation.y
+            && eventY >= y + totalTranslation.y
         return isInXAxes && isInYAxes
     }
 
-    override fun translate(view: View, eventX: Float, eventY: Float) {
-        totalTranslation.x = eventX - startTransformPoint.x
-        totalTranslation.y = eventY - startTransformPoint.y
+    override fun translate(view: View, translationPoint: Point) {
+        totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}," +
                 "${totalTranslation.y})")
 
         view.invalidate()
+
     }
 }
