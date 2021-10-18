@@ -43,7 +43,7 @@ class CanvasView(context: Context): View(context) {
             MotionEvent.ACTION_DOWN -> {
                 if(!isInsideTheSelection(event.x , event.y)){
                     unSelectAllChildren()
-                    tool = FreeHand("polyline", doc as AbstractDocument)
+                    tool = Ellipse("ellipse", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
                     selectionMode = false

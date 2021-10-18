@@ -64,12 +64,16 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     }
 
     override fun getString(): String {
-        getString(selected)
+        str = ""
+        getOriginalString()
+        if(selected){
+            getSelectionString()
+        }
         return str
     }
 
-    override fun getString(selectionActive: Boolean){
-        str = "<ellipse "
+    override fun getOriginalString(){
+        str += "<ellipse "
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
         val transform = this.getAttribute("transformTranslate")
@@ -104,14 +108,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
 
-        if(selectionActive){
-            str += " stroke-dasharray=\"4\""
-            str += " stroke=\"#0000FF\""
-        }
-        else{
-            str += " stroke=\"#000000\""
-        }
-
+        str += " stroke=\"#000000\""
         str += "/>\n"
     }
 
@@ -128,6 +125,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         return isInXAxes && isInYAxes
     }
 
+    override fun scale(view: View, scalePoint: Point) {
+
+    }
+
     override fun translate(view:View, translationPoint: Point){
         totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
@@ -135,6 +136,30 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             "${translationPoint.y})")
 
         view.invalidate()
+    }
+
+    override fun getSelectionString(){
+        str += "<rect "
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+        val x = this.getAttribute("cx").toFloat() - rx
+        val y = this.getAttribute("cy").toFloat() - ry
+        val width = rx * 2
+        val height = ry * 2
+        str += "x=\"$x\" "
+        str += "y=\"$y\" "
+        str += "width=\"$width\""
+        str += "height=\"$height\""
+        val transform = this.getAttribute("transformTranslate")
+        transform?.let{
+            str += "transform=\"$it\""
+        }
+        str += " stroke=\"#0000FF\""
+        str += " stroke-width=\"3\""
+        str += " fill=\"none\"";
+        str += " stroke-dasharray=\"4\""
+        str += "/>\n"
+
     }
 
 }

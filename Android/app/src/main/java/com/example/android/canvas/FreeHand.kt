@@ -12,6 +12,8 @@ import org.w3c.dom.*
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGPathElement
 import org.w3c.dom.svg.SVGPathSegList
+import java.lang.Float.min
+import kotlin.math.max
 
 class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineElement(prefix, owner) {
 
@@ -21,6 +23,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override var str = "<polyline "
     override  var startTransformPoint = Point(0f,0f)
     override var totalTranslation = Point(0f,0f)
+    private var minPoint = Point(Float.MAX_VALUE,Float.MAX_VALUE)
+    private var maxPoint = Point(0f, 0f)
 
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
@@ -44,16 +48,21 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         val halfPointNumber = this.points.points.numberOfItems/2
         val midPoint = this.points.points.getItem(halfPointNumber)
         startTransformPoint = Point(midPoint.x, midPoint.y)
+        calculateDelimeterPoints()
         view.invalidate()
     }
 
     override fun getString(): String {
-        getString(selected)
+        str = ""
+        getOriginalString()
+        if(selected){
+            getSelectionString()
+        }
         return str
     }
 
-    override fun getString(selectionActive: Boolean){
-        str = "<polyline "
+    override fun getOriginalString(){
+        str += "<polyline "
         val startPoint = this.getAttribute("points")
         val translate = this.getAttribute("transformTranslate")
         str += "points=\"$startPoint\" "
@@ -63,11 +72,6 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         str += " fill=\"none\"";
         str += " stroke-linecap=\"round\""
         str += " stroke-linejoin=\"round\""
-
-        if(selectionActive){
-            str += " stroke-dasharray=\"4\""
-            str += " stroke=\"#0000FF\""
-        }
         str += "/>\n"
     }
 
@@ -92,8 +96,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun scale(view: View, scalePoint: Point) {
-        TODO("Not yet implemented")
     }
+
     override fun translate(view:View, translationPoint: Point){
         totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
@@ -102,7 +106,43 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         view.invalidate()
     }
 
+    override fun getSelectionString() {
+        str += "<rect "
+        val x = minPoint.x
+        val y = minPoint.y
+        val width = maxPoint.x - minPoint.x
+        val height = maxPoint.y - minPoint.y
+        str += "x=\"$x\" "
+        str += "y=\"$y\" "
+        str += "width=\"$width\""
+        str += "height=\"$height\""
+        val transform = this.getAttribute("transformTranslate")
+        transform?.let{
+            str += "transform=\"$it\""
+        }
+        str += " stroke=\"#0000FF\""
+        str += " stroke-width=\"3\""
+        str += " fill=\"none\"";
+        str += " stroke-dasharray=\"4\""
+        str += "/>\n"
+    }
+
     private fun isInIncludeRange(actualPoint: Float, curserPoint: Float):Boolean{
         return curserPoint >= actualPoint - 50 && curserPoint <= actualPoint + 50
+    }
+
+    private fun calculateDelimeterPoints(){
+        val polylinePoints = this.points.points
+        if(polylinePoints.numberOfItems > 0){
+            var i = 0
+            while(i < polylinePoints.numberOfItems){
+                val item = polylinePoints.getItem(i)
+                minPoint.x = min(item.x, minPoint.x)
+                minPoint.y = min(item.y, minPoint.y)
+                maxPoint.x = max(item.x, maxPoint.x)
+                maxPoint.y = max(item.y, maxPoint.y)
+                i++
+            }
+        }
     }
 }

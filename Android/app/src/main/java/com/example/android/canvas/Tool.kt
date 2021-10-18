@@ -23,8 +23,9 @@ interface Tool: SVGElement{
     fun touchUp(view: View, selectedTools: ArrayList<Tool>)
 
     fun getString(): String
-    fun getString(selectionActive: Boolean)
+    fun getOriginalString()
     fun containsPoint(eventX: Float, eventY:Float): Boolean
     fun translate(view:View, translationPoint: Point)
     fun scale(view: View, scalePoint: Point)
+    fun getSelectionString()
 }

@@ -21,6 +21,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var str = "<rect "
     override var startTransformPoint = Point(0f, 0f)
     override var totalTranslation = Point(0f,0f)
+    private var selectionOffset = 20f
     //var abstractTool = AbstractTool(this)
 
     override fun touchStart(view: View, eventX: Float,
@@ -64,12 +65,17 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     }
 
     override fun getString(): String {
-        getString(selected)
+        str = ""
+        getOriginalString()
+        if(selected){
+            getSelectionString()
+        }
+
         return str
     }
 
-    override fun getString(selectionActive: Boolean) {
-        str = "<rect "
+    override fun getOriginalString() {
+        str += "<rect "
         val x = this.getAttribute("x")
         val y = this.getAttribute("y")
         val width = this.getAttribute("width")
@@ -107,11 +113,6 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         str += " stroke-width=\"3\""
         str += " fill=\"none\"";
 
-        if(selectionActive){
-            str += " stroke-dasharray=\"4\""
-            str += " stroke=\"#0000FF\""
-        }
-
         str += "/>\n"
     }
 
@@ -128,6 +129,9 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         return isInXAxes && isInYAxes
     }
 
+    override fun scale(view: View, scalePoint: Point) {
+    }
+
     override fun translate(view: View, translationPoint: Point) {
         totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
@@ -135,6 +139,48 @@ class Rectangle(prefix: String, owner: AbstractDocument):
                 "${totalTranslation.y})")
 
         view.invalidate()
-
     }
+
+    override fun getSelectionString() {
+        str += "<rect "
+        val x = this.getAttribute("x")
+        val y = this.getAttribute("y")
+        val width = this.getAttribute("width")
+        val height = this.getAttribute("height")
+        val transform = this.getAttribute("transformTranslate")
+
+        x?.let{
+            if(it.toFloat() > currentX){
+                str += "x=\"${currentX - selectionOffset}\" "
+            }
+            else{
+                str += "x=\"${it.toFloat() - selectionOffset}\" "
+            }
+
+        }
+        y?.let{
+            if(it.toFloat() > currentY){
+                str += "y=\"${currentY - selectionOffset}\" "
+            }
+            else{
+                str += "y=\"${it.toFloat() - selectionOffset}\" "
+            }
+        }
+        width?.let{
+            str += "width=\"${it.toFloat() + (2*selectionOffset)}\" "
+        }
+        height?.let{
+            str += "height=\"${it.toFloat() + (2*selectionOffset)}\" "
+        }
+        transform?.let{
+            str += "transform=\"$it\""
+        }
+
+        str += " stroke=\"#0000FF\""
+        str += " stroke-width=\"3\""
+        str += " fill=\"none\"";
+        str += " stroke-dasharray=\"4\""
+        str += "/>\n"
+    }
+
 }
