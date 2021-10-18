@@ -50,7 +50,7 @@ export class RegisterPageComponent implements OnInit {
         .subscribe(
           token => {
             console.log(this.auth.authentifiedUser);
-            this.router.navigate(['/' + user.pseudo]);
+            //this.router.navigate(['/' + user.pseudo]);
           },
           error => {
             console.log((error as HttpErrorResponse));

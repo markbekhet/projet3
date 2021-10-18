@@ -22,11 +22,6 @@ export class AuthService {
 
   readonly NULL_USER: User = {
     token: '',
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    password: ''
   }
   authentifiedUser: BehaviorSubject<User> = new BehaviorSubject<User>(this.NULL_USER);
 
@@ -34,42 +29,6 @@ export class AuthService {
 
   login(user: UserCredentials) {
     /*
-    
-    console.log('login time');
-    let request: Observable<string> = this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
-    .pipe(tap(responseData => {
-      let profile = this.httpClient.get<any>(PATH + GET_PROFILE_PATH + responseData).subscribe(profile => {
-
-
-        const registeredUser: User = {
-          token: responseData,
-          firstName: profile.firstName,
-          lastName: '',
-          username: user.username,
-          email: '',
-          password: user.password
-        };
-      });
-
-      
-
-      }));
-    //tap(res => console.log('First result', res)),
-    //concatMap((res: { timeout: number }) => this.http.get(`http://test.localhost/api.php?timeout=${+res.timeout + 1}`)),
-    
-    
-    return request;*/
-
-    //this.authentifiedUser.next(registeredUser);
-    let registeredUser: User = {
-      token: '',
-      firstName: '',
-      lastName: '',
-      username: user.username,
-      email: '',
-      password: user.password
-    };
-
     return this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
     .pipe(tap(token => {
       registeredUser.token = token;
@@ -86,19 +45,21 @@ export class AuthService {
       console.log(registeredUser);
       this.authenticateUser(registeredUser);
     }));
-    
+    */
+   return this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
+   .pipe(tap(token => {
+    const loggedInUser: User = {
+      token: token,
+    }
+    this.authenticateUser(loggedInUser);
+   }));
   }
 
   register(user: UserRegistrationInfo): Observable<string> {
     return this.httpClient.post(PATH + REGISTER_PATH, user, { responseType: 'text' })
-    .pipe(tap(responseData => {
+    .pipe(tap(token => {
       const registeredUser: User = {
-        token: responseData,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.pseudo,
-        email: user.emailAddress,
-        password: user.password
+        token: token,
       }
       this.authenticateUser(registeredUser);
     }));
@@ -106,27 +67,13 @@ export class AuthService {
 
   //this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
-    const token = this.authentifiedUser.value.token;
-    console.log(token);
-    //return this.httpClient.post(PATH + DISCONNECT_PATH + token, null, { responseType: 'text' })
-    //.pipe(tap(() => this.authentifiedUser.next(this.NULL_USER)));
-    return this.httpClient.post(PATH + DISCONNECT_PATH + token, null, { responseType: 'text' });
+    return this.httpClient.post(PATH + DISCONNECT_PATH + this.authentifiedUser.value.token, null, { responseType: 'text' });
   }
 
   getProfile() {
     return this.httpClient.get<User>(PATH + GET_PROFILE_PATH + this.authentifiedUser.value.token);
   }
-
-  //deprecated
-  connectClient(username: string, password: string): Observable<string> {
-    return this.httpClient.post<string>(PATH + '' + username, username);
-  }
-
-  //deprecated
-  disconnectClient(username: string): Observable<string> {
-    return this.httpClient.post<string>(PATH + '' + username, username);
-  }
-
+  
   private authenticateUser(user: User) {
     if (user.token)
       this.authentifiedUser.next(user);

@@ -13,9 +13,6 @@ import { UserCredentials } from '../../../../../common/user';
 })
 export class LoginPageComponent implements OnInit {
 
-  username: string = '';
-  password: string = '';
-
   inputForm: FormGroup;
   usernameExists: boolean = false;
   
@@ -36,10 +33,7 @@ export class LoginPageComponent implements OnInit {
   // reference https://www.youtube.com/watch?v=9YuoQrvQ7R8
   // adapted from https://loiane.com/2017/08/angular-reactive-forms-trigger-validation-on-submit/
   public async onSubmit(form: FormGroup) {
-    this.username = form.value['username'];
-    this.password = form.value['password'];
-
-    let user: UserCredentials = {
+    const user: UserCredentials = {
       username: form.value['username'],
       password: form.value['password'],
     };
@@ -49,7 +43,7 @@ export class LoginPageComponent implements OnInit {
         .subscribe(
           accepted => {
             //this.router.navigate(['/' + this.username]);
-            console.log(this.username + ' is logged in');
+            console.log(user.username + ' is logged in');
           },
           error => {
             console.log(error);
@@ -59,35 +53,6 @@ export class LoginPageComponent implements OnInit {
     } catch(e: any) {
 
     }
-
-
-    /*
-    if(this.checkIfEmail(form.value['username'])) {
-
-    } else {
-
-    }
-    */
-
-    /*
-    this.username = this.inputForm.value['username'];
-
-    try {
-      this.request.connectClient(this.username)
-      .subscribe(
-        accepted => {
-          this.usernameExists = false;
-          this.router.navigate(['/' + this.username]); //this.username = username
-        },
-        forbidden => this.usernameExists = true
-      );
-
-      // this.usernameExists = false;
-    } catch (e: any) { }
-      finally {
-        this.inputForm.reset();
-      }
-      */
   }
 
   public checkError(control: string, error: string) {
