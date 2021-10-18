@@ -26,7 +26,7 @@ export class RegisterPageComponent implements OnInit {
         username: formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
         email: formBuilder.control('', [ Validators.required, ValidationService.emailValidator ]),
         password: formBuilder.control('', [ Validators.required, ValidationService.passwordValidator ]),
-        avatar: formBuilder.control('', [ Validators.required ])
+        avatar: formBuilder.control('', [])
       });
     }
 
