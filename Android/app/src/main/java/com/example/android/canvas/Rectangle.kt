@@ -21,6 +21,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var str = "<rect "
     override var startTransformPoint = Point(0f, 0f)
     override var totalTranslation = Point(0f,0f)
+    override var totalScaling = Point(0f,0f)
+    override var scalingPositions = HashMap<Point, Point>()
     private var selectionOffset = 20f
     //var abstractTool = AbstractTool(this)
 
@@ -30,7 +32,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
-        this.setAttribute("transform", "")
+        this.setAttribute("transformTranslate", "")
+        this.setAttribute("transformScale","")
         view.invalidate()
     }
 
@@ -54,7 +57,11 @@ class Rectangle(prefix: String, owner: AbstractDocument):
             this.setAttribute("x", currentX.toString())
         }
         selected = true
-        selectedTools.add(this)
+
+        if(!selectedTools.contains(this)){
+            selectedTools.add(this)
+        }
+
         val xCert = this.getAttribute("x").toFloat()
         val yCert = this.getAttribute("y").toFloat()
         val widthCert = this.getAttribute("width").toFloat()
@@ -122,10 +129,10 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val width = this.getAttribute("width").toFloat()
         val height = this.getAttribute("height").toFloat()
 
-        val isInXAxes = eventX <= x + width + totalTranslation.x
-            && eventX >= x + totalTranslation.x
-        val isInYAxes = eventY <= y + height + totalTranslation.y
-            && eventY >= y + totalTranslation.y
+        val isInXAxes = eventX <= x + width + (2*selectionOffset) + totalTranslation.x
+            && eventX >= x - selectionOffset + totalTranslation.x
+        val isInYAxes = eventY <= y + height + (2*selectionOffset)+ totalTranslation.y
+            && eventY >= y - selectionOffset + totalTranslation.y
         return isInXAxes && isInYAxes
     }
 
@@ -183,4 +190,35 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         str += "/>\n"
     }
 
+    override fun calculateScalingPositions() {
+        scalingPositions.clear()
+        val width = this.getAttribute("width").toFloat()
+        val height = this.getAttribute("height").toFloat()
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
+        val firstPos = Point(x, y)
+        val firstDirection = Point(-1f, -1f)
+        scalingPositions[firstPos] = firstDirection
+
+        val secondPos = Point(x + (width/2), y)
+        scalingPositions[secondPos] = Point(0f,-1f)
+
+        val thirdPos = Point(x + width, y)
+        scalingPositions[thirdPos] = Point(1f, -1f)
+
+        val forthPos = Point(x + width, y + (height/2))
+        scalingPositions[forthPos] = Point(1f, 0f)
+
+        val fifthPos = Point(x + width, y + height)
+        scalingPositions[fifthPos] = Point(1f, 1f)
+
+        val sixthPos = Point(x + (width/2), y + height)
+        scalingPositions[sixthPos] = Point(0f, 1f)
+
+        val seventhPos = Point(x, y + height)
+        scalingPositions[seventhPos] = Point(-1f, 1f)
+
+        val eighthPos = Point(x , y + (height/2))
+        scalingPositions[eighthPos] = Point(-1f, 0f)
+    }
 }

@@ -21,6 +21,8 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     private var startingPositionY = 0f
     override var startTransformPoint = Point(0f, 0f)
     override var totalTranslation = Point(0f, 0f)
+    override var totalScaling = Point(0f,0f)
+    override var scalingPositions = HashMap<Point, Point>()
 
     override fun touchStart(view: View, eventX: Float, eventY: Float) {
         startingPositionX = eventX
@@ -30,6 +32,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
         this.setAttribute("transformTranslate","")
+        this.setAttribute("transformScale", "")
         view.invalidate()
     }
 
@@ -59,7 +62,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val cyCert = this.getAttribute("cy").toFloat()
         startTransformPoint = Point(cxCert, cyCert)
         selected = true
-        selectedTools.add(this)
+        if(!selectedTools.contains(this)){
+            selectedTools.add(this)
+        }
+
         view.invalidate()
     }
 
@@ -159,7 +165,37 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         str += " fill=\"none\"";
         str += " stroke-dasharray=\"4\""
         str += "/>\n"
-
     }
 
+    override fun calculateScalingPositions() {
+        scalingPositions.clear()
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val firstPos = Point(cx - rx, cy - ry)
+        val firstDirection = Point(-1f, -1f)
+        scalingPositions[firstPos] = firstDirection
+
+        val secondPos = Point(cx, cy - ry)
+        scalingPositions[secondPos] = Point(0f,-1f)
+
+        val thirdPos = Point(cx + rx, cy - ry)
+        scalingPositions[thirdPos] = Point(1f, -1f)
+
+        val forthPos = Point(cx + rx, cy)
+        scalingPositions[forthPos] = Point(1f, 0f)
+
+        val fifthPos = Point(cx + rx, cy + ry)
+        scalingPositions[fifthPos] = Point(1f, 1f)
+
+        val sixthPos = Point(cx, cy + ry)
+        scalingPositions[sixthPos] = Point(0f, 1f)
+
+        val seventhPos = Point(cx - rx, cy + ry)
+        scalingPositions[seventhPos] = Point(-1f, 1f)
+
+        val eighthPos = Point(cx + rx, cy)
+        scalingPositions[eighthPos] = Point(-1f, 0f)
+    }
 }

@@ -25,6 +25,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     override var totalTranslation = Point(0f,0f)
     private var minPoint = Point(Float.MAX_VALUE,Float.MAX_VALUE)
     private var maxPoint = Point(0f, 0f)
+    override var totalScaling = Point(0f, 0f)
+    override var scalingPositions = HashMap<Point, Point>()
 
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
@@ -44,7 +46,10 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
-        selectedTools.add(this)
+        if(!selectedTools.contains(this)){
+            selectedTools.add(this)
+        }
+
         val halfPointNumber = this.points.points.numberOfItems/2
         val midPoint = this.points.points.getItem(halfPointNumber)
         startTransformPoint = Point(midPoint.x, midPoint.y)
@@ -76,7 +81,7 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun containsPoint(eventX: Float, eventY: Float): Boolean{
-        val pointsArray = this.points.points
+        /*val pointsArray = this.points.points
         var i = 0
         if(pointsArray.numberOfItems > 0) {
             while(i < pointsArray.numberOfItems){
@@ -91,8 +96,10 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                 }
                 i++
             }
-        }
-        return false
+        }*/
+        val inXAxes = (eventX >= minPoint.x) && (eventX <= maxPoint.x)
+        val inYaxes = (eventY >= minPoint.y) && (eventY <= maxPoint.y)
+        return inXAxes && inYaxes
     }
 
     override fun scale(view: View, scalePoint: Point) {
@@ -144,5 +151,38 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                 i++
             }
         }
+    }
+
+    override fun calculateScalingPositions() {
+        scalingPositions.clear()
+        val width = maxPoint.x - minPoint.x
+        val height = maxPoint.y - minPoint.y
+        val x = minPoint.x
+        val y = minPoint.y
+
+        val firstPos = Point(x, y)
+        val firstDirection = Point(-1f, -1f)
+        scalingPositions[firstPos] = firstDirection
+
+        val secondPos = Point(x + (width/2), y)
+        scalingPositions[secondPos] = Point(0f,-1f)
+
+        val thirdPos = Point(x + width, y)
+        scalingPositions[thirdPos] = Point(1f, -1f)
+
+        val forthPos = Point(x + width, y + (height/2))
+        scalingPositions[forthPos] = Point(1f, 0f)
+
+        val fifthPos = Point(x + width, y + height)
+        scalingPositions[fifthPos] = Point(1f, 1f)
+
+        val sixthPos = Point(x + (width/2), y + height)
+        scalingPositions[sixthPos] = Point(0f, 1f)
+
+        val seventhPos = Point(x, y + height)
+        scalingPositions[seventhPos] = Point(-1f, 1f)
+
+        val eighthPos = Point(x , y + (height/2))
+        scalingPositions[eighthPos] = Point(-1f, 0f)
     }
 }

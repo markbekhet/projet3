@@ -16,6 +16,8 @@ interface Tool: SVGElement{
     var selected: Boolean
     var startTransformPoint: Point
     var totalTranslation: Point
+    var totalScaling: Point
+    var scalingPositions: HashMap<Point, Point>
 
     fun touchStart(view: View, eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
@@ -28,4 +30,5 @@ interface Tool: SVGElement{
     fun translate(view:View, translationPoint: Point)
     fun scale(view: View, scalePoint: Point)
     fun getSelectionString()
+    fun calculateScalingPositions()
 }
