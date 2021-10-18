@@ -35,12 +35,12 @@
                 <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">*ERREUR : Ceci n'est pas un mot de passe valide!</mat-error>
             </mat-form-field>
             <br>
-            <mat-form-field>
+            <!--<mat-form-field>
                 <mat-label>Avatar</mat-label>
                 <input type='text' matInput placeholder='Avatar' formControlName='avatar'>
                 <mat-error *ngIf="checkError('avatar', 'required')">*ERREUR : Un avatar est requis!</mat-error> 
             </mat-form-field>
-            <br>
+            <br>-->
             <button mat-icon-button [disabled]='registerForm.invalid'>
                 Creer <mat-icon>add</mat-icon>
             </button>
