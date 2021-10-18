@@ -1,3 +1,13 @@
-<app-header-view></app-header-view>
-<app-toolbox-view></app-toolbox-view>
-<app-svg-view></app-svg-view>
+<!--https://www.youtube.com/watch?v=U4ftsqSt81w-->
+<header flexLayout='column'>
+    <app-header-view></app-header-view>
+</header>
+<div flexLayout='row' fxFlex>
+    <div fxFlex='20'>
+        <app-toolbox-view></app-toolbox-view>
+        <app-option-view></app-option-view>
+    </div>
+    <div fxFlex='80' class='content'>
+        <app-svg-view></app-svg-view>
+    </div>
+</div>

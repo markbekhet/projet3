@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app-component/app.component';
@@ -12,15 +13,18 @@ import { RegisterPageComponent } from './components/register-page/register-page.
 import { ChatService } from './services/chat.service';
 import { AuthService } from './services/auth.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DrawViewComponent } from './components/draw-view/draw-view.component';
+import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
+import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
+import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DrawViewComponent } from './components/draw-view/draw-view.component';
-import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
-import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
-import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { OptionViewComponent } from './components/draw-view/toolbox-view/option-view/option-view.component';
  
 
 const appRoutes: Routes = [
@@ -41,6 +45,7 @@ const appRoutes: Routes = [
     HeaderViewComponent,
     ToolboxViewComponent,
     SvgViewComponent,
+    OptionViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,6 +58,9 @@ const appRoutes: Routes = [
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatGridListModule,
+    MatSidenavModule,
+    FlexLayoutModule,
   ],
   providers: [
     AuthService,
