@@ -28,7 +28,7 @@ const appRoutes: Routes = [
   { path: 'register', component: RegisterPageComponent },
   //{ path: ':username', component: CommunicationPageComponent },
   { path: 'draw', component: DrawViewComponent},
-  { path: '**', component: LoginPageComponent },
+  { path: '**', component: DrawViewComponent },
 ];
 
 @NgModule({
