@@ -32,4 +32,8 @@ export class UserController {
             throw new HttpException("Username already used", HttpStatus.BAD_REQUEST);
         }
     }
+    @Get("/gallery/:userId")
+    async getUserGallery(@Param("userId") userId: string){
+        return await this.databaseService.getUserDrawings(userId);
+    }
 }

@@ -12,6 +12,8 @@ import { UserRespository } from './modules/user/user.repository';
 import { ConnectionHistoryRespository } from './modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistoryRespository } from './modules/disconnectionHistory/disconnectionHistory.repository';
 import { UserController } from './modules/user/user.controller';
+import { DrawingRepository } from './modules/drawing/drawing.repository';
+import { DrawingController } from './modules/drawing/drawing.controller';
 
 @Module({
   imports: [
@@ -20,9 +22,10 @@ import { UserController } from './modules/user/user.controller';
       UserRespository,
       ConnectionHistoryRespository,
       DisconnectionHistoryRespository,
+      DrawingRepository,
     ])
   ],
-  controllers: [AppController, ConnectionController, UserController],
+  controllers: [AppController, ConnectionController, UserController, DrawingController],
   providers: [AppService, ConnectionService, ChatGateway, DatabaseService],
 })
 export class AppModule {}

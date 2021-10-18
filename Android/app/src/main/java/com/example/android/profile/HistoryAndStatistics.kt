@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.R
+import com.example.android.client.ClientInfo
+import com.example.android.client.ConnectionDisconnectionHistories
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -18,7 +21,8 @@ import kotlin.collections.ArrayList
 class HistoryAndStatistics : AppCompatActivity() {
 
     private var connectionAdapter : GroupAdapter<GroupieViewHolder>? = null
-    private var connectionArray: ArrayList<String>?= null
+    private var connectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
+    private var disconnectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
     private var disconnectionAdapter: GroupAdapter<GroupieViewHolder>? = null
     private var collaborationAdapter: GroupAdapter<GroupieViewHolder>? = null
 
@@ -26,22 +30,38 @@ class HistoryAndStatistics : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
 
+        val userInfo = ClientInfo.userInformation
+        val meanCollaborationTime:TextView = findViewById(R.id.meanCollaborationTime)
+        val totalCollaborationTime: TextView = findViewById(R.id.totalCollaborationTime)
+        val teamCount: TextView = findViewById(R.id.teamCount)
+        val drawingAuthorCount: TextView = findViewById(R.id.drawingAuthorCount)
+        val drawingCollaborationCount: TextView = findViewById(R.id.drawingCollaborationCount)
+
+        meanCollaborationTime.text =
+            userInfo.averageCollaborationTime.toString()
+        totalCollaborationTime.text =
+            userInfo.totalCollaborationTime.toString()
+        teamCount.text =
+            userInfo.numberCollaborationTeams.toString()
+        drawingAuthorCount.text =
+            userInfo.numberAuthoredDrawings.toString()
+        drawingCollaborationCount.text =
+            userInfo.numberCollaboratedDrawings.toString()
+
         val connectionRecycleView: RecyclerView? =
             findViewById(R.id.recycle_view_connection)
+
+
         val connectionLayoutManager = LinearLayoutManager(this)
         connectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
         connectionRecycleView?.layoutManager = connectionLayoutManager
-
-        connectionArray = ArrayList()
-        for (i in 1..20){
-            connectionArray?.add(Date().toString())
-        }
+        connectionArray = userInfo.getConnectionHistory()
 
         fun setConnectionHistory(){
             connectionAdapter = GroupAdapter<GroupieViewHolder>()
             for(connection in connectionArray!!){
                 val connectionInstance = ConnectionDisconnectionEntry()
-                connectionInstance.set(connection)
+                connectionInstance.set(connection.date)
                 connectionAdapter?.add(connectionInstance)
             }
             runOnUiThread {
@@ -58,11 +78,13 @@ class HistoryAndStatistics : AppCompatActivity() {
         disconnectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
         disconnectionRecycleView?.layoutManager = disconnectionLayoutManager
 
+        disconnectionArray = ArrayList()
+        userInfo.getDisconnectionHistory()
         fun setDisconnectionHistory(){
             disconnectionAdapter = GroupAdapter<GroupieViewHolder>()
-            for(connection in connectionArray!!){
+            for(disconnection in disconnectionArray!!){
                 val disconnectionInstance = ConnectionDisconnectionEntry()
-                disconnectionInstance.set(connection)
+                disconnectionInstance.set(disconnection.date)
                 disconnectionAdapter?.add(disconnectionInstance)
             }
             runOnUiThread {
@@ -70,6 +92,7 @@ class HistoryAndStatistics : AppCompatActivity() {
             }
         }
 
+        setDisconnectionHistory()
 
         val collaborationRecycleView: RecyclerView? =
             findViewById(R.id.recycle_view_collaborations)
@@ -86,7 +109,7 @@ class HistoryAndStatistics : AppCompatActivity() {
 
 class ConnectionDisconnectionEntry : Item<GroupieViewHolder>() {
 
-    private var date: String? =null
+    var date: String? =null
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.connectionDisconnectionTime.text = date
     }
@@ -95,7 +118,7 @@ class ConnectionDisconnectionEntry : Item<GroupieViewHolder>() {
         return R.layout.connection_disconnection_item
     }
 
-    fun set(date: String){
+    fun set(date: String?){
         this.date = date
     }
 
