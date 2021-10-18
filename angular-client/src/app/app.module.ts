@@ -26,7 +26,8 @@ import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.compo
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
-  { path: ':username', component: CommunicationPageComponent },
+  //{ path: ':username', component: CommunicationPageComponent },
+  { path: 'draw', component: DrawViewComponent},
   { path: '**', component: LoginPageComponent },
 ];
 
