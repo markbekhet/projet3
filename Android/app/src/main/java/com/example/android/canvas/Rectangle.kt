@@ -45,16 +45,16 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         this.setAttribute("height", height.toString())
         currentY = eventY
         currentX = eventX
-        view.invalidate()
-    }
-
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         val x = this.getAttribute("x").toFloat()
         val y = this.getAttribute("y").toFloat()
 
         this.setAttribute("y", min(currentY,y).toString())
 
         this.setAttribute("x", min(currentX,x).toString())
+        view.invalidate()
+    }
+
+    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
 
         if(!selectedTools.contains(this)){
@@ -89,9 +89,9 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val height = this.getAttribute("height")
         val transform = this.getAttribute("transformTranslate")
 
-        str += "x=\"${min(currentX,x)}\" "
+        str += "x=\"${x}\" "
 
-        str += "y=\"${min(currentY,y)}\" "
+        str += "y=\"${y}\" "
         str += "width=\"$width\" "
         str += "height=\"$height\" "
         str += "transform=\"$transform\""
@@ -141,8 +141,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
             maxPoint.y += scalePoint.y
         }
 
-        this.setAttribute("y", min(currentY,y).toString())
-        this.setAttribute("x", min(currentX,x).toString())
+        this.setAttribute("y", min(minPoint.y,maxPoint.y).toString())
+        this.setAttribute("x", min(minPoint.x,maxPoint.x).toString())
         this.setAttribute("width", abs(maxPoint.x - minPoint.x).toString())
         this.setAttribute("height", abs(maxPoint.y - minPoint.y).toString())
         view.invalidate()
@@ -165,8 +165,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         val height = this.getAttribute("height").toFloat()
         val transform = this.getAttribute("transformTranslate")
 
-        str += "x=\"${min(currentX, x)}\" "
-        str += "y=\"${min(currentY , y)}\" "
+        str += "x=\"${x}\" "
+        str += "y=\"${y}\" "
         str += "width=\"${width}\" "
 
         str += "height=\"${height}\" "

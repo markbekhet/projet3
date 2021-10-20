@@ -9,6 +9,7 @@ import org.apache.batik.anim.dom.SVGOMSVGElement
 import org.apache.batik.dom.AbstractDocument
 import org.w3c.dom.Document
 import org.w3c.dom.svg.SVGElement
+import java.lang.Float.min
 import kotlin.math.abs
 
 class Ellipse(prefix: String, owner: AbstractDocument):
@@ -41,8 +42,8 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val ry = abs(eventY - startingPositionY)/2
         this.setAttribute("rx", rx.toString())
         this.setAttribute("ry", ry.toString())
-        this.setAttribute("cx",(startingPositionX+rx).toString())
-        this.setAttribute("cy",(startingPositionY+ry).toString())
+        this.setAttribute("cx",(min(startingPositionX+rx, currentX + rx)).toString())
+        this.setAttribute("cy",(min(startingPositionY+ry, currentY + ry)).toString())
         this.setAttribute("transform", "")
         currentY = eventY
         currentX = eventX
@@ -50,14 +51,6 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     }
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
-        if(startingPositionY > currentY){
-            val cy = currentY + this.getAttribute("ry").toFloat()
-            this.setAttribute("cy", cy.toString())
-        }
-        if(startingPositionX > currentX){
-            val cx = currentX + this.getAttribute("rx").toFloat()
-            this.setAttribute("cx", cx.toString())
-        }
         val cxCert = this.getAttribute("cx").toFloat()
         val cyCert = this.getAttribute("cy").toFloat()
         startTransformPoint = Point(cxCert, cyCert)
@@ -84,23 +77,12 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
         val transform = this.getAttribute("transformTranslate")
-        var cx = 0f
-        if(startingPositionX > currentX){
-            cx = currentX + rx.toFloat()
-        }
-        else{
-            cx = startingPositionX + rx.toFloat()
-        }
-        str += "cx=\"$cx\" "
 
-        var cy = 0f
-        if(startingPositionY > currentY){
-            cy = currentY + ry.toFloat()
-        }
-        else{
-            cy = startingPositionY + ry.toFloat()
-        }
-        str += "cy=\"$cy\" "
+        val mx = this.getAttribute("cx")
+        str += "cx=\"$mx\" "
+
+        val my = this.getAttribute("cy")
+        str += "cy=\"$my\" "
 
         rx?.let{
             str += "rx=\"$it\" "
@@ -125,15 +107,45 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val rx = this.getAttribute("rx").toFloat()
         val ry = this.getAttribute("ry").toFloat()
 
-        val isInXAxes = eventX <= cx + rx + totalTranslation.x
-            && eventX >= cx - rx + totalTranslation.x
-        val isInYAxes = eventY <= cy + ry + totalTranslation.y
-            && eventY >= cy - ry + totalTranslation.y
+        val isInXAxes = eventX <= cx + rx + totalTranslation.x - (radius * 2)
+            && eventX >= cx - rx + totalTranslation.x - (radius * 2)
+        val isInYAxes = eventY <= cy + ry + totalTranslation.y - (radius * 2)
+            && eventY >= cy - ry + totalTranslation.y - (radius * 2)
         return isInXAxes && isInYAxes
     }
 
     override fun scale(view: View, scalePoint: Point , direction: Point) {
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+        val minPoint = Point(cx - rx , cy - ry)
+        val maxPoint = Point(cx + rx, cy + ry)
+        if(direction.x == -1f){
+            println(minPoint.x)
+            minPoint.x += scalePoint.x
+            println(minPoint.x)
+            currentX = minPoint.x
+        }
+        else if(direction.x == 1f){
+            maxPoint.x += scalePoint.x
+        }
+        if(direction.y == -1f){
+            minPoint.y += scalePoint.y
+            currentY = minPoint.y
+        }
+        else if(direction.y == 1f){
+            maxPoint.y += scalePoint.y
+        }
 
+        this.setAttribute("rx", (abs(maxPoint.x - minPoint.x)/2).toString())
+        this.setAttribute("ry", (abs(maxPoint.y - minPoint.y)/2).toString())
+
+        val newRx = this.getAttribute("rx").toFloat()
+        val newRy = this.getAttribute("ry").toFloat()
+        this.setAttribute("cy", (min(minPoint.y,maxPoint.y) + newRy).toString())
+        this.setAttribute("cx", (min(minPoint.x,maxPoint.x) + newRx).toString())
+        view.invalidate()
     }
 
     override fun translate(view:View, translationPoint: Point){
@@ -196,7 +208,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val seventhPos = Point(cx - rx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[seventhPos] = Point(-1f, 1f)
 
-        val eighthPos = Point(cx + rx + totalTranslation.x , cy + totalTranslation.y)
+        val eighthPos = Point(cx - rx + totalTranslation.x , cy + totalTranslation.y)
         scalingPositions[eighthPos] = Point(-1f, 0f)
     }
 
