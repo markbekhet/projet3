@@ -76,27 +76,15 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent){
-    if(data.status === DrawingStatus.InProgress|| data.status === DrawingStatus.Done){
-      const inProgressElement: Element = this.inProgress.nativeElement;
-      const children: HTMLCollection = inProgressElement.children;
-      let childExist = false;
-      let child!:Element
-      for(let i = 0; i< children.length; i++){
-        if(children[i].innerHTML.includes(data.contentId.toString())){
-            childExist = true;
-            child = children[i];
-        }
-      }
-      if(!childExist){
-        this.inProgress.nativeElement.innerHTML += data.drawing;
-      }
-      else{
-        if(data.status === DrawingStatus.InProgress){
-          child.innerHTML = data.drawing;
-        }
-        else{
-          this.doneDrawing.nativeElement.innerHTML += data.drawing;
-          this.renderer.removeChild(this.inProgress, child);
+    if(data.status === DrawingStatus.InProgress){
+      this.inProgress.nativeElement.innerHTML += data.drawing;
+    }
+    else if(data.status === DrawingStatus.Done){
+      this.doneDrawing.nativeElement.innerHTML += data.drawing;
+      const children: HTMLCollection = this.inProgress.nativeElement.children;
+      for(let i= 0; i< children.length; i++){
+        if(children[i].getAttribute('id') === data.contentId.toString()){
+          this.renderer.removeChild(this.inProgress.nativeElement, children[i]);
         }
       }
     }
