@@ -17,13 +17,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DrawViewComponent } from './components/draw-view/draw-view.component';
+import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
+import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
+import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
  
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
-  { path: ':username', component: CommunicationPageComponent },
-  { path: '**', component: LoginPageComponent },
+  //{ path: ':username', component: CommunicationPageComponent },
+  { path: 'draw', component: DrawViewComponent},
+  { path: '**', component: DrawViewComponent },
 ];
 
 @NgModule({
@@ -32,6 +37,10 @@ const appRoutes: Routes = [
     LoginPageComponent,
     CommunicationPageComponent,
     RegisterPageComponent,
+    DrawViewComponent,
+    HeaderViewComponent,
+    ToolboxViewComponent,
+    SvgViewComponent,
   ],
   imports: [
     BrowserModule,
