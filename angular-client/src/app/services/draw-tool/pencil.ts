@@ -1,4 +1,3 @@
-import { Renderer2 } from "@angular/core";
 import { DrawingStatus } from "src/app/models/drawing-content";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
@@ -16,7 +15,8 @@ export class Pencil extends DrawingTool{
     }
 
     down(position:Point){
-        console.log('here');
+        this.currentPath =[]
+        //console.log('here');
         super.down(position);
 
         this.ignoreNextUp = false;
@@ -41,6 +41,7 @@ export class Pencil extends DrawingTool{
               // add everything to the canvas
               this.updateProgress(DrawingStatus.Done);
             }
+            
         }
     }
 
@@ -62,10 +63,16 @@ export class Pencil extends DrawingTool{
         }
         s= `<polyline id= "${this.drawingContentId}" `;
         s+=  `points="`
-        for(const point of p){
-            s+= `${point.x} ${point.y},`;
+        for(let i= 0; i< p.length; i++){
+            s+= `${p[i].x} ${p[i].y}`;
+            if(i!== p.length-1){
+                s+=",";
+            }
         }
-        s+=`\" stroke= "black" fill="none" />`;
+        s+=`\" stroke= "black" fill="none" `;
+        //Replace the number by the width chosen in the component
+        s+= `stroke-width= "5" `;
+        s+= "/>"
         //console.log(s)
         return s;
     }

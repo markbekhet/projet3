@@ -26,7 +26,7 @@ export abstract class DrawingTool extends InputObserver{
         // emit socket event to server to get the content id
         // this is a stub
         this.drawingContentId ++;
-        console.log(this.drawingContentId)
+        //console.log(this.drawingContentId)
     }
     // To update the colors with the colors given by the draw view
     updateColors(){

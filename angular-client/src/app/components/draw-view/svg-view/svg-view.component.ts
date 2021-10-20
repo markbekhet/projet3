@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { DrawingContent } from 'src/app/models/drawing-content';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { DrawingContent, DrawingStatus } from 'src/app/models/drawing-content';
 import { InputObserver } from 'src/app/services/draw-tool/input-observer';
 import { Pencil } from 'src/app/services/draw-tool/pencil';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
@@ -15,47 +15,46 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @ViewChild("canvas", {static:false}) canvas: ElementRef| undefined;
   @ViewChild("drawingSpace", { static: false })
   drawingSpace: ElementRef| undefined;
-  @ViewChild("actualDrawing", {static: false}) currentDrawing!:ElementRef;
+  @ViewChild("actualDrawing", {static: false}) doneDrawing!:ElementRef;
+  @ViewChild("inProgress", {static: false}) inProgress!: ElementRef
   height: number = 824;
   width: number = 1024;
   backColor: string = "#ffffff";
   toolsContainer = new Map();
+  mouseHandler!: MouseHandler;
   constructor(private interactionService: InteractionService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
   }
-  /*@HostListener('mousedown',['$event'])
+  @HostListener('mousedown',['$event'])
   onMouseDown(e: MouseEvent){
-
-  }*/
+    this.mouseHandler.down(e);
+  }
+  @HostListener('mouseup',['$event'])
+  onMouseUp(e: MouseEvent){
+    this.mouseHandler.up(e);
+  }
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(e: MouseEvent){
+    this.mouseHandler.move(e);
+  }
+  @HostListener('wheel',['$event'])
+  onWheel(e:WheelEvent){
+    this.mouseHandler.wheel(e);
+  }
   ngAfterViewInit(): void {
     if(this.canvas!== undefined){
-      const mouseHandler = new MouseHandler(this.canvas.nativeElement);
+      this.mouseHandler = new MouseHandler(this.canvas.nativeElement);
       this.createTools();
 
       // subscribe each tool to the mouse handler
       this.toolsContainer.forEach((element:InputObserver)=>{
-        mouseHandler.addObserver(element);
+        this.mouseHandler.addObserver(element);
       });
-      window.addEventListener('mousemove', (e: MouseEvent) => {
-        mouseHandler.move(e);
-      });
-      window.addEventListener('mousedown', (e: MouseEvent) => {
-          // e.preventDefault();
-          mouseHandler.down(e);
-      });
-
-      window.addEventListener('mouseup', (e: MouseEvent) => {
-          mouseHandler.up(e);
-      });
-      window.addEventListener('wheel', (e: WheelEvent) => {
-          mouseHandler.wheel(e);
-      });
-      this.interactionService.$drawing.subscribe((drawing:DrawingContent)=>{
+      this.interactionService.$drawing.subscribe((data:DrawingContent)=>{
         if(this.drawingSpace!== undefined){
-          console.log(drawing)
-          this.currentDrawing.nativeElement.innerHTML = drawing.drawing;
-          console.log(this.currentDrawing.nativeElement.innerHTML);
+          //console.log(data)
+          this.drawContent(data);
         }
         else{
           console.log("drawing space undefined");
@@ -66,10 +65,40 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       console.log("canvas is undefined");
     }
   }
+
+
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools(){
     const pencil = new Pencil(true, this.interactionService);
     this.toolsContainer.set('pencil', pencil);
+  }
+
+  // This method will be modified especially with the introduction of selected status and deleted status
+  drawContent(data: DrawingContent){
+    if(data.status === DrawingStatus.InProgress|| data.status === DrawingStatus.Done){
+      const inProgressElement: Element = this.inProgress.nativeElement;
+      const children: HTMLCollection = inProgressElement.children;
+      let childExist = false;
+      let child!:Element
+      for(let i = 0; i< children.length; i++){
+        if(children[i].innerHTML.includes(data.contentId.toString())){
+            childExist = true;
+            child = children[i];
+        }
+      }
+      if(!childExist){
+        this.inProgress.nativeElement.innerHTML += data.drawing;
+      }
+      else{
+        if(data.status === DrawingStatus.InProgress){
+          child.innerHTML = data.drawing;
+        }
+        else{
+          this.doneDrawing.nativeElement.innerHTML += data.drawing;
+          this.renderer.removeChild(this.inProgress, child);
+        }
+      }
+    }
   }
 }
