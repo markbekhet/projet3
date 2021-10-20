@@ -1,6 +1,7 @@
 package com.example.android
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -11,10 +12,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import kotlinx.android.synthetic.main.content_landing_page.*
+import kotlinx.android.synthetic.main.createdraw.*
 
 class LandingPage : AppCompatActivity() {
     private var createDrawing: Dialog? = null
     private var texte: TextView? = null
+    private var button: Button? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
@@ -25,6 +28,12 @@ class LandingPage : AppCompatActivity() {
                 createDrawing = Dialog(this)
                 createDrawing!!.setContentView(R.layout.createdraw)
                 createDrawing!!.show()
+                button = createDrawing!!.findViewById(R.id.button)
+                button?.setOnClickListener(){
+                    startActivity(Intent(this, drawing::class.java))
+                    createDrawing!!.hide()
+                    createDrawing = null
+                }
                 texte = createDrawing!!.findViewById(R.id.fermer)
                 texte?.isEnabled = true
                 texte?.setOnClickListener {

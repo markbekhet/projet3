@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".drawing"
+            android:exported="true" />
+        <activity
+            android:name=".creationdrawing"
+            android:exported="true" />
+        <activity
             android:name=".LandingPage"
             android:exported="true"
             android:label="@string/title_activity_landing_page"
@@ -49,7 +55,7 @@
         <activity
             android:name=".LoginScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />

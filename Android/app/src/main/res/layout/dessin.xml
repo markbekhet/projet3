@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!--        <fragment-->
+        <!--            android:id="@+id/playersInGame"-->
+        <!--            android:layout_width="200dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:name="com.polymtl.faismoiundessin.FragmentPlayersInGame"/>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nom_dessin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="nom du dessin"
+                android:textColor="@color/main_color"
+                android:textSize="32dp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:id="@+id/fl_drawing_view_container"
+                android:layout_width="1000px"
+                android:layout_height="600px"
+                android:layout_margin="5dp"
+                android:background="@drawable/background"
+                android:padding="1dp">
+
+                <!-- In FrameLayout the component which are
+               added below are in foreground and added above are in Background.-->
+                <ImageView
+                    android:id="@+id/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rectangle_background"
+                    android:contentDescription="image"
+                    android:scaleType="centerCrop" />
+
+
+            </FrameLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_action_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ib_undo"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/undo"
+                    android:visibility="visible" />
+
+                <ImageButton
+                    android:id="@+id/ib_redo"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/redo"
+                    android:visibility="visible" />
+
+                <ImageButton
+                    android:id="@+id/ib_brush"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/brush" />
+
+                <ImageButton
+                    android:id="@+id/ib_earaser"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/erase"
+                    android:tag="@color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
