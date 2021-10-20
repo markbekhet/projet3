@@ -11,6 +11,7 @@ import org.apache.batik.dom.svg.SVGOMMatrix
 import org.apache.batik.dom.svg.SVGOMTransform
 import org.w3c.dom.Document
 import org.w3c.dom.svg.SVGElement
+import java.lang.Float.min
 import kotlin.math.abs
 
 class Rectangle(prefix: String, owner: AbstractDocument):
@@ -23,7 +24,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var totalTranslation = Point(0f,0f)
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
-    private var selectionOffset = 20f
+    private var selectionOffset = 0f
     //var abstractTool = AbstractTool(this)
 
     override fun touchStart(view: View, eventX: Float,
@@ -50,12 +51,10 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         val x = this.getAttribute("x").toFloat()
         val y = this.getAttribute("y").toFloat()
-        if(y > currentY){
-            this.setAttribute("y", currentY.toString())
-        }
-        if(x > currentX){
-            this.setAttribute("x", currentX.toString())
-        }
+
+        this.setAttribute("y", min(currentY,y).toString())
+
+        this.setAttribute("x", min(currentX,x).toString())
         selected = true
 
         if(!selectedTools.contains(this)){
@@ -76,6 +75,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         getOriginalString()
         if(selected){
             getSelectionString()
+            getScalingPositionsString()
         }
 
         return str
@@ -83,38 +83,19 @@ class Rectangle(prefix: String, owner: AbstractDocument):
 
     override fun getOriginalString() {
         str += "<rect "
-        val x = this.getAttribute("x")
-        val y = this.getAttribute("y")
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width")
         val height = this.getAttribute("height")
         val transform = this.getAttribute("transformTranslate")
 
-        x?.let{
-            if(it.toFloat() > currentX){
-                str += "x=\"$currentX\" "
-            }
-            else{
-                str += "x=\"$it\" "
-            }
+        str += "x=\"${min(currentX,x)}\" "
 
-        }
-        y?.let{
-            if(it.toFloat() > currentY){
-                str += "y=\"$currentY\" "
-            }
-            else{
-                str += "y=\"$it\" "
-            }
-        }
-        width?.let{
-            str += "width=\"$it\" "
-        }
-        height?.let{
-            str += "height=\"$it\" "
-        }
-        transform?.let{
-            str += "transform=\"$it\""
-        }
+        str += "y=\"${min(currentY,y)}\" "
+        str += "width=\"$width\" "
+        str += "height=\"$height\" "
+        str += "transform=\"$transform\""
+
 
         str += " stroke=\"#000000\""
         str += " stroke-width=\"3\""
@@ -123,7 +104,7 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         str += "/>\n"
     }
 
-    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
+    override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
         val x = this.getAttribute("x").toFloat()
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width").toFloat()
@@ -136,7 +117,35 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         return isInXAxes && isInYAxes
     }
 
-    override fun scale(view: View, scalePoint: Point) {
+    override fun scale(view: View, scalePoint: Point , direction: Point) {
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
+        val width = this.getAttribute("width").toFloat()
+        val height = this.getAttribute("height").toFloat()
+        val minPoint = Point(x , y)
+        val maxPoint = Point(x + width, y + height)
+        if(direction.x == -1f){
+            println(minPoint.x)
+            minPoint.x += scalePoint.x
+            println(minPoint.x)
+            currentX = minPoint.x
+        }
+        else if(direction.x == 1f){
+            maxPoint.x += scalePoint.x
+        }
+        if(direction.y == -1f){
+            minPoint.y += scalePoint.y
+            currentY = minPoint.y
+        }
+        else if(direction.y == 1f){
+            maxPoint.y += scalePoint.y
+        }
+
+        this.setAttribute("y", min(currentY,y).toString())
+        this.setAttribute("x", min(currentX,x).toString())
+        this.setAttribute("width", abs(maxPoint.x - minPoint.x).toString())
+        this.setAttribute("height", abs(maxPoint.y - minPoint.y).toString())
+        view.invalidate()
     }
 
     override fun translate(view: View, translationPoint: Point) {
@@ -150,38 +159,18 @@ class Rectangle(prefix: String, owner: AbstractDocument):
 
     override fun getSelectionString() {
         str += "<rect "
-        val x = this.getAttribute("x")
-        val y = this.getAttribute("y")
-        val width = this.getAttribute("width")
-        val height = this.getAttribute("height")
+        val x = this.getAttribute("x").toFloat()
+        val y = this.getAttribute("y").toFloat()
+        val width = this.getAttribute("width").toFloat()
+        val height = this.getAttribute("height").toFloat()
         val transform = this.getAttribute("transformTranslate")
 
-        x?.let{
-            if(it.toFloat() > currentX){
-                str += "x=\"${currentX - selectionOffset}\" "
-            }
-            else{
-                str += "x=\"${it.toFloat() - selectionOffset}\" "
-            }
+        str += "x=\"${min(currentX, x)}\" "
+        str += "y=\"${min(currentY , y)}\" "
+        str += "width=\"${width}\" "
 
-        }
-        y?.let{
-            if(it.toFloat() > currentY){
-                str += "y=\"${currentY - selectionOffset}\" "
-            }
-            else{
-                str += "y=\"${it.toFloat() - selectionOffset}\" "
-            }
-        }
-        width?.let{
-            str += "width=\"${it.toFloat() + (2*selectionOffset)}\" "
-        }
-        height?.let{
-            str += "height=\"${it.toFloat() + (2*selectionOffset)}\" "
-        }
-        transform?.let{
-            str += "transform=\"$it\""
-        }
+        str += "height=\"${height}\" "
+        str += "transform=\"${transform}\""
 
         str += " stroke=\"#0000FF\""
         str += " stroke-width=\"3\""
@@ -194,31 +183,65 @@ class Rectangle(prefix: String, owner: AbstractDocument):
         scalingPositions.clear()
         val width = this.getAttribute("width").toFloat()
         val height = this.getAttribute("height").toFloat()
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val firstPos = Point(x, y)
+        val x = min(this.getAttribute("x").toFloat(), currentX)
+        val y = min(this.getAttribute("y").toFloat(), currentY)
+        val firstPos = Point(x + totalTranslation.x, y + totalTranslation.y)
         val firstDirection = Point(-1f, -1f)
         scalingPositions[firstPos] = firstDirection
 
-        val secondPos = Point(x + (width/2), y)
+        val secondPos = Point(x + (width/2) + totalTranslation.x, y + + totalTranslation.y)
         scalingPositions[secondPos] = Point(0f,-1f)
 
-        val thirdPos = Point(x + width, y)
+        val thirdPos = Point(x + width + totalTranslation.x, y + totalTranslation.y)
         scalingPositions[thirdPos] = Point(1f, -1f)
 
-        val forthPos = Point(x + width, y + (height/2))
+        val forthPos = Point(x + width + totalTranslation.x,
+            y + (height/2) + totalTranslation.y)
         scalingPositions[forthPos] = Point(1f, 0f)
 
-        val fifthPos = Point(x + width, y + height)
+        val fifthPos = Point(x + width + totalTranslation.x,
+            y + height + totalTranslation.y)
         scalingPositions[fifthPos] = Point(1f, 1f)
 
-        val sixthPos = Point(x + (width/2), y + height)
+        val sixthPos = Point(x + (width/2) + totalTranslation.x
+            , y + height + totalTranslation.y)
         scalingPositions[sixthPos] = Point(0f, 1f)
 
-        val seventhPos = Point(x, y + height)
+        val seventhPos = Point(x + totalTranslation.x
+            , y + height + totalTranslation.y)
         scalingPositions[seventhPos] = Point(-1f, 1f)
 
-        val eighthPos = Point(x , y + (height/2))
+        val eighthPos = Point(x + totalTranslation.x ,
+            y + (height/2) + totalTranslation.y)
         scalingPositions[eighthPos] = Point(-1f, 0f)
+    }
+
+    override fun getScalingPoint(point: Point): MutableMap.MutableEntry<Point, Point>?{
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            val inXAxes = point.x >= x && point.x <= x+ width
+            val inYAxes = point.y >= y && point.y <= y + height
+            if(inXAxes && inYAxes){
+                return item
+            }
+        }
+        return null
+    }
+
+    override fun getScalingPositionsString(){
+        calculateScalingPositions()
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
+                " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
+        }
     }
 }

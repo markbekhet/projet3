@@ -9,6 +9,7 @@ import org.w3c.dom.Node
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGTransform
 
+var radius = 10
 interface Tool: SVGElement{
     var currentX: Float
     var currentY: Float
@@ -26,9 +27,11 @@ interface Tool: SVGElement{
 
     fun getString(): String
     fun getOriginalString()
-    fun containsPoint(eventX: Float, eventY:Float): Boolean
+    fun inTranslationZone(eventX: Float, eventY:Float): Boolean
     fun translate(view:View, translationPoint: Point)
-    fun scale(view: View, scalePoint: Point)
+    fun scale(view: View, scalePoint: Point, direction: Point)
     fun getSelectionString()
     fun calculateScalingPositions()
+    fun getScalingPoint(point: Point):MutableMap.MutableEntry<Point, Point>?
+    fun getScalingPositionsString()
 }

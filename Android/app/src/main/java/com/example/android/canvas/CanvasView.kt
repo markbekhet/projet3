@@ -36,31 +36,46 @@ class CanvasView(context: Context): View(context) {
     // Get the root element (the 'svg' element).
     private var svgRoot = doc.createElementNS(svgNS, "g")
 
-    private var selectionMode = true
 
+    var mode = ""
+    var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
+    var totalScaling = Point(0f,0f)
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                if(!isInsideTheSelection(event.x , event.y)){
-                    unSelectAllChildren()
-                    tool = Ellipse("ellipse", doc as AbstractDocument)
-                    tool!!.touchStart(this, event.x, event.y)
-                    svgRoot.appendChild(tool)
-                    selectionMode = false
+                if(tool != null){
+                    scalingPoint = tool!!.getScalingPoint(Point(event.x , event.y))
+                    totalScaling.makeEqualTo(Point(0f,0f))
+                }
+                if(scalingPoint != null){
+                    mode = "scaling"
+                }
+                else if(isInsideTheSelection(event.x , event.y)){
+                    mode = "translation"
                 }
                 else{
-                    selectionMode = true
+                    unSelectAllChildren()
+                    tool = Rectangle("ellipse", doc as AbstractDocument)
+                    tool!!.touchStart(this, event.x, event.y)
+                    svgRoot.appendChild(tool)
+                    mode = ""
                 }
             }
             MotionEvent.ACTION_MOVE ->{
-                if(!selectionMode){
-                    tool!!.touchMove(this, context,
-                        event.x, event.y)
-                }
-                else{
-                    val translation:Point = tool!!.startTransformPoint
-                        .difference(Point(event.x, event.y))
-                    tool!!.translate(this, translation)
+                when(mode){
+                    "translation" ->{
+                        val translation:Point = tool!!.startTransformPoint
+                            .difference(Point(event.x, event.y))
+                        tool!!.translate(this, translation)
+                    }
+                    "scaling" ->{
+                        val scalingFactor =
+                            Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                event.y - scalingPoint!!.key.y - totalScaling.y)
+                        tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                        totalScaling.plus(scalingFactor)
+                    }
+                    else -> tool!!.touchMove(this, context,event.x, event.y)
                 }
             }
             MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
@@ -96,15 +111,12 @@ class CanvasView(context: Context): View(context) {
         }
 
         str += "</svg>"
-        println(str)
         return str
     }
 
     private fun isInsideTheSelection(eventX: Float, eventY: Float): Boolean{
-        for(tool in selectedTools){
-            if(tool.containsPoint(eventX, eventY)){
-                return true
-            }
+        if(tool != null && tool!!.inTranslationZone(eventX, eventY)){
+            return true
         }
         return false
     }

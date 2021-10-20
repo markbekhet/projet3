@@ -50,9 +50,6 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
             selectedTools.add(this)
         }
 
-        val halfPointNumber = this.points.points.numberOfItems/2
-        val midPoint = this.points.points.getItem(halfPointNumber)
-        startTransformPoint = Point(midPoint.x, midPoint.y)
         calculateDelimeterPoints()
         view.invalidate()
     }
@@ -62,6 +59,7 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         getOriginalString()
         if(selected){
             getSelectionString()
+            getScalingPositionsString()
         }
         return str
     }
@@ -80,29 +78,13 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         str += "/>\n"
     }
 
-    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
-        /*val pointsArray = this.points.points
-        var i = 0
-        if(pointsArray.numberOfItems > 0) {
-            while(i < pointsArray.numberOfItems){
-                val point = pointsArray.getItem(i)
-                val isInY = isInIncludeRange(
-                    point.y + totalTranslation.y, eventY)
-                val isInX = isInIncludeRange(
-                    point.x + totalTranslation.x, eventX)
-
-                if(isInX && isInY){
-                    return true
-                }
-                i++
-            }
-        }*/
+    override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
         val inXAxes = (eventX >= minPoint.x) && (eventX <= maxPoint.x)
         val inYaxes = (eventY >= minPoint.y) && (eventY <= maxPoint.y)
         return inXAxes && inYaxes
     }
 
-    override fun scale(view: View, scalePoint: Point) {
+    override fun scale(view: View, scalePoint: Point , direction: Point) {
     }
 
     override fun translate(view:View, translationPoint: Point){
@@ -150,6 +132,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                 maxPoint.y = max(item.y, maxPoint.y)
                 i++
             }
+            startTransformPoint =
+                Point((maxPoint.x - minPoint.x)/2, (maxPoint.y - minPoint.y)/2)
         }
     }
 
@@ -160,29 +144,66 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         val x = minPoint.x
         val y = minPoint.y
 
-        val firstPos = Point(x, y)
+        val firstPos = Point(x + totalTranslation.x,
+            y + totalTranslation.y)
         val firstDirection = Point(-1f, -1f)
         scalingPositions[firstPos] = firstDirection
 
-        val secondPos = Point(x + (width/2), y)
+        val secondPos = Point(x + (width/2) + totalTranslation.x
+            , y + totalTranslation.y)
         scalingPositions[secondPos] = Point(0f,-1f)
 
-        val thirdPos = Point(x + width, y)
+        val thirdPos = Point(x + width + totalTranslation.x,
+            y + totalTranslation.y)
         scalingPositions[thirdPos] = Point(1f, -1f)
 
-        val forthPos = Point(x + width, y + (height/2))
+        val forthPos = Point(x + width + totalTranslation.x,
+            y + (height/2) + totalTranslation.y)
         scalingPositions[forthPos] = Point(1f, 0f)
 
-        val fifthPos = Point(x + width, y + height)
+        val fifthPos = Point(x + width + totalTranslation.x,
+            y + height + totalTranslation.y)
         scalingPositions[fifthPos] = Point(1f, 1f)
 
-        val sixthPos = Point(x + (width/2), y + height)
+        val sixthPos = Point(x + (width/2) + totalTranslation.x,
+            y + height + totalTranslation.y)
         scalingPositions[sixthPos] = Point(0f, 1f)
 
-        val seventhPos = Point(x, y + height)
+        val seventhPos = Point(x + totalTranslation.x,
+            y + height + totalTranslation.y)
         scalingPositions[seventhPos] = Point(-1f, 1f)
 
-        val eighthPos = Point(x , y + (height/2))
+        val eighthPos = Point(x + totalTranslation.x,
+            y + (height/2) + totalTranslation.y)
         scalingPositions[eighthPos] = Point(-1f, 0f)
+    }
+
+    override fun getScalingPoint(point: Point): MutableMap.MutableEntry<Point, Point>?{
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            val inXAxes = point.x >= x && point.x <= x+ width
+            val inYAxes = point.y >= y && point.y <= y + height
+            if(inXAxes && inYAxes){
+                return item
+            }
+        }
+        return null
+    }
+
+    override fun getScalingPositionsString(){
+        calculateScalingPositions()
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
+                " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
+        }
     }
 }

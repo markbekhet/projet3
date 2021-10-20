@@ -74,6 +74,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         getOriginalString()
         if(selected){
             getSelectionString()
+            getScalingPositionsString()
         }
         return str
     }
@@ -118,7 +119,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         str += "/>\n"
     }
 
-    override fun containsPoint(eventX: Float, eventY: Float): Boolean{
+    override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
         val cx = this.getAttribute("cx").toFloat()
         val cy = this.getAttribute("cy").toFloat()
         val rx = this.getAttribute("rx").toFloat()
@@ -131,7 +132,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         return isInXAxes && isInYAxes
     }
 
-    override fun scale(view: View, scalePoint: Point) {
+    override fun scale(view: View, scalePoint: Point , direction: Point) {
 
     }
 
@@ -173,29 +174,58 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val ry = this.getAttribute("ry").toFloat()
         val cx = this.getAttribute("cx").toFloat()
         val cy = this.getAttribute("cy").toFloat()
-        val firstPos = Point(cx - rx, cy - ry)
+        val firstPos = Point(cx - rx + totalTranslation.x, cy - ry  + totalTranslation.y)
         val firstDirection = Point(-1f, -1f)
         scalingPositions[firstPos] = firstDirection
 
-        val secondPos = Point(cx, cy - ry)
+        val secondPos = Point(cx + totalTranslation.x, cy - ry + totalTranslation.y)
         scalingPositions[secondPos] = Point(0f,-1f)
 
-        val thirdPos = Point(cx + rx, cy - ry)
+        val thirdPos = Point(cx + rx + totalTranslation.x, cy - ry+ + totalTranslation.y)
         scalingPositions[thirdPos] = Point(1f, -1f)
 
-        val forthPos = Point(cx + rx, cy)
+        val forthPos = Point(cx + rx + totalTranslation.x, cy + totalTranslation.y)
         scalingPositions[forthPos] = Point(1f, 0f)
 
-        val fifthPos = Point(cx + rx, cy + ry)
+        val fifthPos = Point(cx + rx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[fifthPos] = Point(1f, 1f)
 
-        val sixthPos = Point(cx, cy + ry)
+        val sixthPos = Point(cx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[sixthPos] = Point(0f, 1f)
 
-        val seventhPos = Point(cx - rx, cy + ry)
+        val seventhPos = Point(cx - rx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[seventhPos] = Point(-1f, 1f)
 
-        val eighthPos = Point(cx + rx, cy)
+        val eighthPos = Point(cx + rx + totalTranslation.x , cy + totalTranslation.y)
         scalingPositions[eighthPos] = Point(-1f, 0f)
+    }
+
+    override fun getScalingPoint(point: Point): MutableMap.MutableEntry<Point, Point>?{
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            val inXAxes = point.x >= x && point.x <= x+ width
+            val inYAxes = point.y >= y && point.y <= y + height
+            if(inXAxes && inYAxes){
+                return item
+            }
+        }
+        return null
+    }
+
+    override fun getScalingPositionsString(){
+        calculateScalingPositions()
+        for(item in scalingPositions){
+            val position = item.key
+            val x = position.x - radius
+            val y = position.y - radius
+            val width = (position.x + radius) - x
+            val height = (position.y + radius) - y
+            str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
+                " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
+        }
     }
 }
