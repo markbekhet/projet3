@@ -138,6 +138,13 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             maxPoint.y += scalePoint.y
         }
 
+        if(minPoint.x >= maxPoint.x){
+            direction.x *= -1
+        }
+
+        if(minPoint.y >= maxPoint.y){
+            direction.y *= -1
+        }
         this.setAttribute("rx", (abs(maxPoint.x - minPoint.x)/2).toString())
         this.setAttribute("ry", (abs(maxPoint.y - minPoint.y)/2).toString())
 

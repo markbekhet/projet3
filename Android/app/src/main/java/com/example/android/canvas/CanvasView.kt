@@ -55,7 +55,7 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = Ellipse("ellipse", doc as AbstractDocument)
+                    tool = Rectangle("rect", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
                     mode = ""

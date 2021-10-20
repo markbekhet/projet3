@@ -141,6 +141,13 @@ class Rectangle(prefix: String, owner: AbstractDocument):
             maxPoint.y += scalePoint.y
         }
 
+        if(minPoint.x >= maxPoint.x){
+            direction.x *= -1
+        }
+
+        if(minPoint.y >= maxPoint.y){
+            direction.y *= -1
+        }
         this.setAttribute("y", min(minPoint.y,maxPoint.y).toString())
         this.setAttribute("x", min(minPoint.x,maxPoint.x).toString())
         this.setAttribute("width", abs(maxPoint.x - minPoint.x).toString())
