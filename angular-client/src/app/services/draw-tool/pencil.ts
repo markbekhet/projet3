@@ -1,11 +1,13 @@
 import { Renderer2 } from "@angular/core";
+import { DrawingStatus } from "src/app/models/drawing-content";
+import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
 
 const DEFAULT_LINE_THICKNESS = 5;
 export class Pencil extends DrawingTool{
-    constructor(selected: boolean){
-        super(selected);
+    constructor(selected: boolean, interactionService: InteractionService){
+        super(selected, interactionService);
         //this.updateColors();
         this.updateAttributes();
     }
@@ -14,6 +16,7 @@ export class Pencil extends DrawingTool{
     }
 
     down(position:Point){
+        console.log('here');
         super.down(position);
 
         this.ignoreNextUp = false;
@@ -25,7 +28,7 @@ export class Pencil extends DrawingTool{
         this.currentPath.push(position);
 
         // should be inside the listening event when integrated with socket
-        this.updateProgress();
+        this.updateProgress(DrawingStatus.InProgress);
     }
 
     up(position: Point, insideWorkspace: boolean){
@@ -36,7 +39,7 @@ export class Pencil extends DrawingTool{
             // no path is created while outside the canvas
             if (insideWorkspace) {
               // add everything to the canvas
-              this.updateDrawing();
+              this.updateProgress(DrawingStatus.Done);
             }
         }
     }
@@ -44,7 +47,7 @@ export class Pencil extends DrawingTool{
     move(position: Point){
         if(this.isDown){
             this.currentPath.push(position);
-            this.updateProgress();
+            this.updateProgress(DrawingStatus.InProgress);
         }
     }
 
@@ -57,13 +60,13 @@ export class Pencil extends DrawingTool{
         if(p.length < 2){
             return s;
         }
-        s= `<polyline id= "${this.drawingContentId} "`;
+        s= `<polyline id= "${this.drawingContentId}" `;
         s+=  `points="`
         for(const point of p){
             s+= `${point.x} ${point.y},`;
         }
-        s+=`\" stroke= "black" fill="none"`;
-
+        s+=`\" stroke= "black" fill="none" />`;
+        //console.log(s)
         return s;
     }
 }

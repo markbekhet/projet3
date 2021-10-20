@@ -21,6 +21,7 @@ import { DrawViewComponent } from './components/draw-view/draw-view.component';
 import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
 import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
 import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
+import { InteractionService } from './services/interaction-service/interaction.service';
  
 
 const appRoutes: Routes = [
@@ -56,7 +57,8 @@ const appRoutes: Routes = [
   ],
   providers: [
     AuthService,
-    ChatService
+    ChatService,
+    InteractionService
   ],
   bootstrap: [AppComponent]
 })

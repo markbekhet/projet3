@@ -1,4 +1,6 @@
 import { Renderer2 } from "@angular/core";
+import { DrawingStatus } from "src/app/models/drawing-content";
+import { InteractionService } from "../interaction-service/interaction.service";
 import { InputObserver } from "./input-observer";
 import { Point } from "./point";
 
@@ -11,7 +13,7 @@ export abstract class DrawingTool extends InputObserver{
 
     abstract createPath(path: Point[], doubleClickCheck?: boolean, removePerimeter?: boolean): void;
 
-    constructor(selected: boolean){
+    constructor(selected: boolean, private interactionService: InteractionService){
         super(selected);
         this.isDown = false;
         this.currentPath = [];
@@ -24,6 +26,7 @@ export abstract class DrawingTool extends InputObserver{
         // emit socket event to server to get the content id
         // this is a stub
         this.drawingContentId ++;
+        console.log(this.drawingContentId)
     }
     // To update the colors with the colors given by the draw view
     updateColors(){
@@ -39,15 +42,17 @@ export abstract class DrawingTool extends InputObserver{
         // emit event with empty string
     }
     // called while the mouse is moving
-    updateProgress(wasDoubleClick?: boolean, removePerimeter?: boolean){
+    updateProgress(drawingStatus: DrawingStatus){
         let d = '';
-        d += this.createPath(this.currentPath, wasDoubleClick);
+        d += this.createPath(this.currentPath);
         // emit event with the string d
+        this.interactionService.emitDrawingContent({contentId: this.drawingContentId, drawing:d, status:drawingStatus});
     }
+    // I think we dont need this method
     updateDrawing(endIt?: boolean){
         let d = "";
         d += this.createPath(this.currentPath, endIt);
-
+        
         // emit event with the string d and status === done (temp)
     }
 
