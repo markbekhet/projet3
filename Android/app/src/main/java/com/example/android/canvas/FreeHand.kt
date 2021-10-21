@@ -49,7 +49,6 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         if(!selectedTools.contains(this)){
             selectedTools.add(this)
         }
-
         calculateDelimeterPoints()
         view.invalidate()
     }
@@ -79,8 +78,10 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
-        val inXAxes = (eventX >= minPoint.x) && (eventX <= maxPoint.x)
-        val inYaxes = (eventY >= minPoint.y) && (eventY <= maxPoint.y)
+        val inXAxes = (eventX >= minPoint.x + totalTranslation.x)
+            && (eventX <= maxPoint.x + totalTranslation.x)
+        val inYaxes = (eventY >= minPoint.y + totalTranslation.y)
+            && (eventY <= maxPoint.y + totalTranslation.y)
         return inXAxes && inYaxes
     }
 
@@ -116,10 +117,6 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         str += "/>\n"
     }
 
-    private fun isInIncludeRange(actualPoint: Float, curserPoint: Float):Boolean{
-        return curserPoint >= actualPoint - 50 && curserPoint <= actualPoint + 50
-    }
-
     private fun calculateDelimeterPoints(){
         val polylinePoints = this.points.points
         if(polylinePoints.numberOfItems > 0){
@@ -133,7 +130,9 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                 i++
             }
             startTransformPoint =
-                Point((maxPoint.x - minPoint.x)/2, (maxPoint.y - minPoint.y)/2)
+                Point(
+                    polylinePoints.getItem(polylinePoints.numberOfItems/2).x
+                    ,polylinePoints.getItem(polylinePoints.numberOfItems/2).y)
         }
     }
 
