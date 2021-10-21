@@ -13,6 +13,7 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGPathElement
 import org.w3c.dom.svg.SVGPathSegList
 import java.lang.Float.min
+import kotlin.math.abs
 import kotlin.math.max
 
 class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineElement(prefix, owner) {
@@ -86,6 +87,49 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     override fun scale(view: View, scalePoint: Point , direction: Point) {
+        // Needs implementing
+        val oldWidth = maxPoint.x - minPoint.x
+        val oldHeight = maxPoint.y - minPoint.y
+        if(direction.x == -1f){
+            minPoint.x += scalePoint.x
+            //currentX = minPoint.x
+        }
+        else if(direction.x == 1f){
+            maxPoint.x += scalePoint.x
+        }
+        if(direction.y == -1f){
+            minPoint.y += scalePoint.y
+            //currentY = minPoint.y
+        }
+        else if(direction.y == 1f){
+            maxPoint.y += scalePoint.y
+        }
+
+        if(minPoint.x >= maxPoint.x){
+            direction.x *= -1
+        }
+
+        if(minPoint.y >= maxPoint.y){
+            direction.y *= -1
+        }
+
+        val newWidth = maxPoint.x - minPoint.x
+        val newHeight = maxPoint.y - minPoint.y
+        val ratioWidth = newWidth / oldWidth
+        val ratioHeight = newHeight / oldHeight
+
+        val polylinePoints = this.points.points
+        if(polylinePoints.numberOfItems > 0){
+            var i = 0
+            while(i < polylinePoints.numberOfItems){
+                val item = polylinePoints.getItem(i)
+                item.x *= ratioWidth
+                item.y *= ratioHeight
+                i++
+            }
+        }
+        calculateDelimeterPoints()
+        view.invalidate()
     }
 
     override fun translate(view:View, translationPoint: Point){
@@ -118,6 +162,8 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     }
 
     private fun calculateDelimeterPoints(){
+        minPoint = Point(Float.MAX_VALUE,Float.MAX_VALUE)
+        maxPoint = Point(0f, 0f)
         val polylinePoints = this.points.points
         if(polylinePoints.numberOfItems > 0){
             var i = 0

@@ -55,7 +55,7 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = Rectangle("rect", doc as AbstractDocument)
+                    tool = FreeHand("polyline", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     svgRoot.appendChild(tool)
                     mode = ""
