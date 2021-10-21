@@ -79,7 +79,7 @@ export class AuthService {
       this.authentifiedUser.next(user);
   }
   
-
+  // A little bit weird you dont need that
   //passer socket id et username
   /*{
     socket_id: this.chat.getSocketID(),
