@@ -2,12 +2,11 @@
 <header flexLayout='column'>
     <app-header-view></app-header-view>
 </header>
-<div flexLayout='row' fxFlex>
-    <div fxFlex='20'>
+<div fxLayout="row" fxLayoutAlign="stretch" fxFlex>
+    <div fxLayout="column" fxLayoutAlign="start stretch" class='toolbox'>
         <app-toolbox-view></app-toolbox-view>
-        <app-option-view></app-option-view>
     </div>
-    <div fxFlex='80' class='content'>
+    <div  fxLayoutAlign="stretch" fxFlex class='canvas'>
         <app-svg-view></app-svg-view>
     </div>
 </div>

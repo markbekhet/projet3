@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./draw-view.component.scss']
 })
 export class DrawViewComponent implements OnInit {
-
+  
   constructor() { }
 
   ngOnInit(): void {
