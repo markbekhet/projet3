@@ -17,6 +17,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
  
 
 const appRoutes: Routes = [
@@ -32,6 +34,7 @@ const appRoutes: Routes = [
     LoginPageComponent,
     CommunicationPageComponent,
     RegisterPageComponent,
+    ErrorDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +47,7 @@ const appRoutes: Routes = [
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
   ],
   providers: [
     AuthService,
