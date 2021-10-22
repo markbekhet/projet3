@@ -17,6 +17,7 @@ import { visibility } from 'src/enumerators/visibility';
 import { Drawing } from 'src/modules/drawing/drawing.entity';
 import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
 import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
+import { DrawingGateway } from 'src/modules/drawing/drawing.gateway';
 
 @Injectable()
 export class DatabaseService {
@@ -26,6 +27,7 @@ export class DatabaseService {
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
         @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
+        private drawingGateway: DrawingGateway,
         ){
             this.logger.log("Initialized");
         }
@@ -143,9 +145,10 @@ export class DatabaseService {
         const drawings = await this.drawingRepo.find({
             where: [
                 {visibility: visibility.PUBLIC},
-                {ownerId: userId},
+                {ownerId: userId, visibility:visibility.PRIVATE},
                 {visibility: visibility.PROTECTED},
-            ]
+            ],
+            relations:["contents"],
         })
         return await this.getGallery(drawings);
     }
@@ -166,7 +169,7 @@ export class DatabaseService {
             username = user.pseudo;
             const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
                                         ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
-                                        ownerLastName: lastName, content: drawing.content}
+                                        ownerLastName: lastName, contents: drawing.contents}
             if(drawingCollection.indexOf(galleryDrawing) === -1){
                 drawingCollection.push(galleryDrawing);
             }
@@ -183,18 +186,19 @@ export class DatabaseService {
             } 
         }
         const drawing = Drawing.createDrawing(drawingInformation);
-        await this.drawingRepo.save(drawing);
-        return drawing.id;
+        const newDrawing = await this.drawingRepo.save(drawing);
+        this.drawingGateway.notifyAllUsers(newDrawing);
+        return newDrawing.id;
     }
     async getDrawingById(drawingId: number, password: string){
-        const drawing = await this.drawingRepo.findOne(drawingId);
+        const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
         if(drawing.visibility === visibility.PROTECTED){
             const passwordMatch = await bcrypt.compare(password, drawing.password);
             if(!passwordMatch){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
         }
-        return drawing.content;
+        return drawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
