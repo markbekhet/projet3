@@ -20,6 +20,15 @@ const GET_PROFILE_PATH = 'user/profile/';
 })
 export class AuthService {
 
+  // login error codes
+  readonly USER_LOGGED_IN = 'User is already logged in';
+  readonly NO_USER_FOUND = 'There is no account with this username or email';
+  readonly INCORRECT_PASSWORD = 'Incorrect password';
+
+  // register error codes
+  readonly DUPLICATE_EMAIL = 'duplicate key value violates unique constraint "UQ_c7a8d184ab23d7ebdc29453832a"';
+  readonly DUPLICATE_USERNAME = 'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
+
   readonly NULL_USER: User = {
     token: '',
   }

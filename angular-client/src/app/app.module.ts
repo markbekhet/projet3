@@ -20,13 +20,16 @@ import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.compo
 import { OptionViewComponent } from './components/draw-view/toolbox-view/option-view/option-view.component';
 import { InteractionService } from './services/interaction-service/interaction.service';
 
-// Angular Material modules
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+
+ 
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -42,6 +45,7 @@ const appRoutes: Routes = [
     LoginPageComponent,
     CommunicationPageComponent,
     RegisterPageComponent,
+    ErrorDialogComponent,
     DrawViewComponent,
     HeaderViewComponent,
     ToolboxViewComponent,
@@ -62,6 +66,7 @@ const appRoutes: Routes = [
     MatGridListModule,
     MatSidenavModule,
     FlexLayoutModule,
+    MatDialogModule,
   ],
   providers: [
     AuthService,

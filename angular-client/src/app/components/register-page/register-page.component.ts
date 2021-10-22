@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ValidationService } from 'src/app/services/validation.service';
 
 import { UserRegistrationInfo } from '../../../../../common/user';  
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-register-page',
@@ -19,7 +21,8 @@ export class RegisterPageComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private auth: AuthService) {
+    private auth: AuthService,
+    public errorDialog: MatDialog) {
       this.registerForm = this.formBuilder.group({
         firstName: formBuilder.control('', [ Validators.required ]),
         lastName: formBuilder.control('', [ Validators.required ]),
@@ -53,12 +56,24 @@ export class RegisterPageComponent implements OnInit {
             //this.router.navigate(['/' + user.pseudo]);
           },
           error => {
-            console.log((error as HttpErrorResponse));
-            console.log((error as HttpErrorResponse).message);
+            const errorCode = JSON.parse((error as HttpErrorResponse).error)['message'];
+            console.log(errorCode);
+            let interfaceErrorCode;
+            switch(errorCode) {
+              case this.auth.DUPLICATE_EMAIL: interfaceErrorCode = 'Un compte avec ce courriel existe déjà !';
+                break;
+              case this.auth.DUPLICATE_USERNAME: interfaceErrorCode = 'Un compte avec ce nom d\'utilisateur existe déjà !';
+                break;
+            }
+            this.errorDialog.open(ErrorDialogComponent, {
+              data: interfaceErrorCode
+            });
+            
+            this.resetForm();
           }
         )
       
-    } catch(e: any) {
+    } catch(e) {
 
     }
 
@@ -69,7 +84,16 @@ export class RegisterPageComponent implements OnInit {
     return this.registerForm.controls[control].dirty && 
     this.registerForm.controls[control].hasError(error);
   }
-
+  
+  private resetForm(){
+    this.registerForm = this.formBuilder.group({
+      firstName: this.formBuilder.control('', [ Validators.required ]),
+      lastName: this.formBuilder.control('', [ Validators.required ]),
+      username: this.formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
+      email: this.formBuilder.control('', [ Validators.required, ValidationService.emailValidator ]),
+      password: this.formBuilder.control('', [ Validators.required, ValidationService.passwordValidator ]),
+      avatar: this.formBuilder.control('', [])});
+  }
   
 
 }

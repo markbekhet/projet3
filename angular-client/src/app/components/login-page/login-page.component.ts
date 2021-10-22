@@ -1,10 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserCredentials } from '../../../../../common/user';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-login-page',
@@ -19,10 +22,11 @@ export class LoginPageComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    public errorDialog: MatDialog
   ) {
     this.inputForm = this.formBuilder.group({
-      username: formBuilder.control('', [ Validators.required, ValidationService.usernameValidator ]),
+      username: formBuilder.control('', [ Validators.required ]),
       password: formBuilder.control('', [ Validators.required ])
     });
   }
@@ -44,9 +48,23 @@ export class LoginPageComponent implements OnInit {
           accepted => {
             //this.router.navigate(['/' + this.username]);
             console.log(user.username + ' is logged in');
+            form.reset();
           },
           error => {
-            console.log(error);
+            const errorCode = JSON.parse((error as HttpErrorResponse).error)['message'];
+            let interfaceErrorCode;
+            switch(errorCode) {
+              case this.auth.USER_LOGGED_IN: interfaceErrorCode = 'Cet utilisateur est déjà connecté au serveur !';
+                break;
+              case this.auth.NO_USER_FOUND: interfaceErrorCode = 'Ce nom d\'utilisateur ou adresse courriel n\'existe pas !';
+                break;
+              case this.auth.INCORRECT_PASSWORD: interfaceErrorCode = 'Le mot de passe est incorrect !';
+                break;
+            }
+            this.errorDialog.open(ErrorDialogComponent, {
+              data: interfaceErrorCode
+            });
+            this.resetForm();
           }
         )
       
@@ -58,5 +76,12 @@ export class LoginPageComponent implements OnInit {
   public checkError(control: string, error: string) {
     return this.inputForm.controls[control].dirty && 
     this.inputForm.controls[control].hasError(error);
+  }
+
+  private resetForm(){
+    this.inputForm = this.formBuilder.group({
+      username: this.formBuilder.control('', [ Validators.required ]),
+      password: this.formBuilder.control('', [ Validators.required ])
+    });
   }
 }
