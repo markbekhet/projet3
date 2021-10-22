@@ -118,13 +118,31 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
         val ratioWidth = newWidth / oldWidth
         val ratioHeight = newHeight / oldHeight
 
+        var differenceWidth = 0f
+        var differenceHeight = 0f
+        if(direction.x == -1f){
+            differenceWidth = (maxPoint.x * ratioWidth) - maxPoint.x
+        }
+        else if(direction.x == 1f){
+            differenceWidth = (minPoint.x * ratioWidth) - minPoint.x
+        }
+
+        if(direction.y == -1f){
+            differenceHeight = (maxPoint.y* ratioHeight) - maxPoint.y
+        }
+        else if(direction.y == 1f){
+            differenceHeight = (minPoint.y * ratioHeight) - minPoint.y
+        }
+
         val polylinePoints = this.points.points
         if(polylinePoints.numberOfItems > 0){
             var i = 0
             while(i < polylinePoints.numberOfItems){
                 val item = polylinePoints.getItem(i)
                 item.x *= ratioWidth
+                item.x -= differenceWidth
                 item.y *= ratioHeight
+                item.y -= differenceHeight
                 i++
             }
         }
