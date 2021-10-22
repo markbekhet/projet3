@@ -12,7 +12,7 @@ export class ConnectionHistory extends BaseEntity{
     })
     date:string
 
-    @ManyToOne(()=> User, user => user.connectionHistories, {nullable: true})
+    @ManyToOne(()=> User, user => user.connectionHistories, {nullable: true, onDelete:"CASCADE"})
     user: User
 
 }

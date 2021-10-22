@@ -1,0 +1,7 @@
+<div contenteditable style= "cursor:default">
+    <svg #canvas id="canvas" [style.width]="width" [style.height]="height" appCanvasSwitch >
+        <rect width="100%" height="100%" [style.fill]="backColor" #drawingSpace />
+        <g #actualDrawing></g>
+        <g #inProgress></g>
+    </svg>
+</div>

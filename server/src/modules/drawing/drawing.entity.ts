@@ -1,7 +1,8 @@
 import { visibility } from "src/enumerators/visibility";
-import { BaseEntity, BeforeInsert, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { CreateDrawingDto } from "./create-drawing.dto";
 import * as bcrypt from 'bcrypt';
+import { DrawingContent } from "../drawing-content/drawing-content.entity";
 
 @Entity("drawing")
 export class Drawing extends BaseEntity{
@@ -35,12 +36,16 @@ export class Drawing extends BaseEntity{
     @Column()
     name: string;
 
-    @Column({ nullable: true})
-    content: string;
-
     @Column({type:"boolean"})
     useOwnerPrivateInformation: boolean;
 
+    @Column()
+    bgColor: string;
+
+    @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true})
+    contents: DrawingContent[];
+
+    
     @BeforeInsert()
     async setPassword(){
         if(this.password !== undefined){
@@ -64,6 +69,7 @@ export class Drawing extends BaseEntity{
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
         newDrawing.useOwnerPrivateInformation = drawingInformation.useOwnerPrivateInformation;
+        newDrawing.bgColor = drawingInformation.color;
         return newDrawing;
     }
 }

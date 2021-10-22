@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from
 import { DatabaseService } from 'src/database/database.service';
 import { CreateDrawingDto } from './create-drawing.dto';
 import { DeleteDrawingDto } from './delete-drawing.dto';
+import { DrawingGateway } from './drawing.gateway';
 
 
 @Controller('/drawing')
