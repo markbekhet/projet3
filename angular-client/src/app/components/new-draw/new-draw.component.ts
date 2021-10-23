@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalWindowService } from 'src/app/services/window-handler/modal-window.service';
 import { CanvasBuilderService } from 'src/app/services/canvas-builder/canvas-builder.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-draw',
@@ -19,6 +20,7 @@ export class NewDrawComponent implements OnInit {
     private formBuilder: FormBuilder,
     private canvasBuilder: CanvasBuilderService,
     private winService: ModalWindowService,
+    private router: Router,
     )
     { 
       this.initForm();
@@ -63,7 +65,16 @@ export class NewDrawComponent implements OnInit {
   }
 
   onSubmit(){
-    // TODO: To implement
+    // TODO: To change while integrating with socket
+    const VALUES = this.newDrawForm.value;
+    this.canvasBuilder.setCanvasFromForm(+VALUES.canvWidth, +VALUES.canvHeight, VALUES.canvColor);
+    this.canvasBuilder.emitCanvas();
+    this.closeModalForm();
+    this.router.navigate(['/vue']);
+    const LOAD_TIME = 15;
+    setTimeout(()=>{
+      window.dispatchEvent(new Event('resize'));
+    }, LOAD_TIME);
   }
 
   closeModalForm(): void {

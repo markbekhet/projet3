@@ -30,12 +30,13 @@ import { NewDrawComponent } from './components/new-draw/new-draw.component';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
 import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
 import { ColorConvertingService } from './services/colorPicker/color-converting.service';
+import { ColorPickingService } from './services/colorPicker/color-picking.service';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
   //{ path: ':username', component: CommunicationPageComponent },
-  { path: 'draw', component: DrawViewComponent},
+  { path: 'vue', component: DrawViewComponent},
   { path: '**', component: EntryPointComponent },
 ];
 
@@ -74,6 +75,7 @@ const appRoutes: Routes = [
     ModalWindowService,
     CanvasBuilderService,
     ColorConvertingService,
+    ColorPickingService,
   ],
   bootstrap: [AppComponent]
 })
