@@ -22,14 +22,17 @@ import { HeaderViewComponent } from './components/draw-view/header-view/header-v
 import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
 import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
 import { InteractionService } from './services/interaction-service/interaction.service';
- 
+import { EntryPointComponent } from './components/entry-point/entry-point.component';
+import { ModalWindowService } from './services/window-handler/modal-window.service';
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
   //{ path: ':username', component: CommunicationPageComponent },
   { path: 'draw', component: DrawViewComponent},
-  { path: '**', component: DrawViewComponent },
+  { path: '**', component: EntryPointComponent },
 ];
 
 @NgModule({
@@ -42,6 +45,7 @@ const appRoutes: Routes = [
     HeaderViewComponent,
     ToolboxViewComponent,
     SvgViewComponent,
+    EntryPointComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,11 +58,14 @@ const appRoutes: Routes = [
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
+    MatSnackBarModule,
   ],
   providers: [
     AuthService,
     ChatService,
-    InteractionService
+    InteractionService,
+    ModalWindowService
   ],
   bootstrap: [AppComponent]
 })
