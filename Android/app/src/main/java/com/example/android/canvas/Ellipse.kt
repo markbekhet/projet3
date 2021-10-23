@@ -12,7 +12,7 @@ import org.w3c.dom.svg.SVGElement
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Ellipse(prefix: String, owner: AbstractDocument):
+class Ellipse(drawingId:Int , prefix: String, owner: AbstractDocument):
     SVGOMEllipseElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
@@ -24,6 +24,8 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override var totalTranslation = Point(0f, 0f)
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
+    //override var drawingID = drawingId
+    override var contentID: Int?=null
 
     override fun touchStart(view: View, eventX: Float, eventY: Float) {
         startingPositionX = eventX
@@ -246,5 +248,9 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
                 " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
         }
+    }
+
+    override fun parse(parceableString: String?){
+
     }
 }

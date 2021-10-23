@@ -19,6 +19,8 @@ interface Tool: SVGElement{
     var totalTranslation: Point
     var totalScaling: Point
     var scalingPositions: HashMap<Point, Point>
+    //var drawingID: Int
+    var contentID: Int?
 
     fun touchStart(view: View, eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
@@ -34,4 +36,5 @@ interface Tool: SVGElement{
     fun calculateScalingPositions()
     fun getScalingPoint(point: Point):MutableMap.MutableEntry<Point, Point>?
     fun getScalingPositionsString()
+    fun parse(parceableString: String?)
 }

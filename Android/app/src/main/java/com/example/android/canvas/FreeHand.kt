@@ -2,6 +2,8 @@ package com.example.android.canvas
 
 import android.content.Context
 import android.view.View
+import com.example.android.SocketHandler
+import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMMPathElement
 import org.apache.batik.anim.dom.SVGOMPathElement
 import org.apache.batik.anim.dom.SVGOMPolylineElement
@@ -16,7 +18,7 @@ import java.lang.Float.min
 import kotlin.math.abs
 import kotlin.math.max
 
-class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineElement(prefix, owner) {
+class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineElement(prefix, owner) {
 
     override var currentX = 0f
     override var currentY = 0f
@@ -28,11 +30,14 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
     private var maxPoint = Point(0f, 0f)
     override var totalScaling = Point(0f, 0f)
     override var scalingPositions = HashMap<Point, Point>()
+    //override var drawingID = drawingId!!.toInt()
+    override var contentID: Int? = null
 
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
-        this.setAttribute("transformTranslate", "")
-        view.invalidate()
+        this.setAttribute("transformTranslate", "translate(0,0)")
+        requestCreation()
+        //view.invalidate()
     }
 
     override fun touchMove(view: View,
@@ -41,8 +46,11 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
                            eventY: Float)
     {
         val existingPoints = this.getAttribute("points")
-        this.setAttribute("points", "$existingPoints, $eventX $eventY")
-        view.invalidate()
+        this.setAttribute("points", "$existingPoints,$eventX $eventY")
+        if(contentID != null){
+            sendProgressToServer(DrawingStatus.InProgress)
+        }
+    //view.invalidate()
     }
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
@@ -51,7 +59,7 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
             selectedTools.add(this)
         }
         calculateDelimeterPoints()
-        view.invalidate()
+        //view.invalidate()
     }
 
     override fun getString(): String {
@@ -268,5 +276,36 @@ class FreeHand(prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineEle
             str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
                 " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
         }
+    }
+
+    private fun requestCreation(){
+        SocketHandler.getDrawingSocket()
+            .emit("createDrawingContent",
+                RequestCreation(drawingId).toJson())
+    }
+
+    override fun parse(parceableString: String?){
+        val pointsRegex = Regex(
+            """points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)"""")
+        val matchPoints = pointsRegex.find(parceableString!!, 1)
+        // Point exist in group 1
+        this.setAttribute("points", matchPoints!!.groups[1]!!.value)
+        val translateRegex = Regex("""translate\(([0-9.?]+),([0-9.?]+)\)""")
+        val matchTranslate = translateRegex.find(parceableString!!, 1)
+        totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
+        totalTranslation.y = matchTranslate!!.groups[2]!!.value.toFloat()
+        this.setAttribute("transformTranslate",
+            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        println(totalTranslation.x)
+        println(totalTranslation.y)
+    }
+
+    private fun sendProgressToServer(status: DrawingStatus){
+        selected = false
+        val drawingContent = DrawingContent(
+            drawingId = drawingId, userId = ClientInfo.userId,
+            contentId = contentID, drawing= getString(), status = status)
+        val socket = SocketHandler.getDrawingSocket()
+        socket.emit("drawingToServer", drawingContent.toJson())
     }
 }

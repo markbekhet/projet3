@@ -14,8 +14,9 @@ import org.w3c.dom.svg.SVGElement
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Rectangle(prefix: String, owner: AbstractDocument):
-    SVGOMRectElement(prefix, owner), Tool {
+class Rectangle(drawingId: Int,
+                prefix: String, owner: AbstractDocument):
+                SVGOMRectElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
     override var selected = false
@@ -25,6 +26,8 @@ class Rectangle(prefix: String, owner: AbstractDocument):
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
     private var selectionOffset = 0f
+    //override var drawingID = drawingId
+    override var contentID: Int?= null
     //var abstractTool = AbstractTool(this)
 
     override fun touchStart(view: View, eventX: Float,
@@ -250,5 +253,9 @@ class Rectangle(prefix: String, owner: AbstractDocument):
             str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
                 " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
         }
+    }
+
+    override fun parse(parceableString: String?){
+
     }
 }

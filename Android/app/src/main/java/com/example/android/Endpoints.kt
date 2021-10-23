@@ -7,3 +7,5 @@ const val profile = "/profile"
 
 const val localUrl = "http://192.168.0.112:3000"
 const val productionUrl = ""
+
+const val drawingNamespace = "/drawing"
