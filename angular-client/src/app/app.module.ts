@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app-component/app.component';
@@ -12,15 +13,11 @@ import { RegisterPageComponent } from './components/register-page/register-page.
 import { ChatService } from './services/chat.service';
 import { AuthService } from './services/auth.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { DrawViewComponent } from './components/draw-view/draw-view.component';
 import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
 import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
 import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
+import { OptionViewComponent } from './components/draw-view/toolbox-view/option-view/option-view.component';
 import { InteractionService } from './services/interaction-service/interaction.service';
 import { EntryPointComponent } from './components/entry-point/entry-point.component';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
@@ -31,6 +28,16 @@ import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.s
 import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
 import { ColorConvertingService } from './services/colorPicker/color-converting.service';
 import { ColorPickingService } from './services/colorPicker/color-picking.service';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+
+ 
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -46,6 +53,7 @@ const appRoutes: Routes = [
     LoginPageComponent,
     CommunicationPageComponent,
     RegisterPageComponent,
+    ErrorDialogComponent,
     DrawViewComponent,
     HeaderViewComponent,
     ToolboxViewComponent,
@@ -53,6 +61,7 @@ const appRoutes: Routes = [
     EntryPointComponent,
     NewDrawComponent,
     MiniColorPickerComponent,
+    OptionViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +76,10 @@ const appRoutes: Routes = [
     MatIconModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatGridListModule,
+    MatSidenavModule,
+    FlexLayoutModule,
+    MatDialogModule,
   ],
   providers: [
     AuthService,
