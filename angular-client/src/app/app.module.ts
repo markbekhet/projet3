@@ -27,6 +27,7 @@ import { ModalWindowService } from './services/window-handler/modal-window.servi
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { NewDrawComponent } from './components/new-draw/new-draw.component';
+import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -67,7 +68,8 @@ const appRoutes: Routes = [
     AuthService,
     ChatService,
     InteractionService,
-    ModalWindowService
+    ModalWindowService,
+    CanvasBuilderService
   ],
   bootstrap: [AppComponent]
 })
