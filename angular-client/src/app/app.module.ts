@@ -28,6 +28,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { NewDrawComponent } from './components/new-draw/new-draw.component';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
+import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
+import { ColorConvertingService } from './services/colorPicker/color-converting.service';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -49,6 +51,7 @@ const appRoutes: Routes = [
     SvgViewComponent,
     EntryPointComponent,
     NewDrawComponent,
+    MiniColorPickerComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,8 @@ const appRoutes: Routes = [
     ChatService,
     InteractionService,
     ModalWindowService,
-    CanvasBuilderService
+    CanvasBuilderService,
+    ColorConvertingService,
   ],
   bootstrap: [AppComponent]
 })
