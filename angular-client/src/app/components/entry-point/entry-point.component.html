@@ -2,7 +2,7 @@
     <h1 id= "title">ColorImage</h1>
     <div id = "buttonContainer">
         <div *ngFor= "let item of menuItems">
-            <button>
+            <button (click)= "execute(item.shortcutName)">
                 <mat-icon>{{item.icon}}</mat-icon>
                 <br>
                 <span class= "buttonText"> {{item.name}}</span>

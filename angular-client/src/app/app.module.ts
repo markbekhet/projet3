@@ -26,6 +26,7 @@ import { EntryPointComponent } from './components/entry-point/entry-point.compon
 import { ModalWindowService } from './services/window-handler/modal-window.service';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { NewDrawComponent } from './components/new-draw/new-draw.component';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -46,6 +47,7 @@ const appRoutes: Routes = [
     ToolboxViewComponent,
     SvgViewComponent,
     EntryPointComponent,
+    NewDrawComponent,
   ],
   imports: [
     BrowserModule,

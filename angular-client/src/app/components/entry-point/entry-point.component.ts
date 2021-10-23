@@ -4,6 +4,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { menuItems } from 'src/app/functionality';
 import { MenuItem } from 'src/app/models/menu-item';
+import { NewDrawComponent } from '../new-draw/new-draw.component';
 
 @Component({
   selector: 'app-entry-point',
@@ -29,5 +30,22 @@ export class EntryPointComponent implements OnInit {
     CONFIG.duration = DURATION; // temps de visibilité de la barre de bienvenue (ms)
     this.snackBar.open('Bienvenue !', undefined, CONFIG);
   }
-
+  openCreateNew(){
+    this.winService.openWindow(NewDrawComponent);
+  }
+  openGallery(){
+    // TODO: Implement
+  }
+  execute(shortcutName: string){
+    switch(shortcutName){
+      case 'Créer':{
+        this.openCreateNew();
+        break;
+      }
+      case 'Ouvrir':{
+        this.openGallery();
+        break;
+      }
+    }
+  }
 }
