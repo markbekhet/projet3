@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { DrawingContent } from 'src/app/models/drawing-content';
 
@@ -9,11 +9,25 @@ import { DrawingContent } from 'src/app/models/drawing-content';
 })
 export class InteractionService {
 
+  selectedTool: Subject<string> = new Subject<string>();
+  $selectedTool: Observable<string> = this.selectedTool.asObservable();
+
   drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
   $drawing: Observable<DrawingContent> = this.drawing.asObservable();
 
+  ref: Subject<ElementRef> = new Subject<ElementRef>()
+  $refObs: Observable<ElementRef> = this.ref.asObservable();
+
   emitDrawingContent(content: DrawingContent){
     this.drawing.next(content);
+  }
+
+  emitRef(el:ElementRef){
+    this.ref.next(el);
+  }
+
+  emitSelectedTool(tool: string){
+    this.selectedTool.next(tool);
   }
   constructor() {
 

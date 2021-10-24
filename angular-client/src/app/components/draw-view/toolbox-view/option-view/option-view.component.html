@@ -1,0 +1,20 @@
+<p *ngIf="!'Choisir Couleur'">{{ selectedTool}}</p>
+<div [ngSwitch]= "selectedTool">
+    <div
+    *ngSwitchCase="selectedTool === 'Rectangle' || selectedTool === 'Ellipse'? selectedTool : ''"
+        (mouseleave)="updateForms()"
+    >
+        <label> "Épaisseur du contour": {{lineThickness}} px </label>
+        <mat-slider thumbLabel type="range" min="1" max="30" [(ngModel)]="lineThickness"></mat-slider> <br />
+        <br id="label-space" />
+    </div>
+    <div *ngSwitchCase= "'Crayon'" (mouseleave)= "updateTools()">
+        <label> Épaisseur du trait: {{ lineThickness }} px </label>
+        <mat-slider thumbLabel type="range" min="1" max="50" [(ngModel)]="lineThickness"></mat-slider> <br />
+    </div>
+    <div *ngSwitchCase="'Efface'" (mouseleave)="updateTools()">
+        <label> Épaisseur du trait: {{ lineThickness }} px </label>
+        <mat-slider thumbLabel type="range" min="3" max="50" [(ngModel)]="lineThickness"></mat-slider> <br />
+    </div>
+
+</div>
