@@ -22,6 +22,7 @@ export class ToolboxViewComponent implements OnInit {
 
   buttonAction(name: string){
     this.interactionTool.emitSelectedTool(name);
+    this.activeButton = name;
   }
 
 }

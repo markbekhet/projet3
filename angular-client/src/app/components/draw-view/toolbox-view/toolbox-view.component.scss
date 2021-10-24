@@ -1,9 +1,37 @@
-:host {
+/*:host {
     padding:20px;
     //background-color: salmon;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    //height: 100%;
+    //width: 100%;
     //border-style: solid;
-}
+}*/
+.drawingTools{
+    width: auto;
+    border-right: thick;
+    float: left;
+    padding-bottom: 1vh; 
+    margin-left: 0;
+  }
+  
+  .toolsSideBar{
+    width: 4vw;
+    height : auto;
+  }
+  .selected {
+    color: #ff4081;
+  }
+  .notSelected{
+    color:white;
+  }
+  .toolIcon {
+    height: 3vh;
+    width: 3vh;
+    // alignement des icônes avec les boutons respectifs
+    position:absolute;
+    top: 50%;
+     left:50%;
+    transform: translate(-50%, -50%);
+    filter: invert(100%); // inversion des couleurs afin d'obtenir des icônes blancs
+  }

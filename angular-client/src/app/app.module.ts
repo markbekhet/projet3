@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -38,6 +38,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { IconsService } from './services/icons/icons.service';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
  
 
 const appRoutes: Routes = [
@@ -83,6 +85,9 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatIconModule,
     MatTooltipModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    FormsModule,
   ],
   providers: [
     AuthService,
