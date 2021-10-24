@@ -4,22 +4,15 @@ import android.content.Context
 import android.view.View
 import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
-import org.apache.batik.anim.dom.SVGOMMPathElement
-import org.apache.batik.anim.dom.SVGOMPathElement
 import org.apache.batik.anim.dom.SVGOMPolylineElement
 import org.apache.batik.dom.AbstractDocument
-import org.apache.batik.dom.svg.SVGOMPoint
-import org.apache.batik.dom.svg.SVGPathSegItem
-import org.w3c.dom.*
-import org.w3c.dom.svg.SVGElement
-import org.w3c.dom.svg.SVGPathElement
-import org.w3c.dom.svg.SVGPathSegList
 import java.lang.Float.min
-import kotlin.math.abs
 import kotlin.math.max
 
-class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : Tool, SVGOMPolylineElement(prefix, owner) {
-
+class FreeHand(private var drawingId: Int?,
+               prefix: String, owner: AbstractDocument) :
+            Tool, SVGOMPolylineElement(prefix, owner)
+{
     override var currentX = 0f
     override var currentY = 0f
     override var selected = false
@@ -59,12 +52,14 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
             selectedTools.add(this)
         }
         calculateDelimeterPoints()
+        calculateScalingPositions()
+        sendProgressToServer(DrawingStatus.Selected)
         //view.invalidate()
     }
 
     override fun getString(): String {
         str = ""
-        getOriginalString()
+        str += getOriginalString()
         if(selected){
             getSelectionString()
             getScalingPositionsString()
@@ -72,18 +67,19 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
         return str
     }
 
-    override fun getOriginalString(){
-        str += "<polyline "
+    override fun getOriginalString(): String{
+        var result = "<polyline "
         val startPoint = this.getAttribute("points")
         val translate = this.getAttribute("transformTranslate")
-        str += "points=\"$startPoint\" "
-        str += "transform=\"$translate\" "
-        str += " stroke=\"#000000\""
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
-        str += " stroke-linecap=\"round\""
-        str += " stroke-linejoin=\"round\""
-        str += "/>\n"
+        result += "points=\"$startPoint\" "
+        result += "transform=\"$translate\" "
+        result += " stroke=\"#000000\""
+        result += " stroke-width=\"3\""
+        result += " fill=\"none\""
+        result += " stroke-linecap=\"round\""
+        result += " stroke-linejoin=\"round\""
+        result += "/>\n"
+        return result
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
@@ -155,7 +151,9 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
             }
         }
         calculateDelimeterPoints()
-        view.invalidate()
+        //view.invalidate()
+        calculateScalingPositions()
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun translate(view:View, translationPoint: Point){
@@ -163,7 +161,8 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}," +
             "${totalTranslation.y})")
-        view.invalidate()
+        calculateScalingPositions()
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun getSelectionString() {
@@ -182,7 +181,7 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
         }
         str += " stroke=\"#0000FF\""
         str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        str += " fill=\"none\""
         str += " stroke-dasharray=\"4\""
         str += "/>\n"
     }
@@ -286,26 +285,29 @@ class FreeHand(var drawingId: Int?, prefix: String, owner: AbstractDocument) : T
 
     override fun parse(parceableString: String?){
         val pointsRegex = Regex(
-            """points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)"""")
+            """points="([-?0-9.?]*( )*[-?0-9.?]*(,[-?0-9.?]*( )*[-?0-9.?]*)*)"""")
         val matchPoints = pointsRegex.find(parceableString!!, 1)
         // Point exist in group 1
         this.setAttribute("points", matchPoints!!.groups[1]!!.value)
-        val translateRegex = Regex("""translate\(([0-9.?]+),([0-9.?]+)\)""")
-        val matchTranslate = translateRegex.find(parceableString!!, 1)
+        val translateRegex = Regex("""translate\(([-?0-9.?]+),([-?0-9.?]+)\)""")
+        val matchTranslate = translateRegex.find(parceableString, 1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
-        totalTranslation.y = matchTranslate!!.groups[2]!!.value.toFloat()
+        totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}, ${totalTranslation.y})")
-        println(totalTranslation.x)
-        println(totalTranslation.y)
+        calculateDelimeterPoints()
     }
 
     private fun sendProgressToServer(status: DrawingStatus){
-        selected = false
         val drawingContent = DrawingContent(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getString(), status = status)
+            contentId = contentID, drawing= getOriginalString(), status = status)
         val socket = SocketHandler.getDrawingSocket()
         socket.emit("drawingToServer", drawingContent.toJson())
+    }
+
+    override fun unselect(){
+        selected = false
+        sendProgressToServer(DrawingStatus.Done)
     }
 }

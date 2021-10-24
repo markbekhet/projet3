@@ -1,16 +1,9 @@
 package com.example.android.canvas
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.view.View
 import org.apache.batik.anim.dom.SVGOMRectElement
 import org.apache.batik.dom.AbstractDocument
-import org.apache.batik.dom.svg.SVGOMMatrix
-import org.apache.batik.dom.svg.SVGOMTransform
-import org.w3c.dom.Document
-import org.w3c.dom.svg.SVGElement
 import java.lang.Float.min
 import kotlin.math.abs
 
@@ -84,27 +77,28 @@ class Rectangle(drawingId: Int,
         return str
     }
 
-    override fun getOriginalString() {
-        str += "<rect "
+    override fun getOriginalString(): String {
+        var result = "<rect "
         val x = this.getAttribute("x").toFloat()
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width")
         val height = this.getAttribute("height")
         val transform = this.getAttribute("transformTranslate")
 
-        str += "x=\"${x}\" "
+        result += "x=\"${x}\" "
 
-        str += "y=\"${y}\" "
-        str += "width=\"$width\" "
-        str += "height=\"$height\" "
-        str += "transform=\"$transform\""
+        result += "y=\"${y}\" "
+        result += "width=\"$width\" "
+        result += "height=\"$height\" "
+        result += "transform=\"$transform\""
 
 
-        str += " stroke=\"#000000\""
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        result += " stroke=\"#000000\""
+        result += " stroke-width=\"3\""
+        result += " fill=\"none\""
 
-        str += "/>\n"
+        result += "/>\n"
+        return result
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
@@ -184,7 +178,7 @@ class Rectangle(drawingId: Int,
 
         str += " stroke=\"#0000FF\""
         str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        str += " fill=\"none\""
         str += " stroke-dasharray=\"4\""
         str += "/>\n"
     }
@@ -257,5 +251,9 @@ class Rectangle(drawingId: Int,
 
     override fun parse(parceableString: String?){
 
+    }
+
+    override  fun unselect(){
+        selected = false
     }
 }

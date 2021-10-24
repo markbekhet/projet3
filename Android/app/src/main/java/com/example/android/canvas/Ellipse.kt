@@ -3,12 +3,7 @@ package com.example.android.canvas
 import android.content.Context
 import android.view.View
 import org.apache.batik.anim.dom.SVGOMEllipseElement
-import org.apache.batik.anim.dom.SVGOMPolylineElement
-import org.apache.batik.anim.dom.SVGOMRectElement
-import org.apache.batik.anim.dom.SVGOMSVGElement
 import org.apache.batik.dom.AbstractDocument
-import org.w3c.dom.Document
-import org.w3c.dom.svg.SVGElement
 import java.lang.Float.min
 import kotlin.math.abs
 
@@ -66,7 +61,7 @@ class Ellipse(drawingId:Int , prefix: String, owner: AbstractDocument):
 
     override fun getString(): String {
         str = ""
-        getOriginalString()
+        str += getOriginalString()
         if(selected){
             getSelectionString()
             getScalingPositionsString()
@@ -74,33 +69,34 @@ class Ellipse(drawingId:Int , prefix: String, owner: AbstractDocument):
         return str
     }
 
-    override fun getOriginalString(){
-        str += "<ellipse "
+    override fun getOriginalString(): String{
+        var result = "<ellipse "
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
         val transform = this.getAttribute("transformTranslate")
 
         val mx = this.getAttribute("cx")
-        str += "cx=\"$mx\" "
+        result += "cx=\"$mx\" "
 
         val my = this.getAttribute("cy")
-        str += "cy=\"$my\" "
+        result += "cy=\"$my\" "
 
         rx?.let{
-            str += "rx=\"$it\" "
+            result += "rx=\"$it\" "
         }
         ry?.let{
-            str += "ry=\"$it\" "
+            result += "ry=\"$it\" "
         }
 
         transform?.let{
-            str += "transform=\"$it\""
+            result += "transform=\"$it\""
         }
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        result += " stroke-width=\"3\""
+        result += " fill=\"none\""
 
-        str += " stroke=\"#000000\""
-        str += "/>\n"
+        result += " stroke=\"#000000\""
+        result += "/>\n"
+        return result
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
@@ -184,7 +180,7 @@ class Ellipse(drawingId:Int , prefix: String, owner: AbstractDocument):
         }
         str += " stroke=\"#0000FF\""
         str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        str += " fill=\"none\""
         str += " stroke-dasharray=\"4\""
         str += "/>\n"
     }
@@ -252,5 +248,9 @@ class Ellipse(drawingId:Int , prefix: String, owner: AbstractDocument):
 
     override fun parse(parceableString: String?){
 
+    }
+
+    override fun unselect(){
+        selected = false
     }
 }

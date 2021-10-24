@@ -23,6 +23,7 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGTransform
 import org.xml.sax.helpers.XMLReaderFactory
 import org.xmlpull.v1.XmlSerializer
+import java.lang.RuntimeException
 
 private const val STROKE_WIDTH = 12f // has to be float
 val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
@@ -119,8 +120,13 @@ class CanvasView(context: Context): View(context) {
         }
 
         val svgString = getSVGString()
-        val svg = SVG.getFromString(svgString)
-        svg.renderToCanvas(canvas)
+        try{
+            val svg = SVG.getFromString(svgString)
+            svg.renderToCanvas(canvas)
+        } catch(e: Exception){
+            println(e.message)
+        }
+
 
     }
 
@@ -148,9 +154,8 @@ class CanvasView(context: Context): View(context) {
 
     private fun unSelectAllChildren(){
         for(tool in selectedTools){
-            tool.selected = false
+            tool.unselect()
         }
-        invalidate()
     }
 
     private fun manipulateReceivedDrawing(drawingContent: DrawingContent){
@@ -172,6 +177,7 @@ class CanvasView(context: Context): View(context) {
             val newTool = FreeHand(drawingContent.drawingId,
                 "polyline", doc as AbstractDocument)
             newTool.contentID = drawingContent.contentId!!
+            newTool.selected = drawingContent.status == DrawingStatus.Selected
             newTool.parse(drawingContent.drawing)
             svgRoot.appendChild(newTool)
         }
