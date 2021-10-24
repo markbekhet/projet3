@@ -29,6 +29,8 @@ class FreeHand(private var drawingId: Int?,
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
         this.setAttribute("transformTranslate", "translate(0,0)")
+        this.setAttribute("stroke-width", "3")
+        this.setAttribute("stroke", "#000000")
         requestCreation()
         //view.invalidate()
     }
@@ -71,10 +73,12 @@ class FreeHand(private var drawingId: Int?,
         var result = "<polyline "
         val startPoint = this.getAttribute("points")
         val translate = this.getAttribute("transformTranslate")
+        val stroke = this.getAttribute("stroke")
+        val strokeWidth = this.getAttribute("stroke-width")
         result += "points=\"$startPoint\" "
         result += "transform=\"$translate\" "
-        result += " stroke=\"#000000\""
-        result += " stroke-width=\"3\""
+        result += " stroke=\"$stroke\""
+        result += " stroke-width=\"$strokeWidth\""
         result += " fill=\"none\""
         result += " stroke-linecap=\"round\""
         result += " stroke-linejoin=\"round\""
@@ -295,6 +299,13 @@ class FreeHand(private var drawingId: Int?,
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        //strokeParse
+        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val matchStroke = strokeRegex.find(parceableString, 1)
+        this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
+        val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
+        val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
+        this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
         calculateDelimeterPoints()
     }
 
