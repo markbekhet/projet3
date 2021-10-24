@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -42,29 +43,30 @@
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/firstName"
+            android:id="@+id/longueur"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:ems="10"
             android:hint=" longueur du dessin"
-            android:inputType="textPersonName"
+            android:inputType="number"
             android:padding="10dp"
             android:textColor="#808080"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/lastName"
+            android:id="@+id/largeur"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:hint="largeur du dessin"
-            android:inputType="textPersonName"
+            android:inputType="number"
             android:padding="10dp"
             android:textColor="#808080"
             android:textSize="20sp" />
+
 
 
                 <LinearLayout
@@ -72,6 +74,39 @@
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
+                    <Switch
+                        android:id="@+id/visible"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:text="groupe public" />
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="229dp"
+                        android:layout_height="40dp"
+                        android:layout_marginBottom="10dp"
+                        android:width="40sp"
+                        android:ems="10"
+                        android:hint="mot de passe"
+                        android:visibility="gone"
+                        android:inputType="textPersonName"
+                        android:padding="10dp"
+                        android:textColor="#808080"
+                        android:textSize="20sp" />
+
+                    <Spinner
+                        android:id="@+id/sp_option"
+                        android:layout_width="match_parent"
+                        android:padding="20dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/result"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <Button
                         android:id="@+id/btnColorSelected"
                         android:layout_width="50sp"
@@ -95,8 +130,6 @@
             android:id="@+id/dessin"
             android:layout_width="229dp"
             android:layout_height="50dp"
-            android:clickable="false"
-            android:enabled="false"
             android:text="creer dessin" />
 
         <Button

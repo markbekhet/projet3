@@ -25,7 +25,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nom_dessin"
+                android:id="@+id/nom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -36,8 +36,8 @@
 
             <FrameLayout
                 android:id="@+id/fl_drawing_view_container"
-                android:layout_width="1000px"
-                android:layout_height="600px"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/background"
                 android:padding="1dp">
@@ -64,30 +64,31 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/ib_undo"
+                    android:id="@+id/selection"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:contentDescription="image"
+                    android:src="@drawable/select"
                     android:scaleType="fitXY"
-                    android:src="@drawable/undo"
+
                     android:visibility="visible" />
 
                 <ImageButton
-                    android:id="@+id/ib_redo"
+                    android:id="@+id/rectangle"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:contentDescription="image"
                     android:scaleType="fitXY"
-                    android:src="@drawable/redo"
+                    android:src="@drawable/ellipse"
                     android:visibility="visible" />
 
                 <ImageButton
-                    android:id="@+id/ib_brush"
+                    android:id="@+id/ellipse"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:contentDescription="image"
                     android:scaleType="fitXY"
-                    android:src="@drawable/brush" />
+                    android:src="@drawable/rectangle" />
 
                 <ImageButton
                     android:id="@+id/ib_earaser"

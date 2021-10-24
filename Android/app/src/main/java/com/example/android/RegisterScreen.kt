@@ -25,8 +25,8 @@ class RegisterScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
 
-        val firstName: EditText = findViewById(R.id.firstName)
-        val lastName: EditText = findViewById(R.id.lastName)
+        val firstName: EditText = findViewById(R.id.longueur)
+        val lastName: EditText = findViewById(R.id.largeur)
         val pseudo: EditText = findViewById(R.id.pseudonyme)
         val password: EditText = findViewById(R.id.password)
         val confirmPassword: EditText = findViewById(R.id.confirm_password)

@@ -1,12 +1,13 @@
 package com.example.android.profile
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.SeekBar
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -20,21 +21,51 @@ import kotlinx.android.synthetic.main.colorpicker.*
 import kotlinx.android.synthetic.main.colorpicker.colorA
 import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
+import kotlinx.android.synthetic.main.dessin.*
+import android.view.ViewGroup
+import android.widget.*
+import com.example.android.client.ClientInfo
+import com.example.android.client.Draw
+
 
 class createdraw : AppCompatActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        lateinit var option : Spinner
+        lateinit var result : TextView
+        lateinit var switch : Switch
+        var nouveau_dessin : Draw
+        var color:String= "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
+
+        switch=findViewById(R.id.visible) as Switch
+        option=findViewById(R.id.sp_option) as Spinner
+        result=findViewById(R.id.result) as TextView
+
+        val options = arrayOf("proteger","privee","public")
+        option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,options)
+        option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                result.text = options[p2]
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                result.text= "public"
+            }
+        }
         btnColorPicker.setOnClickListener {
             colorSelector.visibility = View.VISIBLE
+
         }
+        
 
         btnColorSelected.setOnClickListener {
             colorSelector.visibility = View.VISIBLE
         }
         dessin?.setOnClickListener(){
+            nouveau_dessin =  Draw(result.text.toString(),"",ClientInfo.userId,largeur.text.toString().toInt(),
+                longueur.text.toString().toInt(),nom_dessin.text.toString(),switch.isChecked,color)
                     startActivity(Intent(this, drawing::class.java))}
 
         annuler?.setOnClickListener(){
@@ -118,7 +149,7 @@ class createdraw : AppCompatActivity() {
         }
 
         colorOkBtn.setOnClickListener {
-            val color:String = getColorString()
+           color = getColorString()
             btnColorSelected.setBackgroundColor(Color.parseColor(color))
             colorSelector.visibility = View.GONE
         }
@@ -135,3 +166,6 @@ class createdraw : AppCompatActivity() {
         return "#" + a + r + g + b
     }
 }
+
+
+
