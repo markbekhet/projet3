@@ -66,7 +66,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     });
     this.canvBuilder.emitCanvas();
   }
-  @HostListener('resize')
+  @HostListener('window:resize')
   onResize(){
     this.mouseHandler.updateWindowSize();
   }
