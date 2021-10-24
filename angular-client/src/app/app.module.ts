@@ -40,7 +40,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { IconsService } from './services/icons/icons.service';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
- 
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -88,6 +88,7 @@ const appRoutes: Routes = [
     MatSliderModule,
     MatSlideToggleModule,
     FormsModule,
+    MatToolbarModule,
   ],
   providers: [
     AuthService,

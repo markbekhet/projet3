@@ -87,6 +87,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.mouseHandler.wheel(e);
   }
   ngAfterViewInit(): void {
+    // TODO; Use interactionService to unselect all the tools and select the tool chosen by the user
     if(this.canvas!== undefined){
       this.mouseHandler = new MouseHandler(this.canvas.nativeElement);
       this.createTools();
