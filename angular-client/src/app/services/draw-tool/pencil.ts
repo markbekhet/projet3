@@ -72,6 +72,7 @@ export class Pencil extends DrawingTool{
         s+=`\" stroke= "black" fill="none" `;
         //Replace the number by the width chosen in the component
         s+= `stroke-width= "5" `;
+        s+= `transform="translate(0,0)"`;
         s+= "/>"
         //console.log(s)
         return s;

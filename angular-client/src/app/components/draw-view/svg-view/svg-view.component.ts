@@ -21,11 +21,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   drawingSpace: ElementRef| undefined;
   @ViewChild("actualDrawing", {static: false}) doneDrawing!:ElementRef;
   @ViewChild("inProgress", {static: false}) inProgress!: ElementRef
-  height: number = 824;
-  width: number = 1024;
+  height!: number;
+  width!: number;
   backColor: string = "#ffffff";
   toolsContainer = new Map();
   mouseHandler!: MouseHandler;
+  contents: Map<number, SVGElement> = new Map();
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
@@ -135,4 +136,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
     }
   }
+
+  
 }
