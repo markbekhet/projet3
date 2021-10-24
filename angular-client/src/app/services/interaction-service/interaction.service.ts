@@ -9,6 +9,9 @@ import { DrawingContent } from 'src/app/models/drawing-content';
 })
 export class InteractionService {
 
+  selectedTool: Subject<string> = new Subject<string>();
+  $selectedTool: Observable<string> = this.selectedTool.asObservable();
+
   drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
   $drawing: Observable<DrawingContent> = this.drawing.asObservable();
 
@@ -21,6 +24,10 @@ export class InteractionService {
 
   emitRef(el:ElementRef){
     this.ref.next(el);
+  }
+
+  emitSelectedTool(tool: string){
+    this.selectedTool.next(tool);
   }
   constructor() {
 

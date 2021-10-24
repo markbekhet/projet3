@@ -36,7 +36,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
-
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { IconsService } from './services/icons/icons.service';
  
 
 const appRoutes: Routes = [
@@ -80,6 +81,8 @@ const appRoutes: Routes = [
     MatSidenavModule,
     FlexLayoutModule,
     MatDialogModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   providers: [
     AuthService,
@@ -89,6 +92,7 @@ const appRoutes: Routes = [
     CanvasBuilderService,
     ColorConvertingService,
     ColorPickingService,
+    IconsService,
   ],
   bootstrap: [AppComponent]
 })

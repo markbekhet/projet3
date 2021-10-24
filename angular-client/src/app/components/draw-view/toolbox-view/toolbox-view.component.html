@@ -1,4 +1,11 @@
-BOITE A OUTILS
+<!--BOITE A OUTILS
 <div fxLayout="column" fxLayoutAlign="end center" fxFlex="66" fxFlexOffset="100">
     <app-option-view fxFlex></app-option-view>
+</div>-->
+<div class= "drawingTools" *ngFor= "let func of funcTools">
+    <button class=" toolBtn" mat-icon-button color="primary" matTooltip={{func.name}} matTooltipPosition="after"
+        (click)="buttonAction(func.name)">
+        <mat-icon [ngClass]="(activeButton === func.name)? 'selected':'notSelected'" svgIcon={{func.icon}}>
+        </mat-icon>
+    </button>
 </div>
