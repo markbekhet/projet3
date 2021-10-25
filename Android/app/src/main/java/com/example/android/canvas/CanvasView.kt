@@ -61,7 +61,14 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = Ellipse(drawingId,"ellipse", doc as AbstractDocument)
+                    when(DrawingUtils.currentTool){
+                        ellipseString -> tool = Ellipse(drawingId,
+                            ellipseString, doc as AbstractDocument)
+                        rectString -> tool = Rectangle(drawingId,
+                            rectString, doc as AbstractDocument)
+                        pencilString -> tool = FreeHand(drawingId,
+                            pencilString, doc as AbstractDocument)
+                    }
                     tool!!.touchStart(this, event.x, event.y)
                     mode = ""
                 }
@@ -172,12 +179,22 @@ class CanvasView(context: Context): View(context) {
             }
         }
         if(!exist){
-            val newTool = Ellipse(drawingContent.drawingId,
-                "ellipse", doc as AbstractDocument)
             try {
-                newTool.contentID = drawingContent.contentId!!
-                newTool.selected = drawingContent.status == DrawingStatus.Selected
-                newTool.parse(drawingContent.drawing)
+                val toolRegex = Regex("""<([a-z]+)""")
+                println(drawingContent.drawing)
+                val toolMatch = toolRegex.find(drawingContent.drawing!!,1)
+                var newTool: Tool? = null
+                when(toolMatch!!.groups[1]!!.value){
+                    ellipseString -> newTool = Ellipse(drawingId,
+                        ellipseString, doc as AbstractDocument)
+                    rectString -> newTool = Rectangle(drawingId,
+                        rectString, doc as AbstractDocument)
+                    pencilString -> newTool = FreeHand(drawingId,
+                        pencilString, doc as AbstractDocument)
+                }
+                newTool?.contentID = drawingContent.contentId!!
+                newTool?.selected = drawingContent.status == DrawingStatus.Selected
+                newTool?.parse(drawingContent.drawing)
                 svgRoot.appendChild(newTool)
             } catch(e: Exception){
                 println(e.message)
