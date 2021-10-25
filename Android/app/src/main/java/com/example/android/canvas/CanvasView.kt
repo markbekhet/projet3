@@ -61,7 +61,7 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = Rectangle(drawingId,"rect", doc as AbstractDocument)
+                    tool = Ellipse(drawingId,"ellipse", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
                     mode = ""
                 }
@@ -172,8 +172,8 @@ class CanvasView(context: Context): View(context) {
             }
         }
         if(!exist){
-            val newTool = Rectangle(drawingContent.drawingId,
-                "rect", doc as AbstractDocument)
+            val newTool = Ellipse(drawingContent.drawingId,
+                "ellipse", doc as AbstractDocument)
             try {
                 newTool.contentID = drawingContent.contentId!!
                 newTool.selected = drawingContent.status == DrawingStatus.Selected
