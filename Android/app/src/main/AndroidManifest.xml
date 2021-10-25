@@ -19,17 +19,18 @@
             android:theme="@style/Theme.Android.NoActionBar" />
         <activity
             android:name=".drawing"
-            android:exported="true" />
-        <activity
-            android:name=".LandingPage"
-            android:exported="true"
-            android:label="@string/title_activity_landing_page"
-            android:theme="@style/Theme.Android.NoActionBar">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LandingPage"
+            android:exported="true"
+            android:label="@string/title_activity_landing_page"
+            android:theme="@style/Theme.Android.NoActionBar">
         </activity>
         <activity
             android:name=".profile.HistoryAndStatistics"
