@@ -6,11 +6,17 @@ import { CanvasBuilderService } from 'src/app/services/canvas-builder/canvas-bui
 import { ColorPickingService } from 'src/app/services/colorPicker/color-picking.service';
 import { InputObserver } from 'src/app/services/draw-tool/input-observer';
 import { Pencil } from 'src/app/services/draw-tool/pencil';
+import { Rectangle } from 'src/app/services/draw-tool/rectangle';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
-const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`)
-const TRANSLATE_REGX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`)
+const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`);
+const X_REGEX = new RegExp(`x="([-?0-9.?]*)"`);
+const Y_REGEX = new RegExp(`y="([-?0-9.?]*)"`);
+const WIDTH_REGEX = new RegExp(`width="([-?0-9.?]*)"`);
+const HEIGHT_REGEX = new RegExp(`height="([-?0-9.?]*)"`);
+const TRANSLATE_REGX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
+
 @Component({
   selector: 'app-svg-view',
   templateUrl: './svg-view.component.html',
@@ -101,6 +107,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       });
       this.bgroundChangedSubscription();
       this.interactionService.$drawing.subscribe((data:DrawingContent)=>{
+        //console.log(data.drawing);
         if(this.drawingSpace!== undefined){
           //console.log(data)
           this.drawContent(data);
@@ -119,23 +126,46 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools(){
-    const pencil = new Pencil(true, this.interactionService);
+    const pencil = new Pencil(false, this.interactionService);
+    const rectangle = new Rectangle(true, this.interactionService);
+
     this.toolsContainer.set('Crayon', pencil);
+    this.toolsContainer.set('Rectangle', rectangle);
   }
 
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent){
+    //console.log(data.drawing);
     if(data.status === DrawingStatus.InProgress){
       if(!this.contents.has(data.contentId)){
-        let newObj = this.createSVGPolyline(data.drawing);
-        this.renderer.appendChild(this.inProgress.nativeElement, newObj);
-        this.contents.set(data.contentId, newObj);
+        //new elements
+        let newObj!: SVGElement;
+        if (data.drawing.includes('polyline')) {
+          newObj = this.createSVGPolyline(data.drawing);
+        } else if (data.drawing.includes('rect')) {
+          console.log('here');
+          newObj = this.createSVGRect(data.drawing);
+        } else if (data.drawing.includes('ellipse')) {
+
+        }
+        
+        if (newObj !== null) {
+          this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+          this.contents.set(data.contentId, newObj);
+        }
       }
       else{
         let element = this.contents.get(data.contentId)
-        if(element!== undefined){
+        if(element !== undefined){
           //this.renderer.removeChild(this.inProgress.nativeElement,element);
+          if (data.drawing.includes('polyline')) {
           this.modifyPolyline(data.drawing, element);
+          } else if (data.drawing.includes('rect')) {
+          console.log(data.drawing);
+          this.modifyRect(data.drawing, element);
+          } else if (data.drawing.includes('ellipse')) {
+  
+          }
           this.renderer.appendChild(this.inProgress.nativeElement, element);
         }
       }
@@ -144,9 +174,14 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       let element = this.contents.get(data.contentId)
       if(element!== undefined){
         this.renderer.removeChild(this.inProgress.nativeElement, element);
-        this.modifyPolyline(data.drawing, element);
-        this.renderer.appendChild(this.doneDrawing.nativeElement, element);
+        if (data.drawing.includes('polyline')) {
+          this.modifyPolyline(data.drawing, element);
+        } else if (data.drawing.includes('rect')) {
+          this.modifyRect(data.drawing, element);
+        } else if (data.drawing.includes('ellipse')) {
 
+        }
+        this.renderer.appendChild(this.doneDrawing.nativeElement, element);
       }
     }
   }
@@ -168,13 +203,44 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   modifyPolyline(drawing: string, element: SVGElement){
     this.renderer.removeAttribute(element, 'points');
     let points_array = POINTS_REGEX.exec(drawing);
-    if(points_array!== null){
+    if (points_array!== null) {
       this.renderer.setAttribute(element,'points', points_array[1].toString());
       //this.renderer.setAttribute(element, 'points', points_array[1].toString())
       this.renderer.setAttribute(element,'stroke', 'black');
       this.renderer.setAttribute(element,'stroke-width','5');
     }
-    console.log(element.innerHTML);
   }
+
+  createSVGRect(drawing: string) {
+    console.log(drawing)
+    let element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
+    //console.log(element);
+    let x = X_REGEX.exec(drawing);
+    let y = Y_REGEX.exec(drawing);
+    let width = WIDTH_REGEX.exec(drawing);
+    let height = HEIGHT_REGEX.exec(drawing);
+    if(x !== null && y !== null && width !== null && height !== null){
+      this.renderer.setAttribute(element, 'x', x[1].toString());
+      this.renderer.setAttribute(element, 'y', y[1].toString());
+      this.renderer.setAttribute(element, 'width', width[1].toString());
+      this.renderer.setAttribute(element, 'height', height[1].toString());
+    }
+    return element;
+  }
+
+  modifyRect(drawing: string, element: SVGElement){
+    let width = WIDTH_REGEX.exec(drawing);
+    console.log(width);
+    let height = HEIGHT_REGEX.exec(drawing);
+    console.log(height);
+    if (width !== null && height !== null){
+      this.renderer.setAttribute(element, 'width', width[1].toString());
+      this.renderer.setAttribute(element, 'height', height[1].toString());
+    }
+    console.log(element);
+  }
+
+
+
 
 }
