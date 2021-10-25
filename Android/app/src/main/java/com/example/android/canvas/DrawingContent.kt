@@ -4,10 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.json.JSONObject
 
-enum class DrawingStatus{
-    InProgress, Done, Selected, Deleted
+enum class DrawingStatus(var int: Int){
+    InProgress(0), Done(1), Selected(2), Deleted(3)
 }
-data class DrawingContent(
+data class ContentDrawingSocket(
     var drawingId: Int? = null,
     private var userId: String? = null,
     var contentId: Int? = null,
@@ -15,11 +15,12 @@ data class DrawingContent(
     var status: DrawingStatus? = null
 ){
     fun toJson(): String{
+        println(Gson().toJson(this))
         return Gson().toJson(this)
     }
 
-    fun fromJson(json: String): DrawingContent{
-        return Gson().fromJson(json, DrawingContent::class.java)
+    fun fromJson(json: String): ContentDrawingSocket {
+        return Gson().fromJson(json, ContentDrawingSocket::class.java)
     }
 }
 

@@ -310,7 +310,7 @@ class FreeHand(private var drawingId: Int?,
     }
 
     private fun sendProgressToServer(status: DrawingStatus){
-        val drawingContent = DrawingContent(
+        val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
             contentId = contentID, drawing= getOriginalString(), status = status)
         val socket = SocketHandler.getDrawingSocket()

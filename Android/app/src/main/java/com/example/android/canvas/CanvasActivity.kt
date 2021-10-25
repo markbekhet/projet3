@@ -24,7 +24,7 @@ class CanvasActivity : AppCompatActivity() {
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                val dataTransformed = Gson().fromJson(data, DrawingContent::class.java)
+                val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
                 canvas.onReceivedDrawing(dataTransformed)
             }
         }

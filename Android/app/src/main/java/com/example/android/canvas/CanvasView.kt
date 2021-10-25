@@ -104,7 +104,7 @@ class CanvasView(context: Context): View(context) {
         println(tool!!.contentID)
     }
 
-    fun onReceivedDrawing(drawingContent: DrawingContent){
+    fun onReceivedDrawing(drawingContent: ContentDrawingSocket){
         //val drawingContent = DrawingContent().fromJson(json.toString())
         manipulateReceivedDrawing(drawingContent)
         invalidate()
@@ -158,7 +158,7 @@ class CanvasView(context: Context): View(context) {
         }
     }
 
-    private fun manipulateReceivedDrawing(drawingContent: DrawingContent){
+    private fun manipulateReceivedDrawing(drawingContent: ContentDrawingSocket){
         var i = 0
         var exist = false
         if(svgRoot.childNodes.length > 0){
@@ -176,10 +176,15 @@ class CanvasView(context: Context): View(context) {
         if(!exist){
             val newTool = FreeHand(drawingContent.drawingId,
                 "polyline", doc as AbstractDocument)
-            newTool.contentID = drawingContent.contentId!!
-            newTool.selected = drawingContent.status == DrawingStatus.Selected
-            newTool.parse(drawingContent.drawing)
-            svgRoot.appendChild(newTool)
+            try {
+                newTool.contentID = drawingContent.contentId!!
+                newTool.selected = drawingContent.status == DrawingStatus.Selected
+                newTool.parse(drawingContent.drawing)
+                svgRoot.appendChild(newTool)
+            } catch(e: Exception){
+                println(e.message)
+            }
+
         }
     }
 }
