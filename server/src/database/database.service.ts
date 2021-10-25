@@ -18,6 +18,7 @@ import { Drawing } from 'src/modules/drawing/drawing.entity';
 import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
 import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
 import { DrawingGateway } from 'src/modules/drawing/drawing.gateway';
+import { TeamRepository } from 'src/modules/team/team.repository';
 
 @Injectable()
 export class DatabaseService {
@@ -28,6 +29,7 @@ export class DatabaseService {
         @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
         private drawingGateway: DrawingGateway,
+        @InjectRepository(TeamRepository) private teamRepo: TeamRepository
         ){
             this.logger.log("Initialized");
         }
