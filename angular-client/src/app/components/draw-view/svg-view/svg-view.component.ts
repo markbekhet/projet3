@@ -133,7 +133,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools(){
@@ -149,7 +148,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent){
     //console.log(data.drawing);
-    if(data.status === DrawingStatus.InProgress){
+    if(data.status === DrawingStatus.InProgress.valueOf()){
       if(!this.contents.has(data.contentId)){
         //new elements
         let newObj!: SVGElement;
@@ -183,7 +182,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    else if(data.status === DrawingStatus.Done){
+    else if(data.status === DrawingStatus.Done.valueOf()){
       let element = this.contents.get(data.contentId)
       if(element!== undefined){
         this.renderer.removeChild(this.inProgress.nativeElement, element);
@@ -205,8 +204,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let points_array = POINTS_REGEX.exec(drawing);
     if(points_array !== null){
       this.renderer.setAttribute(element, 'points', points_array[1].toString());
-      this.renderer.setAttribute(element,'stroke', 'black');
-      this.renderer.setAttribute(element,'stroke-width','3');
+      this.renderer.setAttribute(element, 'stroke', 'black');
+      this.renderer.setAttribute(element, 'stroke-width', '3');
       this.renderer.setAttribute(element, 'stroke-linecap', 'round')
       this.renderer.setAttribute(element, 'fill', 'none');
     }
@@ -236,7 +235,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
-      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element, 'stroke', 'black');
       this.renderer.setAttribute(element, 'stroke-width','5');
       this.renderer.setAttribute(element, 'fill', 'none');
     }
