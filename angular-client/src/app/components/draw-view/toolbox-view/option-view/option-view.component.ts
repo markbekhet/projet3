@@ -24,7 +24,7 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
     this.lineThickness = DEF_THICK;
   }
   ngAfterViewInit(): void {
-    throw new Error('Method not implemented.');
+    //throw new Error('Method not implemented.');
   }
 
   ngOnInit(): void {
