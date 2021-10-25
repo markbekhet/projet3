@@ -9,6 +9,8 @@ import { Pencil } from 'src/app/services/draw-tool/pencil';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
+const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`)
+const TRANSLATE_REGX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`)
 @Component({
   selector: 'app-svg-view',
   templateUrl: './svg-view.component.html',
@@ -21,11 +23,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   drawingSpace: ElementRef| undefined;
   @ViewChild("actualDrawing", {static: false}) doneDrawing!:ElementRef;
   @ViewChild("inProgress", {static: false}) inProgress!: ElementRef
-  height: number = 824;
-  width: number = 1024;
+  height!: number;
+  width!: number;
   backColor: string = "#ffffff";
   toolsContainer = new Map();
   mouseHandler!: MouseHandler;
+  contents: Map<number, SVGElement> = new Map();
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
@@ -117,22 +120,61 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // A map is used instead of if/else
   createTools(){
     const pencil = new Pencil(true, this.interactionService);
-    this.toolsContainer.set('pencil', pencil);
+    this.toolsContainer.set('Crayon', pencil);
   }
 
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent){
     if(data.status === DrawingStatus.InProgress){
-      this.inProgress.nativeElement.innerHTML += data.drawing;
-    }
-    else if(data.status === DrawingStatus.Done){
-      this.doneDrawing.nativeElement.innerHTML += data.drawing;
-      const children: HTMLCollection = this.inProgress.nativeElement.children;
-      for(let i= 0; i< children.length; i++){
-        if(children[i].getAttribute('id') === data.contentId.toString()){
-          this.renderer.removeChild(this.inProgress.nativeElement, children[i]);
+      if(!this.contents.has(data.contentId)){
+        let newObj = this.createSVGPolyline(data.drawing);
+        this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+        this.contents.set(data.contentId, newObj);
+      }
+      else{
+        let element = this.contents.get(data.contentId)
+        if(element!== undefined){
+          //this.renderer.removeChild(this.inProgress.nativeElement,element);
+          this.modifyPolyline(data.drawing, element);
+          this.renderer.appendChild(this.inProgress.nativeElement, element);
         }
       }
     }
+    else if(data.status === DrawingStatus.Done){
+      let element = this.contents.get(data.contentId)
+      if(element!== undefined){
+        this.renderer.removeChild(this.inProgress.nativeElement, element);
+        this.modifyPolyline(data.drawing, element);
+        this.renderer.appendChild(this.doneDrawing.nativeElement, element);
+
+      }
+    }
   }
+  
+  createSVGPolyline(drawing: string){
+    console.log(drawing);
+    let element = this.renderer.createElement('polyline', 'svg') as SVGPolylineElement;
+    let points_array = POINTS_REGEX.exec(drawing);
+    if(points_array !== null){
+      this.renderer.setAttribute(element, 'points', points_array[1].toString());
+      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element,'stroke-width','3');
+      this.renderer.setAttribute(element, 'stroke-linecap', 'round')
+      this.renderer.setAttribute(element, 'fill', 'none');
+    }
+    return element;
+  }
+
+  modifyPolyline(drawing: string, element: SVGElement){
+    this.renderer.removeAttribute(element, 'points');
+    let points_array = POINTS_REGEX.exec(drawing);
+    if(points_array!== null){
+      this.renderer.setAttribute(element,'points', points_array[1].toString());
+      //this.renderer.setAttribute(element, 'points', points_array[1].toString())
+      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element,'stroke-width','5');
+    }
+    console.log(element.innerHTML);
+  }
+
 }

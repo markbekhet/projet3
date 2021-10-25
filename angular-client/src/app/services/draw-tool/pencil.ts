@@ -61,7 +61,7 @@ export class Pencil extends DrawingTool{
         if(p.length < 2){
             return s;
         }
-        s= `<polyline id= "${this.drawingContentId}" `;
+        s= `<polyline `;
         s+=  `points="`
         for(let i= 0; i< p.length; i++){
             s+= `${p[i].x} ${p[i].y}`;
@@ -69,10 +69,11 @@ export class Pencil extends DrawingTool{
                 s+=",";
             }
         }
-        s+=`\" stroke= "black" fill="none" `;
+        s+=`\" stroke="#000000" fill="none" `;
         //Replace the number by the width chosen in the component
-        s+= `stroke-width= "5" `;
-        s+= "/>"
+        s+= `stroke-width="5" `;
+        s+= `transform="translate(0,0)"`;
+        s+= "/>\n"
         //console.log(s)
         return s;
     }
