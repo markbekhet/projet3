@@ -35,14 +35,15 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   }
 
   @SubscribeMessage("drawingToServer")
-  async diffuseDrawing(@MessageBody()drawing: ContentDrawingSocket){
+  async diffuseDrawing(@MessageBody()drawing: any){
     console.log('here');
     console.log(drawing);
-    if(drawing.status === DrawingStatus.Done){
-      await this.drawingContentRepo.update(drawing.contentId,{content:drawing.drawing})
+    const drawingMod: ContentDrawingSocket = JSON.parse(drawing);
+    if(drawingMod.status === DrawingStatus.Done.valueOf()){
+      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing})
     }
-    if(drawing.status === DrawingStatus.Deleted){
-      await this.drawingContentRepo.delete(drawing.contentId);
+    if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
+      await this.drawingContentRepo.delete(drawingMod.contentId);
     }
     //let parsedDrawing:SocketDrawing = JSON.parse(drawing)
     //console.log(drawing.drawingId,drawing.contentId, drawing.drawing)
