@@ -7,14 +7,16 @@ import { FormControl } from '@angular/forms';
 export class ValidationService {
   
   //https://medium.com/factory-mind/regex-cookbook-most-wanted-regex-aa721558c3c1
-  static readonly USERNAME_REGEX: RegExp = new RegExp(/^[a-z0-9_-]{3,}$/);
+  static readonly USERNAME_REGEX: RegExp = new RegExp(/^[a-zA-Z0-9_-]{3,}$/);
   static readonly EMAIL_REGEX: RegExp = new RegExp(/^\S+@\S+$/);
-  static readonly PASSWORD_REGEX: RegExp = new RegExp(/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
+  static readonly PASSWORD_REGEX: RegExp = new RegExp(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
   
   constructor() { }
   
   static usernameValidator(control: FormControl) {
     if (control.value.match(ValidationService.USERNAME_REGEX)) {
+      return null;
+    } else if (control.value.match(ValidationService.EMAIL_REGEX)) {
       return null;
     } else {
       return { invalidUsername: true };

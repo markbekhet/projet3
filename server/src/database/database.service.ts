@@ -1,9 +1,6 @@
 import { HttpCode, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WsException } from '@nestjs/websockets';
-import { Validator } from 'class-validator';
-import { identity } from 'rxjs';
-import { ModificationParameters, Status, UserCredentials, UserRegistrationInfo } from 'src/interfaces/user';
+import { Status} from 'src/enumerators/user-status';
 import { ConnectionHistory } from 'src/modules/connectionHistory/connectionHistory.entity';
 import { ConnectionHistoryRespository } from 'src/modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistory } from 'src/modules/disconnectionHistory/disconnectionHistory.entity';
@@ -11,6 +8,16 @@ import { DisconnectionHistoryRespository } from 'src/modules/disconnectionHistor
 import { User } from 'src/modules/user/user.entity';
 import { UserRespository } from 'src/modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/modules/user/create-user.dto';
+import { LoginDto } from 'src/modules/user/login.dto';
+import { UpdateUserDto } from 'src/modules/user/update-user.dto';
+import { DrawingRepository } from 'src/modules/drawing/drawing.repository';
+import { CreateDrawingDto } from 'src/modules/drawing/create-drawing.dto';
+import { visibility } from 'src/enumerators/visibility';
+import { Drawing } from 'src/modules/drawing/drawing.entity';
+import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
+import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
+import { DrawingGateway } from 'src/modules/drawing/drawing.gateway';
 
 @Injectable()
 export class DatabaseService {
@@ -18,11 +25,14 @@ export class DatabaseService {
     constructor(
         @InjectRepository(UserRespository) private userRepo: UserRespository,
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
-        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository
+        @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
+        @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
+        private drawingGateway: DrawingGateway,
         ){
             this.logger.log("Initialized");
         }
-    async createUser(registrationInfo: UserRegistrationInfo){
+        //-------------------------------------------------- User services ---------------------------------------------------------------------
+    async createUser(registrationInfo: CreateUserDto){
         
         console.log(registrationInfo)
         
@@ -38,12 +48,13 @@ export class DatabaseService {
     async getUser(userId: string) {
         
         return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "nbAuthoredDrawings", "nbCollaboratedDrawings", "pseudo", "status", "emailAddress"],
+            select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+                "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
             relations:["connectionHistories", "disconnectionHistories"]
         })
     }
     
-    async login(userCredentials: UserCredentials){
+    async login(userCredentials: LoginDto){
         let user: User;
         user = await this.userRepo.findOne({
             where: [
@@ -55,10 +66,20 @@ export class DatabaseService {
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
         }
         else{
+            if(user.status == Status.ONLINE || user.status == Status.BUSY){
+                throw new HttpException("User is already logged in", HttpStatus.BAD_REQUEST);
+            }
             let userExist = await bcrypt.compare(userCredentials.password, user.password);
             if(!userExist){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
+            
+            await this.userRepo.update(user.id, {
+                status: Status.ONLINE
+            })
+            let newConnection = new ConnectionHistory();
+            newConnection.user = user;
+            this.connectionRepo.save(newConnection);
             return user.id;
         }
     }
@@ -76,13 +97,20 @@ export class DatabaseService {
             this.disconnectionRepo.save(newDisconnection)
         }
     }
-    async modifyUserProfile(userId: string, newParameters: ModificationParameters) {
+    async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         const user = await this.userRepo.findOne(userId);
         if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
             await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
         }
         else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
@@ -93,6 +121,13 @@ export class DatabaseService {
             }
         }
         else{
+            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            }
+            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+            if(!validOldPassword){
+                throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+            }
             const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
             if(samePassword){
                 throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
@@ -103,9 +138,76 @@ export class DatabaseService {
                     password: hashedPassword,
                     pseudo: newParameters.newPseudo
                 })
-        }
+            }
         }
     }
+    async getUserDrawings(userId: string){
+        const drawings = await this.drawingRepo.find({
+            where: [
+                {visibility: visibility.PUBLIC},
+                {ownerId: userId, visibility:visibility.PRIVATE},
+                {visibility: visibility.PROTECTED},
+            ],
+            relations:["contents"],
+        })
+        return await this.getGallery(drawings);
+    }
+    async getGallery(drawings: Drawing[]){
+        let drawingCollection: GalleryDrawing[] = []
+        for(const drawing of drawings){
+            let username: string = null;
+            let firstName: string = null;
+            let lastName: string = null;
+            let email: string = null;
+            // to change with collaboration team
+            const user = await this.userRepo.findOne(drawing.ownerId);
+            if(drawing.useOwnerPrivateInformation){
+                firstName = user.firstName;
+                lastName = user.lastName;
+                email = user.emailAddress;
+            }
+            username = user.pseudo;
+            const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
+                                        ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
+                                        ownerLastName: lastName, contents: drawing.contents}
+            if(drawingCollection.indexOf(galleryDrawing) === -1){
+                drawingCollection.push(galleryDrawing);
+            }
+        };
+        console.log(drawingCollection)
+        return drawingCollection;
+
+    }
+    //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
+    async createDrawing(drawingInformation: CreateDrawingDto){
+        if(drawingInformation.visibility === visibility.PROTECTED){
+            if(drawingInformation.password === undefined || drawingInformation.password === null){
+                throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
+            } 
+        }
+        const drawing = Drawing.createDrawing(drawingInformation);
+        const newDrawing = await this.drawingRepo.save(drawing);
+        this.drawingGateway.notifyAllUsers(newDrawing);
+        return newDrawing.id;
+    }
+    async getDrawingById(drawingId: number, password: string){
+        const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
+        if(drawing.visibility === visibility.PROTECTED){
+            const passwordMatch = await bcrypt.compare(password, drawing.password);
+            if(!passwordMatch){
+                throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return drawing;
+    }
+    async deleteDrawing(deleteInformation: DeleteDrawingDto){
+        const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
+        if(drawing.ownerId !== deleteInformation.userId){
+            throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
+        }
+        await this.drawingRepo.delete(drawing.id)
+    }
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){
         if(password.length < 8){
             throw new HttpException("The password must be longer than or equal to 8 characters", HttpStatus.BAD_REQUEST);

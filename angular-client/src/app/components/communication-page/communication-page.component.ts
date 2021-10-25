@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ChatService } from 'src/app/services/chat.service';
-import { RequestService } from 'src/app/services/request.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Message, CustomDate } from 'src/app/models/MessageMeta';
 
 @Component({
@@ -21,7 +21,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private activeRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private chat: ChatService,
-    private request: RequestService
+    private auth: AuthService
   ) {
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [Validators.required]),
@@ -76,8 +76,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   disconnect(): void {
     try {
-      this.request.disconnectClient(this.username).subscribe(
-        () => {
+      this.auth.disconnect().subscribe(
+        (code) => {
           this.router.navigate(['/']);
         }, // this.username = username
         (err) => {

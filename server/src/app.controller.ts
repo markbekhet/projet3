@@ -1,12 +1,14 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
-import { ModificationParameters, UserCredentials, UserRegistrationInfo } from './interfaces/user';
+import { CreateUserDto } from './modules/user/create-user.dto';
+import { LoginDto } from './modules/user/login.dto';
+import { UpdateUserDto } from './modules/user/update-user.dto';
+
 
 const LOGIN_URL = "/login";
 const REGISTRATION_URL = "/register";
-const PROFILE_URL = "/profile";
-const DISCONNECT_URL = "/disconnect";
+
 
 @Controller()
 export class AppController {
@@ -18,7 +20,7 @@ export class AppController {
   }
 
   @Post(REGISTRATION_URL)
-  async registerUser(@Body() registrationInfo: UserRegistrationInfo){
+  async registerUser(@Body() registrationInfo: CreateUserDto){
     console.log(registrationInfo);
     debugger
     //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
@@ -29,26 +31,9 @@ export class AppController {
       throw new HttpException(ex.message, HttpStatus.BAD_REQUEST);
     }
   }
-
-  @Get(PROFILE_URL+"/:userId")
-  async getUserProfile(@Param("userId") userId: string){
-    console.log(`Controller received ${userId} to get the user profile`)
-    return await this.databaseService.getUser(userId);
-  }
-
   @Post(LOGIN_URL)
-  async login(@Body() userCredentials: UserCredentials){
-      return await this.databaseService.login(userCredentials)
-  }
-  @Post(DISCONNECT_URL+"/:userId")
-  async disconnectUser(@Param("userId") userId: number){
-    await this.databaseService.disconnect(userId);
-    return HttpStatus.OK
-  }
-
-  @Put(PROFILE_URL+ "/:userId")
-  async modifyProfile(@Param("userId") userId: string, @Body() newParameters: ModificationParameters){
-    await this.databaseService.modifyUserProfile(userId, newParameters);
-    return HttpStatus.OK
-  }
+    async login(@Body() userCredentials: LoginDto){
+        return await this.databaseService.login(userCredentials)
+    }
+  
 }

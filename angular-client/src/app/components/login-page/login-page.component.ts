@@ -1,10 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
-import { RequestService } from '@services/request.service';
-import { ValidationService } from '@services/validation.service';
-import { UserCredentials } from '@common/user';
+import { ValidationService } from 'src/app/services/validation.service';
+import { UserCredentials } from '../../../../../common/user';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-login-page',
@@ -12,22 +15,17 @@ import { UserCredentials } from '@common/user';
   styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent implements OnInit {
-  username: string = '';
-  password: string = '';
-
   inputForm: FormGroup;
   usernameExists: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private request: RequestService
+    private auth: AuthService,
+    public errorDialog: MatDialog
   ) {
     this.inputForm = this.formBuilder.group({
-      username: formBuilder.control('', [
-        Validators.required,
-        ValidationService.usernameValidator,
-      ]),
+      username: formBuilder.control('', [Validators.required]),
       password: formBuilder.control('', [Validators.required]),
     });
   }
@@ -38,55 +36,45 @@ export class LoginPageComponent implements OnInit {
   // reference https://www.youtube.com/watch?v=9YuoQrvQ7R8
   // adapted from https://loiane.com/2017/08/angular-reactive-forms-trigger-validation-on-submit/
   public async onSubmit(form: FormGroup) {
-    this.username = form.value.username;
-    this.password = form.value.password;
-
     const user: UserCredentials = {
       username: form.value.username,
       password: form.value.password,
     };
 
-    const token: string = '8d7eaf18-9350-4b27-be01-222d76f82883';
-
     try {
-      this.request.login(user).subscribe(
+      this.auth.login(user).subscribe(
         (accepted) => {
           // this.router.navigate(['/' + this.username]);
-          console.log(`${this.username} is logged in`);
+          console.log(`${user.username} is logged in`);
+          form.reset();
         },
         (error) => {
-          console.log(error);
+          const errorCode = JSON.parse(
+            (error as HttpErrorResponse).error
+          ).message;
+          let interfaceErrorCode;
+          switch (errorCode) {
+            case this.auth.USER_LOGGED_IN:
+              interfaceErrorCode =
+                'Cet utilisateur est déjà connecté au serveur !';
+              break;
+            case this.auth.NO_USER_FOUND:
+              interfaceErrorCode =
+                "Ce nom d'utilisateur ou adresse courriel n'existe pas !";
+              break;
+            case this.auth.INCORRECT_PASSWORD:
+              interfaceErrorCode = 'Le mot de passe est incorrect !';
+              break;
+            default:
+              break;
+          }
+          this.errorDialog.open(ErrorDialogComponent, {
+            data: interfaceErrorCode,
+          });
+          this.resetForm();
         }
       );
     } catch (e: any) {}
-
-    /*
-    if(this.checkIfEmail(form.value['username'])) {
-
-    } else {
-
-    }
-    */
-
-    /*
-    this.username = this.inputForm.value['username'];
-
-    try {
-      this.request.connectClient(this.username)
-      .subscribe(
-        accepted => {
-          this.usernameExists = false;
-          this.router.navigate(['/' + this.username]); //this.username = username
-        },
-        forbidden => this.usernameExists = true
-      );
-
-      // this.usernameExists = false;
-    } catch (e: any) { }
-      finally {
-        this.inputForm.reset();
-      }
-      */
   }
 
   public checkError(control: string, error: string) {
@@ -94,5 +82,12 @@ export class LoginPageComponent implements OnInit {
       this.inputForm.controls[control].dirty &&
       this.inputForm.controls[control].hasError(error)
     );
+  }
+
+  private resetForm() {
+    this.inputForm = this.formBuilder.group({
+      username: this.formBuilder.control('', [Validators.required]),
+      password: this.formBuilder.control('', [Validators.required]),
+    });
   }
 }

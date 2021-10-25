@@ -4,7 +4,7 @@
     <string name="username">Nom d\'utilisateur</string>
     <string name="send">envoyé</string>
     <string name="enter_message">Entrez votre message</string>
-    <string name="user_error">Ce nom est utilise par un autre client. Veuillez saisir un autre nom.</string>
+    <string name="user_error">Le mot de passe ou le nom de l\'utilisateur est errone. .</string>
     <string name="general_info">Information générale</string>
     <string name="modify_param">Modification des paramètres</string>
     <string name="history">Statistique et historique</string>
@@ -14,7 +14,7 @@
     <string name="nickname">Pseudonyme</string>
     <string name="modifyParams">Modifier les paramètres du compte</string>
     <string name="viewHistoryAndStatistics">Consulter l\'historique et les statistiques</string>
-    <string name="userProfileTitle">Profil utilisateur</string>
+    <string name="userProfileTitle">Profile utilisateur</string>
 
 
 </resources>

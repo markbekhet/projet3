@@ -11,6 +11,11 @@ import { typeormConfig } from './config/typeorm.config';
 import { UserRespository } from './modules/user/user.repository';
 import { ConnectionHistoryRespository } from './modules/connectionHistory/connectionHistory.repository';
 import { DisconnectionHistoryRespository } from './modules/disconnectionHistory/disconnectionHistory.repository';
+import { UserController } from './modules/user/user.controller';
+import { DrawingRepository } from './modules/drawing/drawing.repository';
+import { DrawingController } from './modules/drawing/drawing.controller';
+import { DrawingGateway } from './modules/drawing/drawing.gateway';
+import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 
 @Module({
   imports: [
@@ -19,9 +24,11 @@ import { DisconnectionHistoryRespository } from './modules/disconnectionHistory/
       UserRespository,
       ConnectionHistoryRespository,
       DisconnectionHistoryRespository,
+      DrawingRepository,
+      DrawingContentRepository,
     ])
   ],
-  controllers: [AppController, ConnectionController],
-  providers: [AppService, ConnectionService, ChatGateway, DatabaseService],
+  controllers: [AppController, ConnectionController, UserController, DrawingController],
+  providers: [AppService, ConnectionService, ChatGateway, DatabaseService, DrawingGateway],
 })
 export class AppModule {}

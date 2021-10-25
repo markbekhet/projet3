@@ -1,0 +1,61 @@
+/*:host {
+    padding:20px;
+    //background-color: yellow;
+    flex-direction: column;
+    //height: 100%;
+    //width: 100%;
+    //border-style: solid;
+}*/
+label,
+p,
+mat-radio-button {
+    color: lightgray;
+}
+
+p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+img {
+    float: right;
+    padding-left: 5px;
+}
+
+#pipette-prev {
+    position: relative;
+}
+
+.btn-container {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    gap: 25%;
+}
+
+.mode-btn {
+    padding-top: 1vh;
+}
+
+#poly-slider {
+    padding-top: 5vh;
+}
+
+.notSelected {
+    filter: invert(50%);
+}
+
+@media only screen and (max-height: 800px) {
+    .btn-container {
+        gap: 0%;
+    }
+
+    #poly-slider,
+    .mode-btn {
+        padding-top: 0vh;
+    }
+
+    #label-space {
+        display: none;
+    }
+}

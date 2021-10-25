@@ -1,5 +1,5 @@
-import { Status } from "src/interfaces/user";
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Status } from "src/enumerators/user-status";
+import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ConnectionHistory } from "../connectionHistory/connectionHistory.entity";
 import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHistory.entity";
 import {v4 as uuidv4} from 'uuid';
@@ -24,12 +24,6 @@ export class User extends BaseEntity{
     @Column()
     password: string;
 
-    @Column({default: 0})
-    nbCollaboratedDrawings: number;
-
-    @Column({default: 0})
-    nbAuthoredDrawings: number;
-
     @Column({
         default: Status.ONLINE
     })
@@ -39,6 +33,30 @@ export class User extends BaseEntity{
         unique: true,
     })
     pseudo: string;
+
+    @Column({
+        default: 0
+    })
+    averageCollaborationTime: number;
+    @Column({
+        default: 0,
+    })
+    totalCollaborationTime: number;
+
+    @Column({
+        default: 0
+    })
+    numberCollaborationTeams: number;
+
+    @Column({
+        default: 0
+    })
+    numberCollaboratedDrawings: number;
+
+    @Column({
+        default: 0 
+    })
+    numberAuthoredDrawings: number;
 
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
     connectionHistories: ConnectionHistory[]
@@ -51,13 +69,10 @@ export class User extends BaseEntity{
         const salt = 10;
         this.password = await bcrypt.hash(this.password, salt)
     }
-    /*@BeforeInsert()
-    async setId(){
-        this.id = uuidv4();
-    }*/
 
     public static createUserProfile(UserRegistrationInfo):User{
         let newUserProfile = new User();
+        //console.log(newUserProfile.numberAuthoredDrawings, newUserProfile)
         newUserProfile.firstName = UserRegistrationInfo.firstName;
         newUserProfile.lastName = UserRegistrationInfo.lastName;
         newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;

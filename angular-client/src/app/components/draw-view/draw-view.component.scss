@@ -1,0 +1,49 @@
+.body {
+    margin: 0;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr;
+    grid-template-rows: 0fr 1fr 0fr;
+    grid-template-areas: "header header header header" "nav content content content" "nav content content content";
+    width: 100vw;
+    height: 100vh;
+}
+
+header {
+    grid-area: header;
+}
+
+nav {
+    grid-area: nav;
+    background-color: rgb(161, 157, 157);
+   
+}
+
+main {
+    background-color: rgb(182, 179, 179);
+    grid-area: content;
+
+    overflow: auto;
+    
+}
+
+.wrapper {
+    //margin-left: auto;
+    //margin-right: auto;
+    
+    width: auto;
+    height: auto;
+}
+
+#colorPicker{
+  float:left; 
+}
+
+#toolBox{
+  float:left; 
+}
+#toolAttributes{
+  float:left; 
+}
