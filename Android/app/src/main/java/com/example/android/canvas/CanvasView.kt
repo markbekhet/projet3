@@ -61,9 +61,8 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = FreeHand(drawingId,"polyline", doc as AbstractDocument)
+                    tool = Rectangle(drawingId,"rect", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
-                    //svgRoot.appendChild(tool)
                     mode = ""
                 }
             }
@@ -101,11 +100,9 @@ class CanvasView(context: Context): View(context) {
     fun receiveContentID(json: JSONObject){
         val getContentId = GetContentId(0).fromJson(json.toString())
         tool!!.contentID = getContentId.contentId
-        println(tool!!.contentID)
     }
 
     fun onReceivedDrawing(drawingContent: ContentDrawingSocket){
-        //val drawingContent = DrawingContent().fromJson(json.toString())
         manipulateReceivedDrawing(drawingContent)
         invalidate()
     }
@@ -142,6 +139,7 @@ class CanvasView(context: Context): View(context) {
         }
 
         str += "</svg>"
+        println(str)
         return str
     }
 
@@ -174,8 +172,8 @@ class CanvasView(context: Context): View(context) {
             }
         }
         if(!exist){
-            val newTool = FreeHand(drawingContent.drawingId,
-                "polyline", doc as AbstractDocument)
+            val newTool = Rectangle(drawingContent.drawingId,
+                "rect", doc as AbstractDocument)
             try {
                 newTool.contentID = drawingContent.contentId!!
                 newTool.selected = drawingContent.status == DrawingStatus.Selected

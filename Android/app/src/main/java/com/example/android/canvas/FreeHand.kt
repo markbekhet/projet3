@@ -32,7 +32,6 @@ class FreeHand(private var drawingId: Int?,
         this.setAttribute("stroke-width", "3")
         this.setAttribute("stroke", "#000000")
         requestCreation()
-        //view.invalidate()
     }
 
     override fun touchMove(view: View,
@@ -45,7 +44,6 @@ class FreeHand(private var drawingId: Int?,
         if(contentID != null){
             sendProgressToServer(DrawingStatus.InProgress)
         }
-    //view.invalidate()
     }
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
@@ -56,7 +54,6 @@ class FreeHand(private var drawingId: Int?,
         calculateDelimeterPoints()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)
-        //view.invalidate()
     }
 
     override fun getString(): String {
@@ -155,7 +152,6 @@ class FreeHand(private var drawingId: Int?,
             }
         }
         calculateDelimeterPoints()
-        //view.invalidate()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)
     }
