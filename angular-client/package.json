@@ -1,6 +1,6 @@
 {
   "name": "angular-client",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Windows Application pour Projet 3",
   "main": "main.js",
   "author": "Équipe 101",
@@ -44,17 +44,23 @@
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "@types/socket.io-client": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "4.28.2",
-    "@typescript-eslint/parser": "4.28.2",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "electron": "^15.0.0",
     "electron-packager": "^15.4.0",
     "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-airbnb-typescript": "^14.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "^4.0.0",
     "jasmine-core": "~3.7.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "prettier": "^2.4.1",
     "typescript": "~4.2.3"
   }
 }

@@ -1,30 +1,36 @@
 <!-- Reactive form (with validators) -->
+
 <div class="test" layout="column" layout-align="center center">
-  <h1>COLORIMAGE</h1>
-  <form [formGroup]='inputForm' (ngSubmit)='onSubmit(inputForm)'>
-    <div class="form-container" layout-align="center center"> <!-- class="form-container"-->
-      <mat-form-field>
-        <mat-label>Nom d'utilisateur</mat-label>
-        <input type="text" matInput placeholder="Nom d'utilisateur" formControlName='username'>
-        <mat-error *ngIf="checkError('username', 'required')">*ERREUR : Le nom d'utilisateur est requis!</mat-error>
-        <mat-error *ngIf="checkError('username', 'invalidUsername') && !checkError('username', 'required')">*ERREUR : Le nom d'utilisateur n'est pas valide!</mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field>
-        <mat-label>Mot de passe</mat-label>
-        <input type="password" matInput placeholder="Mot de passe" formControlName='password'>
-        <mat-error *ngIf="checkError('password', 'required')">*ERREUR : Le mot de passe est requis!</mat-error>
-      </mat-form-field>
-      <br>
-      <button mat-icon-button [disabled]='inputForm.invalid'>
-        Connexion <mat-icon>login</mat-icon>
-      </button>
-      <br>
-      <div>
-        Si vous n'avez pas un compte,
-        <a matLine routerLink='/register'>cliquez ici</a>
-        pour en créer un!
-      </div>
-    </div>
-  </form>
+    <h1>COLORIMAGE</h1>
+    <form [formGroup]="inputForm" (ngSubmit)="onSubmit(inputForm)">
+        <div class="form-container" layout-align="center center">
+            <mat-form-field>
+                <mat-label>Nom d'utilisateur</mat-label>
+                <input type="text" matInput placeholder="Nom d'utilisateur" formControlName="username" />
+                <mat-error *ngIf="checkError('username', 'required')">*ERREUR : Le nom d'utilisateur est requis!
+                </mat-error>
+                <mat-error *ngIf="
+                        checkError('username', 'invalidUsername') &&
+                        !checkError('username', 'required')
+                    ">
+                    *ERREUR : Le nom d'utilisateur n'est pas valide!</mat-error>
+            </mat-form-field>
+            <br />
+            <mat-form-field>
+                <mat-label>Mot de passe</mat-label>
+                <input type="password" matInput placeholder="Mot de passe" formControlName="password" />
+                <mat-error *ngIf="checkError('password', 'required')">*ERREUR : Le mot de passe est requis!</mat-error>
+            </mat-form-field>
+            <br />
+            <button mat-icon-button [disabled]="inputForm.invalid">
+                Connexion <mat-icon>login</mat-icon>
+            </button>
+            <br />
+            <div>
+                Si vous n'avez pas un compte,
+                <a matLine routerLink="/register">cliquez ici</a>
+                pour en créer un!
+            </div>
+        </div>
+    </form>
 </div>

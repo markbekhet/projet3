@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "Android"
+    },
+    {
+      "path": "angular-client"
+    },
+    {
+      "path": "common"
+    },
+    {
+      "path": "server"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "angular-client/Colorimage-*": true
+    },
+
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+
+    "[html]": {
+      "editor.defaultFormatter": "vscode.html-language-features",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2
+    },
+    "html.format.endWithNewline": true,
+    "html.format.wrapAttributes": "aligned-multiple",
+
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always"
+  }
+}

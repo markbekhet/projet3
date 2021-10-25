@@ -1,22 +1,27 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*"],
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
-        "project": [
-          "angular-client/tsconfig.json"
-        ],
+        "project": ["tsconfig.app.json", "tsconfig.spec.json"],
         "createDefaultProgram": true
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "airbnb-base",
+        "airbnb-typescript/base",
+        "plugin:prettier/recommended"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
@@ -34,17 +39,60 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/component-class-suffix": [
+          "error",
+          {
+            "suffixes": ["Component", "Page", "Dialog"]
+          }
+        ],
+        "no-empty": "warn",
+        "import/prefer-default-export": "off",
+        "lines-between-class-members": "off",
+        "@typescript-eslint/lines-between-class-members": "off"
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
+      "files": ["*.component.ts"],
+      "extends": ["plugin:@angular-eslint/template/process-inline-templates"]
+    },
+    {
+      "files": ["*.html"],
       "extends": [
-        "plugin:@angular-eslint/template/recommended"
+        /* Note (Paul) : Si nécessaire, décommenter ces lignes pour faire rouler prettier comme formatteur des fichiers HTML
+        plutôt que le formatteur de base de vscode. Ne devrait pas être nécessaire. */
+        // "plugin:prettier/recommended"
       ],
+      "rules": {
+        // "prettier/prettier": [
+        //   "error",
+        //   { "singleQuote": false, "parser": "angular" }
+        // ],
+        "quotes": ["error", "double"],
+        "max-len": ["error", { "code": 140 }]
+      }
+    },
+    {
+      "files": ["*.component.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {}
     }
+
+    /* Note (Paul) : Sûrement pas nécessaire, mais ces lignes pourraient être utiles pour faire fonctionner prettier sur les
+    inline-templates d'Angular. */
+
+    // https://github.com/angular-eslint/angular-eslint
+    //  --> "Notes for eslint-plugin-prettier users"
+
+    // NOTE: WE ARE NOT APPLYING @ANGULAR-ESLINT/TEMPLATE IN THIS OVERRIDE, ONLY PRETTIER
+    /* {
+      "files": ["*.html"],
+      "excludedFiles": ["*inline-template-*.component.html"],
+      "extends": ["plugin:prettier/recommended"],
+      "rules": {
+        // NOTE: WE ARE OVERRIDING THE DEFAULT CONFIG TO ALWAYS SET THE PARSER TO ANGULAR (SEE BELOW)
+        "prettier/prettier": ["error", { "parser": "angular" }]
+      }
+    } */
   ]
 }

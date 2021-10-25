@@ -9,10 +9,9 @@ import { Message, CustomDate } from 'src/app/models/MessageMeta';
 @Component({
   selector: 'app-communication-page',
   templateUrl: './communication-page.component.html',
-  styleUrls: ['./communication-page.component.scss']
+  styleUrls: ['./communication-page.component.scss'],
 })
 export class CommunicationPageComponent implements OnInit, OnDestroy {
-
   username: string = '';
   messages: Message[] = [];
   messageForm: FormGroup;
@@ -25,12 +24,12 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private request: RequestService
   ) {
     this.messageForm = this.formBuilder.group({
-      message: formBuilder.control('', [ Validators.required])
+      message: formBuilder.control('', [Validators.required]),
     });
   }
 
   ngOnInit(): void {
-    this.username = this.activeRoute.snapshot.params['username'];
+    this.username = this.activeRoute.snapshot.params.username;
     this.messages = [];
     // this.chat.connect();
 
@@ -39,8 +38,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
         this.messages.unshift(message);
       }
       console.log(this.messages);
-      console.log('client received: ' + message.message);
-    })
+      console.log(`client received: ${message.message}`);
+    });
   }
 
   onSubmit() {
@@ -49,17 +48,17 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     const date: CustomDate = {
       hour: currentDate.getHours().toString(),
       minutes: currentDate.getMinutes().toString(),
-      seconds: currentDate.getSeconds().toString()
+      seconds: currentDate.getSeconds().toString(),
     };
 
     const message: Message = {
       clientName: this.username,
-      message: this.messageForm.value['message'],
-      date: date
+      message: this.messageForm.value.message,
+      date,
     };
 
     this.chat.sendMessage(message);
-    console.log('client sent: ' + message);
+    console.log(`client sent: ${message}`);
 
     this.messageForm.reset();
   }
@@ -77,15 +76,15 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   disconnect(): void {
     try {
-      this.request.disconnectClient(this.username)
-      .subscribe(
-        code => {
+      this.request.disconnectClient(this.username).subscribe(
+        () => {
           this.router.navigate(['/']);
-        }, //this.username = username
-        err => console.log(err)); //LandingPageComponent.usernameExists = true
-    } catch (e: any) {
-
-    }
+        }, // this.username = username
+        (err) => {
+          console.log(err);
+        }
+      ); // LandingPageComponent.usernameExists = true
+    } catch (e: any) {}
     this.messages = [];
   }
 }
