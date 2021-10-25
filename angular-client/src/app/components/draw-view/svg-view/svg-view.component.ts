@@ -140,10 +140,10 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       if(!this.contents.has(data.contentId)){
         //new elements
         let newObj!: SVGElement;
+        console.log(data.contentId);
         if (data.drawing.includes('polyline')) {
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
-          console.log('here');
           newObj = this.createSVGRect(data.drawing);
         } else if (data.drawing.includes('ellipse')) {
 
@@ -161,7 +161,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           if (data.drawing.includes('polyline')) {
           this.modifyPolyline(data.drawing, element);
           } else if (data.drawing.includes('rect')) {
-          console.log(data.drawing);
           this.modifyRect(data.drawing, element);
           } else if (data.drawing.includes('ellipse')) {
   
@@ -212,9 +211,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   createSVGRect(drawing: string) {
-    console.log(drawing)
     let element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
-    //console.log(element);
     let x = X_REGEX.exec(drawing);
     let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
@@ -224,20 +221,27 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
+      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element, 'stroke-width','5');
+      this.renderer.setAttribute(element, 'fill', 'none');
+    
     }
     return element;
   }
 
   modifyRect(drawing: string, element: SVGElement){
+    console.log(drawing);
+    let x = X_REGEX.exec(drawing);
+    let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
-    console.log(width);
     let height = HEIGHT_REGEX.exec(drawing);
-    console.log(height);
-    if (width !== null && height !== null){
+    if (x !== null && y !== null && width !== null && height !== null){
+      this.renderer.setAttribute(element, 'x', x[1].toString());
+      this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
+      
     }
-    console.log(element);
   }
 
 

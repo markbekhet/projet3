@@ -17,10 +17,11 @@ export class Rectangle extends Shape {
     }
 
     setDimensions(p: Point[]): void {
-        super.setDimensions(p);
-        // Rectangle
         this.startX = this.width > 0 ? p[0].x : p[p.length - 1].x;
         this.startY = this.height > 0 ? p[0].y : p[p.length - 1].y;        
+    
+        super.setDimensions(p);
+        // Rectangle
     }
 
     // this is the function used to write the string

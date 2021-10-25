@@ -88,6 +88,7 @@ export class Shape extends DrawingTool {
 
             // add everything to the canvas
             this.updateDrawing(true);
+            this.currentPath = [];
         }
     }
 
