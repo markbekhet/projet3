@@ -12,15 +12,14 @@ export class Pencil extends DrawingTool{
 
     constructor(selected: boolean, interactionService: InteractionService){
         super(selected, interactionService);
-        this.attr = { lineThickness: DEFAULT_LINE_THICKNESS };
+        this.attr = { pencilLineThickness: DEFAULT_LINE_THICKNESS };
         this.updateAttributes();
     }
 
     updateAttributes(): void {
         this.interactionService.$toolsAttributes.subscribe((attr: ToolsAttributes) => {
           if (attr) {
-            this.attr = { lineThickness: attr.lineThickness };
-            console.log('pencil attr has been updated');
+            this.attr = { pencilLineThickness: attr.pencilLineThickness };
           }
         });
       }
@@ -82,7 +81,7 @@ export class Pencil extends DrawingTool{
         }
         s+=`\" stroke="#000000" fill="none" `;
         //Replace the number by the width chosen in the component
-        s+= `stroke-width="${this.attr.lineThickness}" `;
+        s+= `stroke-width="${this.attr.pencilLineThickness}" `;
         s+= `transform="translate(0,0)"`;
         s+= "/>\n"
         //console.log(s)

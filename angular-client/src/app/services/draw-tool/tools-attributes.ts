@@ -1,4 +1,11 @@
 export interface ToolsAttributes {
-    lineThickness: number;
-    //rect + ellipse attributes
+    pencilLineThickness?: number;
+    shapeLineThickness?: number;
+    shapeType?: ShapeTypes;
+}
+
+export enum ShapeTypes {
+    OUTLINE = 'OUTLINE',
+    FULL = 'FULL',
+    BOTH = 'BOTH'
 }

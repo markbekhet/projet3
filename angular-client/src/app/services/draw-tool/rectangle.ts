@@ -3,6 +3,7 @@ import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
 import { Shape } from "./shape";
+import { ToolsAttributes } from "./tools-attributes";
 
 const DEFAULT_LINE_THICKNESS = 5;
 export class Rectangle extends Shape {
@@ -12,8 +13,16 @@ export class Rectangle extends Shape {
         //this.updateColors();
         this.updateAttributes();
     }
+    
     updateAttributes(){
-        
+        this.interactionService.$toolsAttributes.subscribe((attr: ToolsAttributes) => {
+            if (attr) {
+                this.attr = { 
+                    shapeLineThickness: attr.shapeLineThickness,
+                    shapeType: attr.shapeType
+                };
+            }
+          });
     }
 
     setDimensions(p: Point[]): void {
@@ -21,7 +30,6 @@ export class Rectangle extends Shape {
         this.startY = this.height > 0 ? p[0].y : p[p.length - 1].y;        
     
         super.setDimensions(p);
-        // Rectangle
     }
 
     // this is the function used to write the string

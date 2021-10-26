@@ -4,15 +4,15 @@ import { DrawingStatus } from 'src/app/models/drawing-content';
 import { InteractionService } from '../interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
+import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 
 // Default attributes of shapes
-const DEFAULT_PLOT_TYPE = 2;
-const DEFAULT_NUMBER_CORNERS = 3;
-const DEFAULT_LINE_THICKNESS = 5;
+const DEF_SHAPE_TYPE = ShapeTypes.OUTLINE;
+const DEF_LINE_THICKNESS = 5;
 
 export class Shape extends DrawingTool {
 
-    //attr: FormsAttribute;
+    attr: ToolsAttributes;
 
     // Shape's dimensions
     width: number;
@@ -30,10 +30,13 @@ export class Shape extends DrawingTool {
     protected stroke: string;
     protected fill: string;
 
-    constructor(selected: boolean, interaction: InteractionService) {
+    constructor(selected: boolean, interactionService: InteractionService) {
 
-        super(selected, interaction);
-        //this.attr = { plotType: DEFAULT_PLOT_TYPE, lineThickness: DEFAULT_LINE_THICKNESS, numberOfCorners: DEFAULT_NUMBER_CORNERS };
+        super(selected, interactionService);
+        this.attr = { 
+            shapeLineThickness: DEF_LINE_THICKNESS, 
+            shapeType: DEF_SHAPE_TYPE 
+        };
         this.updateColors();
         this.updateAttributes();
         this.width = 0;
@@ -47,12 +50,15 @@ export class Shape extends DrawingTool {
     }
 
     updateAttributes(): void {
-        /*this.interaction.$formsAttributes.subscribe((obj: FormsAttribute | undefined) => {
-            if (obj) {
-                // Getting attributes for a shape
-                this.attr = { plotType: obj.plotType, lineThickness: obj.lineThickness, numberOfCorners: obj.numberOfCorners };
+        this.interactionService.$toolsAttributes.subscribe((attr: ToolsAttributes) => {
+            if (attr) {
+                this.attr = {
+                    shapeLineThickness: attr.shapeLineThickness,
+                    shapeType: attr.shapeType
+                };
             }
-        });*/
+            console.log('shape attr updated');
+          });
     }
 
     // updating on key up
@@ -62,7 +68,6 @@ export class Shape extends DrawingTool {
 
     // mouse down with shape in hand
     down(position: Point): void {
-
         super.down(position);
         // in case we changed tool while the mouse was down
         this.ignoreNextUp = false;
@@ -141,12 +146,26 @@ export class Shape extends DrawingTool {
         // get fill and outline stroke attributes from renderMode (outline, fill, outline + fill)
         //this.stroke = (this.attr.plotType === 0 || this.attr.plotType === 2) ? `${this.chosenColor.secColor}` : 'none';
         //this.fill = (this.attr.plotType === 1 || this.attr.plotType === 2) ? `${this.chosenColor.primColor}` : 'none';
-
-        this.stroke = 'black';
-        this.fill = 'none';
-
+        
+        switch(this.attr.shapeType) {
+            case ShapeTypes.OUTLINE: {
+                this.stroke = 'black';
+                this.fill = 'none';
+            }
+                break;
+            case ShapeTypes.FULL: {
+                this.stroke = 'none';
+                this.fill = 'black';
+            }
+                break;
+            case ShapeTypes.BOTH: {
+                this.stroke = 'black';
+                this.fill = 'black';
+            }
+                break; 
+        }
         this.svgString += ` fill="${this.fill}"`;
-        this.svgString += ` stroke-width="${DEFAULT_LINE_THICKNESS}" stroke="${this.stroke}"`;
+        this.svgString += ` stroke-width="${this.attr.shapeLineThickness}" stroke="${this.stroke}"`;
         this.svgString += ` style="transform: translate(0px, 0px)"/>\n`;
 
     }

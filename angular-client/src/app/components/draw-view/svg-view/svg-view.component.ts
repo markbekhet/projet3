@@ -182,7 +182,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         //new elements
         let newObj!: SVGElement;
         if (data.drawing.includes('polyline')) {
-          console.log('pencil: ' + data.drawing);
+          console.log('pencil: ' + data.contentId);
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
           console.log('rect: ' + data.contentId);
@@ -238,19 +238,18 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'points', points_array[1].toString());
       this.renderer.setAttribute(element, 'stroke', 'black');
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
-      this.renderer.setAttribute(element, 'stroke-linecap', 'round')
+      this.renderer.setAttribute(element, 'stroke-linecap', 'round');
       this.renderer.setAttribute(element, 'fill', 'none');
     }
     return element;
   }
 
-  modifyPolyline(drawing: string, element: SVGElement){
+  modifyPolyline(drawing: string, element: SVGElement) {
     this.renderer.removeAttribute(element, 'points');
     let points_array = POINTS_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
     if (points_array!== null && stroke_width !== null) {
       this.renderer.setAttribute(element,'points', points_array[1].toString());
-      //this.renderer.setAttribute(element, 'points', points_array[1].toString())
       this.renderer.setAttribute(element,'stroke', 'black');
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
     }
@@ -263,13 +262,14 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
     let height = HEIGHT_REGEX.exec(drawing);
-    if(x !== null && y !== null && width !== null && height !== null){
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if(x !== null && y !== null && width !== null && height !== null && stroke_width !== null){
       this.renderer.setAttribute(element, 'x', x[1].toString());
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
       this.renderer.setAttribute(element, 'stroke', 'black');
-      this.renderer.setAttribute(element, 'stroke-width','5');
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', 'none');
     }
     return element;
@@ -281,11 +281,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
     let height = HEIGHT_REGEX.exec(drawing);
-    if (x !== null && y !== null && width !== null && height !== null){
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if (x !== null && y !== null && width !== null && height !== null && stroke_width !== null) {
       this.renderer.setAttribute(element, 'x', x[1].toString());
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
     }
   }
 
@@ -296,14 +298,14 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let cy = CY_REGEX.exec(drawing);
     let rx = RX_REGEX.exec(drawing);
     let ry = RY_REGEX.exec(drawing);
-    //console.log(ry);
-    if(cx !== null && cy !== null && rx !== null && ry !== null){
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null) {
       this.renderer.setAttribute(element, 'cx', cx[1].toString());
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
       this.renderer.setAttribute(element,'stroke', 'black');
-      this.renderer.setAttribute(element, 'stroke-width','5');
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', 'none');
     }
     return element;
@@ -314,13 +316,14 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let cy = CY_REGEX.exec(drawing);
     let rx = RX_REGEX.exec(drawing);
     let ry = RY_REGEX.exec(drawing);
-    if(cx !== null && cy !== null && rx !== null && ry !== null){
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null) {
       this.renderer.setAttribute(element, 'cx', cx[1].toString());
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
       this.renderer.setAttribute(element,'stroke', 'black');
-      this.renderer.setAttribute(element, 'stroke-width','5');
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', 'none');
     }
   }

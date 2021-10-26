@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ShapeTypes } from 'src/app/services/draw-tool/tools-attributes';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 
 @Component({
@@ -8,7 +9,9 @@ import { InteractionService } from 'src/app/services/interaction-service/interac
 })
 export class OptionViewComponent implements OnInit, AfterViewInit {
 
-  @Input() lineThickness: number;
+  pencilLineThickness: number;
+  shapeLineThickness: number;
+  shapeType: ShapeTypes;
 
   selectedTool: string = "Crayon";
   tools: string[] = []
@@ -21,7 +24,11 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
       'Efface',
     ];
     const DEF_THICK = 5;
-    this.lineThickness = DEF_THICK;
+    const DEF_SHAPE_TYPE = ShapeTypes.OUTLINE;
+
+    this.pencilLineThickness = DEF_THICK;
+    this.shapeLineThickness = DEF_THICK;
+    this.shapeType = DEF_SHAPE_TYPE;
   }
   ngAfterViewInit(): void {
     //throw new Error('Method not implemented.');
@@ -41,9 +48,12 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
       }
     })
   }
-  updateTools(){
+
+  updateTools() {
     this.interaction.emitToolsAttributes({
-      lineThickness: this.lineThickness
+      pencilLineThickness: this.pencilLineThickness,
+      shapeLineThickness: this.shapeLineThickness,
+      shapeType: this.shapeType
     });
   }
 
