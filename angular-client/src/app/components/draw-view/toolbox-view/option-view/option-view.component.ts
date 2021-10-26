@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { InteractionService } from 'src/app/services/interaction-service/interac
 })
 export class OptionViewComponent implements OnInit, AfterViewInit {
 
-  lineThickness: number;
+  @Input() lineThickness: number;
 
   selectedTool: string = "Crayon";
   tools: string[] = []
@@ -20,7 +20,7 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
       'Ellipse',
       'Efface',
     ];
-    const DEF_THICK = 20;
+    const DEF_THICK = 5;
     this.lineThickness = DEF_THICK;
   }
   ngAfterViewInit(): void {
@@ -42,8 +42,11 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
     })
   }
   updateTools(){
-    // TODO:
+    this.interaction.emitToolsAttributes({
+      lineThickness: this.lineThickness
+    });
   }
+
   updateForms(){
     // TODO:
   }

@@ -12,6 +12,9 @@ import { Rectangle } from 'src/app/services/draw-tool/rectangle';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
+// Multi-purpose
+const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
+
 //Crayon
 const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`);
 
@@ -146,9 +149,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools(){
-    const pencil = new Pencil(false, this.interactionService);
+    const pencil = new Pencil(true, this.interactionService);
     const rectangle = new Rectangle(false, this.interactionService);
-    const ellipse = new Ellipse(true, this.interactionService);
+    const ellipse = new Ellipse(false, this.interactionService);
 
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
@@ -179,7 +182,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         //new elements
         let newObj!: SVGElement;
         if (data.drawing.includes('polyline')) {
-          console.log('pencil: ' + data.contentId);
+          console.log('pencil: ' + data.drawing);
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
           console.log('rect: ' + data.contentId);
@@ -194,7 +197,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.contents.set(data.contentId, newObj);
         }
       }
-      else{
+      else {
         let element = this.contents.get(data.contentId)
         if (element !== undefined){
           //this.renderer.removeChild(this.inProgress.nativeElement,element);
@@ -230,10 +233,11 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     //console.log(drawing);
     let element = this.renderer.createElement('polyline', 'svg') as SVGPolylineElement;
     let points_array = POINTS_REGEX.exec(drawing);
-    if(points_array !== null){
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if (points_array !== null && stroke_width !== null) {
       this.renderer.setAttribute(element, 'points', points_array[1].toString());
       this.renderer.setAttribute(element, 'stroke', 'black');
-      this.renderer.setAttribute(element, 'stroke-width', '3');
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'stroke-linecap', 'round')
       this.renderer.setAttribute(element, 'fill', 'none');
     }
@@ -243,11 +247,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   modifyPolyline(drawing: string, element: SVGElement){
     this.renderer.removeAttribute(element, 'points');
     let points_array = POINTS_REGEX.exec(drawing);
-    if (points_array!== null) {
+    let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
+    if (points_array!== null && stroke_width !== null) {
       this.renderer.setAttribute(element,'points', points_array[1].toString());
       //this.renderer.setAttribute(element, 'points', points_array[1].toString())
       this.renderer.setAttribute(element,'stroke', 'black');
-      this.renderer.setAttribute(element,'stroke-width','5');
+      this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
     }
   }
 

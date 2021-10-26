@@ -2,17 +2,28 @@ import { DrawingStatus } from "src/app/models/drawing-content";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
+import { ToolsAttributes } from "./tools-attributes";
 
 const DEFAULT_LINE_THICKNESS = 5;
+
+
 export class Pencil extends DrawingTool{
+    attr: ToolsAttributes;
+
     constructor(selected: boolean, interactionService: InteractionService){
         super(selected, interactionService);
-        //this.updateColors();
+        this.attr = { lineThickness: DEFAULT_LINE_THICKNESS };
         this.updateAttributes();
     }
-    updateAttributes(){
 
-    }
+    updateAttributes(): void {
+        this.interactionService.$toolsAttributes.subscribe((attr: ToolsAttributes) => {
+          if (attr) {
+            this.attr = { lineThickness: attr.lineThickness };
+            console.log('pencil attr has been updated');
+          }
+        });
+      }
 
     down(position:Point){
         this.currentPath =[]
@@ -71,7 +82,7 @@ export class Pencil extends DrawingTool{
         }
         s+=`\" stroke="#000000" fill="none" `;
         //Replace the number by the width chosen in the component
-        s+= `stroke-width="5" `;
+        s+= `stroke-width="${this.attr.lineThickness}" `;
         s+= `transform="translate(0,0)"`;
         s+= "/>\n"
         //console.log(s)

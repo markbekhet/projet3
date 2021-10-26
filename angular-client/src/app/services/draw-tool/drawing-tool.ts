@@ -1,4 +1,3 @@
-import { Renderer2 } from "@angular/core";
 import { DrawingStatus } from "src/app/models/drawing-content";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { InputObserver } from "./input-observer";
@@ -9,27 +8,26 @@ export abstract class DrawingTool extends InputObserver{
     currentPath : Point[];
     //selected: boolean;
     ignoreNextUp: boolean;
-
+    
     abstract createPath(path: Point[], doubleClickCheck?: boolean, removePerimeter?: boolean): void;
     static drawingContentId: number = -1;
 
-    constructor(selected: boolean, private interactionService: InteractionService){
+    constructor(selected: boolean, protected interactionService: InteractionService){
         super(selected);
         this.isDown = false;
         this.currentPath = [];
         this.ignoreNextUp = false;
-        
     }
 
     // Implement down() method to get the id?
-    down(position: Point){
+    down(position: Point) {
         // emit socket event to server to get the content id
         // this is a stub
         DrawingTool.drawingContentId++;
         //console.log(this.drawingContentId)
     }
     // To update the colors with the colors given by the draw view
-    updateColors(){
+    updateColors() {
 
     }
 
