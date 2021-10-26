@@ -9,23 +9,23 @@ export abstract class DrawingTool extends InputObserver{
     currentPath : Point[];
     //selected: boolean;
     ignoreNextUp: boolean;
-    drawingContentId: number;
 
     abstract createPath(path: Point[], doubleClickCheck?: boolean, removePerimeter?: boolean): void;
+    static drawingContentId: number = -1;
 
     constructor(selected: boolean, private interactionService: InteractionService){
         super(selected);
         this.isDown = false;
         this.currentPath = [];
         this.ignoreNextUp = false;
-        this.drawingContentId = -1;
+        
     }
 
     // Implement down() method to get the id?
     down(position: Point){
         // emit socket event to server to get the content id
         // this is a stub
-        this.drawingContentId ++;
+        DrawingTool.drawingContentId++;
         //console.log(this.drawingContentId)
     }
     // To update the colors with the colors given by the draw view
@@ -46,7 +46,7 @@ export abstract class DrawingTool extends InputObserver{
         let d = '';
         d += this.createPath(this.currentPath);
         // emit event with the string d
-        this.interactionService.emitDrawingContent({contentId: this.drawingContentId, drawing:d, status:drawingStatus});
+        this.interactionService.emitDrawingContent({contentId: DrawingTool.drawingContentId, drawing:d, status:drawingStatus});
     }
     // I think we dont need this method
     updateDrawing(endIt?: boolean){
