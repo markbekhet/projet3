@@ -3,7 +3,7 @@ import { BaseEntity, BeforeInsert, Column, Entity,PrimaryGeneratedColumn } from 
 import * as bcrypt from 'bcrypt'
 import { CreateTeamDto } from "./create-team.dto";
 
-Entity("team")
+@Entity("team")
 export class Team extends BaseEntity{
     @PrimaryGeneratedColumn('uuid')
     id: number;
