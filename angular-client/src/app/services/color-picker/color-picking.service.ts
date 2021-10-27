@@ -253,7 +253,7 @@ export class ColorPickingService {
         this.updateDisplayRGB(rgb);
         // HSL value of last color for display
         this.updateDisplayHSL(hsl);
-        this.upadateDisplayHex(hex);
+        this.updateDisplayHex(hex);
         this.setColorsFromForm(this.cData.primaryColor, this.cData.secondaryColor, this.cData.backgroundColor);
         this.emitColors();
     }
@@ -274,7 +274,7 @@ export class ColorPickingService {
         }
         this.setSLCursor(this.cData.saturationSliderInput / 2, this.cData.lightnessSliderInput / 2);
     }
-    upadateDisplayHex(hex: string): void {
+    updateDisplayHex(hex: string): void {
         const BIG_SUB = 7;
         const AVERAGE_SUB = 5;
         const SMALL_SUB = 3;
