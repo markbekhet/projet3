@@ -38,14 +38,14 @@ export const toolsItems: MenuItem[] = [
         icon: 'pencil',
 
     },
-    {
+    /*{
         name: 'Efface',
         shortcutName: 'Efface',
         shortDescription: 'L’efface supprimera tout objet auquel il sera en contact lors du clic de souris.',
         description: `Pour choisir cette option, vous pouvez sélectionner l'outil via la barre des outils en appuyant sur l'icône approprié,
         comme vous pouvez l'utiliser en appuyant sur la touche 'E' de votre clavier. Les objets entrant en contact avec l'efface se verront dotés d'un contour rouge.`,
         icon: 'eraser',
-    },
+    },*/
 
     {
         name: 'Rectangle',
