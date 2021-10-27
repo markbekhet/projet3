@@ -14,6 +14,8 @@ import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
+const STROKE_REGEX = new RegExp(`stroke="(#[0-9a-fA-F]{6}|none)"`);
+const FILL_REGEX = new RegExp(`fill="(#[0-9a-fA-F]{6}|none)"`);
 
 //Crayon
 const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`);
@@ -185,7 +187,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           console.log('pencil: ' + data.contentId);
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
-          console.log('rect: ' + data.contentId);
+          console.log('rect: ' + data.drawing);
           newObj = this.createSVGRect(data.drawing);
         } else if (data.drawing.includes('ellipse')) {
           console.log('ell: ' + data.contentId);
@@ -232,81 +234,101 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   createSVGPolyline(drawing: string){
     //console.log(drawing);
     let element = this.renderer.createElement('polyline', 'svg') as SVGPolylineElement;
+    
     let points_array = POINTS_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if (points_array !== null && stroke_width !== null) {
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if (points_array !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element, 'points', points_array[1].toString());
-      this.renderer.setAttribute(element, 'stroke', 'black');
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'stroke-linecap', 'round');
-      this.renderer.setAttribute(element, 'fill', 'none');
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
     return element;
   }
 
   modifyPolyline(drawing: string, element: SVGElement) {
     this.renderer.removeAttribute(element, 'points');
+    
     let points_array = POINTS_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if (points_array!== null && stroke_width !== null) {
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if (points_array !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element,'points', points_array[1].toString());
-      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
   }
 
   createSVGRect(drawing: string) {
     let element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
-    //console.log(element)
+    
     let x = X_REGEX.exec(drawing);
     let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
     let height = HEIGHT_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if(x !== null && y !== null && width !== null && height !== null && stroke_width !== null){
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if(x !== null && y !== null && width !== null && height !== null && stroke_width !== null && stroke !== null && fill !== null){
       this.renderer.setAttribute(element, 'x', x[1].toString());
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
-      this.renderer.setAttribute(element, 'stroke', 'black');
+      this.renderer.setAttribute(element,'stroke', stroke[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
-      this.renderer.setAttribute(element, 'fill', 'none');
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
     return element;
   }
 
   modifyRect(drawing: string, element: SVGElement){
-    //console.log(drawing);
     let x = X_REGEX.exec(drawing);
     let y = Y_REGEX.exec(drawing);
     let width = WIDTH_REGEX.exec(drawing);
     let height = HEIGHT_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if (x !== null && y !== null && width !== null && height !== null && stroke_width !== null) {
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if (x !== null && y !== null && width !== null && height !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element, 'x', x[1].toString());
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
+      this.renderer.setAttribute(element,'stroke', stroke[1].toString());
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
   }
 
   createSVGEllipse(drawing: string) {
     //console.log(drawing);
     let element = this.renderer.createElement('ellipse', 'svg');
+    
     let cx = CX_REGEX.exec(drawing);
     let cy = CY_REGEX.exec(drawing);
     let rx = RX_REGEX.exec(drawing);
     let ry = RY_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null) {
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element, 'cx', cx[1].toString());
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element,'stroke', stroke[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
-      this.renderer.setAttribute(element, 'fill', 'none');
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
     return element;
   }
@@ -317,14 +339,17 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let rx = RX_REGEX.exec(drawing);
     let ry = RY_REGEX.exec(drawing);
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
-    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null) {
+    let stroke = STROKE_REGEX.exec(drawing);
+    let fill = FILL_REGEX.exec(drawing);
+    
+    if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element, 'cx', cx[1].toString());
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element,'stroke', 'black');
+      this.renderer.setAttribute(element,'stroke', stroke[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
-      this.renderer.setAttribute(element, 'fill', 'none');
+      this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
   }
 }

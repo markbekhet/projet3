@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { ShapeTypes } from 'src/app/services/draw-tool/tools-attributes';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 
@@ -57,8 +57,32 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
     });
   }
 
+  updateShapeType(shapeType: string) {
+    switch(shapeType) {
+      case 'OUTLINE': this.shapeType = ShapeTypes.OUTLINE;
+        break;
+      case 'FULL': this.shapeType = ShapeTypes.FULL;
+        break;
+      case 'BOTH': this.shapeType = ShapeTypes.BOTH;
+        break;
+    }
+    this.updateTools();
+  }
+
   updateForms(){
     // TODO:
   }
 
+}
+
+@Pipe({ name: 'shapetype'})
+export class ShapeTypePipe implements PipeTransform {
+  transform(value: string) {
+    switch(value) {
+      case 'OUTLINE': return 'Contours';
+      case 'FULL': return 'Plein';
+      case 'BOTH': return 'Contours + Plein';
+    }
+    return value;
+  }
 }

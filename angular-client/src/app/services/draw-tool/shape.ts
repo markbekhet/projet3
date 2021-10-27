@@ -9,6 +9,7 @@ import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 // Default attributes of shapes
 const DEF_SHAPE_TYPE = ShapeTypes.OUTLINE;
 const DEF_LINE_THICKNESS = 5;
+const DEF_COLOR = '#000000';
 
 export class Shape extends DrawingTool {
 
@@ -29,6 +30,8 @@ export class Shape extends DrawingTool {
     // Attribute for createPath
     protected stroke: string;
     protected fill: string;
+    protected primaryColor: string;
+    protected secondaryColor: string;
 
     constructor(selected: boolean, interactionService: InteractionService) {
 
@@ -47,6 +50,8 @@ export class Shape extends DrawingTool {
         this.svgString = '';
         this.stroke = '';
         this.fill = '';
+        this.primaryColor = DEF_COLOR;
+        this.secondaryColor = DEF_COLOR;
     }
 
     updateAttributes(): void {
@@ -57,7 +62,6 @@ export class Shape extends DrawingTool {
                     shapeType: attr.shapeType
                 };
             }
-            console.log('shape attr updated');
           });
     }
 
@@ -143,27 +147,28 @@ export class Shape extends DrawingTool {
     }
 
     setAttributesToPath(): void {
-        // get fill and outline stroke attributes from renderMode (outline, fill, outline + fill)
-        //this.stroke = (this.attr.plotType === 0 || this.attr.plotType === 2) ? `${this.chosenColor.secColor}` : 'none';
-        //this.fill = (this.attr.plotType === 1 || this.attr.plotType === 2) ? `${this.chosenColor.primColor}` : 'none';
-        
+        this.primaryColor = '#000000';
+        this.secondaryColor = '#afafaf';
+
         switch(this.attr.shapeType) {
-            case ShapeTypes.OUTLINE: {
-                this.stroke = 'black';
+            case 'OUTLINE': {
+                this.stroke = this.primaryColor;
                 this.fill = 'none';
             }
                 break;
-            case ShapeTypes.FULL: {
+            case 'FULL': {
+                console.log('we get in here');
                 this.stroke = 'none';
-                this.fill = 'black';
+                this.fill = this.secondaryColor;
             }
                 break;
-            case ShapeTypes.BOTH: {
-                this.stroke = 'black';
-                this.fill = 'black';
+            case 'BOTH': {
+                this.stroke = this.primaryColor;
+                this.fill = this.secondaryColor;
             }
                 break; 
         }
+
         this.svgString += ` fill="${this.fill}"`;
         this.svgString += ` stroke-width="${this.attr.shapeLineThickness}" stroke="${this.stroke}"`;
         this.svgString += ` style="transform: translate(0px, 0px)"/>\n`;

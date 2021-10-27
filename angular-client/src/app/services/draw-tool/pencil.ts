@@ -4,16 +4,20 @@ import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
 import { ToolsAttributes } from "./tools-attributes";
 
-const DEFAULT_LINE_THICKNESS = 5;
+const DEF_LINE_THICKNESS = 5;
+const DEF_COLOR = '#000000';
 
 
 export class Pencil extends DrawingTool{
     attr: ToolsAttributes;
+    primaryColor: string;
+    
 
     constructor(selected: boolean, interactionService: InteractionService){
         super(selected, interactionService);
-        this.attr = { pencilLineThickness: DEFAULT_LINE_THICKNESS };
+        this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
         this.updateAttributes();
+        this.primaryColor = DEF_COLOR;
     }
 
     updateAttributes(): void {
@@ -25,7 +29,7 @@ export class Pencil extends DrawingTool{
       }
 
     down(position:Point){
-        this.currentPath =[]
+        this.currentPath = [];
         //console.log('here');
         super.down(position);
 
@@ -75,14 +79,14 @@ export class Pencil extends DrawingTool{
         s+=  `points="`
         for(let i= 0; i< p.length; i++){
             s+= `${p[i].x} ${p[i].y}`;
-            if(i!== p.length-1){
+            if(i !== p.length-1){
                 s+=",";
             }
         }
-        s+=`\" stroke="#000000" fill="none" `;
+        s+=`\" stroke="${this.primaryColor}" fill="none"`;
         //Replace the number by the width chosen in the component
-        s+= `stroke-width="${this.attr.pencilLineThickness}" `;
-        s+= `transform="translate(0,0)"`;
+        s+= ` stroke-width="${this.attr.pencilLineThickness}"`;
+        s+= ` transform="translate(0,0)"`;
         s+= "/>\n"
         //console.log(s)
         return s;

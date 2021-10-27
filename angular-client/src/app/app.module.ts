@@ -17,12 +17,12 @@ import { DrawViewComponent } from './components/draw-view/draw-view.component';
 import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
 import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
 import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
-import { OptionViewComponent } from './components/draw-view/toolbox-view/option-view/option-view.component';
+import { OptionViewComponent, ShapeTypePipe } from './components/draw-view/toolbox-view/option-view/option-view.component';
 import { InteractionService } from './services/interaction-service/interaction.service';
 import { EntryPointComponent } from './components/entry-point/entry-point.component';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
 import { MatDialogModule } from '@angular/material/dialog';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBarModule} from '@angular/material/snack-bar';
 import { NewDrawComponent } from './components/new-draw/new-draw.component';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
 import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
@@ -36,11 +36,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { IconsService } from './services/icons/icons.service';
-import {MatSliderModule} from '@angular/material/slider';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -65,6 +66,7 @@ const appRoutes: Routes = [
     NewDrawComponent,
     MiniColorPickerComponent,
     OptionViewComponent,
+    ShapeTypePipe,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +91,7 @@ const appRoutes: Routes = [
     MatSlideToggleModule,
     FormsModule,
     MatToolbarModule,
+    MatMenuModule,
   ],
   providers: [
     AuthService,
