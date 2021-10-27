@@ -3,3 +3,6 @@
 
 # OMZ Jira plugin
 .jira-url
+
+# VS Code Workspace File
+!.code-workspace

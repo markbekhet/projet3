@@ -16,6 +16,7 @@
       "path": "server"
     }
   ],
+
   "settings": {
     "files.exclude": {
       "angular-client/Colorimage-*": true
@@ -35,5 +36,13 @@
 
     "typescript.updateImportsOnFileMove.enabled": "always",
     "javascript.updateImportsOnFileMove.enabled": "always"
+  },
+
+  "extensions": {
+    "recommendations": [
+      "eamodio.gitlens",
+      "dzhavat.git-cheatsheet",
+      "adam-bender.commit-message-editor"
+    ]
   }
 }
