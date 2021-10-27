@@ -2,7 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
+    "outDir": "./dist/out-tsc/app",
     "types": [],
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -10,5 +10,5 @@
     "noUnusedLocals": true
   },
   "files": ["src/main.ts", "src/polyfills.ts"],
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.d.ts"]
 }
