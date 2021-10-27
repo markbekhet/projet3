@@ -1,9 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Canvas } from 'src/app/models/canvas';
-import { ChoosenColors } from 'src/app/models/chosen-colors';
 import { DrawingContent, DrawingStatus } from 'src/app/models/drawing-content';
 import { CanvasBuilderService } from 'src/app/services/canvas-builder/canvas-builder.service';
-import { ColorPickingService } from 'src/app/services/colorPicker/color-picking.service';
 import { DrawingTool } from 'src/app/services/draw-tool/drawing-tool';
 import { Ellipse } from 'src/app/services/draw-tool/ellipse';
 import { InputObserver } from 'src/app/services/draw-tool/input-observer';
@@ -59,22 +57,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     private interactionService: InteractionService,
     private renderer: Renderer2,
     private canvBuilder: CanvasBuilderService,
-    private colorPick: ColorPickingService,
     ) { }
 
   ngOnInit(): void {
     this.initCanvas();
   }
   bgroundChangedSubscription(){
-    this.colorPick.colorSubject.subscribe((choosenColors: ChoosenColors)=> {
-      if(choosenColors){
-        this.backColor = choosenColors.backColor;
-        this.colorPick.cData.primaryColor = choosenColors.primColor;
-        this.colorPick.cData.secondaryColor = choosenColors.secColor;
-        this.colorPick.cData.backgroundColor = choosenColors.backColor;
-        this.colorPick.setColorsFromForm(choosenColors.primColor, choosenColors.secColor, choosenColors.backColor);
-      }
-    })
+    
   }
   initCanvas() {
     this.canvBuilder.canvSubject.subscribe((canvas: Canvas) =>{
@@ -85,8 +74,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.width = canvas.canvasWidth;
       this.height = canvas.canvasHeight;
       this.backColor = canvas.canvasColor;
-      this.colorPick.cData.backgroundColor = canvas.canvasColor;
-      this.colorPick.emitColors();
       if (canvas.wipeAll === true || canvas.wipeAll === undefined) { // if no attribute is specified, the doodle will be w
           this.canvBuilder.wipeDraw(this.doneDrawing);
           //this.canvBuilder.wipeDraw(this.filterRef);

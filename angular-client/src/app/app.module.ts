@@ -25,9 +25,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule} from '@angular/material/snack-bar';
 import { NewDrawComponent } from './components/new-draw/new-draw.component';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
-import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
-import { ColorConvertingService } from './services/colorPicker/color-converting.service';
-import { ColorPickingService } from './services/colorPicker/color-picking.service';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -42,6 +39,9 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { ColorPickerComponent } from './components/color-picker/color-picker.component';
+import { MiniColorPickerComponent } from './components/color-picker/mini-color-picker/mini-color-picker.component';
+
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -64,9 +64,10 @@ const appRoutes: Routes = [
     SvgViewComponent,
     EntryPointComponent,
     NewDrawComponent,
-    MiniColorPickerComponent,
     OptionViewComponent,
     ShapeTypePipe,
+    ColorPickerComponent,
+    MiniColorPickerComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,8 +100,6 @@ const appRoutes: Routes = [
     InteractionService,
     ModalWindowService,
     CanvasBuilderService,
-    ColorConvertingService,
-    ColorPickingService,
     IconsService,
   ],
   bootstrap: [AppComponent]
