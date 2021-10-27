@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ValidationService } from 'src/app/services/validation.service';
 
@@ -19,7 +19,7 @@ export class RegisterPageComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router,
+    // private router: Router,
     private auth: AuthService,
     public errorDialog: MatDialog
   ) {
@@ -42,6 +42,7 @@ export class RegisterPageComponent implements OnInit {
     });
   }
 
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
 
   public async onSubmit(form: FormGroup) {
@@ -57,6 +58,7 @@ export class RegisterPageComponent implements OnInit {
 
     try {
       this.auth.register(user).subscribe(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
           console.log(this.auth.authentifiedUser);
           // this.router.navigate(['/' + user.pseudo]);

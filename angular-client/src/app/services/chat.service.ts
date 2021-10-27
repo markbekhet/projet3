@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { io } from "socket.io-client";
+import { BehaviorSubject /* , Observable */ } from 'rxjs';
+import { io } from 'socket.io-client';
 
 import { Message } from '../models/MessageMeta';
 
@@ -8,7 +8,7 @@ const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 // const PATH = 'localhost:3000';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatService {
   socket = io(PATH);
@@ -19,18 +19,18 @@ export class ChatService {
     date: {
       hour: '',
       minutes: '',
-      seconds: ''
-    }
+      seconds: '',
+    },
   });
 
   public sendMessage(message: Message) {
-    console.log('chat service sent: ' + message.message);
+    console.log(`chat service sent: ${message.message}`);
     this.socket.emit('msgToServer', JSON.stringify(message));
   }
 
   public getNewMessage = () => {
     this.socket.on('msgToClient', (message: Message) => {
-      console.log('chat service received: ' + message.message);
+      console.log(`chat service received: ${message.message}`);
       this.message$.next(message);
     });
 

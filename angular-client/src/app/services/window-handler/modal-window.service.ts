@@ -1,10 +1,10 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Component, Injectable } from '@angular/core';
+import { /* Component,  */ Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NewDrawComponent } from 'src/app/components/new-draw/new-draw.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModalWindowService {
   dialogConfig: MatDialogConfig;
@@ -19,11 +19,11 @@ export class ModalWindowService {
     this.dialogConfig.restoreFocus = false;
   }
 
-  openWindow(component: ComponentType<NewDrawComponent>){
-    this.closeWindow()
+  openWindow(component: ComponentType<NewDrawComponent>) {
+    this.closeWindow();
     this.dialog.open(component, this.dialogConfig);
   }
-  closeWindow(){
+  closeWindow() {
     this.dialog.closeAll();
   }
 }
