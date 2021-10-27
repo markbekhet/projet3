@@ -1,4 +1,5 @@
 import { DrawingStatus } from 'src/app/models/drawing-content';
+import { ColorPickingService } from '../color-picker/color-picking.service';
 //import { FormsAttribute } from '../attributes/attribute-form';
 //import { ColorPickingService } from '../colorPicker/color-picking.service';
 import { InteractionService } from '../interaction-service/interaction.service';
@@ -33,9 +34,9 @@ export class Shape extends DrawingTool {
     protected primaryColor: string;
     protected secondaryColor: string;
 
-    constructor(selected: boolean, interactionService: InteractionService) {
+    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService) {
 
-        super(selected, interactionService);
+        super(selected, interactionService, colorPick);
         this.attr = { 
             shapeLineThickness: DEF_LINE_THICKNESS, 
             shapeType: DEF_SHAPE_TYPE 
@@ -147,24 +148,20 @@ export class Shape extends DrawingTool {
     }
 
     setAttributesToPath(): void {
-        this.primaryColor = '#000000';
-        this.secondaryColor = '#afafaf';
-
         switch(this.attr.shapeType) {
             case 'OUTLINE': {
-                this.stroke = this.primaryColor;
+                this.stroke = this.chosenColor.primColor;
                 this.fill = 'none';
             }
                 break;
             case 'FULL': {
-                console.log('we get in here');
                 this.stroke = 'none';
-                this.fill = this.secondaryColor;
+                this.fill = this.chosenColor.secColor;
             }
                 break;
             case 'BOTH': {
-                this.stroke = this.primaryColor;
-                this.fill = this.secondaryColor;
+                this.stroke = this.chosenColor.primColor;
+                this.fill = this.chosenColor.secColor;
             }
                 break; 
         }

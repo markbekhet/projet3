@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, OnInit, Renderer2, 
 import { Canvas } from 'src/app/models/canvas';
 import { DrawingContent, DrawingStatus } from 'src/app/models/drawing-content';
 import { CanvasBuilderService } from 'src/app/services/canvas-builder/canvas-builder.service';
+import { ColorPickingService } from 'src/app/services/color-picker/color-picking.service';
 import { DrawingTool } from 'src/app/services/draw-tool/drawing-tool';
 import { Ellipse } from 'src/app/services/draw-tool/ellipse';
 import { InputObserver } from 'src/app/services/draw-tool/input-observer';
@@ -12,8 +13,8 @@ import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
-const STROKE_REGEX = new RegExp(`stroke="(#[0-9a-fA-F]{6}|none)"`);
-const FILL_REGEX = new RegExp(`fill="(#[0-9a-fA-F]{6}|none)"`);
+const STROKE_REGEX = new RegExp(`stroke="(#([0-9a-fA-F]{8})|none)"`);
+const FILL_REGEX = new RegExp(`fill="(#([0-9a-fA-F]{8})|none)"`);
 
 //Crayon
 const POINTS_REGEX= new RegExp(`points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`);
@@ -57,6 +58,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     private interactionService: InteractionService,
     private renderer: Renderer2,
     private canvBuilder: CanvasBuilderService,
+    private colorPick: ColorPickingService
     ) { }
 
   ngOnInit(): void {
@@ -138,9 +140,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools(){
-    const pencil = new Pencil(true, this.interactionService);
-    const rectangle = new Rectangle(false, this.interactionService);
-    const ellipse = new Ellipse(false, this.interactionService);
+    const pencil = new Pencil(true, this.interactionService, this.colorPick);
+    const rectangle = new Rectangle(false, this.interactionService, this.colorPick);
+    const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
 
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
@@ -171,7 +173,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         //new elements
         let newObj!: SVGElement;
         if (data.drawing.includes('polyline')) {
-          console.log('pencil: ' + data.contentId);
+          console.log('pencil: ' + data.drawing);
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
           console.log('rect: ' + data.drawing);
@@ -307,6 +309,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let stroke_width = STROKE_WIDTH_REGEX.exec(drawing);
     let stroke = STROKE_REGEX.exec(drawing);
     let fill = FILL_REGEX.exec(drawing);
+    if (stroke)
+    console.log('element: ' + drawing + '\nstroke: ' + stroke[1].substring(0, 7));
     
     if(cx !== null && cy !== null && rx !== null && ry !== null && stroke_width !== null && stroke !== null && fill !== null) {
       this.renderer.setAttribute(element, 'cx', cx[1].toString());

@@ -1,23 +1,22 @@
 import { DrawingStatus } from "src/app/models/drawing-content";
+import { ColorPickingService } from "../color-picker/color-picking.service";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
 import { ToolsAttributes } from "./tools-attributes";
 
 const DEF_LINE_THICKNESS = 5;
-const DEF_COLOR = '#000000';
 
 
 export class Pencil extends DrawingTool{
     attr: ToolsAttributes;
-    primaryColor: string;
     
 
-    constructor(selected: boolean, interactionService: InteractionService){
-        super(selected, interactionService);
+    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService,){
+        super(selected, interactionService, colorPick);
         this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
         this.updateAttributes();
-        this.primaryColor = DEF_COLOR;
+        this.updateColors();
     }
 
     updateAttributes(): void {
@@ -83,7 +82,7 @@ export class Pencil extends DrawingTool{
                 s+=",";
             }
         }
-        s+=`\" stroke="${this.primaryColor}" fill="none"`;
+        s+=`\" stroke="${this.chosenColor.primColor}" fill="none"`;
         //Replace the number by the width chosen in the component
         s+= ` stroke-width="${this.attr.pencilLineThickness}"`;
         s+= ` transform="translate(0,0)"`;

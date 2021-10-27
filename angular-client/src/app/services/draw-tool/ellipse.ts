@@ -1,4 +1,5 @@
 import { DrawingStatus } from "src/app/models/drawing-content";
+import { ColorPickingService } from "../color-picker/color-picking.service";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
@@ -8,9 +9,9 @@ import { ToolsAttributes } from "./tools-attributes";
 const DEFAULT_LINE_THICKNESS = 5;
 export class Ellipse extends Shape {
     
-    constructor(selected: boolean, interactionService: InteractionService){
-        super(selected, interactionService);
-        //this.updateColors();
+    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService){
+        super(selected, interactionService, colorPick);
+        this.updateColors();
         this.updateAttributes();
     }
     
