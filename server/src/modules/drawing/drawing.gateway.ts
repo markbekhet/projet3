@@ -9,7 +9,7 @@ import { DrawingContentRepository } from '../drawing-content/drawing-content.rep
 import { CreateDrawingDto } from './create-drawing.dto';
 import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
-import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
+import { ContentDrawingSocket} from './socket-drawing.dto';
 
 @WebSocketGateway({namespace: '/drawing'})
 export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
@@ -40,13 +40,11 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     console.log(drawing);
     const drawingMod: ContentDrawingSocket = JSON.parse(drawing);
     if(drawingMod.status === DrawingStatus.Done.valueOf()){
-      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing})
+      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing, toolName:drawingMod.toolName})
     }
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
       await this.drawingContentRepo.delete(drawingMod.contentId);
     }
-    //let parsedDrawing:SocketDrawing = JSON.parse(drawing)
-    //console.log(drawing.drawingId,drawing.contentId, drawing.drawing)
     this.wss.emit("drawingToClient", drawing);
   }
 
