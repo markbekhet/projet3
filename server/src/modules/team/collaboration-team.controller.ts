@@ -9,11 +9,11 @@ export class CollaborationTeamController {
     constructor(private databaseService: DatabaseService){}
     @Post()
     createTeam(@Body() dto: CreateTeamDto){
-
+        return this.databaseService.createTeam(dto);
     }
 
     @Delete()
     deleteTeam(@Body() dto: DeleteTeamDto){
-        
+        this.databaseService.deleteTeam(dto);
     }
 }

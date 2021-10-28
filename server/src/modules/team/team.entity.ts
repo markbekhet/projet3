@@ -21,7 +21,7 @@ export class Team extends BaseEntity{
     ownerId: string;
 
     @Column({default:4})
-    maximumCollaborators: number;
+    nbCollaborators: number;
 
     @BeforeInsert()
     async setPassword(){
@@ -37,5 +37,6 @@ export class Team extends BaseEntity{
         newTeam.visibility = dto.visibility;
         newTeam.password = dto.password;
         newTeam.name = dto.name;
+        return newTeam;
     }
 }

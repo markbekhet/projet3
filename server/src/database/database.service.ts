@@ -19,6 +19,9 @@ import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
 import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
 import { DrawingGateway } from 'src/modules/drawing/drawing.gateway';
 import { TeamRepository } from 'src/modules/team/team.repository';
+import { CreateTeamDto } from 'src/modules/team/create-team.dto';
+import { Team } from 'src/modules/team/team.entity';
+import { DeleteTeamDto } from 'src/modules/team/delete-team.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -209,6 +212,25 @@ export class DatabaseService {
         }
         await this.drawingRepo.delete(drawing.id)
     }
+    // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
+    async createTeam(dto: CreateTeamDto){
+        if(dto.visibility === visibility.PROTECTED){
+            if(dto.password=== undefined || dto.password === null){
+                throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
+            }
+        }
+        const newTeam = Team.createTeam(dto);
+        const createdTeam = await this.teamRepo.save(newTeam)
+        return createdTeam;
+    }
+
+    async deleteTeam(dto: DeleteTeamDto){
+        const team = await this.teamRepo.findOne(dto.teamId);
+        if(team.ownerId !== dto.userId){
+            throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
+        }
+        await this.teamRepo.delete(dto.teamId);
+    }
     //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){
         if(password.length < 8){
@@ -221,5 +243,4 @@ export class DatabaseService {
 
         return true;
     }
-    
 }

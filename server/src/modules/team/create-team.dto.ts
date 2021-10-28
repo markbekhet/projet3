@@ -15,4 +15,7 @@ export class CreateTeamDto
     @IsOptional()
     password: string;
 
+    @IsOptional()
+    nbCollaborators: number;
+
 }
