@@ -7,16 +7,25 @@ import android.view.View
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGTransform
 
-interface Tool: SVGElement {
+interface Tool: SVGElement{
     var currentX: Float
     var currentY: Float
     var str: String
-    var node: SVGElement
-    fun touchStart(doc: Document, eventX: Float, eventY:Float)
+    var selected: Boolean
+    var startTransformPoint: Point
+    var totalTranslation: Point
+
+    fun touchStart(view: View, eventX: Float, eventY:Float)
     fun touchMove(view: View, context: Context,
                   eventX: Float, eventY: Float)
-    fun touchUp()
+    fun touchUp(view: View, selectedTools: ArrayList<Tool>)
 
     fun getString(): String
+    fun getOriginalString()
+    fun containsPoint(eventX: Float, eventY:Float): Boolean
+    fun translate(view:View, translationPoint: Point)
+    fun scale(view: View, scalePoint: Point)
+    fun getSelectionString()
 }

@@ -25,46 +25,48 @@ private const val STROKE_WIDTH = 12f // has to be float
 val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
 
 class CanvasView(context: Context): View(context) {
-    private lateinit var bitmap: Bitmap
-    private lateinit var canvas: Canvas
+    private var selectedTools = ArrayList<Tool>()
     private var width: String = "100"
     private var height: String = "100"
 
-    private lateinit var tool: Tool
+    private var tool: Tool? = null
 
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     // Get the root element (the 'svg' element).
     private var svgRoot = doc.createElementNS(svgNS, "g")
 
+    private var selectionMode = true
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                tool = FreeHand("path", doc as AbstractDocument)
-                tool.touchStart(doc, event.x, event.y)
-                svgRoot.appendChild(tool)
+                if(!isInsideTheSelection(event.x , event.y)){
+                    unSelectAllChildren()
+                    tool = Ellipse("ellipse", doc as AbstractDocument)
+                    tool!!.touchStart(this, event.x, event.y)
+                    svgRoot.appendChild(tool)
+                    selectionMode = false
+                }
+                else{
+                    selectionMode = true
+                }
             }
-            MotionEvent.ACTION_MOVE -> tool.touchMove(this, context,
-                event!!.x, event!!.y)
-            MotionEvent.ACTION_UP -> tool.touchUp()
+            MotionEvent.ACTION_MOVE ->{
+                if(!selectionMode){
+                    tool!!.touchMove(this, context,
+                        event.x, event.y)
+                }
+                else{
+                    val translation:Point = tool!!.startTransformPoint
+                        .difference(Point(event.x, event.y))
+                    tool!!.translate(this, translation)
+                }
+            }
+            MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
         }
 
         return true
-    }
-
-    fun drawRandomRect(){
-        var rectangle = doc.createElementNS(svgNS, "rect");
-        rectangle.setAttributeNS(null, "x", "10");
-        rectangle.setAttributeNS(null, "y", "20");
-        rectangle.setAttributeNS(null, "width", "100");
-        rectangle.setAttributeNS(null, "height", "50");
-        rectangle.setAttributeNS(null, "fill", "red");
-
-        // Attach the rectangle to the root 'svg' element.
-        svgRoot.appendChild(rectangle);
-        invalidate()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -77,12 +79,12 @@ class CanvasView(context: Context): View(context) {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val svgString = getSvgString()
+        val svgString = getSVGString()
         val svg = SVG.getFromString(svgString)
         svg.renderToCanvas(canvas)
     }
 
-    fun getSvgString(): String{
+    private fun getSVGString(): String{
         var str = "<svg width=\"${width}\" height=\"${height}\" xmlns=\"http://www.w3.org/2000/svg\">\n"
         var i = 0
         if(svgRoot.childNodes.length > 0){
@@ -96,5 +98,21 @@ class CanvasView(context: Context): View(context) {
         str += "</svg>"
         println(str)
         return str
+    }
+
+    private fun isInsideTheSelection(eventX: Float, eventY: Float): Boolean{
+        for(tool in selectedTools){
+            if(tool.containsPoint(eventX, eventY)){
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun unSelectAllChildren(){
+        for(tool in selectedTools){
+            tool.selected = false
+        }
+        invalidate()
     }
 }
