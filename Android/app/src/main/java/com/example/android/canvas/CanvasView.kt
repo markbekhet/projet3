@@ -8,11 +8,14 @@ import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.caverock.androidsvg.SVG
 import com.example.android.R
+import com.example.android.SocketHandler
+import io.socket.client.Socket
 import org.apache.batik.anim.dom.*
 import org.apache.batik.dom.AbstractDocument
 import org.apache.batik.dom.svg.AbstractSVGTransformList
 import org.apache.batik.dom.svg.SVGSVGContext
 import org.apache.batik.util.SVGFeatureStrings
+import org.json.JSONObject
 import org.w3c.dom.Document
 import org.w3c.dom.svg.GetSVGDocument
 import org.w3c.dom.svg.SVGAnimatedString
@@ -20,6 +23,7 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGTransform
 import org.xml.sax.helpers.XMLReaderFactory
 import org.xmlpull.v1.XmlSerializer
+import java.lang.RuntimeException
 
 private const val STROKE_WIDTH = 12f // has to be float
 val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
@@ -29,17 +33,19 @@ class CanvasView(context: Context): View(context) {
     private var width: String = "100"
     private var height: String = "100"
 
+    private var socket = SocketHandler.getDrawingSocket()
+    // Drawing utils
     private var tool: Tool? = null
-
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
-    // Get the root element (the 'svg' element).
     private var svgRoot = doc.createElementNS(svgNS, "g")
-
-
+    private var drawingId = 1
+    //Action attributes
     var mode = ""
     var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
     var totalScaling = Point(0f,0f)
+
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
@@ -55,9 +61,8 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = FreeHand("polyline", doc as AbstractDocument)
+                    tool = Ellipse(drawingId,"ellipse", doc as AbstractDocument)
                     tool!!.touchStart(this, event.x, event.y)
-                    svgRoot.appendChild(tool)
                     mode = ""
                 }
             }
@@ -92,11 +97,34 @@ class CanvasView(context: Context): View(context) {
         height = h.toString()
     }
 
+    fun receiveContentID(json: JSONObject){
+        val getContentId = GetContentId(0).fromJson(json.toString())
+        tool!!.contentID = getContentId.contentId
+    }
+
+    fun onReceivedDrawing(drawingContent: ContentDrawingSocket){
+        manipulateReceivedDrawing(drawingContent)
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        socket.on("drawingContentCreated"){ args ->
+            if(args[0] != null){
+                val data = args[0] as JSONObject
+                receiveContentID(data)
+            }
+        }
+
         val svgString = getSVGString()
-        val svg = SVG.getFromString(svgString)
-        svg.renderToCanvas(canvas)
+        try{
+            val svg = SVG.getFromString(svgString)
+            svg.renderToCanvas(canvas)
+        } catch(e: Exception){
+            println(e.message)
+        }
+
+
     }
 
     private fun getSVGString(): String{
@@ -111,6 +139,7 @@ class CanvasView(context: Context): View(context) {
         }
 
         str += "</svg>"
+        println(str)
         return str
     }
 
@@ -123,8 +152,37 @@ class CanvasView(context: Context): View(context) {
 
     private fun unSelectAllChildren(){
         for(tool in selectedTools){
-            tool.selected = false
+            tool.unselect()
         }
-        invalidate()
+    }
+
+    private fun manipulateReceivedDrawing(drawingContent: ContentDrawingSocket){
+        var i = 0
+        var exist = false
+        if(svgRoot.childNodes.length > 0){
+            while(i < svgRoot.childNodes.length){
+                val tool = svgRoot.childNodes.item(i) as Tool
+                if(tool.contentID == drawingContent.contentId){
+                    tool.parse(drawingContent.drawing)
+                    exist = true
+                    tool.selected = drawingContent.status == DrawingStatus.Selected
+                    break
+                }
+                i++
+            }
+        }
+        if(!exist){
+            val newTool = Ellipse(drawingContent.drawingId,
+                "ellipse", doc as AbstractDocument)
+            try {
+                newTool.contentID = drawingContent.contentId!!
+                newTool.selected = drawingContent.status == DrawingStatus.Selected
+                newTool.parse(drawingContent.drawing)
+                svgRoot.appendChild(newTool)
+            } catch(e: Exception){
+                println(e.message)
+            }
+
+        }
     }
 }

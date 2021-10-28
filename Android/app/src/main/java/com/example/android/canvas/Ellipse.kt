@@ -2,17 +2,15 @@ package com.example.android.canvas
 
 import android.content.Context
 import android.view.View
+import com.example.android.SocketHandler
+import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMEllipseElement
-import org.apache.batik.anim.dom.SVGOMPolylineElement
-import org.apache.batik.anim.dom.SVGOMRectElement
-import org.apache.batik.anim.dom.SVGOMSVGElement
 import org.apache.batik.dom.AbstractDocument
-import org.w3c.dom.Document
-import org.w3c.dom.svg.SVGElement
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Ellipse(prefix: String, owner: AbstractDocument):
+class Ellipse(private var drawingId:Int? ,
+              prefix: String, owner: AbstractDocument):
     SVGOMEllipseElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
@@ -24,6 +22,8 @@ class Ellipse(prefix: String, owner: AbstractDocument):
     override var totalTranslation = Point(0f, 0f)
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
+    //override var drawingID = drawingId
+    override var contentID: Int?=null
 
     override fun touchStart(view: View, eventX: Float, eventY: Float) {
         startingPositionX = eventX
@@ -32,9 +32,10 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         this.setAttribute("ry", "0")
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
-        this.setAttribute("transformTranslate","")
-        this.setAttribute("transformScale", "")
-        view.invalidate()
+        this.setAttribute("transformTranslate","translate(0,0)")
+        this.setAttribute("stroke-width", "3")
+        this.setAttribute("stroke", "#000000")
+        requestCreation()
     }
 
     override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
@@ -44,27 +45,33 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         this.setAttribute("ry", ry.toString())
         this.setAttribute("cx",(min(startingPositionX+rx, currentX + rx)).toString())
         this.setAttribute("cy",(min(startingPositionY+ry, currentY + ry)).toString())
-        this.setAttribute("transform", "")
+
         currentY = eventY
         currentX = eventX
-        view.invalidate()
+        if(contentID != null){
+            sendProgressToServer(DrawingStatus.InProgress)
+        }
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
+    private fun setCriticalValues(){
         val cxCert = this.getAttribute("cx").toFloat()
         val cyCert = this.getAttribute("cy").toFloat()
         startTransformPoint = Point(cxCert, cyCert)
+    }
+
+    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
         if(!selectedTools.contains(this)){
             selectedTools.add(this)
         }
-
-        view.invalidate()
+        setCriticalValues()
+        calculateScalingPositions()
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun getString(): String {
         str = ""
-        getOriginalString()
+        str += getOriginalString()
         if(selected){
             getSelectionString()
             getScalingPositionsString()
@@ -72,33 +79,36 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         return str
     }
 
-    override fun getOriginalString(){
-        str += "<ellipse "
+    override fun getOriginalString(): String{
+        var result = "<ellipse "
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
         val transform = this.getAttribute("transformTranslate")
+        val stroke = this.getAttribute("stroke")
+        val strokeWidth = this.getAttribute("stroke-width")
 
         val mx = this.getAttribute("cx")
-        str += "cx=\"$mx\" "
+        result += "cx=\"$mx\" "
 
         val my = this.getAttribute("cy")
-        str += "cy=\"$my\" "
+        result += "cy=\"$my\" "
 
         rx?.let{
-            str += "rx=\"$it\" "
+            result += "rx=\"$it\" "
         }
         ry?.let{
-            str += "ry=\"$it\" "
+            result += "ry=\"$it\" "
         }
 
         transform?.let{
-            str += "transform=\"$it\""
+            result += "transform=\"$it\""
         }
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
+        result += " stroke-width=\"$strokeWidth\""
+        result += " fill=\"none\""
 
-        str += " stroke=\"#000000\""
-        str += "/>\n"
+        result += " stroke=\"$stroke\""
+        result += "/>\n"
+        return result
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
@@ -152,7 +162,7 @@ class Ellipse(prefix: String, owner: AbstractDocument):
         val newRy = this.getAttribute("ry").toFloat()
         this.setAttribute("cy", (min(minPoint.y,maxPoint.y) + newRy).toString())
         this.setAttribute("cx", (min(minPoint.x,maxPoint.x) + newRx).toString())
-        view.invalidate()
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun translate(view:View, translationPoint: Point){
@@ -161,30 +171,33 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             "translate(${translationPoint.x}," +
             "${translationPoint.y})")
 
-        view.invalidate()
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun getSelectionString(){
-        str += "<rect "
-        val rx = this.getAttribute("rx").toFloat()
-        val ry = this.getAttribute("ry").toFloat()
-        val x = this.getAttribute("cx").toFloat() - rx
-        val y = this.getAttribute("cy").toFloat() - ry
-        val width = rx * 2
-        val height = ry * 2
-        str += "x=\"$x\" "
-        str += "y=\"$y\" "
-        str += "width=\"$width\""
-        str += "height=\"$height\""
-        val transform = this.getAttribute("transformTranslate")
-        transform?.let{
-            str += "transform=\"$it\""
-        }
-        str += " stroke=\"#0000FF\""
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\"";
-        str += " stroke-dasharray=\"4\""
-        str += "/>\n"
+        try{
+            str += "<rect "
+            val rx = this.getAttribute("rx").toFloat()
+            val ry = this.getAttribute("ry").toFloat()
+            val x = this.getAttribute("cx").toFloat() - rx
+            val y = this.getAttribute("cy").toFloat() - ry
+            val width = rx * 2
+            val height = ry * 2
+            str += "x=\"$x\" "
+            str += "y=\"$y\" "
+            str += "width=\"$width\""
+            str += "height=\"$height\""
+            val transform = this.getAttribute("transformTranslate")
+            transform?.let{
+                str += "transform=\"$it\""
+            }
+            str += " stroke=\"#0000FF\""
+            str += " stroke-width=\"3\""
+            str += " fill=\"none\""
+            str += " stroke-dasharray=\"4\""
+            str += "/>\n"
+        } catch(e: Exception){}
+
     }
 
     override fun calculateScalingPositions() {
@@ -246,5 +259,55 @@ class Ellipse(prefix: String, owner: AbstractDocument):
             str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
                 " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
         }
+    }
+
+    override fun parse(parceableString: String?){
+        val cxRegex = Regex("""cx="([-?0-9.?]*)"""")
+        val matchCX = cxRegex.find(parceableString!!, 1)
+        this.setAttribute("cx", matchCX!!.groups[1]!!.value)
+        val cyRegex = Regex("""cy="([-?0-9.?]*)"""")
+        val matchCY = cyRegex.find(parceableString,1)
+        this.setAttribute("cy", matchCY!!.groups[1]!!.value)
+        val rxRegex = Regex("""rx="([-?0-9.?]*)""")
+        val matchRX = rxRegex.find(parceableString,1)
+        this.setAttribute("rx", matchRX!!.groups[1]!!.value)
+        val ryRegex = Regex("""ry="([-?0-9.?]*)"""")
+        val matchRY = ryRegex.find(parceableString,1)
+        this.setAttribute("ry", matchRY!!.groups[1]!!.value)
+
+        //Commune between tools
+        val translateRegex = Regex("""translate\(([-?0-9.?]+),([-?0-9.?]+)\)""")
+        val matchTranslate = translateRegex.find(parceableString, 1)
+        totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
+        totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
+        this.setAttribute("transformTranslate",
+            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        //strokeParse
+        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val matchStroke = strokeRegex.find(parceableString, 1)
+        this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
+        val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
+        val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
+        this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
+        setCriticalValues()
+    }
+
+    private fun sendProgressToServer(status: DrawingStatus){
+        val drawingContent = ContentDrawingSocket(
+            drawingId = drawingId, userId = ClientInfo.userId,
+            contentId = contentID, drawing= getOriginalString(), status = status)
+        val socket = SocketHandler.getDrawingSocket()
+        socket.emit("drawingToServer", drawingContent.toJson())
+    }
+
+    private fun requestCreation(){
+        SocketHandler.getDrawingSocket()
+            .emit("createDrawingContent",
+                RequestCreation(drawingId).toJson())
+    }
+
+    override fun unselect(){
+        sendProgressToServer(DrawingStatus.Done)
+        selected = false
     }
 }

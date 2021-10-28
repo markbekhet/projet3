@@ -3,7 +3,6 @@ package com.example.android.client
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.example.android.URL
 import com.example.android.localUrl
 import com.example.android.profile
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +32,7 @@ class ClientService : Service() {
     suspend fun disconnect(username:String?){
         withContext(Dispatchers.IO){
             val endpoint: String = "/connection/disconnect/${username}"
-            val mURL = URL(URL +endpoint)
+            val mURL = URL(localUrl +endpoint)
 
             with(mURL.openConnection() as HttpURLConnection) {
                 // optional default is GET
@@ -47,7 +46,7 @@ class ClientService : Service() {
     suspend fun connect(username:String?){
         withContext(Dispatchers.IO){
             val endpoint: String = "/connection/connect/${username}"
-            val mURL = URL(URL +endpoint)
+            val mURL = URL(localUrl +endpoint)
 
             with(mURL.openConnection() as HttpURLConnection) {
                 // optional default is GET
