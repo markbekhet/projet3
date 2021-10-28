@@ -33,7 +33,8 @@ class Rectangle(private var drawingId: Int?,
         this.setAttribute("height", "0")
         this.setAttribute("transformTranslate", "translate(0,0)")
         this.setAttribute("stroke-width", "3")
-        this.setAttribute("stroke", "#000000")
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
         requestCreation()
     }
 
@@ -76,11 +77,13 @@ class Rectangle(private var drawingId: Int?,
 
     override fun getString(): String {
         str = ""
-        str += getOriginalString()
-        if(selected){
-            getSelectionString()
-            getScalingPositionsString()
-        }
+        try{
+            str += getOriginalString()
+            if(selected){
+                getSelectionString()
+                getScalingPositionsString()
+            }
+        }catch(e: Exception){}
 
         return str
     }
@@ -94,6 +97,7 @@ class Rectangle(private var drawingId: Int?,
         val transform = this.getAttribute("transformTranslate")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
+        val fill = this.getAttribute("fill")
 
         result += "x=\"${x}\" "
         result += "y=\"${y}\" "
@@ -102,7 +106,7 @@ class Rectangle(private var drawingId: Int?,
         result += "transform=\"$transform\""
         result += " stroke=\"$stroke\""
         result += " stroke-width=\"$strokeWidth\""
-        result += " fill=\"none\""
+        result += " fill=\"$fill\""
 
         result += "/>\n"
         return result
@@ -278,12 +282,15 @@ class Rectangle(private var drawingId: Int?,
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}, ${totalTranslation.y})")
         //strokeParse
-        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
         this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
         val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
         this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
+        val fillRegex = Regex("""fill="([#a-zA-Z0-9]+ |none)"""")
+        val matchFill = fillRegex.find(parceableString)
+        this.setAttribute("fill", matchFill!!.groups[1]!!.value)
         setCriticalValues()
     }
 

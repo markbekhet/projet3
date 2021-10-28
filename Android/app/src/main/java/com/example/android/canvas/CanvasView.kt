@@ -180,9 +180,9 @@ class CanvasView(context: Context): View(context) {
         }
         if(!exist){
             try {
-                val toolRegex = Regex("""<([a-z]+)""")
+                val toolRegex = Regex("""<([a-zA-Z_0-9]*)""")
                 println(drawingContent.drawing)
-                val toolMatch = toolRegex.find(drawingContent.drawing!!,1)
+                val toolMatch = toolRegex.find(drawingContent.drawing!!)
                 var newTool: Tool? = null
                 when(toolMatch!!.groups[1]!!.value){
                     ellipseString -> newTool = Ellipse(drawingId,

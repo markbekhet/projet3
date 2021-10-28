@@ -30,7 +30,7 @@ class FreeHand(private var drawingId: Int?,
         this.setAttribute("points", "$eventX $eventY")
         this.setAttribute("transformTranslate", "translate(0,0)")
         this.setAttribute("stroke-width", "3")
-        this.setAttribute("stroke", "#000000")
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
         requestCreation()
     }
 
@@ -296,7 +296,7 @@ class FreeHand(private var drawingId: Int?,
         this.setAttribute("transformTranslate",
             "translate(${totalTranslation.x}, ${totalTranslation.y})")
         //strokeParse
-        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
         this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
