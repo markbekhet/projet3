@@ -13,4 +13,9 @@ class Point(var x: Float, var y: Float) {
         x = point.x
         y = point.y
     }
+
+    fun plus(point:Point){
+        x += point.x
+        y += point.y
+    }
 }
