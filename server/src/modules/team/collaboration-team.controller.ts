@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Post } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ChatGateway } from 'src/chat.gateway';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateTeamDto } from './create-team.dto';
 import { DeleteTeamDto } from './delete-team.dto';
@@ -6,14 +7,18 @@ import { DeleteTeamDto } from './delete-team.dto';
 @Controller('collaborationTeam')
 export class CollaborationTeamController {
 
-    constructor(private databaseService: DatabaseService){}
+    constructor(private databaseService: DatabaseService, private chatGateway: ChatGateway){}
     @Post()
-    createTeam(@Body() dto: CreateTeamDto){
-        return this.databaseService.createTeam(dto);
+    async createTeam(@Body() dto: CreateTeamDto){
+        let team = await this.databaseService.createTeam(dto);
+        this.chatGateway.notifyTeamCreation(team);
+        return team;
     }
 
     @Delete()
-    deleteTeam(@Body() dto: DeleteTeamDto){
-        this.databaseService.deleteTeam(dto);
+    async deleteTeam(@Body() dto: DeleteTeamDto){
+        let team = await this.databaseService.deleteTeam(dto);
+        this.chatGateway.notifyTeamDeletion(team);
+        return HttpStatus.OK;
     }
 }

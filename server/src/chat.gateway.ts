@@ -54,9 +54,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.wss.emit("userUpdate", user);
   }
   notifyTeamCreation(team:Team){
-    
+    this.wss.emit("newTeamCreated", team);
   }
   notifyTeamDeletion(team: Team){
-
+    this.wss.emit("teamDeleted", team);
   }
 }

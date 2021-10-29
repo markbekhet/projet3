@@ -243,7 +243,10 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        return createdTeam;
+        let returnedTeam = await this.teamRepo.findOne(createdTeam.id, {
+            select: ["id", "visibility", "name"],
+        })
+        return returnedTeam;
     }
 
     async deleteTeam(dto: DeleteTeamDto){
