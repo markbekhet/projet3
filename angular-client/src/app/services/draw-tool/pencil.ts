@@ -1,21 +1,34 @@
 import { DrawingStatus } from "src/app/models/drawing-content";
+import { ColorPickingService } from "../color-picker/color-picking.service";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { DrawingTool } from "./drawing-tool";
 import { Point } from "./point";
+import { ToolsAttributes } from "./tools-attributes";
 
-const DEFAULT_LINE_THICKNESS = 5;
+const DEF_LINE_THICKNESS = 5;
+
+
 export class Pencil extends DrawingTool{
-    constructor(selected: boolean, interactionService: InteractionService){
-        super(selected, interactionService);
-        //this.updateColors();
-        this.updateAttributes();
-    }
-    updateAttributes(){
+    attr: ToolsAttributes;
+    
 
+    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService,){
+        super(selected, interactionService, colorPick);
+        this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
+        this.updateAttributes();
+        this.updateColors();
     }
+
+    updateAttributes(): void {
+        this.interactionService.$toolsAttributes.subscribe((attr: ToolsAttributes) => {
+          if (attr) {
+            this.attr = { pencilLineThickness: attr.pencilLineThickness };
+          }
+        });
+      }
 
     down(position:Point){
-        this.currentPath =[]
+        this.currentPath = [];
         //console.log('here');
         super.down(position);
 
@@ -61,18 +74,19 @@ export class Pencil extends DrawingTool{
         if(p.length < 2){
             return s;
         }
-        s= `<polyline id= "${this.drawingContentId}" `;
+        s= `<polyline `;
         s+=  `points="`
         for(let i= 0; i< p.length; i++){
             s+= `${p[i].x} ${p[i].y}`;
-            if(i!== p.length-1){
+            if(i !== p.length-1){
                 s+=",";
             }
         }
-        s+=`\" stroke= "black" fill="none" `;
+        s+=`\" stroke="${this.chosenColor.primColor}" fill="none"`;
         //Replace the number by the width chosen in the component
-        s+= `stroke-width= "5" `;
-        s+= "/>"
+        s+= ` stroke-width="${this.attr.pencilLineThickness}"`;
+        s+= ` transform="translate(0,0)"`;
+        s+= "/>\n"
         //console.log(s)
         return s;
     }
