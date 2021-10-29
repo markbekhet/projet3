@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.android.synthetic.main.dessin.*
 import okhttp3.internal.toHexString
 import top.defaults.colorpicker.ColorPickerPopup
+import java.util.*
 
 class drawing : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,8 +72,8 @@ class drawing : AppCompatActivity() {
         primaryColor.setOnClickListener {
             ColorPickerPopup.Builder(this).initialColor(Color.BLACK)
                 .enableBrightness(true)
-                .okTitle("Choisir")
                 .enableAlpha(false)
+                .okTitle("Choisir")
                 .cancelTitle("Annuler")
                 .showIndicator(true)
                 .showValue(true)
@@ -106,11 +107,15 @@ class drawing : AppCompatActivity() {
     private class ColorPicker(var button: View, var string: String): ColorPickerPopup.ColorPickerObserver() {
         override fun onColorPicked(color: Int){
             button.setBackgroundColor(color)
+            val r = Color.red(color)
+            val g = Color.green(color)
+            val b = Color.blue(color)
+            val colorString = String.format(Locale.getDefault(), "%02X%02X%02X",r, g, b)
             if(string == "secondary"){
-                DrawingUtils.secondaryColor = "#${color.toHexString().substring(2)}"
+                DrawingUtils.secondaryColor = "#$colorString"
             }
             else{
-                DrawingUtils.primaryColor = "#${color.toHexString().substring(2)}"
+                DrawingUtils.primaryColor = "#$colorString"
             }
 
         }
