@@ -79,7 +79,14 @@ class drawing : AppCompatActivity() {
                 .build()
                 .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor))
         }
+
+        transparent.setOnCheckedChangeListener { buttonView, isChecked ->
+            DrawingUtils.secondaryColor = none
+        }
+
         secondaryColor.setOnClickListener {
+            transparent.isSelected = false
+            transparent.isChecked = false
             ColorPickerPopup.Builder(this)
                 .enableBrightness(true)
                 .okTitle("Choisir")
@@ -89,6 +96,10 @@ class drawing : AppCompatActivity() {
                 .showValue(true)
                 .build()
                 .show(it, ColorPicker(secondaryColor, "secondary"))
+        }
+        thickness.value = DrawingUtils.thickness.toFloat()
+        thickness.addOnChangeListener { slider, value, fromUser ->
+            DrawingUtils.thickness = value.toInt()
         }
     }
 

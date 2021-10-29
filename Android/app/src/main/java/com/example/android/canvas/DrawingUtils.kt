@@ -9,4 +9,5 @@ object DrawingUtils {
     var currentTool = pencilString
     var primaryColor = black
     var secondaryColor = none
+    var thickness = 3
 }

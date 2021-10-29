@@ -32,7 +32,7 @@ class Rectangle(private var drawingId: Int?,
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
         this.setAttribute("transformTranslate", "translate(0,0)")
-        this.setAttribute("stroke-width", "3")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
         requestCreation()

@@ -33,7 +33,7 @@ class Ellipse(private var drawingId:Int? ,
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
         this.setAttribute("transformTranslate","translate(0,0)")
-        this.setAttribute("stroke-width", "3")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
         requestCreation()
@@ -79,11 +79,6 @@ class Ellipse(private var drawingId:Int? ,
                 getScalingPositionsString()
             }
         } catch(e: Exception){}
-        /*str += getOriginalString()
-        if(selected) {
-            getSelectionString()
-            getScalingPositionsString()
-        }*/
         return str
     }
 

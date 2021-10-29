@@ -115,7 +115,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Couleur primaire"
+                            android:text="Couleur du trait/bordure"
                             android:layout_marginTop="5dp"/>
 
                         <LinearLayout
@@ -135,7 +135,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Couleur secondaire"
+                            android:text="Couleur du fond de la forme"
                             android:layout_marginTop="5dp"/>
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -150,6 +150,13 @@
                                 android:clickable="true"
                                 android:enabled="true"/>
                         </LinearLayout>
+
+                        <CheckBox
+                            android:id="@+id/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Fond transparent"
+                            android:checked="true"/>
                     </LinearLayout>
                     <ScrollView
                         android:layout_width="wrap_content"

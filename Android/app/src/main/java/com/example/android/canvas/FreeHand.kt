@@ -29,7 +29,7 @@ class FreeHand(private var drawingId: Int?,
     override fun touchStart(view: View, eventX: Float, eventY:Float){
         this.setAttribute("points", "$eventX $eventY")
         this.setAttribute("transformTranslate", "translate(0,0)")
-        this.setAttribute("stroke-width", "3")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         requestCreation()
     }
