@@ -1,23 +1,36 @@
 import { Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import{ServerMessage, CustomDate, ClientMessage} from'./MessageMeta'
 import { Team } from './modules/team/team.entity';
+import { TeamRepository } from './modules/team/team.repository';
 import { User } from './modules/user/user.entity';
+import { UserRespository } from './modules/user/user.repository';
 
 @WebSocketGateway({namespace:'chat',cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
   
+  constructor(@InjectRepository(UserRespository) private readonly userRepo: UserRespository,
+    @InjectRepository(TeamRepository) private readonly teamRepo: TeamRepository){}
   @WebSocketServer() wss: Server;
   
   handleDisconnect(client: Socket) {
     this.logger.log(`Client diconnected: ${client.id}`);
   }
   
-  handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
+    let users = await this.userRepo.find({
+      select: ["id", "status", "pseudo"],
+    })
+    let teams = await this.teamRepo.find({
+      select: ["id", "name","visibility"]
+    })
+    client.emit("usersArrayToClient", users);
+    client.emit("teamsArrayToClient", teams);
   }
 
   afterInit(server: Server) {
@@ -40,7 +53,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   notifyUserUpdate(user: User){
     this.wss.emit("userUpdate", user);
   }
-  notifyTeamUpdate(team:Team){
+  notifyTeamCreation(team:Team){
+    
+  }
+  notifyTeamDeletion(team: Team){
 
   }
 }

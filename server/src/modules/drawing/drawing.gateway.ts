@@ -5,7 +5,6 @@ import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from 'src/enumerators/drawing-status';
 import { DrawingContent } from '../drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from '../drawing-content/drawing-content.repository';
-import { CreateDrawingDto } from './create-drawing.dto';
 import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
 import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
