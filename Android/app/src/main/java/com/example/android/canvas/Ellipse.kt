@@ -4,68 +4,63 @@ import android.content.Context
 import android.view.View
 import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
-import org.apache.batik.anim.dom.SVGOMRectElement
+import org.apache.batik.anim.dom.SVGOMEllipseElement
 import org.apache.batik.dom.AbstractDocument
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Rectangle(private var drawingId: Int?,
-                prefix: String, owner: AbstractDocument):
-                SVGOMRectElement(prefix, owner), Tool {
+class Ellipse(private var drawingId:Int? ,
+              prefix: String, owner: AbstractDocument):
+    SVGOMEllipseElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
     override var selected = false
-    override var str = "<rect "
+    override var str = "<ellipse "
+    private var startingPositionX = 0f
+    private var startingPositionY = 0f
     override var startTransformPoint = Point(0f, 0f)
-    override var totalTranslation = Point(0f,0f)
+    override var totalTranslation = Point(0f, 0f)
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
-    private var selectionOffset = 0f
     //override var drawingID = drawingId
-    override var contentID: Int?= null
-    //var abstractTool = AbstractTool(this)
+    override var contentID: Int?=null
 
-    override fun touchStart(view: View, eventX: Float,
-                            eventY: Float) {
-        this.setAttribute("x", eventX.toString())
-        this.setAttribute("y", eventY.toString())
-        this.setAttribute("width", "0")
-        this.setAttribute("height", "0")
-        this.setAttribute("transformTranslate", "translate(0,0)")
+    override fun touchStart(view: View, eventX: Float, eventY: Float) {
+        startingPositionX = eventX
+        startingPositionY = eventY
+        this.setAttribute("rx", "0")
+        this.setAttribute("ry", "0")
+        this.setAttribute("cx",eventX.toString())
+        this.setAttribute("cy",eventY.toString())
+        this.setAttribute("transformTranslate","translate(0,0)")
         this.setAttribute("stroke-width", "3")
         this.setAttribute("stroke", "#000000")
         requestCreation()
     }
 
     override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
-        val width = abs(eventX - this.getAttribute("x").toFloat())
-        val height = abs(eventY - this.getAttribute("y").toFloat())
-        this.setAttribute("width", width.toString())
-        this.setAttribute("height", height.toString())
+        val rx = abs(eventX - startingPositionX)/2
+        val ry = abs(eventY - startingPositionY)/2
+        this.setAttribute("rx", rx.toString())
+        this.setAttribute("ry", ry.toString())
+        this.setAttribute("cx",(min(startingPositionX+rx, currentX + rx)).toString())
+        this.setAttribute("cy",(min(startingPositionY+ry, currentY + ry)).toString())
+
         currentY = eventY
         currentX = eventX
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-
-        this.setAttribute("y", min(currentY,y).toString())
-        this.setAttribute("x", min(currentX,x).toString())
         if(contentID != null){
             sendProgressToServer(DrawingStatus.InProgress)
         }
     }
 
     private fun setCriticalValues(){
-        val xCert = this.getAttribute("x").toFloat()
-        val yCert = this.getAttribute("y").toFloat()
-        val widthCert = this.getAttribute("width").toFloat()
-        val heightCert = this.getAttribute("height").toFloat()
-        startTransformPoint.x = xCert + (widthCert/2)
-        startTransformPoint.y = yCert + (heightCert/2)
+        val cxCert = this.getAttribute("cx").toFloat()
+        val cyCert = this.getAttribute("cy").toFloat()
+        startTransformPoint = Point(cxCert, cyCert)
     }
 
     override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
         selected = true
-
         if(!selectedTools.contains(this)){
             selectedTools.add(this)
         }
@@ -81,53 +76,61 @@ class Rectangle(private var drawingId: Int?,
             getSelectionString()
             getScalingPositionsString()
         }
-
         return str
     }
 
-    override fun getOriginalString(): String {
-        var result = "<rect "
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val width = this.getAttribute("width")
-        val height = this.getAttribute("height")
+    override fun getOriginalString(): String{
+        var result = "<ellipse "
+        val rx = this.getAttribute("rx")
+        val ry = this.getAttribute("ry")
         val transform = this.getAttribute("transformTranslate")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
 
-        result += "x=\"${x}\" "
-        result += "y=\"${y}\" "
-        result += "width=\"$width\" "
-        result += "height=\"$height\" "
-        result += "transform=\"$transform\""
-        result += " stroke=\"$stroke\""
+        val mx = this.getAttribute("cx")
+        result += "cx=\"$mx\" "
+
+        val my = this.getAttribute("cy")
+        result += "cy=\"$my\" "
+
+        rx?.let{
+            result += "rx=\"$it\" "
+        }
+        ry?.let{
+            result += "ry=\"$it\" "
+        }
+
+        transform?.let{
+            result += "transform=\"$it\""
+        }
         result += " stroke-width=\"$strokeWidth\""
         result += " fill=\"none\""
 
+        result += " stroke=\"$stroke\""
         result += "/>\n"
         return result
     }
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean{
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val width = this.getAttribute("width").toFloat()
-        val height = this.getAttribute("height").toFloat()
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
 
-        val isInXAxes = eventX <= x + width + (2*selectionOffset) + totalTranslation.x
-            && eventX >= x - selectionOffset + totalTranslation.x
-        val isInYAxes = eventY <= y + height + (2*selectionOffset)+ totalTranslation.y
-            && eventY >= y - selectionOffset + totalTranslation.y
+        val isInXAxes = eventX <= cx + rx + totalTranslation.x - (radius * 2)
+            && eventX >= cx - rx + totalTranslation.x - (radius * 2)
+        val isInYAxes = eventY <= cy + ry + totalTranslation.y - (radius * 2)
+            && eventY >= cy - ry + totalTranslation.y - (radius * 2)
         return isInXAxes && isInYAxes
     }
 
     override fun scale(view: View, scalePoint: Point , direction: Point) {
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val width = this.getAttribute("width").toFloat()
-        val height = this.getAttribute("height").toFloat()
-        val minPoint = Point(x , y)
-        val maxPoint = Point(x + width, y + height)
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+        val minPoint = Point(cx - rx , cy - ry)
+        val maxPoint = Point(cx + rx, cy + ry)
         if(direction.x == -1f){
             println(minPoint.x)
             minPoint.x += scalePoint.x
@@ -152,78 +155,80 @@ class Rectangle(private var drawingId: Int?,
         if(minPoint.y >= maxPoint.y){
             direction.y *= -1
         }
-        this.setAttribute("y", min(minPoint.y,maxPoint.y).toString())
-        this.setAttribute("x", min(minPoint.x,maxPoint.x).toString())
-        this.setAttribute("width", abs(maxPoint.x - minPoint.x).toString())
-        this.setAttribute("height", abs(maxPoint.y - minPoint.y).toString())
+        this.setAttribute("rx", (abs(maxPoint.x - minPoint.x)/2).toString())
+        this.setAttribute("ry", (abs(maxPoint.y - minPoint.y)/2).toString())
+
+        val newRx = this.getAttribute("rx").toFloat()
+        val newRy = this.getAttribute("ry").toFloat()
+        this.setAttribute("cy", (min(minPoint.y,maxPoint.y) + newRy).toString())
+        this.setAttribute("cx", (min(minPoint.x,maxPoint.x) + newRx).toString())
         sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun translate(view: View, translationPoint: Point) {
+    override fun translate(view:View, translationPoint: Point){
         totalTranslation.makeEqualTo(translationPoint)
         this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}," +
-                "${totalTranslation.y})")
-        sendProgressToServer(DrawingStatus.Selected)
+            "translate(${translationPoint.x}," +
+            "${translationPoint.y})")
 
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun getSelectionString() {
-        str += "<rect "
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val width = this.getAttribute("width").toFloat()
-        val height = this.getAttribute("height").toFloat()
-        val transform = this.getAttribute("transformTranslate")
+    override fun getSelectionString(){
+        try{
+            str += "<rect "
+            val rx = this.getAttribute("rx").toFloat()
+            val ry = this.getAttribute("ry").toFloat()
+            val x = this.getAttribute("cx").toFloat() - rx
+            val y = this.getAttribute("cy").toFloat() - ry
+            val width = rx * 2
+            val height = ry * 2
+            str += "x=\"$x\" "
+            str += "y=\"$y\" "
+            str += "width=\"$width\""
+            str += "height=\"$height\""
+            val transform = this.getAttribute("transformTranslate")
+            transform?.let{
+                str += "transform=\"$it\""
+            }
+            str += " stroke=\"#0000FF\""
+            str += " stroke-width=\"3\""
+            str += " fill=\"none\""
+            str += " stroke-dasharray=\"4\""
+            str += "/>\n"
+        } catch(e: Exception){}
 
-        str += "x=\"${x}\" "
-        str += "y=\"${y}\" "
-        str += "width=\"${width}\" "
-
-        str += "height=\"${height}\" "
-        str += "transform=\"${transform}\""
-
-        str += " stroke=\"#0000FF\""
-        str += " stroke-width=\"3\""
-        str += " fill=\"none\""
-        str += " stroke-dasharray=\"4\""
-        str += "/>\n"
     }
 
     override fun calculateScalingPositions() {
         scalingPositions.clear()
-        val width = this.getAttribute("width").toFloat()
-        val height = this.getAttribute("height").toFloat()
-        val x = this.getAttribute("x").toFloat()
-        val y = this.getAttribute("y").toFloat()
-        val firstPos = Point(x + totalTranslation.x, y + totalTranslation.y)
+        val rx = this.getAttribute("rx").toFloat()
+        val ry = this.getAttribute("ry").toFloat()
+        val cx = this.getAttribute("cx").toFloat()
+        val cy = this.getAttribute("cy").toFloat()
+        val firstPos = Point(cx - rx + totalTranslation.x, cy - ry  + totalTranslation.y)
         val firstDirection = Point(-1f, -1f)
         scalingPositions[firstPos] = firstDirection
 
-        val secondPos = Point(x + (width/2) + totalTranslation.x, y + totalTranslation.y)
+        val secondPos = Point(cx + totalTranslation.x, cy - ry + totalTranslation.y)
         scalingPositions[secondPos] = Point(0f,-1f)
 
-        val thirdPos = Point(x + width + totalTranslation.x, y + totalTranslation.y)
+        val thirdPos = Point(cx + rx + totalTranslation.x, cy - ry+ + totalTranslation.y)
         scalingPositions[thirdPos] = Point(1f, -1f)
 
-        val forthPos = Point(x + width + totalTranslation.x,
-            y + (height/2) + totalTranslation.y)
+        val forthPos = Point(cx + rx + totalTranslation.x, cy + totalTranslation.y)
         scalingPositions[forthPos] = Point(1f, 0f)
 
-        val fifthPos = Point(x + width + totalTranslation.x,
-            y + height + totalTranslation.y)
+        val fifthPos = Point(cx + rx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[fifthPos] = Point(1f, 1f)
 
-        val sixthPos = Point(x + (width/2) + totalTranslation.x
-            , y + height + totalTranslation.y)
+        val sixthPos = Point(cx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[sixthPos] = Point(0f, 1f)
 
-        val seventhPos = Point(x + totalTranslation.x
-            , y + height + totalTranslation.y)
+        val seventhPos = Point(cx - rx + totalTranslation.x, cy + ry + totalTranslation.y)
         scalingPositions[seventhPos] = Point(-1f, 1f)
 
-        val eighthPos = Point(x + totalTranslation.x ,
-            y + (height/2) + totalTranslation.y)
+        val eighthPos = Point(cx - rx + totalTranslation.x , cy + totalTranslation.y)
         scalingPositions[eighthPos] = Point(-1f, 0f)
     }
 
@@ -257,18 +262,18 @@ class Rectangle(private var drawingId: Int?,
     }
 
     override fun parse(parceableString: String?){
-        val xRegex = Regex("""x="([-?0-9.?]*)"""")
-        val matchX = xRegex.find(parceableString!!, 1)
-        this.setAttribute("x", matchX!!.groups[1]!!.value)
-        val yRegex = Regex("""y="([-?0-9.?]*)"""")
-        val matchY = yRegex.find(parceableString,1)
-        this.setAttribute("y", matchY!!.groups[1]!!.value)
-        val widthRegex = Regex("""width="([-?0-9.?]*)""")
-        val matchWidth = widthRegex.find(parceableString,1)
-        this.setAttribute("width", matchWidth!!.groups[1]!!.value)
-        val heightRegex = Regex("""height="([-?0-9.?]*)"""")
-        val matchHeight = heightRegex.find(parceableString,1)
-        this.setAttribute("height", matchHeight!!.groups[1]!!.value)
+        val cxRegex = Regex("""cx="([-?0-9.?]*)"""")
+        val matchCX = cxRegex.find(parceableString!!, 1)
+        this.setAttribute("cx", matchCX!!.groups[1]!!.value)
+        val cyRegex = Regex("""cy="([-?0-9.?]*)"""")
+        val matchCY = cyRegex.find(parceableString,1)
+        this.setAttribute("cy", matchCY!!.groups[1]!!.value)
+        val rxRegex = Regex("""rx="([-?0-9.?]*)""")
+        val matchRX = rxRegex.find(parceableString,1)
+        this.setAttribute("rx", matchRX!!.groups[1]!!.value)
+        val ryRegex = Regex("""ry="([-?0-9.?]*)"""")
+        val matchRY = ryRegex.find(parceableString,1)
+        this.setAttribute("ry", matchRY!!.groups[1]!!.value)
 
         //Commune between tools
         val translateRegex = Regex("""translate\(([-?0-9.?]+),([-?0-9.?]+)\)""")
@@ -301,7 +306,7 @@ class Rectangle(private var drawingId: Int?,
                 RequestCreation(drawingId).toJson())
     }
 
-    override  fun unselect(){
+    override fun unselect(){
         sendProgressToServer(DrawingStatus.Done)
         selected = false
     }
