@@ -2,7 +2,6 @@ import { Inject, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageBody, OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DatabaseService } from 'src/database/database.service';
 import { DrawingStatus } from 'src/enumerators/drawing-status';
 import { DrawingContent } from '../drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from '../drawing-content/drawing-content.repository';
@@ -11,7 +10,7 @@ import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
 import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
 
-@WebSocketGateway({namespace: '/drawing'})
+@WebSocketGateway({namespace: '/drawing', cors:true})
 export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   
   @WebSocketServer() wss: Server;

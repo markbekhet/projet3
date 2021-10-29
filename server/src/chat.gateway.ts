@@ -2,8 +2,10 @@ import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import{ServerMessage, CustomDate, ClientMessage} from'./MessageMeta'
+import { Team } from './modules/team/team.entity';
+import { User } from './modules/user/user.entity';
 
-@WebSocketGateway({cors: true})
+@WebSocketGateway({namespace:'chat',cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
@@ -33,5 +35,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log("client: " + formattedData.clientName + " sent " + formattedData.message + " at" + formattedData.date.hour + ":" + formattedData.date.minutes + ":" +formattedData.date.seconds);
     //return {event: 'msgToClient', data: text}
     this.wss.emit("msgToClient", formattedData);
+  }
+
+  notifyUserUpdate(user: User){
+    this.wss.emit("userUpdate", user);
+  }
+  notifyTeamUpdate(team:Team){
+
   }
 }

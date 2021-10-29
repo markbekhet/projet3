@@ -46,7 +46,10 @@ export class DatabaseService {
         await this.userRepo.save(user)
         connection.user = user
         await this.connectionRepo.save(connection)
-        return user.id;
+        let returnedUser = await this.userRepo.findOne(user.id,{
+            select: ["status","id","pseudo"],
+        })
+        return returnedUser;
         
     }
 
@@ -65,7 +68,8 @@ export class DatabaseService {
             where: [
                 {emailAddress: userCredentials.username},
                 {pseudo: userCredentials.username}
-            ]
+            ],
+            select: ["pseudo","id","status"],
         })
         if(user === undefined){
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
@@ -85,7 +89,8 @@ export class DatabaseService {
             let newConnection = new ConnectionHistory();
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
-            return user.id;
+            user.status = Status.ONLINE;
+            return user;
         }
     }
 
@@ -93,57 +98,74 @@ export class DatabaseService {
         const user = await this.userRepo.findOne({
             where: [
                 {id: userId}
-            ]
+            ],
+            select: ["id","pseudo","status"]
         })
-        if(user !== undefined){
+        if(user === undefined){
+            throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
+        }
+        else{
             const newDisconnection = new DisconnectionHistory()
             newDisconnection.user = user
             this.userRepo.update(userId, {status: Status.OFFLINE})
             this.disconnectionRepo.save(newDisconnection)
+            user.status = Status.OFFLINE;
+            return user;
         }
     }
     async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
-        const user = await this.userRepo.findOne(userId);
-        if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
-            await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
-        }
-        else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
-            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
-                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
-            }
-            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
-            if(!validOldPassword){
-                throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
-            }
-            const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
-            if(samePassword){
-                throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
-            }
-            if(this.IsPasswordValide(newParameters.newPassword)){
-                const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
-                await this.userRepo.update(userId,{password: hashedPassword})
-            }
+        const user = await this.userRepo.findOne(userId, {
+            select:["id", "pseudo", "status"]
+        });
+        if(user === undefined){
+            throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
         else{
-            if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
-                throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+            if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
+                await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
+                user.pseudo = newParameters.newPseudo;
             }
-            const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
-            if(!validOldPassword){
-                throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+            else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
+                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                    throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+                }
+                const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+                if(!validOldPassword){
+                    throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
+                }
+                const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
+                if(samePassword){
+                    throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+                }
+                if(this.IsPasswordValide(newParameters.newPassword)){
+                    const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
+                    await this.userRepo.update(userId,{password: hashedPassword})
+                }
             }
-            const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
-            if(samePassword){
-                throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+            else{
+                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+                    throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+                }
+                const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
+                if(!validOldPassword){
+                    throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+                }
+                const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
+                if(samePassword){
+                    throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+                }
+                if(this.IsPasswordValide(newParameters.newPassword)){
+                    const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
+                    await this.userRepo.update(userId,{
+                        password: hashedPassword,
+                        pseudo: newParameters.newPseudo
+                    })
+                }
+                user.pseudo = newParameters.newPseudo;
             }
-            if(this.IsPasswordValide(newParameters.newPassword)){
-                const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
-                await this.userRepo.update(userId,{
-                    password: hashedPassword,
-                    pseudo: newParameters.newPseudo
-                })
-            }
+            return user;
+
         }
     }
     async getUserDrawings(userId: string){
@@ -225,11 +247,14 @@ export class DatabaseService {
     }
 
     async deleteTeam(dto: DeleteTeamDto){
-        const team = await this.teamRepo.findOne(dto.teamId);
+        const team = await this.teamRepo.findOne(dto.teamId,{
+            select: ["id","name"],
+        });
         if(team.ownerId !== dto.userId){
             throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
         }
         await this.teamRepo.delete(dto.teamId);
+        return team;
     }
     //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){

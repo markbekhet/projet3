@@ -1,4 +1,5 @@
 import { Controller, Get, HttpStatus, Param, Post, Put, Body, HttpException } from '@nestjs/common';
+import { ChatGateway } from 'src/chat.gateway';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateUserDto } from './update-user.dto';
 
@@ -7,7 +8,7 @@ const DISCONNECT_URL = "/disconnect";
 
 @Controller('/user')
 export class UserController {
-    constructor(private readonly databaseService: DatabaseService){}
+    constructor(private readonly databaseService: DatabaseService, private chatGateway: ChatGateway){}
 
     @Get(PROFILE_URL+"/:userId")
         async getUserProfile(@Param("userId") userId: string){
@@ -18,14 +19,16 @@ export class UserController {
     
     @Post(DISCONNECT_URL+"/:userId")
     async disconnectUser(@Param("userId") userId: number){
-        await this.databaseService.disconnect(userId);
+        let user = await this.databaseService.disconnect(userId);
+        this.chatGateway.notifyUserUpdate(user);
         return HttpStatus.OK
     }
 
     @Put(PROFILE_URL+ "/:userId")
     async modifyProfile(@Param("userId") userId: string, @Body() newParameters: UpdateUserDto){
         try{
-            await this.databaseService.modifyUserProfile(userId, newParameters);
+            let user = await this.databaseService.modifyUserProfile(userId, newParameters);
+            this.chatGateway.notifyUserUpdate(user);
             return HttpStatus.OK
         }
         catch(e: any){
