@@ -72,7 +72,7 @@ class drawing : AppCompatActivity() {
         primaryColor.setOnClickListener {
             ColorPickerPopup.Builder(this).initialColor(Color.BLACK)
                 .enableBrightness(true)
-                .enableAlpha(false)
+                .enableAlpha(true)
                 .okTitle("Choisir")
                 .cancelTitle("Annuler")
                 .showIndicator(true)
@@ -91,7 +91,7 @@ class drawing : AppCompatActivity() {
             ColorPickerPopup.Builder(this)
                 .enableBrightness(true)
                 .okTitle("Choisir")
-                .enableAlpha(false)
+                .enableAlpha(true)
                 .cancelTitle("Annuler")
                 .showIndicator(true)
                 .showValue(true)
@@ -107,10 +107,11 @@ class drawing : AppCompatActivity() {
     private class ColorPicker(var button: View, var string: String): ColorPickerPopup.ColorPickerObserver() {
         override fun onColorPicked(color: Int){
             button.setBackgroundColor(color)
+            val a = Color.alpha(color)
             val r = Color.red(color)
             val g = Color.green(color)
             val b = Color.blue(color)
-            val colorString = String.format(Locale.getDefault(), "%02X%02X%02X",r, g, b)
+            val colorString = String.format(Locale.getDefault(), "%02X%02X%02X%02X",r, g, b, a)
             if(string == "secondary"){
                 DrawingUtils.secondaryColor = "#$colorString"
             }
