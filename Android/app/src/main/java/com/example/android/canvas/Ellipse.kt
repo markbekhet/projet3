@@ -317,4 +317,8 @@ class Ellipse(private var drawingId:Int? ,
         sendProgressToServer(DrawingStatus.Done)
         selected = false
     }
+
+    override fun delete(){
+        sendProgressToServer(DrawingStatus.Deleted)
+    }
 }

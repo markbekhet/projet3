@@ -1,34 +1,23 @@
-package com.example.android.profile
+package com.example.android
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.example.android.LandingPage
-import com.example.android.R
-import com.example.android.drawing
 import kotlinx.android.synthetic.main.colorpicker.*
 import kotlinx.android.synthetic.main.colorpicker.colorA
 import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
-import kotlinx.android.synthetic.main.dessin.*
-import android.view.ViewGroup
 import android.widget.*
 import com.example.android.client.ClientInfo
 import com.example.android.client.Draw
 
 
-class createdraw : AppCompatActivity() {
+class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option : Spinner
         lateinit var result : TextView
@@ -58,7 +47,7 @@ class createdraw : AppCompatActivity() {
             colorSelector.visibility = View.VISIBLE
 
         }
-        
+
 
         btnColorSelected.setOnClickListener {
             colorSelector.visibility = View.VISIBLE
@@ -66,7 +55,7 @@ class createdraw : AppCompatActivity() {
         dessin?.setOnClickListener(){
             nouveau_dessin =  Draw(result.text.toString(),"",ClientInfo.userId,largeur.text.toString().toInt(),
                 longueur.text.toString().toInt(),nom_dessin.text.toString(),switch.isChecked,color)
-                    startActivity(Intent(this, drawing::class.java))}
+                    startActivity(Intent(this, Drawing::class.java))}
 
         annuler?.setOnClickListener(){
             startActivity(Intent(this, LandingPage::class.java))}

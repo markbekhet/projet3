@@ -15,7 +15,7 @@ import okhttp3.internal.toHexString
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
 
-class drawing : AppCompatActivity() {
+class Drawing : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
@@ -28,9 +28,10 @@ class drawing : AppCompatActivity() {
         //Button new width
         //Button new width
         SocketHandler.setDrawingSocket()
+        SocketHandler.establishDrawingSocketConnection()
+        println(SocketHandler.getDrawingSocket().isActive)
         DrawingUtils.currentTool = pencilString
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
-        SocketHandler.establishDrawingSocketConnection()
         val canvas = CanvasView(this)
         params.width=1200
         params.height= 800
@@ -101,6 +102,9 @@ class drawing : AppCompatActivity() {
         thickness.value = DrawingUtils.thickness.toFloat()
         thickness.addOnChangeListener { slider, value, fromUser ->
             DrawingUtils.thickness = value.toInt()
+        }
+        delete.setOnClickListener {
+            canvas.deleteTool()
         }
     }
 

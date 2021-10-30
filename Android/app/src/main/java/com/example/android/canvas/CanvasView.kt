@@ -158,8 +158,8 @@ class CanvasView(context: Context): View(context) {
     }
 
     private fun unSelectAllChildren(){
-        for(tool in selectedTools){
-            tool.unselect()
+        if(tool != null){
+            tool!!.unselect()
         }
     }
 
@@ -173,6 +173,11 @@ class CanvasView(context: Context): View(context) {
                     tool.parse(drawingContent.drawing)
                     exist = true
                     tool.selected = drawingContent.status == DrawingStatus.Selected
+
+                    if(drawingContent.status == DrawingStatus.Deleted){
+                        svgRoot.removeChild(tool)
+                    }
+
                     break
                 }
                 i++
@@ -201,5 +206,9 @@ class CanvasView(context: Context): View(context) {
             }
 
         }
+    }
+    fun deleteTool(){
+        tool!!.delete()
+        tool = null
     }
 }

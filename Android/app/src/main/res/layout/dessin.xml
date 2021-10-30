@@ -43,7 +43,7 @@
 
                         <ImageButton
                             android:id="@+id/selection"
-                            android:layout_width="match_parent"
+                            android:layout_width="70dp"
                             android:layout_height="50dp"
                             android:contentDescription="image"
                             android:src="@drawable/select"
@@ -53,7 +53,7 @@
 
                         <ImageButton
                             android:id="@+id/rectangle"
-                            android:layout_width="match_parent"
+                            android:layout_width="70dp"
                             android:layout_height="50dp"
                             android:contentDescription="image"
                             android:scaleType="fitXY"
@@ -63,7 +63,7 @@
 
                         <ImageButton
                             android:id="@+id/ellipse"
-                            android:layout_width="match_parent"
+                            android:layout_width="70dp"
                             android:layout_height="50dp"
                             android:contentDescription="image"
                             android:scaleType="fitXY"
@@ -73,7 +73,7 @@
 
                         <ImageButton
                             android:id="@+id/pencil"
-                            android:layout_width="match_parent"
+                            android:layout_width="70dp"
                             android:layout_height="50dp"
                             android:contentDescription="image"
                             android:scaleType="fitXY"

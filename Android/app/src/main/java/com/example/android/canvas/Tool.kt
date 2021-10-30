@@ -33,4 +33,5 @@ interface Tool: SVGElement{
     fun getScalingPositionsString()
     fun parse(parceableString: String?)
     fun unselect()
+    fun delete()
 }

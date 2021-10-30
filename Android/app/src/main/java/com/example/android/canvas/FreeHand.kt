@@ -317,4 +317,8 @@ class FreeHand(private var drawingId: Int?,
         selected = false
         sendProgressToServer(DrawingStatus.Done)
     }
+
+    override fun delete(){
+        sendProgressToServer(DrawingStatus.Deleted)
+    }
 }
