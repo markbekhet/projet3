@@ -208,7 +208,27 @@ class CanvasView(context: Context): View(context) {
         }
     }
     fun deleteTool(){
-        tool!!.delete()
-        tool = null
+        if(tool != null){
+            tool!!.delete()
+            tool = null
+        }
+    }
+
+    fun updateToolPrimaryColor(){
+        if(tool != null){
+            tool!!.updatePrimaryColor()
+        }
+    }
+
+    fun updateToolSecondaryColor(){
+        if(tool != null){
+            tool!!.updateSecondaryColor()
+        }
+    }
+
+    fun updateToolThickness(){
+        if(tool != null){
+            tool!!.updateThickness()
+        }
     }
 }

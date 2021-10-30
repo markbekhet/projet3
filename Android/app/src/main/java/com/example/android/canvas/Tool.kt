@@ -34,4 +34,7 @@ interface Tool: SVGElement{
     fun parse(parceableString: String?)
     fun unselect()
     fun delete()
+    fun updateThickness()
+    fun updatePrimaryColor()
+    fun updateSecondaryColor()
 }

@@ -9,8 +9,8 @@ import org.apache.batik.dom.AbstractDocument
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Rectangle(private var drawingId: Int?,
-                prefix: String, owner: AbstractDocument):
+open class Rectangle(private var drawingId: Int?,
+                     prefix: String, owner: AbstractDocument):
                 SVGOMRectElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
@@ -55,7 +55,7 @@ class Rectangle(private var drawingId: Int?,
         }
     }
 
-    private fun setCriticalValues(){
+    protected fun setCriticalValues(){
         val xCert = this.getAttribute("x").toFloat()
         val yCert = this.getAttribute("y").toFloat()
         val widthCert = this.getAttribute("width").toFloat()
@@ -294,7 +294,7 @@ class Rectangle(private var drawingId: Int?,
         setCriticalValues()
     }
 
-    private fun sendProgressToServer(status: DrawingStatus){
+    protected fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
             contentId = contentID, drawing= getOriginalString(), status = status)
@@ -302,7 +302,7 @@ class Rectangle(private var drawingId: Int?,
         socket.emit("drawingToServer", drawingContent.toJson())
     }
 
-    private fun requestCreation(){
+    protected fun requestCreation(){
         SocketHandler.getDrawingSocket()
             .emit("createDrawingContent",
                 RequestCreation(drawingId).toJson())
@@ -315,5 +315,20 @@ class Rectangle(private var drawingId: Int?,
 
     override fun delete(){
         sendProgressToServer(DrawingStatus.Deleted)
+    }
+
+    override fun updateThickness() {
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updatePrimaryColor() {
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updateSecondaryColor() {
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
     }
 }

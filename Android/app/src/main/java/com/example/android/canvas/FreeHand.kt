@@ -321,4 +321,16 @@ class FreeHand(private var drawingId: Int?,
     override fun delete(){
         sendProgressToServer(DrawingStatus.Deleted)
     }
+
+    override fun updateThickness() {
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updatePrimaryColor() {
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updateSecondaryColor() {/*Not needed*/}
 }

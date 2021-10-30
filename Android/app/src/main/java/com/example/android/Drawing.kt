@@ -79,11 +79,12 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor))
+                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor, canvas))
         }
 
         transparent.setOnCheckedChangeListener { buttonView, isChecked ->
             DrawingUtils.secondaryColor = none
+            canvas.updateToolSecondaryColor()
         }
 
         secondaryColor.setOnClickListener {
@@ -97,18 +98,19 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(secondaryColor, "secondary"))
+                .show(it, ColorPicker(secondaryColor, "secondary", canvas))
         }
         thickness.value = DrawingUtils.thickness.toFloat()
         thickness.addOnChangeListener { slider, value, fromUser ->
             DrawingUtils.thickness = value.toInt()
+            canvas.updateToolThickness()
         }
         delete.setOnClickListener {
             canvas.deleteTool()
         }
     }
 
-    private class ColorPicker(var button: View, var string: String): ColorPickerPopup.ColorPickerObserver() {
+    private class ColorPicker(var button: View, var string: String, var canvas: CanvasView): ColorPickerPopup.ColorPickerObserver() {
         override fun onColorPicked(color: Int){
             button.setBackgroundColor(color)
             val a = Color.alpha(color)
@@ -118,9 +120,11 @@ class Drawing : AppCompatActivity() {
             val colorString = String.format(Locale.getDefault(), "%02X%02X%02X%02X",r, g, b, a)
             if(string == "secondary"){
                 DrawingUtils.secondaryColor = "#$colorString"
+                canvas.updateToolSecondaryColor()
             }
             else{
                 DrawingUtils.primaryColor = "#$colorString"
+                canvas.updateToolPrimaryColor()
             }
 
         }
