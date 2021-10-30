@@ -5,8 +5,13 @@ import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from 'src/enumerators/drawing-status';
 import { DrawingContent } from '../drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from '../drawing-content/drawing-content.repository';
+import { DrawingEditionHistory } from '../drawingEditionHistory/drawingEditionHistory.entity';
+//import { DrawingEditionHistory } from '../drawingEditionHistory/drawingEditionHistory.entity';
+import { DrawingEditionRepository } from '../drawingEditionHistory/drawingEditionHistory.repository';
+import { UserRespository } from '../user/user.repository';
 import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
+import { JoinDrawingDto } from './joinDrawing.dto';
 import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
 
 @WebSocketGateway({namespace: '/drawing', cors:true})
@@ -20,7 +25,9 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   }
 
   constructor(@InjectRepository(DrawingContentRepository) private readonly drawingContentRepo: DrawingContentRepository,
-              @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,){}
+              @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
+              @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
+              @InjectRepository(UserRespository) private readonly userRepo){}
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`client connected: ${client.id}`);
@@ -58,20 +65,30 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   }
 
   @SubscribeMessage("joinDrawing")
-  async joinDrawing(client:Socket, drawingName: string){
-    console.log(`client ${client.id} has joined ${drawingName}`)
-    client.join(drawingName);
+  async joinDrawing(client:Socket, dto: JoinDrawingDto){
+    console.log(`client ${client.id} has joined ${dto.drawingName}`)
+    client.join(dto.drawingName);
     let drawing: Drawing = await this.drawingRepo.findOne({
       where:[
-        {name: drawingName}
+        {name: dto.drawingName}
       ],
       select:["bgColor","height","width","id"],
       relations:["contents"]
     });
+    let user = await this.userRepo.findOne(dto.userId);
+    let newEditionHistory = new DrawingEditionHistory();
+    newEditionHistory.user = user;
+    newEditionHistory.action = "join";
+    await this.drawingEditionRepository.save(newEditionHistory);
     client.emit("drawingInformations", drawing);
   }
   @SubscribeMessage("leaveDrawing")
-  leaveDrawing(client: Socket, drawingName: string){
-    client.leave(drawingName);
+  async leaveDrawing(client: Socket, dto: JoinDrawingDto){
+    let user = await this.userRepo.findOne(dto.userId);
+    let newEditionHistory = new DrawingEditionHistory();
+    newEditionHistory.user = user;
+    newEditionHistory.action = "leave";
+    await this.drawingEditionRepository.save(newEditionHistory);
+    client.leave(dto.drawingName);
   }
 }

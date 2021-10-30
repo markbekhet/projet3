@@ -18,6 +18,7 @@ import { DrawingGateway } from './modules/drawing/drawing.gateway';
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 import { CollaborationTeamController } from './modules/team/collaboration-team.controller';
 import { TeamRepository } from './modules/team/team.repository';
+import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawingEditionHistory.repository';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TeamRepository } from './modules/team/team.repository';
       DrawingRepository,
       DrawingContentRepository,
       TeamRepository,
+      DrawingEditionRepository,
     ])
   ],
   controllers: [AppController, ConnectionController, UserController, DrawingController, CollaborationTeamController],
