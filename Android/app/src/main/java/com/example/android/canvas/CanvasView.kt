@@ -69,7 +69,7 @@ class CanvasView(context: Context): View(context) {
                         pencilString -> tool = FreeHand(drawingId,
                             pencilString, doc as AbstractDocument)
                     }
-                    tool!!.touchStart(this, event.x, event.y)
+                    tool!!.touchStart( event.x, event.y, svgRoot)
                     mode = ""
                 }
             }
@@ -87,10 +87,10 @@ class CanvasView(context: Context): View(context) {
                         tool!!.scale(this, scalingFactor, scalingPoint!!.value)
                         totalScaling.plus(scalingFactor)
                     }
-                    else -> tool!!.touchMove(this, context,event.x, event.y)
+                    else -> tool!!.touchMove(context,event.x, event.y)
                 }
             }
-            MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
+            MotionEvent.ACTION_UP -> tool!!.touchUp()
         }
 
         return true

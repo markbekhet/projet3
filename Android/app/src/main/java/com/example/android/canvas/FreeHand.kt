@@ -6,6 +6,7 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMPolylineElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.max
 
@@ -26,7 +27,7 @@ class FreeHand(private var drawingId: Int?,
     //override var drawingID = drawingId!!.toInt()
     override var contentID: Int? = null
 
-    override fun touchStart(view: View, eventX: Float, eventY:Float){
+    override fun touchStart(eventX: Float, eventY:Float, svgRoot: Element){
         this.setAttribute("points", "$eventX $eventY")
         this.setAttribute("transformTranslate", "translate(0,0)")
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
@@ -34,8 +35,7 @@ class FreeHand(private var drawingId: Int?,
         requestCreation()
     }
 
-    override fun touchMove(view: View,
-                           context: Context,
+    override fun touchMove(context: Context,
                            eventX: Float,
                            eventY: Float)
     {
@@ -46,11 +46,8 @@ class FreeHand(private var drawingId: Int?,
         }
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
+    override fun touchUp() {
         selected = true
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
         calculateDelimeterPoints()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)

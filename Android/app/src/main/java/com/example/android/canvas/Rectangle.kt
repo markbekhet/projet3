@@ -6,6 +6,7 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMRectElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.abs
 
@@ -25,8 +26,7 @@ open class Rectangle(private var drawingId: Int?,
     override var contentID: Int?= null
     //var abstractTool = AbstractTool(this)
 
-    override fun touchStart(view: View, eventX: Float,
-                            eventY: Float) {
+    override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         this.setAttribute("x", eventX.toString())
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
@@ -38,7 +38,7 @@ open class Rectangle(private var drawingId: Int?,
         requestCreation()
     }
 
-    override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
+    override fun touchMove(context: Context, eventX: Float, eventY: Float) {
         val width = abs(eventX - this.getAttribute("x").toFloat())
         val height = abs(eventY - this.getAttribute("y").toFloat())
         this.setAttribute("width", width.toString())
@@ -64,12 +64,9 @@ open class Rectangle(private var drawingId: Int?,
         startTransformPoint.y = yCert + (heightCert/2)
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
+    override fun touchUp() {
         selected = true
 
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
         setCriticalValues()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)

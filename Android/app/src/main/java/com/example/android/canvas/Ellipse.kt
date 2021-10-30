@@ -6,6 +6,7 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMEllipseElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.abs
 
@@ -25,7 +26,7 @@ class Ellipse(private var drawingId:Int? ,
     //override var drawingID = drawingId
     override var contentID: Int?=null
 
-    override fun touchStart(view: View, eventX: Float, eventY: Float) {
+    override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         startingPositionX = eventX
         startingPositionY = eventY
         this.setAttribute("rx", "0")
@@ -39,7 +40,7 @@ class Ellipse(private var drawingId:Int? ,
         requestCreation()
     }
 
-    override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
+    override fun touchMove(context: Context, eventX: Float, eventY: Float) {
         val rx = abs(eventX - startingPositionX)/2
         val ry = abs(eventY - startingPositionY)/2
         this.setAttribute("rx", rx.toString())
@@ -60,11 +61,8 @@ class Ellipse(private var drawingId:Int? ,
         startTransformPoint = Point(cxCert, cyCert)
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
+    override fun touchUp() {
         selected = true
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
         setCriticalValues()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)
