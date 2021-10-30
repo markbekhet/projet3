@@ -32,6 +32,7 @@ class FreeHand(private var drawingId: Int?,
         this.setAttribute("transform", "translate(0,0)")
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
+        svgRoot.appendChild(this)
         requestCreation()
     }
 

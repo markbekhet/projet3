@@ -37,6 +37,7 @@ class Ellipse(private var drawingId:Int? ,
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
+        svgRoot.appendChild(this)
         requestCreation()
     }
 

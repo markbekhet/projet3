@@ -40,6 +40,9 @@ class CanvasView(context: Context): View(context) {
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     private var svgRoot = doc.createElementNS(svgNS, "g")
     private var drawingId = 1
+    //copy doc and svgRoot to manipulate
+    private val docCopy: Document= impl.createDocument(svgNS, "svg", null)
+    private var svgRootCopy = docCopy.createElementNS(svgNS, "g")
     //Action attributes
     var mode = ""
     var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
@@ -65,13 +68,13 @@ class CanvasView(context: Context): View(context) {
                         when(DrawingUtils.currentTool){
                             selectionString -> tool = Selection()
                             ellipseString -> tool = Ellipse(drawingId,
-                                ellipseString, doc as AbstractDocument)
+                                ellipseString, docCopy as AbstractDocument)
                             rectString -> tool = Rectangle(drawingId,
-                                rectString, doc as AbstractDocument)
+                                rectString, docCopy as AbstractDocument)
                             pencilString -> tool = FreeHand(drawingId,
-                                pencilString, doc as AbstractDocument)
+                                pencilString, docCopy as AbstractDocument)
                         }
-                        tool!!.touchStart( event.x, event.y, svgRoot)
+                        tool!!.touchStart( event.x, event.y, svgRootCopy)
                         mode = ""
                     }
                 }

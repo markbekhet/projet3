@@ -43,8 +43,8 @@ class Selection: Tool, SVGOMGElement()
     }
 
     override fun touchUp() {
-        //setCriticalValues()
-        //calculateScalingPositions()
+        setCriticalValues()
+        calculateScalingPositions()
     }
 
     override fun getString(): String { return str}
