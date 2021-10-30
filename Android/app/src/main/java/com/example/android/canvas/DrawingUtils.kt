@@ -1,6 +1,6 @@
 package com.example.android.canvas
 
-var pencilString = "polyline"
+var pencilString = "pencil"
 var rectString = "rect"
 var ellipseString = "ellipse"
 var black = "#000000"

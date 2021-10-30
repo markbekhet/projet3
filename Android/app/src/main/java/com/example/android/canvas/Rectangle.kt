@@ -297,7 +297,8 @@ open class Rectangle(private var drawingId: Int?,
     protected fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(), status = status)
+            contentId = contentID, drawing= getOriginalString(),
+            status = status, toolName = rectString)
         val socket = SocketHandler.getDrawingSocket()
         socket.emit("drawingToServer", drawingContent.toJson())
     }
