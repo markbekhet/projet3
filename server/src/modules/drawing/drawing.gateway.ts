@@ -28,8 +28,8 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
 
   notifyAllUsers(drawing: Drawing){
     this.logger.log(drawing.id);
-    const drawingInformations = {id: drawing.id, height: drawing.height, width: drawing.width, color: drawing.bgColor};
-    this.wss.emit("drawingCreated", drawingInformations);
+    const drawingInformations = {id: drawing.id, name: drawing.name};
+    this.wss.emit("askJoinDrawing", drawingInformations);
   }
 
   @SubscribeMessage("drawingToServer")
@@ -45,7 +45,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     }
     //let parsedDrawing:SocketDrawing = JSON.parse(drawing)
     //console.log(drawing.drawingId,drawing.contentId, drawing.drawing)
-    this.wss.emit("drawingToClient", drawing);
+    this.wss.to(drawingMod.drawingName).emit("drawingToClient", drawing);
   }
 
   @SubscribeMessage("createDrawingContent")
@@ -55,5 +55,23 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     newContent.drawing = drawing;
     const newDrawing = await this.drawingContentRepo.save(newContent);
     client.emit("drawingContentCreated",{contentId: newDrawing.id});
+  }
+
+  @SubscribeMessage("joinDrawing")
+  async joinDrawing(client:Socket, drawingName: string){
+    console.log(`client ${client.id} has joined ${drawingName}`)
+    client.join(drawingName);
+    let drawing: Drawing = await this.drawingRepo.findOne({
+      where:[
+        {name: drawingName}
+      ],
+      select:["bgColor","height","width","id"],
+      relations:["contents"]
+    });
+    client.emit("drawingInformations", drawing);
+  }
+  @SubscribeMessage("leaveDrawing")
+  leaveDrawing(client: Socket, drawingName: string){
+    client.leave(drawingName);
   }
 }

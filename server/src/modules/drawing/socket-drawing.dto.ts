@@ -8,6 +8,7 @@ export interface SocketDrawing{
 }
 
 export interface ContentDrawingSocket{
+    drawingName: string;
     userId: string,
     drawingId: number;
     contentId: number;
