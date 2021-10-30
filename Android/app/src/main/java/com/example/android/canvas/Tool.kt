@@ -33,7 +33,7 @@ interface Tool: SVGElement{
     fun getScalingPositionsString()
     fun parse(parceableString: String?)
     fun unselect()
-    fun delete()
+    fun delete(svgRoot: Element)
     fun updateThickness()
     fun updatePrimaryColor()
     fun updateSecondaryColor()

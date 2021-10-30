@@ -321,7 +321,8 @@ class FreeHand(private var drawingId: Int?,
         sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun delete(){
+    override fun delete(svgRoot: Element){
+        svgRoot.removeChild(this)
         sendProgressToServer(DrawingStatus.Deleted)
     }
 

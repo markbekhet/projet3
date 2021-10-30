@@ -95,9 +95,10 @@ class Selection: Tool, SVGOMGElement()
         }
     }
 
-    override fun delete() {
+    override fun delete(svgRoot: Element) {
         if(selectedTool != null){
-            selectedTool!!.unselect()
+            selectedTool!!.delete(svgRoot)
+            selectedTool = null
         }
     }
 

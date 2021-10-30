@@ -50,7 +50,7 @@ class CanvasView(context: Context): View(context) {
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        try{
+        /*try{
             when(event?.action){
                 MotionEvent.ACTION_DOWN -> {
                     if(tool != null){
@@ -115,8 +115,71 @@ class CanvasView(context: Context): View(context) {
                 }
                 MotionEvent.ACTION_UP -> tool!!.touchUp()
             }
-        } catch(e: Exception){}
-
+        } catch(e: Exception){}*/
+        when(event?.action){
+            MotionEvent.ACTION_DOWN -> {
+                if(tool != null){
+                    scalingPoint = tool!!.getScalingPoint(Point(event.x , event.y))
+                    totalScaling.makeEqualTo(Point(0f,0f))
+                }
+                if(scalingPoint != null){
+                    mode = "scaling"
+                }
+                else if(isInsideTheSelection(event.x , event.y)){
+                    mode = "translation"
+                }
+                else{
+                    unSelectAllChildren()
+                    when(DrawingUtils.currentTool){
+                        selectionString -> tool = Selection()
+                        ellipseString -> tool = Ellipse(drawingId,
+                            ellipseString, docCopy as AbstractDocument)
+                        rectString -> tool = Rectangle(drawingId,
+                            rectString, docCopy as AbstractDocument)
+                        pencilString -> tool = FreeHand(drawingId,
+                            pencilString, docCopy as AbstractDocument)
+                    }
+                    tool!!.touchStart( event.x, event.y, svgRootCopy)
+                    mode = ""
+                }
+            }
+            MotionEvent.ACTION_MOVE ->{
+                if(DrawingUtils.currentTool == selectionString){
+                    when(mode){
+                        "translation" ->{
+                            val translation:Point = tool!!.startTransformPoint
+                                .difference(Point(event.x, event.y))
+                            tool!!.translate(this, translation)
+                        }
+                        "scaling" ->{
+                            val scalingFactor =
+                                Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                    event.y - scalingPoint!!.key.y - totalScaling.y)
+                            tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                            totalScaling.plus(scalingFactor)
+                        }
+                    }
+                }
+                else{
+                    when(mode){
+                        "translation" ->{
+                            val translation:Point = tool!!.startTransformPoint
+                                .difference(Point(event.x, event.y))
+                            tool!!.translate(this, translation)
+                        }
+                        "scaling" ->{
+                            val scalingFactor =
+                                Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                    event.y - scalingPoint!!.key.y - totalScaling.y)
+                            tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                            totalScaling.plus(scalingFactor)
+                        }
+                        else -> tool!!.touchMove(context,event.x, event.y)
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP -> tool!!.touchUp()
+        }
 
         return true
     }
@@ -233,7 +296,7 @@ class CanvasView(context: Context): View(context) {
     }
     fun deleteTool(){
         if(tool != null){
-            tool!!.delete()
+            tool!!.delete(svgRootCopy)
             tool = null
         }
     }
