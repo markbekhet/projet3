@@ -55,7 +55,7 @@ open class Rectangle(private var drawingId: Int?,
         }
     }
 
-    protected fun setCriticalValues(){
+    override fun setCriticalValues(){
         val xCert = this.getAttribute("x").toFloat()
         val yCert = this.getAttribute("y").toFloat()
         val widthCert = this.getAttribute("width").toFloat()
@@ -65,11 +65,9 @@ open class Rectangle(private var drawingId: Int?,
     }
 
     override fun touchUp() {
-        selected = true
-
         setCriticalValues()
         calculateScalingPositions()
-        sendProgressToServer(DrawingStatus.Selected)
+        select()
     }
 
     override fun getString(): String {
@@ -309,6 +307,11 @@ open class Rectangle(private var drawingId: Int?,
     override  fun unselect(){
         sendProgressToServer(DrawingStatus.Done)
         selected = false
+    }
+
+    override fun select(){
+        selected = true
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun delete(){

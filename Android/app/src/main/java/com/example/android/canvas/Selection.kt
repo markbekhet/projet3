@@ -18,14 +18,33 @@ class Selection: Tool, SVGOMGElement()
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
     override var contentID: Int? = null
+    private var selectedTool: Tool? = null
 
     override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
+        // Take the most recent element on the stack
+        var i = svgRoot.childNodes.length - 1
+        if(svgRoot.childNodes.length > 0){
+            while(i >= 0){
+                val tool = svgRoot.childNodes.item(i) as Tool
+                if(tool.inTranslationZone(eventX, eventY)){
+                    tool.select()
+                    selectedTool = tool
+                    startTransformPoint.x = tool.startTransformPoint.x
+                    startTransformPoint.y = tool.startTransformPoint.y
+                    break
+                }
+                i--
+            }
+        }
     }
 
     override fun touchMove(context: Context, eventX: Float, eventY: Float) {
+        //Not needed given the exception that will be made in the CanvasView
     }
 
     override fun touchUp() {
+        //setCriticalValues()
+        //calculateScalingPositions()
     }
 
     override fun getString(): String { return str}
@@ -33,22 +52,36 @@ class Selection: Tool, SVGOMGElement()
     override fun getOriginalString(): String { return str}
 
     override fun inTranslationZone(eventX: Float, eventY: Float): Boolean {
+        if(selectedTool != null){
+            return selectedTool!!.inTranslationZone(eventX, eventY)
+        }
         return false
     }
 
     override fun translate(view: View, translationPoint: Point) {
+        if(selectedTool != null){
+            selectedTool!!.translate(view, translationPoint)
+        }
     }
 
     override fun scale(view: View, scalePoint: Point, direction: Point) {
+        if(selectedTool != null){
+            selectedTool!!.scale(view, scalePoint, direction)
+        }
     }
 
-    override fun getSelectionString() {
-    }
+    override fun getSelectionString() {}
 
     override fun calculateScalingPositions() {
+        if(selectedTool != null){
+            selectedTool!!.calculateScalingPositions()
+        }
     }
 
     override fun getScalingPoint(point: Point): MutableMap.MutableEntry<Point, Point>? {
+        if(selectedTool != null){
+            return selectedTool!!.getScalingPoint(point)
+        }
         return null
     }
 
@@ -56,13 +89,39 @@ class Selection: Tool, SVGOMGElement()
 
     override fun parse(parceableString: String?) {}
 
-    override fun unselect() {}
+    override fun unselect() {
+        if(selectedTool != null){
+            selectedTool!!.unselect()
+        }
+    }
 
-    override fun delete() {}
+    override fun delete() {
+        if(selectedTool != null){
+            selectedTool!!.unselect()
+        }
+    }
 
-    override fun updateThickness() {}
+    override fun updateThickness() {
+        if(selectedTool != null){
+            selectedTool!!.updateThickness()
+        }
+    }
 
-    override fun updatePrimaryColor() {}
+    override fun updatePrimaryColor() {
+        if(selectedTool != null){
+            selectedTool!!.updatePrimaryColor()
+        }
+    }
 
-    override fun updateSecondaryColor() {}
+    override fun updateSecondaryColor() {
+        if(selectedTool != null){
+            selectedTool!!.updateSecondaryColor()
+        }
+    }
+    override fun select(){}
+    override fun setCriticalValues() {
+        if(selectedTool!= null){
+            selectedTool!!.setCriticalValues()
+        }
+    }
 }

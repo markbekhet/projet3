@@ -37,4 +37,6 @@ interface Tool: SVGElement{
     fun updateThickness()
     fun updatePrimaryColor()
     fun updateSecondaryColor()
+    fun select()
+    fun setCriticalValues()
 }

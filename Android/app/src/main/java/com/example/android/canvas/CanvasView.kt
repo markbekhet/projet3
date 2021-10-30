@@ -47,51 +47,73 @@ class CanvasView(context: Context): View(context) {
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when(event?.action){
-            MotionEvent.ACTION_DOWN -> {
-                if(tool != null){
-                    scalingPoint = tool!!.getScalingPoint(Point(event.x , event.y))
-                    totalScaling.makeEqualTo(Point(0f,0f))
-                }
-                if(scalingPoint != null){
-                    mode = "scaling"
-                }
-                else if(isInsideTheSelection(event.x , event.y)){
-                    mode = "translation"
-                }
-                else{
-                    unSelectAllChildren()
-                    when(DrawingUtils.currentTool){
-                        ellipseString -> tool = Ellipse(drawingId,
-                            ellipseString, doc as AbstractDocument)
-                        rectString -> tool = Rectangle(drawingId,
-                            rectString, doc as AbstractDocument)
-                        pencilString -> tool = FreeHand(drawingId,
-                            pencilString, doc as AbstractDocument)
+        try{
+            when(event?.action){
+                MotionEvent.ACTION_DOWN -> {
+                    if(tool != null){
+                        scalingPoint = tool!!.getScalingPoint(Point(event.x , event.y))
+                        totalScaling.makeEqualTo(Point(0f,0f))
                     }
-                    tool!!.touchStart( event.x, event.y, svgRoot)
-                    mode = ""
+                    if(scalingPoint != null){
+                        mode = "scaling"
+                    }
+                    else if(isInsideTheSelection(event.x , event.y)){
+                        mode = "translation"
+                    }
+                    else{
+                        unSelectAllChildren()
+                        when(DrawingUtils.currentTool){
+                            selectionString -> tool = Selection()
+                            ellipseString -> tool = Ellipse(drawingId,
+                                ellipseString, doc as AbstractDocument)
+                            rectString -> tool = Rectangle(drawingId,
+                                rectString, doc as AbstractDocument)
+                            pencilString -> tool = FreeHand(drawingId,
+                                pencilString, doc as AbstractDocument)
+                        }
+                        tool!!.touchStart( event.x, event.y, svgRoot)
+                        mode = ""
+                    }
                 }
+                MotionEvent.ACTION_MOVE ->{
+                    if(DrawingUtils.currentTool == selectionString){
+                        when(mode){
+                            "translation" ->{
+                                val translation:Point = tool!!.startTransformPoint
+                                    .difference(Point(event.x, event.y))
+                                tool!!.translate(this, translation)
+                            }
+                            "scaling" ->{
+                                val scalingFactor =
+                                    Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                        event.y - scalingPoint!!.key.y - totalScaling.y)
+                                tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                                totalScaling.plus(scalingFactor)
+                            }
+                        }
+                    }
+                    else{
+                        when(mode){
+                            "translation" ->{
+                                val translation:Point = tool!!.startTransformPoint
+                                    .difference(Point(event.x, event.y))
+                                tool!!.translate(this, translation)
+                            }
+                            "scaling" ->{
+                                val scalingFactor =
+                                    Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                        event.y - scalingPoint!!.key.y - totalScaling.y)
+                                tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                                totalScaling.plus(scalingFactor)
+                            }
+                            else -> tool!!.touchMove(context,event.x, event.y)
+                        }
+                    }
+                }
+                MotionEvent.ACTION_UP -> tool!!.touchUp()
             }
-            MotionEvent.ACTION_MOVE ->{
-                when(mode){
-                    "translation" ->{
-                        val translation:Point = tool!!.startTransformPoint
-                            .difference(Point(event.x, event.y))
-                        tool!!.translate(this, translation)
-                    }
-                    "scaling" ->{
-                        val scalingFactor =
-                            Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
-                                event.y - scalingPoint!!.key.y - totalScaling.y)
-                        tool!!.scale(this, scalingFactor, scalingPoint!!.value)
-                        totalScaling.plus(scalingFactor)
-                    }
-                    else -> tool!!.touchMove(context,event.x, event.y)
-                }
-            }
-            MotionEvent.ACTION_UP -> tool!!.touchUp()
-        }
+        } catch(e: Exception){}
+
 
         return true
     }
@@ -146,7 +168,7 @@ class CanvasView(context: Context): View(context) {
         }
 
         str += "</svg>"
-        println(str)
+        //println(str)
         return str
     }
 
@@ -170,7 +192,9 @@ class CanvasView(context: Context): View(context) {
             while(i < svgRoot.childNodes.length){
                 val tool = svgRoot.childNodes.item(i) as Tool
                 if(tool.contentID == drawingContent.contentId){
-                    tool.parse(drawingContent.drawing)
+                    try{
+                        tool.parse(drawingContent.drawing)
+                    } catch(e: Exception){}
                     exist = true
                     tool.selected = drawingContent.status == DrawingStatus.Selected
 

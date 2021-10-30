@@ -63,6 +63,14 @@ class Drawing : AppCompatActivity() {
             selection.setBackgroundColor(Color.parseColor(unselectedColor))
         }
 
+        selection.setOnClickListener {
+            DrawingUtils.currentTool = selectionString
+            pencil.setBackgroundColor(Color.parseColor(unselectedColor))
+            rectangle.setBackgroundColor(Color.parseColor(unselectedColor))
+            ellipse.setBackgroundColor(Color.parseColor(unselectedColor))
+            selection.setBackgroundColor(Color.parseColor(selectedColor))
+        }
+
         ellipse.setOnClickListener {
             DrawingUtils.currentTool = ellipseString
             pencil.setBackgroundColor(Color.parseColor(unselectedColor))

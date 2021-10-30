@@ -55,17 +55,16 @@ class Ellipse(private var drawingId:Int? ,
         }
     }
 
-    private fun setCriticalValues(){
+    override fun setCriticalValues(){
         val cxCert = this.getAttribute("cx").toFloat()
         val cyCert = this.getAttribute("cy").toFloat()
         startTransformPoint = Point(cxCert, cyCert)
     }
 
     override fun touchUp() {
-        selected = true
         setCriticalValues()
         calculateScalingPositions()
-        sendProgressToServer(DrawingStatus.Selected)
+        select()
     }
 
     override fun getString(): String {
@@ -315,6 +314,11 @@ class Ellipse(private var drawingId:Int? ,
     override fun unselect(){
         sendProgressToServer(DrawingStatus.Done)
         selected = false
+    }
+
+    override fun select(){
+        selected = true
+        sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun delete(){
