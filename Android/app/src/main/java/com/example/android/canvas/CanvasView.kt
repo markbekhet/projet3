@@ -40,9 +40,6 @@ class CanvasView(context: Context): View(context) {
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     private var svgRoot = doc.createElementNS(svgNS, "g")
     private var drawingId = 1
-    //copy doc and svgRoot to manipulate
-    private val docCopy: Document= impl.createDocument(svgNS, "svg", null)
-    private var svgRootCopy = docCopy.createElementNS(svgNS, "g")
     //Action attributes
     var mode = ""
     var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
@@ -50,72 +47,6 @@ class CanvasView(context: Context): View(context) {
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        /*try{
-            when(event?.action){
-                MotionEvent.ACTION_DOWN -> {
-                    if(tool != null){
-                        scalingPoint = tool!!.getScalingPoint(Point(event.x , event.y))
-                        totalScaling.makeEqualTo(Point(0f,0f))
-                    }
-                    if(scalingPoint != null){
-                        mode = "scaling"
-                    }
-                    else if(isInsideTheSelection(event.x , event.y)){
-                        mode = "translation"
-                    }
-                    else{
-                        unSelectAllChildren()
-                        when(DrawingUtils.currentTool){
-                            selectionString -> tool = Selection()
-                            ellipseString -> tool = Ellipse(drawingId,
-                                ellipseString, docCopy as AbstractDocument)
-                            rectString -> tool = Rectangle(drawingId,
-                                rectString, docCopy as AbstractDocument)
-                            pencilString -> tool = FreeHand(drawingId,
-                                pencilString, docCopy as AbstractDocument)
-                        }
-                        tool!!.touchStart( event.x, event.y, svgRootCopy)
-                        mode = ""
-                    }
-                }
-                MotionEvent.ACTION_MOVE ->{
-                    if(DrawingUtils.currentTool == selectionString){
-                        when(mode){
-                            "translation" ->{
-                                val translation:Point = tool!!.startTransformPoint
-                                    .difference(Point(event.x, event.y))
-                                tool!!.translate(this, translation)
-                            }
-                            "scaling" ->{
-                                val scalingFactor =
-                                    Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
-                                        event.y - scalingPoint!!.key.y - totalScaling.y)
-                                tool!!.scale(this, scalingFactor, scalingPoint!!.value)
-                                totalScaling.plus(scalingFactor)
-                            }
-                        }
-                    }
-                    else{
-                        when(mode){
-                            "translation" ->{
-                                val translation:Point = tool!!.startTransformPoint
-                                    .difference(Point(event.x, event.y))
-                                tool!!.translate(this, translation)
-                            }
-                            "scaling" ->{
-                                val scalingFactor =
-                                    Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
-                                        event.y - scalingPoint!!.key.y - totalScaling.y)
-                                tool!!.scale(this, scalingFactor, scalingPoint!!.value)
-                                totalScaling.plus(scalingFactor)
-                            }
-                            else -> tool!!.touchMove(context,event.x, event.y)
-                        }
-                    }
-                }
-                MotionEvent.ACTION_UP -> tool!!.touchUp()
-            }
-        } catch(e: Exception){}*/
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
                 if(tool != null){
@@ -131,20 +62,21 @@ class CanvasView(context: Context): View(context) {
                 else{
                     unSelectAllChildren()
                     when(DrawingUtils.currentTool){
-                        selectionString -> tool = Selection()
+                        selectionString -> tool = Selection(drawingId, doc as AbstractDocument)
                         ellipseString -> tool = Ellipse(drawingId,
-                            ellipseString, docCopy as AbstractDocument)
+                            ellipseString, doc as AbstractDocument)
                         rectString -> tool = Rectangle(drawingId,
-                            rectString, docCopy as AbstractDocument)
+                            rectString, doc as AbstractDocument)
                         pencilString -> tool = FreeHand(drawingId,
-                            pencilString, docCopy as AbstractDocument)
+                            pencilString, doc as AbstractDocument)
                     }
-                    tool!!.touchStart( event.x, event.y, svgRootCopy)
+                    tool!!.touchStart( event.x, event.y, svgRoot)
                     mode = ""
                 }
             }
             MotionEvent.ACTION_MOVE ->{
-                if(DrawingUtils.currentTool == selectionString){
+                if(tool is Selection &&
+                    (tool as Selection).getSelectedTool() != null){
                     when(mode){
                         "translation" ->{
                             val translation:Point = tool!!.startTransformPoint
@@ -296,7 +228,7 @@ class CanvasView(context: Context): View(context) {
     }
     fun deleteTool(){
         if(tool != null){
-            tool!!.delete(svgRootCopy)
+            tool!!.delete()
             tool = null
         }
     }

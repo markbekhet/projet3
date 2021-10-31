@@ -7,7 +7,8 @@ import org.apache.batik.dom.AbstractDocument
 import org.w3c.dom.Element
 import org.w3c.dom.svg.SVGElement
 
-class Selection: Tool, SVGOMGElement()
+class Selection(private var drawingId: Int?, private var owner: AbstractDocument)
+    : Tool, SVGOMGElement()
 {
     override var currentX = 0f
     override var currentY = 0f
@@ -27,10 +28,24 @@ class Selection: Tool, SVGOMGElement()
             while(i >= 0){
                 val tool = svgRoot.childNodes.item(i) as Tool
                 if(tool.inTranslationZone(eventX, eventY)){
-                    tool.select()
+                    /*tool.select()
                     selectedTool = tool
                     startTransformPoint.x = tool.startTransformPoint.x
+                    startTransformPoint.y = tool.startTransformPoint.y*/
+                    if (tool is FreeHand){
+                        selectedTool = FreeHand(drawingId, pencilString, owner)
+                    }
+                    else if(tool is Ellipse){
+                        selectedTool = Ellipse(drawingId, ellipseString, owner)
+                    }
+                    else{
+                        selectedTool = Rectangle(drawingId, rectString, owner)
+                    }
+                    selectedTool!!.parse(tool.getOriginalString())
+                    startTransformPoint.x = tool.startTransformPoint.x
                     startTransformPoint.y = tool.startTransformPoint.y
+                    selectedTool!!.contentID = tool.contentID
+                    selectedTool!!.select()
                     break
                 }
                 i--
@@ -42,8 +57,11 @@ class Selection: Tool, SVGOMGElement()
         //Not needed given the exception that will be made in the CanvasView
     }
 
+    fun getSelectedTool(): Tool?{
+        return selectedTool
+    }
     override fun touchUp() {
-        setCriticalValues()
+        //setCriticalValues()
         calculateScalingPositions()
     }
 
@@ -95,9 +113,9 @@ class Selection: Tool, SVGOMGElement()
         }
     }
 
-    override fun delete(svgRoot: Element) {
+    override fun delete() {
         if(selectedTool != null){
-            selectedTool!!.delete(svgRoot)
+            selectedTool!!.delete()
             selectedTool = null
         }
     }

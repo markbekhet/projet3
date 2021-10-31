@@ -31,11 +31,11 @@ open class Rectangle(private var drawingId: Int?,
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
-        this.setAttribute("transformTranslate", "translate(0,0)")
+        this.setAttribute("transform", "translate(0,0)")
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
-        svgRoot.appendChild(this)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
@@ -90,7 +90,7 @@ open class Rectangle(private var drawingId: Int?,
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width")
         val height = this.getAttribute("height")
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
         val fill = this.getAttribute("fill")
@@ -161,9 +161,8 @@ open class Rectangle(private var drawingId: Int?,
 
     override fun translate(view: View, translationPoint: Point) {
         totalTranslation.makeEqualTo(translationPoint)
-        this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}," +
-                "${totalTranslation.y})")
+        this.setAttribute("transform",
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         sendProgressToServer(DrawingStatus.Selected)
 
     }
@@ -174,7 +173,7 @@ open class Rectangle(private var drawingId: Int?,
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width").toFloat()
         val height = this.getAttribute("height").toFloat()
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
 
         str += "x=\"${x}\" "
         str += "y=\"${y}\" "
@@ -275,8 +274,8 @@ open class Rectangle(private var drawingId: Int?,
         val matchTranslate = translateRegex.find(parceableString, 1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
-        this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        this.setAttribute("transform",
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
         val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
@@ -315,8 +314,7 @@ open class Rectangle(private var drawingId: Int?,
         sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun delete(svgRoot: Element){
-        svgRoot.removeChild(this)
+    override fun delete(){
         sendProgressToServer(DrawingStatus.Deleted)
     }
 

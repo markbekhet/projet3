@@ -32,7 +32,7 @@ class FreeHand(private var drawingId: Int?,
         this.setAttribute("transform", "translate(0,0)")
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
-        svgRoot.appendChild(this)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
@@ -286,12 +286,12 @@ class FreeHand(private var drawingId: Int?,
         val matchPoints = pointsRegex.find(parceableString!!, 1)
         // Point exist in group 1
         this.setAttribute("points", matchPoints!!.groups[1]!!.value)
-        val translateRegex = Regex("""translate\(([-?0-9.?]+),(( )*[-?0-9.?]+)\)""")
+        val translateRegex = Regex("""translate\(([-?0-9.?]+),([-?0-9.?]+)\)""")
         val matchTranslate = translateRegex.find(parceableString,1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
         this.setAttribute("transform",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
         val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
@@ -321,8 +321,7 @@ class FreeHand(private var drawingId: Int?,
         sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun delete(svgRoot: Element){
-        svgRoot.removeChild(this)
+    override fun delete(){
         sendProgressToServer(DrawingStatus.Deleted)
     }
 

@@ -37,7 +37,7 @@ class Ellipse(private var drawingId:Int? ,
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
-        svgRoot.appendChild(this)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
@@ -283,7 +283,7 @@ class Ellipse(private var drawingId:Int? ,
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
         this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
         val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
@@ -322,8 +322,7 @@ class Ellipse(private var drawingId:Int? ,
         sendProgressToServer(DrawingStatus.Selected)
     }
 
-    override fun delete(svgRoot: Element){
-        svgRoot.removeChild(this)
+    override fun delete(){
         sendProgressToServer(DrawingStatus.Deleted)
     }
 
