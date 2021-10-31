@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ChatService } from 'src/app/services/chat.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { Message, CustomDate } from 'src/app/models/MessageMeta';
+import { Message, CustomDate } from '@models/MessageMeta';
+import { ChatService } from '@services/chat/chat.service';
+import { AuthService } from '@services/authentication/auth.service';
 
 @Component({
   selector: 'app-communication-page',

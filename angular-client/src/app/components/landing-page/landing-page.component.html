@@ -1,0 +1,18 @@
+<div id="landing-page">
+    <!-- <h1 id="title">ColorImage</h1> -->
+    <div class="wrapper-logo">
+        <img src="../../../assets/logos/colorimage_logo1.png" alt="Logo ColorImage" class="logo">
+    </div>
+    <div id="buttonContainer">
+        <div *ngFor="let item of menuItems">
+            <button (click)="execute(item.shortcutName)">
+                <mat-icon>{{item.icon}}</mat-icon>
+                <br>
+                <span class="buttonText"> {{item.name}}</span>
+            </button>
+        </div>
+    </div>
+    <div class="footer">
+        <p> © Équipe-101</p>
+    </div>
+</div>

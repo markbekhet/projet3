@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
+import { InteractionService } from '@services/interaction-service/interaction.service';
 
 @Component({
-  selector: 'app-draw-view',
-  templateUrl: './draw-view.component.html',
-  styleUrls: ['./draw-view.component.scss'],
+  selector: 'app-drawing-view',
+  templateUrl: './drawing-view.component.html',
+  styleUrls: ['./drawing-view.component.scss'],
 })
-export class DrawViewComponent implements AfterViewInit {
+export class DrawingViewComponent implements AfterViewInit {
   @ViewChild('workingSpace', { static: false }) workingSpaceRef!: ElementRef;
 
   constructor(public interaction: InteractionService) {}

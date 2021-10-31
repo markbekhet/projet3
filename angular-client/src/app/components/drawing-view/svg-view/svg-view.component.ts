@@ -7,15 +7,17 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { Canvas } from 'src/app/models/canvas';
-import { ChoosenColors } from 'src/app/models/chosen-colors';
-import { DrawingContent, DrawingStatus } from 'src/app/models/drawing-content';
-import { CanvasBuilderService } from 'src/app/services/canvas-builder/canvas-builder.service';
-import { ColorPickingService } from 'src/app/services/colorPicker/color-picking.service';
-import { InputObserver } from 'src/app/services/draw-tool/input-observer';
-import { Pencil } from 'src/app/services/draw-tool/pencil';
-import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
-import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
+
+import { Canvas } from '@models/CanvasInfo';
+import { ChosenColors } from '@models/ChosenColors';
+import { DrawingContent, DrawingStatus } from '@models/DrawingContent';
+
+import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
+import { ColorPickingService } from '@services/colorPicker/color-picking.service';
+import { InputObserver } from '@services/draw-tool/input-observer';
+import { Pencil } from '@services/draw-tool/pencil';
+import { InteractionService } from '@services/interaction-service/interaction.service';
+import { MouseHandler } from '@services/mouse-handler/mouse.handler';
 
 const POINTS_REGEX = new RegExp(
   `points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`
@@ -55,7 +57,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.initCanvas();
   }
   bgroundChangedSubscription() {
-    this.colorPick.colorSubject.subscribe((choosenColors: ChoosenColors) => {
+    this.colorPick.colorSubject.subscribe((choosenColors: ChosenColors) => {
       if (choosenColors) {
         this.backColor = choosenColors.backColor;
         this.colorPick.cData.primaryColor = choosenColors.primColor;

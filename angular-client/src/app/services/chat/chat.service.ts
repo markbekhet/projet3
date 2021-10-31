@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject /* , Observable */ } from 'rxjs';
 import { io } from 'socket.io-client';
 
-import { Message } from '../models/MessageMeta';
+import { Message } from '@models/MessageMeta';
 
 const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 // const PATH = 'localhost:3000';

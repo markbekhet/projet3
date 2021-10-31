@@ -1,13 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 // import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
-import { ValidationService } from 'src/app/services/validation.service';
 
-import { UserRegistrationInfo } from '../../../../../common/user';
-import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { UserRegistrationInfo } from '@common/user';
+import { AuthService } from '@services/authentication/auth.service';
+import { ValidationService } from '@services/validation/validation.service';
+import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-register-page',

@@ -1,7 +1,7 @@
 <mat-toolbar class="topToolBar">
     <div>
         <button class="topBtn" mat-mini-fab color="primary" matTooltip="{{ funcMenu[0].name }}"
-                (click)="openNewDrawForm()">
+                (click)="openNewDrawingForm()">
             <mat-icon class="topIcon"> {{ funcMenu[0].icon }}</mat-icon>
         </button>
         <button class="topBtn" mat-mini-fab color="primary" matTooltip="{{ funcMenu[1].name }}" (click)="openGallery()">
@@ -11,6 +11,6 @@
     <div fxLayout='row' fxLayoutGap='20px' id='roots-container'>
         <a routerLink='/login'>PROFILE</a>
         <!-- There is no link here-->
-        <a routerLink='/register'>LEAVE ROOM</a>
+        <a routerLink='/home'>LEAVE ROOM</a>
     </div>
 </mat-toolbar>

@@ -1,5 +1,5 @@
-import { DrawingStatus } from 'src/app/models/drawing-content';
-import { InteractionService } from '../interaction-service/interaction.service';
+import { DrawingStatus } from '@models/DrawingContent';
+import { InteractionService } from '@services/interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 

@@ -3,11 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 // import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
 
-// import { ValidationService } from 'src/app/services/validation.service';
-import { UserCredentials } from '../../../../../common/user';
-import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { UserCredentials } from '@common/user';
+import { AuthService } from '@services/authentication/auth.service';
+// import { ValidationService } from '@services/validation.service';
+import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-login-page',

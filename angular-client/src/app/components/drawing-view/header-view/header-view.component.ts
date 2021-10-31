@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { menuItems } from 'src/app/functionality';
-import { Canvas } from 'src/app/models/canvas';
-import { MenuItem } from 'src/app/models/menu-item';
-// import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
-import { ModalWindowService } from 'src/app/services/window-handler/modal-window.service';
-import { NewDrawComponent } from '../../new-draw/new-draw.component';
+
+import { menuItems } from '@src/app/features';
+import { Canvas } from '@models/CanvasInfo';
+import { FeatureItem } from '@models/FeatureItem';
+// import { InteractionService } from '@services/interaction-service/interaction.service';
+import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 
 @Component({
   selector: 'app-header-view',
@@ -13,7 +14,7 @@ import { NewDrawComponent } from '../../new-draw/new-draw.component';
   styleUrls: ['./header-view.component.scss'],
 })
 export class HeaderViewComponent implements OnInit {
-  funcMenu: MenuItem[] = menuItems;
+  funcMenu: FeatureItem[] = menuItems;
   canvasSub!: Subscription;
   currentCanvas!: Canvas;
 
@@ -21,10 +22,10 @@ export class HeaderViewComponent implements OnInit {
     private winService: ModalWindowService // private interaction: InteractionService
   ) {}
 
-  openNewDrawForm() {
+  openNewDrawingForm() {
     // eslint-disable-next-line no-alert
     if (window.confirm('Un dessin est déjà en cours. Voulez-vous continuer?')) {
-      this.winService.openWindow(NewDrawComponent);
+      this.winService.openWindow(NewDrawingComponent);
     }
   }
 

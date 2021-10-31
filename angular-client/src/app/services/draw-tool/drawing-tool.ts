@@ -1,6 +1,6 @@
 // import { Renderer2 } from '@angular/core';
-import { DrawingStatus } from 'src/app/models/drawing-content';
-import { InteractionService } from '../interaction-service/interaction.service';
+import { DrawingStatus } from '@models/DrawingContent';
+import { InteractionService } from '@services/interaction-service/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
 
@@ -36,6 +36,7 @@ export abstract class DrawingTool extends InputObserver {
     this.drawingContentId++;
     // console.log(this.drawingContentId)
   }
+
   // To update the colors with the colors given by the draw view
   updateColors() {}
 
@@ -47,7 +48,8 @@ export abstract class DrawingTool extends InputObserver {
     this.isDown = false;
     // emit event with empty string
   }
-  // called while the mouse is moving
+
+  // Called while the mouse is moving
   updateProgress(drawingStatus: DrawingStatus) {
     let d = '';
     d += this.createPath(this.currentPath);
@@ -56,6 +58,8 @@ export abstract class DrawingTool extends InputObserver {
       contentId: this.drawingContentId,
       drawing: d,
       status: drawingStatus,
+      // TODO: 0 for drawingId here is just a placeholder to remove compile error
+      // drawingId: 0,
     });
   }
   // I think we dont need this method
