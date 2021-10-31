@@ -19,14 +19,13 @@
     "lib": ["es2018", "dom"],
     "paths": {
       "@src/*": ["src/*"],
-      "@app/*": ["src/app/*"],
-      "@assets/*": ["src/assets/*"],
       "@components/*": ["src/app/components/*"],
       "@models/*": ["src/app/models/*"],
       "@services/*": ["src/app/services/*"],
       "@tools/*": ["src/app/services/tools/*"],
-      "@common/*": ["../common/*"],
-      "@environments/*": ["src/environments/*"]
+      "@assets/*": ["src/assets/*"],
+      "@environments/*": ["src/environments/*"],
+      "@common/*": ["../common/*"]
     }
   },
   "angularCompilerOptions": {

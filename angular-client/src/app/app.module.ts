@@ -1,105 +1,78 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSliderModule } from '@angular/material/slider';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './components/app-component/app.component';
-import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
-import { LoginPageComponent } from './components/login-page/login-page.component';
-import { RegisterPageComponent } from './components/register-page/register-page.component';
-import { ChatService } from './services/chat.service';
-import { AuthService } from './services/auth.service';
-import { DrawViewComponent } from './components/draw-view/draw-view.component';
-import { HeaderViewComponent } from './components/draw-view/header-view/header-view.component';
-import { ToolboxViewComponent } from './components/draw-view/toolbox-view/toolbox-view.component';
-import { SvgViewComponent } from './components/draw-view/svg-view/svg-view.component';
-import { OptionViewComponent } from './components/draw-view/toolbox-view/option-view/option-view.component';
-import { InteractionService } from './services/interaction-service/interaction.service';
-import { EntryPointComponent } from './components/entry-point/entry-point.component';
-import { ModalWindowService } from './services/window-handler/modal-window.service';
-import { NewDrawComponent } from './components/new-draw/new-draw.component';
+import { AngularMaterialModule } from './angular-material.module';
+
+import { AuthService } from './services/authentication/auth.service';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
-import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
+import { ChatService } from './services/chat/chat.service';
 import { ColorConvertingService } from './services/colorPicker/color-converting.service';
 import { ColorPickingService } from './services/colorPicker/color-picking.service';
-import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { IconsService } from './services/icons/icons.service';
+import { InteractionService } from './services/interaction-service/interaction.service';
+import { ModalWindowService } from './services/window-handler/modal-window.service';
 
-const appRoutes: Routes = [
-  { path: 'login', component: LoginPageComponent },
-  { path: 'register', component: RegisterPageComponent },
-  // { path: ':username', component: CommunicationPageComponent },
-  { path: 'vue', component: DrawViewComponent },
-  { path: '**', component: EntryPointComponent },
-];
+import { AppComponent } from './components/app-component/app.component';
+import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
+import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+import { HeaderViewComponent } from './components/drawing-view/header-view/header-view.component';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
+import { LoginPageComponent } from './components/login-page/login-page.component';
+import { MiniColorPickerComponent } from './components/mini-color-picker/mini-color-picker.component';
+import { NewDrawingComponent } from './components/new-drawing-dialog/new-drawing.component';
+import { OptionViewComponent } from './components/drawing-view/toolbox-view/option-view/option-view.component';
+import { RegisterPageComponent } from './components/register-page/register-page.component';
+import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
+import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginPageComponent,
     CommunicationPageComponent,
-    RegisterPageComponent,
+    DrawingViewComponent,
     ErrorDialogComponent,
-    DrawViewComponent,
     HeaderViewComponent,
-    ToolboxViewComponent,
-    SvgViewComponent,
-    EntryPointComponent,
-    NewDrawComponent,
+    LandingPageComponent,
+    LoginPageComponent,
     MiniColorPickerComponent,
+    NewDrawingComponent,
     OptionViewComponent,
+    RegisterPageComponent,
+    SvgViewComponent,
+    ToolboxViewComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterModule.forRoot(appRoutes),
-    BrowserAnimationsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatGridListModule,
-    MatSidenavModule,
+    AppRoutingModule,
     FlexLayoutModule,
-    MatDialogModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatSliderModule,
-    MatSlideToggleModule,
-    FormsModule,
-    MatToolbarModule,
+    AngularMaterialModule,
   ],
   providers: [
     AuthService,
-    ChatService,
-    InteractionService,
-    ModalWindowService,
     CanvasBuilderService,
+    ChatService,
     ColorConvertingService,
     ColorPickingService,
     IconsService,
+    InteractionService,
+    ModalWindowService,
   ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}
+
+// Note (Paul) :
+// - HttpClientModule --> mis dans les providers dans mon projet 2 précédent
+// - entryComponents: [LandingPageComponent, DrawingViewComponent] --> à mettre après les providers,
+// peut être utile pour les modales.
