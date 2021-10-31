@@ -17,6 +17,7 @@ interface Tool: SVGElement{
     var scalingPositions: HashMap<Point, Point>
     //var drawingID: Int
     var contentID: Int?
+    var userId: String?
 
     fun touchStart(eventX: Float, eventY:Float, svgRoot: Element)
     fun touchMove(context: Context, eventX: Float, eventY: Float)

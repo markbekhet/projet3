@@ -2,6 +2,7 @@ package com.example.android.canvas
 
 import android.content.Context
 import android.view.View
+import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMGElement
 import org.apache.batik.dom.AbstractDocument
 import org.w3c.dom.Element
@@ -19,7 +20,9 @@ class Selection(private var drawingId: Int?, private var owner: AbstractDocument
     override var totalScaling = Point(0f,0f)
     override var scalingPositions = HashMap<Point, Point>()
     override var contentID: Int? = null
+    override var userId: String? = ClientInfo.userId
     private var selectedTool: Tool? = null
+
 
     override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         // Take the most recent element on the stack
@@ -28,24 +31,23 @@ class Selection(private var drawingId: Int?, private var owner: AbstractDocument
             while(i >= 0){
                 val tool = svgRoot.childNodes.item(i) as Tool
                 if(tool.inTranslationZone(eventX, eventY)){
-                    /*tool.select()
-                    selectedTool = tool
-                    startTransformPoint.x = tool.startTransformPoint.x
-                    startTransformPoint.y = tool.startTransformPoint.y*/
-                    if (tool is FreeHand){
-                        selectedTool = FreeHand(drawingId, pencilString, owner)
+                    if(!(tool.selected && tool.userId != ClientInfo.userId)){
+                        if (tool is FreeHand){
+                            selectedTool = FreeHand(drawingId, pencilString, owner)
+                        }
+                        else if(tool is Ellipse){
+                            selectedTool = Ellipse(drawingId, ellipseString, owner)
+                        }
+                        else{
+                            selectedTool = Rectangle(drawingId, rectString, owner)
+                        }
+                        selectedTool!!.parse(tool.getOriginalString())
+                        startTransformPoint.x = tool.startTransformPoint.x
+                        startTransformPoint.y = tool.startTransformPoint.y
+                        selectedTool!!.contentID = tool.contentID
+                        selectedTool!!.select()
                     }
-                    else if(tool is Ellipse){
-                        selectedTool = Ellipse(drawingId, ellipseString, owner)
-                    }
-                    else{
-                        selectedTool = Rectangle(drawingId, rectString, owner)
-                    }
-                    selectedTool!!.parse(tool.getOriginalString())
-                    startTransformPoint.x = tool.startTransformPoint.x
-                    startTransformPoint.y = tool.startTransformPoint.y
-                    selectedTool!!.contentID = tool.contentID
-                    selectedTool!!.select()
+
                     break
                 }
                 i--

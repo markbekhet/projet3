@@ -195,7 +195,7 @@ class CanvasView(context: Context): View(context) {
                     } catch(e: Exception){}
                     exist = true
                     tool.selected = drawingContent.status == DrawingStatus.Selected
-
+                    tool.userId = drawingContent.userId
                     if(drawingContent.status == DrawingStatus.Deleted){
                         svgRoot.removeChild(tool)
                     }
@@ -216,6 +216,7 @@ class CanvasView(context: Context): View(context) {
                     pencilString -> newTool = FreeHand(drawingId,
                         pencilString, doc as AbstractDocument)
                 }
+                newTool?.userId = drawingContent.userId
                 newTool?.contentID = drawingContent.contentId!!
                 newTool?.selected = drawingContent.status == DrawingStatus.Selected
                 newTool?.parse(drawingContent.drawing)

@@ -26,6 +26,7 @@ class FreeHand(private var drawingId: Int?,
     override var scalingPositions = HashMap<Point, Point>()
     //override var drawingID = drawingId!!.toInt()
     override var contentID: Int? = null
+    override var userId: String?  = ClientInfo.userId
 
     override fun touchStart(eventX: Float, eventY:Float, svgRoot: Element){
         this.setAttribute("points", "$eventX $eventY")

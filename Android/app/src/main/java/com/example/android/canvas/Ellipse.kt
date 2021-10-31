@@ -25,6 +25,7 @@ class Ellipse(private var drawingId:Int? ,
     override var scalingPositions = HashMap<Point, Point>()
     //override var drawingID = drawingId
     override var contentID: Int?=null
+    override var userId: String? = ClientInfo.userId
 
     override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         startingPositionX = eventX

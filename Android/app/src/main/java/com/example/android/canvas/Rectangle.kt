@@ -24,7 +24,7 @@ open class Rectangle(private var drawingId: Int?,
     private var selectionOffset = 0f
     //override var drawingID = drawingId
     override var contentID: Int?= null
-    //var abstractTool = AbstractTool(this)
+    override var userId: String?  = ClientInfo.userId
 
     override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         this.setAttribute("x", eventX.toString())
