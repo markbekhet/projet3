@@ -250,14 +250,24 @@ export class DatabaseService {
     }
 
     async deleteTeam(dto: DeleteTeamDto){
+        const drawings = await this.drawingRepo.find({
+            where: [{ownerId: dto.teamId}]
+        })
         const team = await this.teamRepo.findOne(dto.teamId,{
-            select: ["id","name"],
+            select: ["id","name", "ownerId", "visibility"],
         });
         if(team.ownerId !== dto.userId){
             throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
         }
+        for(const drawing of drawings){
+            await this.drawingRepo.delete(drawing.id);
+        }
         await this.teamRepo.delete(dto.teamId);
-        return team;
+        let retTeam = new Team();
+        retTeam.id = team.id;
+        retTeam.name = team.name;
+        retTeam.visibility = team.visibility;
+        return retTeam;
     }
     //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){
