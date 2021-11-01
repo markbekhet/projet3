@@ -26,11 +26,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let users = await this.userRepo.find({
       select: ["id", "status", "pseudo"],
     })
+    let usersString = JSON.stringify(users);
     let teams = await this.teamRepo.find({
       select: ["id", "name","visibility"]
     })
-    client.emit("usersArrayToClient", users);
-    client.emit("teamsArrayToClient", teams);
+    let teamsString = JSON.stringify(teams);
+    client.emit("usersArrayToClient", usersString);
+    client.emit("teamsArrayToClient", teamsString);
   }
 
   afterInit(server: Server) {
@@ -51,12 +53,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   notifyUserUpdate(user: User){
-    this.wss.emit("userUpdate", user);
+    let userString = JSON.stringify(user);
+    this.wss.emit("userUpdate", userString);
   }
   notifyTeamCreation(team:Team){
-    this.wss.emit("newTeamCreated", team);
+    let teamString = JSON.stringify(team);
+    this.wss.emit("newTeamCreated", teamString);
   }
   notifyTeamDeletion(team: Team){
-    this.wss.emit("teamDeleted", team);
+    let teamString = JSON.stringify(team);
+    this.wss.emit("teamDeleted", teamString);
   }
 }
