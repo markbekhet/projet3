@@ -130,14 +130,15 @@ export class Selection extends DrawingTool {
 
     saveRect() {
         if (this.target) {
-            let rect = this.target as SVGRectElement;
+            let rect = (this.target as SVGRectElement).x;
+
             
         }
     }
 
     saveEllipse() {
         if (this.target) {
-            this.target.setAttribute('transform', '');
+            //this.target.setAttribute('transform', '');
         }
     }
 
