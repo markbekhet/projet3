@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:="http://www.w3.org/2000/svg"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-  >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateDraw">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="2dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/nom_app"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginLeft="5sp"
-            android:layout_marginRight="5sp"
-            android:layout_marginBottom="20sp"
             android:text="creation dessin"
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/red" />
 
         <EditText
-            android:id="@+id/nom_dessin"
+            android:id="@+id/drawingName"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
@@ -38,12 +39,11 @@
             android:ems="10"
             android:hint=" nom du dessin"
             android:inputType="textPersonName"
-            android:padding="10dp"
             android:textColor="#808080"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/longueur"
+            android:id="@+id/height"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
@@ -51,19 +51,17 @@
             android:ems="10"
             android:hint=" longueur du dessin"
             android:inputType="number"
-            android:padding="10dp"
             android:textColor="#808080"
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/largeur"
+            android:id="@+id/width"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:hint="largeur du dessin"
             android:inputType="number"
-            android:padding="10dp"
             android:textColor="#808080"
             android:textSize="20sp" />
 
@@ -73,72 +71,67 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
-                    <Switch
+                    <!--<Switch
                         android:id="@+id/visible"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
                         android:text="groupe public" />
+                    -->
+
+                    <Spinner
+                        android:id="@+id/sp_option"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/result"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
 
                     <EditText
-                        android:id="@+id/password"
+                        android:id="@+id/drawingPassword"
                         android:layout_width="229dp"
                         android:layout_height="40dp"
                         android:layout_marginBottom="10dp"
                         android:width="40sp"
                         android:ems="10"
                         android:hint="mot de passe"
-                        android:visibility="gone"
-                        android:inputType="textPersonName"
+                        android:visibility="invisible"
+                        android:inputType="textPassword"
                         android:padding="10dp"
                         android:textColor="#808080"
                         android:textSize="20sp" />
 
-                    <Spinner
-                        android:id="@+id/sp_option"
-                        android:layout_width="match_parent"
-                        android:padding="20dp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/result"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <Button
-                        android:id="@+id/btnColorSelected"
-                        android:layout_width="50sp"
-                        android:layout_height="60sp" />
-                    <Button
-                        android:id="@+id/btnColorPicker"
-                        android:layout_margin="25sp"
-                        android:backgroundTint="@color/main_color"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Color Picker" />
+                        android:background="@drawable/rectangle_background"
+                        android:layout_marginTop="5dp">
+                        <View
+                            android:id="@+id/btnColorSelected"
+                            android:layout_width="50sp"
+                            android:layout_height="60sp"
+                            android:background="#FFFFFF"
+                            android:clickable="true"
+                            android:enabled="true"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-        <include
+        <!--<include
             layout="@layout/colorpicker"
             android:layout_width="294dp"
             android:layout_height="436dp"
             android:layout_gravity="center" />
-
+        -->
         <Button
-            android:id="@+id/dessin"
+            android:id="@+id/create"
             android:layout_width="229dp"
             android:layout_height="50dp"
-            android:text="creer dessin" />
+            android:text="creer dessin"
+            android:layout_marginTop="10dp"/>
 
-        <Button
-            android:id="@+id/annuler"
-            android:layout_width="229dp"
-            android:layout_height="50dp"
-            android:text="annuler"
-
-            />
     </LinearLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

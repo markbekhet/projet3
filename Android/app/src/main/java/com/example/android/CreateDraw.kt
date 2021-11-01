@@ -13,53 +13,145 @@ import kotlinx.android.synthetic.main.colorpicker.colorA
 import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
+import androidx.core.widget.doAfterTextChanged
+import com.example.android.canvas.*
 import com.example.android.client.ClientInfo
-import com.example.android.client.Draw
+import com.example.android.client.ClientService
+import kotlinx.android.synthetic.main.chatfragment.view.*
+import kotlinx.android.synthetic.main.dessin.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
+import top.defaults.colorpicker.ColorPickerPopup
+import java.util.*
 
 
 class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        lateinit var option : Spinner
-        lateinit var result : TextView
-        lateinit var switch : Switch
-        var nouveau_dessin : Draw
-        var color:String= "#FFFFFF"
+        lateinit var option: Spinner
+        lateinit var result: TextView
+        lateinit var switch: Switch
+        val clientService = ClientService()
+        var newDrawing = DrawingInformation(color="#FFFFFF")
+        var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
 
-        switch=findViewById(R.id.visible) as Switch
-        option=findViewById(R.id.sp_option) as Spinner
-        result=findViewById(R.id.result) as TextView
+        //switch=findViewById(R.id.visible) as Switch
+        option = findViewById(R.id.sp_option) as Spinner
+        result = findViewById(R.id.result) as TextView
 
-        val options = arrayOf("proteger","privee","public")
-        option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,options)
-        option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        val options = arrayOf("public", "proteger", "privee")
+        option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
+        option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 result.text = options[p2]
+                newDrawing.visibility = p2
+                if (p2 == 1) {
+                    drawingPassword.visibility = View.VISIBLE
+                } else {
+                    drawingPassword.visibility = View.INVISIBLE
+                }
             }
 
             @SuppressLint("SetTextI18n")
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                result.text= "public"
+                result.text = options[0]
+                newDrawing.visibility = 0
             }
         }
-        btnColorPicker.setOnClickListener {
-            colorSelector.visibility = View.VISIBLE
 
-        }
+
+        /*btnColorPicker.setOnClickListener {
+            colorSelector.visibility = View.VISIBLE
+        }*/
 
 
         btnColorSelected.setOnClickListener {
-            colorSelector.visibility = View.VISIBLE
+            //colorSelector.visibility = View.VISIBLE
+            ColorPickerPopup.Builder(this)
+                .enableBrightness(true)
+                .okTitle("Choisir")
+                .enableAlpha(false)
+                .cancelTitle("Annuler")
+                .showIndicator(true)
+                .showValue(true)
+                .build()
+                .show(it, newDrawing.color?.let { it1 -> ColorPicker(btnColorSelected, it1) })
         }
-        dessin?.setOnClickListener(){
-            nouveau_dessin =  Draw(result.text.toString(),"",ClientInfo.userId,largeur.text.toString().toInt(),
-                longueur.text.toString().toInt(),nom_dessin.text.toString(),switch.isChecked,color)
-                    startActivity(Intent(this, Drawing::class.java))}
 
-        annuler?.setOnClickListener(){
-            startActivity(Intent(this, LandingPage::class.java))}
-        strColor.addTextChangedListener(object : TextWatcher {
+        drawingName.doAfterTextChanged {
+            if (!isNotBlank()) {
+                create.isEnabled = false
+                create.isClickable = false
+            } else {
+                create.isEnabled = true
+                create.isClickable = true
+            }
+        }
+        height.doAfterTextChanged {
+            if (!isNotBlank()) {
+                create.isEnabled = false
+                create.isClickable = false
+            } else {
+                create.isEnabled = true
+                create.isClickable = true
+            }
+        }
+
+        width.doAfterTextChanged {
+            if (!isNotBlank()) {
+                create.isEnabled = false
+                create.isClickable = false
+            } else {
+                create.isEnabled = true
+                create.isClickable = true
+            }
+        }
+        create?.setOnClickListener() {
+            var canProcessQuery = true
+            if (newDrawing.visibility == Visibility.protectedVisibility.int) {
+                if (drawingPassword.text.isBlank() || drawingPassword.text.isEmpty()) {
+                    canProcessQuery = false
+                    error.text = "Le mot de passe est obligatoire et" +
+                        " ne peut pas être composé d'espace quand le dessin est protégé"
+                } else {
+                    newDrawing.password = drawingPassword.text.toString()
+                }
+            }
+            else{
+                newDrawing.password = null
+            }
+
+            newDrawing.height = height.text.toString().toInt()
+            newDrawing.width = width.text.toString().toInt()
+            newDrawing.name = drawingName.text.toString()
+            newDrawing.ownerId = ClientInfo.userId
+            println(newDrawing.color)
+            if (canProcessQuery) {
+                var response: Response<ResponseBody>? = null
+                runBlocking {
+                    async {
+                        launch {
+                            response = clientService.createDrawing(newDrawing)
+                        }
+                    }
+                }
+                if (response!!.isSuccessful) {
+                    DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
+
+                    //join the drawing
+                    startActivity(Intent(this, Drawing::class.java))
+                } else {
+                    error.text = "Une erreur est arrivée lors de la création du dessin"
+                }
+
+            }
+        }
+
+        /*strColor.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable) {
                 if (s.length == 6){
@@ -83,9 +175,9 @@ class CreateDraw : AppCompatActivity() {
                                        before: Int, count: Int) {
 
             }
-        })
+        })*/
 
-        colorA.max = 255
+        /*colorA.max = 255
         colorA.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -94,6 +186,7 @@ class CreateDraw : AppCompatActivity() {
                 val colorStr = getColorString()
                 strColor.setText(colorStr.replace("#","").toUpperCase())
                 btnColorPreview.setBackgroundColor(Color.parseColor(colorStr))
+                newDrawing.color = colorStr
             }
         })
 
@@ -104,6 +197,7 @@ class CreateDraw : AppCompatActivity() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int,
                                            fromUser: Boolean) {
                 val colorStr = getColorString()
+                newDrawing.color = colorStr
                 strColor.setText(colorStr.replace("#","").toUpperCase())
                 btnColorPreview.setBackgroundColor(Color.parseColor(colorStr))
             }
@@ -116,6 +210,7 @@ class CreateDraw : AppCompatActivity() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int,
                                            fromUser: Boolean) {
                 val colorStr = getColorString()
+                newDrawing.color = colorStr
                 strColor.setText(colorStr.replace("#","").toUpperCase())
                 btnColorPreview.setBackgroundColor(Color.parseColor(colorStr))
             }
@@ -152,8 +247,29 @@ class CreateDraw : AppCompatActivity() {
         if(g.length==1) g = "0"+g
         var b = Integer.toHexString(((255*colorB.progress)/colorB.max))
         if(b.length==1) b = "0"+b
-        return "#" + a + r + g + b
+        return "#$r$g$b$a"
+    }*/
     }
+    private fun isNotBlank(): Boolean{
+        if(height.text.isBlank() || width.text.isBlank() || drawingName.text.isBlank()){
+            return false
+        }
+        return true
+    }
+    private class ColorPicker(var button: View, var string:String): ColorPickerPopup.ColorPickerObserver() {
+        override fun onColorPicked(color: Int){
+            button.setBackgroundColor(color)
+            val r = Color.red(color)
+            val g = Color.green(color)
+            val b = Color.blue(color)
+            string = String.format(Locale.getDefault(), "#%02X%02X%02X",r, g, b)
+
+
+
+        }
+    }
+
+
 }
 
 

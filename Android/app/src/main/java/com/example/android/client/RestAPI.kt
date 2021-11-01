@@ -12,8 +12,9 @@ interface RestAPI {
     @POST(register)
     suspend fun createUser(@Body requestBody: RequestBody): Response<ResponseBody>
 
-    @GET("$user$profile/{Id}")
-    suspend fun getProfile(@Path("Id") userId: String): Response<ResponseBody>
+    @GET("$user$profile/{Id}/{otherId}")
+    suspend fun getProfile(@Path("Id") userId: String,
+                           @Path("otherId") otherUserId:String): Response<ResponseBody>
 
     @PUT("$user$profile/{Id}")
     suspend fun modifyProfileParams(@Path("Id") userId: String,
@@ -23,4 +24,7 @@ interface RestAPI {
 
     @POST("$user$disconnect/{Id}")
     suspend fun disconnectUser(@Path("Id") userId:String): Response<ResponseBody>
+
+    @POST("$drawingNamespace")
+    suspend fun createDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
 }

@@ -3,6 +3,7 @@ package com.example.android.client
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.example.android.canvas.DrawingInformation
 import com.example.android.url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,22 +38,35 @@ class ClientService : Service() {
         }
 
     }
-    suspend fun getUserProfileInformation(){
+    suspend fun getUserProfileInformation(otherId: String): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(url)
             .build()
 
         val service = retrofit.create(RestAPI::class.java)
 
+        var response: Response<ResponseBody>? = null
         withContext(Dispatchers.IO){
-            val response =  service.getProfile(ClientInfo.userId)
-
-            if (response!!.isSuccessful){
-                var responseBody = response.body()?.string()
-                val userInformation = ClientInfo.userInformation.fromJson(responseBody)
-                ClientInfo.userInformation = userInformation
-            }
+            response =  service.getProfile(ClientInfo.userId, otherId)
+            return@withContext response
         }
+        return response
+    }
+
+    suspend fun createDrawing(drawingInfo: DrawingInformation): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+
+        val requestBody = drawingInfo.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response =  service.createDrawing(requestBody)
+            return@withContext response
+        }
+        return response
     }
 
     suspend fun createUser(userRegistration: UserRegistrationInfo): Response<ResponseBody>?{

@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.android.client.ClientInfo
-import com.example.android.client.ClientService
-import com.example.android.client.User
-import com.example.android.client.UsersArrayList
+import com.example.android.client.*
 import com.example.android.profile.OwnProfile
 import com.google.gson.Gson
 import io.socket.client.Socket
@@ -35,17 +32,13 @@ class LandingPage : AppCompatActivity() {
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.usersList= Gson().fromJson(data, UsersArrayList::class.java)
-                for(user in ClientInfo.usersList.userList!!){
-                    println(user.status)
-                }
-                println(data)
             }
         }
 
         chatSocket?.on("teamsArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                println("teams array: $data")
+                ClientInfo.teamsList = Gson().fromJson(data, TeamsArrayList::class.java)
             }
         }
 
@@ -58,8 +51,12 @@ class LandingPage : AppCompatActivity() {
             startActivity(Intent(this, OwnProfile::class.java))
         }
 
-        creerSalon.setOnClickListener(){
+        creerSalon.setOnClickListener{
             startActivity(Intent(this, CreateDraw::class.java))}
+
+        disconnect.setOnClickListener {
+            disconnect()
+        }
 
 //            if (createDrawing == null) {
 //                createDrawing = Dialog(this)
@@ -81,9 +78,7 @@ class LandingPage : AppCompatActivity() {
 //        }
 
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    fun disconnect(){
         runBlocking{
             launch{
                 clientService.disconnect()
@@ -92,6 +87,9 @@ class LandingPage : AppCompatActivity() {
         }
         chatSocket?.disconnect()
         drawingSocket?.disconnect()
-        println("Disconnection Here")
+    }
+    override fun onDestroy() {
+        disconnect()
+        super.onDestroy()
     }
 }

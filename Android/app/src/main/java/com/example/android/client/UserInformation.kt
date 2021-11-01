@@ -2,14 +2,15 @@ package com.example.android.client
 
 import com.google.gson.Gson
 
-enum class ClientStatus{
-    ONLINE, BUSY, OFFLINE
+enum class ClientStatus(var int: Int){
+    ONLINE(0), BUSY(1), OFFLINE(2)
 }
 
 data class UserProfileInformation(
     var firstName: String? = null,
     var lastName: String? = null,
     var pseudo: String? = null,
+    var status: Int?= null,
     var emailAddress: String? = null,
     var averageCollaborationTime: Int? = null,
     var totalCollaborationTime: Int? = null,
