@@ -6,7 +6,6 @@ import { Point } from "./point";
 import { Shape } from "./shape";
 import { ToolsAttributes } from "./tools-attributes";
 
-const DEFAULT_LINE_THICKNESS = 5;
 export class Ellipse extends Shape {
     
     constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService){

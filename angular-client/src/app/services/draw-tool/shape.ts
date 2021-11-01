@@ -169,7 +169,10 @@ export class Shape extends DrawingTool {
         this.svgString += ` fill="${this.fill}"`;
         this.svgString += ` stroke-width="${this.attr.shapeLineThickness}" stroke="${this.stroke}"`;
         this.svgString += ` style="transform: translate(0px, 0px)"/>\n`;
+    }
 
+    objectPressed(position: Point): boolean {
+        return false;
     }
 
 }

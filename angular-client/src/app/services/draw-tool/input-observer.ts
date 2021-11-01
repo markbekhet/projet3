@@ -1,6 +1,6 @@
 import { Point } from "./point";
 
-export abstract class InputObserver{
+export abstract class InputObserver {
     constructor(selected:boolean){
         this.selected = selected;
     }
@@ -15,4 +15,5 @@ export abstract class InputObserver{
     abstract doubleClick(position: Point, insideWorkspace?: boolean): void;
     abstract goingOutsideCanvas(position: Point): void;
     abstract goingInsideCanvas(position: Point): void;
+    abstract objectPressed(position: Point): boolean;
 }

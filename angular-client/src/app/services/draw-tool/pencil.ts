@@ -7,12 +7,15 @@ import { ToolsAttributes } from "./tools-attributes";
 
 const DEF_LINE_THICKNESS = 5;
 
-
-export class Pencil extends DrawingTool{
+export class Pencil extends DrawingTool {
     attr: ToolsAttributes;
-    
+    minPoint: Point = {
+        x: 0,
+        y: 0
+    };
+    maxPoint: Point = this.minPoint;
 
-    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService,){
+    constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService){
         super(selected, interactionService, colorPick);
         this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
         this.updateAttributes();
@@ -54,7 +57,6 @@ export class Pencil extends DrawingTool{
               // add everything to the canvas
               this.updateProgress(DrawingStatus.Done);
             }
-            
         }
     }
 
@@ -62,6 +64,7 @@ export class Pencil extends DrawingTool{
         if(this.isDown){
             this.currentPath.push(position);
             this.updateProgress(DrawingStatus.InProgress);
+            this.updateMinMaxPoints(position);
         }
     }
 
@@ -90,4 +93,33 @@ export class Pencil extends DrawingTool{
         //console.log(s)
         return s;
     }
+
+    updateMinMaxPoints(position: Point) {
+        //x 
+        if (position.x > this.maxPoint.x) {
+            this.maxPoint.x = position.x;
+        } else if (position.x < this.minPoint.x) {
+            this.minPoint.x = position.x;
+        }
+        //y
+        if (position.y > this.maxPoint.y) {
+            this.maxPoint.y = position.y;
+        } else if (position.y < this.minPoint.y) {
+            this.minPoint.y = position.y;
+        }
+    }
+
+    objectPressed(position: Point): boolean {
+        /*let inXAxes = (position.x >= minPoint.x + totalTranslation.x)
+            && (eventX <= maxPoint.x + totalTranslation.x)
+        let inYaxes = (eventY >= minPoint.y + totalTranslation.y)
+            && (eventY <= maxPoint.y + totalTranslation.y)
+        return inXAxes && inYaxes*/
+
+        const xAxis: boolean = (position.x > this.minPoint.x) && (position.x < this.maxPoint.x);
+        const yAxis: boolean = (position.y > this.minPoint.y) && (position.y < this.maxPoint.y);
+        return xAxis && yAxis;
+
+    }
+
 }

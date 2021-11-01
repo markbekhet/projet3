@@ -8,6 +8,7 @@ import { Ellipse } from 'src/app/services/draw-tool/ellipse';
 import { InputObserver } from 'src/app/services/draw-tool/input-observer';
 import { Pencil } from 'src/app/services/draw-tool/pencil';
 import { Rectangle } from 'src/app/services/draw-tool/rectangle';
+import { Selection } from 'src/app/services/draw-tool/selection';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
 import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
 
@@ -31,7 +32,7 @@ const CY_REGEX = new RegExp(`cy="([-?0-9.?]*)"`);
 const RX_REGEX = new RegExp(`rx="([-?0-9.?]*)"`);
 const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
 
-const TRANSLATE_REGX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
+const TRANSLATE_REGEX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
 
 @Component({
   selector: 'app-svg-view',
@@ -40,11 +41,9 @@ const TRANSLATE_REGX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?]
 })
 export class SvgViewComponent implements OnInit, AfterViewInit {
 
-  @ViewChild("canvas", {static:false}) canvas: ElementRef| undefined;
-  @ViewChild("drawingSpace", { static: false })
-  drawingSpace: ElementRef| undefined;
-  @ViewChild("actualDrawing", {static: false}) doneDrawing!:ElementRef;
-  @ViewChild("inProgress", {static: false}) inProgress!: ElementRef
+  @ViewChild("canvas", {static:false}) canvas!: ElementRef;
+  @ViewChild("drawingSpace", {static: false}) drawingSpace!: ElementRef;
+  @ViewChild("actualDrawing", {static: false}) doneDrawing!: ElementRef;
   height!: number;
   width!: number;
   backColor: string = "#ffffff";
@@ -139,14 +138,16 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   // To create tools and add them to the map
   // A map is used instead of if/else
-  createTools(){
+  createTools() {
     const pencil = new Pencil(true, this.interactionService, this.colorPick);
     const rectangle = new Rectangle(false, this.interactionService, this.colorPick);
     const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
+    const select = new Selection(false, this.interactionService, this.colorPick, this.doneDrawing.nativeElement);
 
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
     this.toolsContainer.set('Ellipse', ellipse);
+    this.toolsContainer.set('Sélectionner', select);
   }
 
   updateSelectedTool(tool: string) {
@@ -184,7 +185,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
         
         if (newObj !== null) {
-          this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, newObj);
           this.contents.set(data.contentId, newObj);
         }
       }
@@ -200,14 +201,14 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             this.modifyEllipse(data.drawing, element);
             //console.log(data.drawing);
          }
-          this.renderer.appendChild(this.inProgress.nativeElement, element);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, element);
         }
       }
     }
     else if (data.status === DrawingStatus.Done.valueOf()){
       let element = this.contents.get(data.contentId)
       if (element!== undefined){
-        this.renderer.removeChild(this.inProgress.nativeElement, element);
+        this.renderer.removeChild(this.doneDrawing.nativeElement, element);
         if (data.drawing.includes('polyline')) {
           this.modifyPolyline(data.drawing, element);
         } else if (data.drawing.includes('rect')) {

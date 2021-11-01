@@ -11,7 +11,7 @@ const DEFAULT_SECONDARY_COLOR = '000000';
 const DEFAULT_BACK_COLOR = 'ffffffff';
 
 
-export abstract class DrawingTool extends InputObserver{
+export abstract class DrawingTool extends InputObserver {
     isDown: boolean;
     currentPath : Point[];
     //selected: boolean;
@@ -59,6 +59,9 @@ export abstract class DrawingTool extends InputObserver{
       }
 
     abstract updateAttributes(): void;
+    objectPressed(position: Point) {
+      return false;
+    }
 
     cancel(){
         this.currentPath = [];
