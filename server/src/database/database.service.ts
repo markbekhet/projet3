@@ -49,6 +49,9 @@ export class DatabaseService {
         let returnedUser = await this.userRepo.findOne(user.id,{
             select: ["status","id","pseudo"],
         })
+        console.log(connection.date)
+        let date = connection.date.toString();
+        console.log(date);
         return returnedUser;
         
     }

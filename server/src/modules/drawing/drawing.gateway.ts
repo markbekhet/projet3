@@ -27,7 +27,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   constructor(@InjectRepository(DrawingContentRepository) private readonly drawingContentRepo: DrawingContentRepository,
               @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
               @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
-              @InjectRepository(UserRespository) private readonly userRepo){}
+              @InjectRepository(UserRespository) private readonly userRepo: UserRespository){}
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`client connected: ${client.id}`);
@@ -50,8 +50,6 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
       await this.drawingContentRepo.delete(drawingMod.contentId);
     }
-    //let parsedDrawing:SocketDrawing = JSON.parse(drawing)
-    //console.log(drawing.drawingId,drawing.contentId, drawing.drawing)
     this.wss.to(drawingMod.drawingName).emit("drawingToClient", drawing);
   }
 
@@ -79,16 +77,26 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     let newEditionHistory = new DrawingEditionHistory();
     newEditionHistory.user = user;
     newEditionHistory.action = "join";
+    await this.userRepo.update(user.id, {
+      numberAuthoredDrawings: user.numberCollaboratedDrawings+1
+    });
     await this.drawingEditionRepository.save(newEditionHistory);
     client.emit("drawingInformations", drawing);
   }
   @SubscribeMessage("leaveDrawing")
   async leaveDrawing(client: Socket, dto: JoinDrawingDto){
-    let user = await this.userRepo.findOne(dto.userId);
-    let newEditionHistory = new DrawingEditionHistory();
-    newEditionHistory.user = user;
-    newEditionHistory.action = "leave";
-    await this.drawingEditionRepository.save(newEditionHistory);
+    let user = await this.userRepo.findOne(dto.userId, {
+      select:['totalCollaborationTime'],
+      relations: ['drawingEditionHistory']
+    });
+    let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date
+    let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
+    let timeEllapsedInSeconds = timeEllapsed/100;
+    await this.userRepo.update(dto.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds})
+    //let newEditionHistory = new DrawingEditionHistory();
+    //newEditionHistory.user = user;
+    //newEditionHistory.action = "leave";
+    //await this.drawingEditionRepository.save(newEditionHistory);
     client.leave(dto.drawingName);
   }
 }
