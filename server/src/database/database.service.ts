@@ -72,12 +72,19 @@ export class DatabaseService {
                 {emailAddress: userCredentials.username},
                 {pseudo: userCredentials.username}
             ],
-            select: ["pseudo","id","status"],
+            select: ["password"],
         })
         if(user === undefined){
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
         }
         else{
+            let user = await this.userRepo.findOne({
+                where: [
+                    {emailAddress: userCredentials.username},
+                    {pseudo: userCredentials.username}
+                ],
+                select:["id", "status", "pseudo"],
+            })
             if(user.status == Status.ONLINE || user.status == Status.BUSY){
                 throw new HttpException("User is already logged in", HttpStatus.BAD_REQUEST);
             }
@@ -119,7 +126,7 @@ export class DatabaseService {
     async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         const user = await this.userRepo.findOne(userId, {
-            select:["id", "pseudo", "status"]
+            select:["pseudo","password"]
         });
         if(user === undefined){
             throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
@@ -167,7 +174,10 @@ export class DatabaseService {
                 }
                 user.pseudo = newParameters.newPseudo;
             }
-            return user;
+            let retuser = this.userRepo.findOne(userId, {
+                select:["id", "pseudo", "status"]
+            })
+            return retuser;
 
         }
     }
@@ -257,7 +267,7 @@ export class DatabaseService {
             where: [{ownerId: dto.teamId}]
         })
         const team = await this.teamRepo.findOne(dto.teamId,{
-            select: ["id","name", "ownerId", "visibility"],
+            select: ["ownerId"],
         });
         if(team.ownerId !== dto.userId){
             throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
@@ -265,11 +275,10 @@ export class DatabaseService {
         for(const drawing of drawings){
             await this.drawingRepo.delete(drawing.id);
         }
+        let retTeam = this.teamRepo.findOne(dto.teamId, {
+            select:["id", "visibility", "name"]
+        })
         await this.teamRepo.delete(dto.teamId);
-        let retTeam = new Team();
-        retTeam.id = team.id;
-        retTeam.name = team.name;
-        retTeam.visibility = team.visibility;
         return retTeam;
     }
     //--------------------------------------------------------------------------------------------------------------------------------------------------------

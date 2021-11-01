@@ -1,8 +1,9 @@
-import { Inject, Logger } from '@nestjs/common';
+import {Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageBody, OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from 'src/enumerators/drawing-status';
+import { visibility } from 'src/enumerators/visibility';
 import { DrawingContent } from '../drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from '../drawing-content/drawing-content.repository';
 import { DrawingEditionHistory } from '../drawingEditionHistory/drawingEditionHistory.entity';
@@ -11,8 +12,9 @@ import { DrawingEditionRepository } from '../drawingEditionHistory/drawingEditio
 import { UserRespository } from '../user/user.repository';
 import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
-import { JoinDrawingDto } from './joinDrawing.dto';
+import { JoinDrawingDto, LeaveDrawingDto } from './joinDrawing.dto';
 import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
+import * as bcrypt from 'bcrypt';
 
 @WebSocketGateway({namespace: '/drawing', cors:true})
 export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
@@ -36,7 +38,8 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   notifyAllUsers(drawing: Drawing){
     this.logger.log(drawing.id);
     const drawingInformations = {id: drawing.id, name: drawing.name};
-    this.wss.emit("askJoinDrawing", drawingInformations);
+    let drawingInformationsString = JSON.stringify(drawingInformations);
+    this.wss.emit("askJoinDrawing", drawingInformationsString);
   }
 
   @SubscribeMessage("drawingToServer")
@@ -63,40 +66,49 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   }
 
   @SubscribeMessage("joinDrawing")
-  async joinDrawing(client:Socket, dto: JoinDrawingDto){
-    console.log(`client ${client.id} has joined ${dto.drawingName}`)
-    client.join(dto.drawingName);
+  async joinDrawing(client:Socket, dto: any){
+    let dtoMod : JoinDrawingDto = JSON.parse(dto);
+    console.log(`client ${client.id} has joined ${dtoMod.drawingName}`)
+    client.join(dtoMod.drawingName);
     let drawing: Drawing = await this.drawingRepo.findOne({
       where:[
-        {name: dto.drawingName}
+        {name: dtoMod.drawingName}
       ],
-      select:["bgColor","height","width","id"],
-      relations:["contents"]
+      select:["visibility", "password"],
     });
-    let user = await this.userRepo.findOne(dto.userId);
-    let newEditionHistory = new DrawingEditionHistory();
-    newEditionHistory.user = user;
-    newEditionHistory.action = "join";
-    await this.userRepo.update(user.id, {
-      numberAuthoredDrawings: user.numberCollaboratedDrawings+1
-    });
-    await this.drawingEditionRepository.save(newEditionHistory);
-    client.emit("drawingInformations", drawing);
+    let passwordMatch: boolean = false
+    if(drawing.visibility === visibility.PROTECTED){
+      passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
+    }
+    if(passwordMatch || drawing.visibility === visibility.PUBLIC || drawing.visibility === visibility.PRIVATE){
+      let user = await this.userRepo.findOne(dtoMod.userId);
+      let newEditionHistory = new DrawingEditionHistory();
+      newEditionHistory.user = user;
+      newEditionHistory.action = "join";
+      await this.userRepo.update(user.id, {
+        numberAuthoredDrawings: user.numberCollaboratedDrawings+1
+      });
+      await this.drawingEditionRepository.save(newEditionHistory);
+      let drawingRet = this.drawingRepo.findOne({
+        where: [{name: dtoMod.drawingName}],
+        select: ['bgColor', "height", "width", "visibility"],
+        relations:['contents']
+      })
+      let drawingString = JSON.stringify(drawingRet);
+      client.emit("drawingInformations", drawingString);
+    }
   }
   @SubscribeMessage("leaveDrawing")
-  async leaveDrawing(client: Socket, dto: JoinDrawingDto){
-    let user = await this.userRepo.findOne(dto.userId, {
+  async leaveDrawing(client: Socket, dto: any){
+    let dtoMod :LeaveDrawingDto = JSON.parse(dto)
+    let user = await this.userRepo.findOne(dtoMod.userId, {
       select:['totalCollaborationTime'],
       relations: ['drawingEditionHistory']
     });
-    let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date
+    let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date.toString()
     let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
-    let timeEllapsedInSeconds = timeEllapsed/100;
-    await this.userRepo.update(dto.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds})
-    //let newEditionHistory = new DrawingEditionHistory();
-    //newEditionHistory.user = user;
-    //newEditionHistory.action = "leave";
-    //await this.drawingEditionRepository.save(newEditionHistory);
-    client.leave(dto.drawingName);
+    let timeEllapsedInSeconds = timeEllapsed/1000;
+    await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds})
+    client.leave(dtoMod.drawingName);
   }
 }
