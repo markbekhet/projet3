@@ -54,7 +54,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
       await this.drawingContentRepo.delete(drawingMod.contentId);
     }
-    this.wss.to(drawingMod.drawingName).emit("drawingToClient", drawing);
+    this.wss.to(drawingMod.drawingId.toString()).emit("drawingToClient", drawing);
   }
 
   @SubscribeMessage("createDrawingContent")
