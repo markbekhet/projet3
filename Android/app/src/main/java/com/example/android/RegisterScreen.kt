@@ -18,6 +18,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import android.text.TextUtils
 import android.util.Patterns
+import kotlinx.android.synthetic.main.popup_modify_parameters.*
 
 
 class RegisterScreen : AppCompatActivity() {
@@ -51,18 +52,21 @@ class RegisterScreen : AppCompatActivity() {
             validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString())
+            errorPassword.text = ""
         }
 
         password.doAfterTextChanged {
             (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString()))
+            errorPassword.text = ""
         }
 
         confirmPassword.doAfterTextChanged {
             (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString()))
+            errorPassword.text = ""
         }
 
 
@@ -70,6 +74,7 @@ class RegisterScreen : AppCompatActivity() {
             (validater(firstName.text.toString(), lastName.text.toString(),
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString()))
+            errorPassword.text = ""
         }
 
 
@@ -79,16 +84,42 @@ class RegisterScreen : AppCompatActivity() {
                 email.text.toString(), password.text.toString())
 
             var response: Response<ResponseBody>? = null
+            var canProcessQuery = true
 
-            runBlocking {
-                async {
-                    launch {
-                        response = clientService.createUser(user)
+            if(password.text.length < 8){
+                errorPassword.append("Le mot de passe doit avoir au moins 8 caractères")
+                canProcessQuery = false
+            }
+            val regex = Regex(
+                """((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$""")
+            if(!regex.matches(password.text.toString())){
+                errorPassword.append("Le mot de passe ne doit pas avoir d'espace " +
+                    "et doit contenir au moins: " +
+                    "* Un caractèere en majuscule " +
+                    "* Un caractère en miniscule " +
+                    "* Un caractère spécial " +
+                    "* Un chiffre")
+                canProcessQuery = false
+            }
+
+            if(canProcessQuery) {
+
+                runBlocking {
+                    async {
+                        launch {
+                            response = clientService.createUser(user)
+                        }
                     }
                 }
+                if(response?.isSuccessful == true){
+                    ClientInfo.userId = response?.body()?.string().toString()
+                    startActivity(Intent(this, LandingPage::class.java))
+                }
+                else{
+                    errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
+                        " adresse courriel ou le même pseudonyme."
+                }
             }
-            ClientInfo.userId = response?.body()?.string().toString()
-            startActivity(Intent(this, OwnProfile::class.java))
         }
 
         login.setOnClickListener(){
