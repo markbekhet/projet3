@@ -23,7 +23,6 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   
   @WebSocketServer() wss: Server;
   private logger: Logger = new Logger("drawingGateway");
-  private i: number = 0;
   afterInit(server: Server) {
     this.logger.log("Initialized");
   }
@@ -39,7 +38,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
 
   notifyAllUsers(drawing: Drawing){
     this.logger.log(drawing.id);
-    const drawingInformations = {id: drawing.id, name: drawing.name};
+    const drawingInformations = {id: drawing.id};
     let drawingInformationsString = JSON.stringify(drawingInformations);
     this.wss.emit("askJoinDrawing", drawingInformationsString);
   }
@@ -70,13 +69,13 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   @SubscribeMessage("joinDrawing")
   async joinDrawing(client:Socket, dto: any){
     let dtoMod : JoinDrawingDto = JSON.parse(dto);
-    console.log(`client ${client.id} has joined ${dtoMod.drawingName}`)
-    client.join(dtoMod.drawingName);
+    console.log(`client ${client.id} has joined ${dtoMod.drawingId}`)
+    
     let drawing: Drawing = await this.drawingRepo.findOne({
       where:[
-        {name: dtoMod.drawingName}
+        {id: dtoMod.drawingId}
       ],
-      select:["visibility", "password"],
+      select:["visibility", "password","name"],
     });
     let passwordMatch: boolean = false
     if(drawing.visibility === visibility.PROTECTED){
@@ -91,10 +90,11 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
         numberAuthoredDrawings: user.numberCollaboratedDrawings+1,
         status: Status.BUSY,
       });
+      newEditionHistory.drawingName = drawing.name;
       await this.drawingEditionRepository.save(newEditionHistory);
       let drawingRet = this.drawingRepo.findOne({
-        where: [{name: dtoMod.drawingName}],
-        select: ['bgColor', "height", "width", "visibility"],
+        where: [{id: dtoMod.drawingId}],
+        select: ['bgColor', "height", "width", "visibility", "name"],
         relations:['contents']
       })
       const userRet = await this.userRepo.findOne(dtoMod.userId,{
@@ -102,6 +102,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
       })
       this.chatGateway.notifyUserUpdate(userRet);
       let drawingString = JSON.stringify(drawingRet);
+      client.join(dtoMod.drawingId.toString());
       client.emit("drawingInformations", drawingString);
     }
   }
@@ -118,6 +119,6 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds, status: Status.ONLINE})
     user = await this.userRepo.findOne(dtoMod.userId, {select: ["id", "pseudo", "status"]});
     this.chatGateway.notifyUserUpdate(user);
-    client.leave(dtoMod.drawingName);
+    client.leave(dtoMod.drawingId.toString());
   }
 }

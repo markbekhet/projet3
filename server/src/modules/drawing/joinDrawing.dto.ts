@@ -1,9 +1,9 @@
 export class JoinDrawingDto{
-    drawingName: string;
+    drawingId: number;
     userId: string;
     password: string | undefined;
 }
 export interface LeaveDrawingDto{
-    drawingName: string;
+    drawingId: number;
     userId: string;
 }

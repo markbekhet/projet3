@@ -211,11 +211,6 @@ export class DatabaseService {
             let email: string = null;
             // to change with collaboration team
             const user = await this.userRepo.findOne(drawing.ownerId);
-            if(drawing.useOwnerPrivateInformation){
-                firstName = user.firstName;
-                lastName = user.lastName;
-                email = user.emailAddress;
-            }
             username = user.pseudo;
             const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
                                         ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,

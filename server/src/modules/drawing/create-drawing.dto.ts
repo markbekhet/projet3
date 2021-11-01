@@ -19,9 +19,6 @@ export class CreateDrawingDto{
     @IsNotEmpty()
     name: string;
 
-    @IsOptional()
-    useOwnerPrivateInformation: boolean;
-
     @IsNotEmpty()
     color: string;
 }
