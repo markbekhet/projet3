@@ -47,7 +47,7 @@
             app:backgroundTint="@color/white" />
 
         <Button
-            android:id="@+id/profilbutton"
+            android:id="@+id/profileButton"
             android:layout_width="150sp"
             android:layout_height="50sp"
             android:text="profil"

@@ -2,7 +2,7 @@ package com.example.android.client
 
 import com.google.gson.Gson
 
-enum class Status{
+enum class ClientStatus{
     ONLINE, BUSY, OFFLINE
 }
 

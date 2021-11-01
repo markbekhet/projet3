@@ -29,7 +29,6 @@ class Drawing : AppCompatActivity() {
         //Button new width
         SocketHandler.setDrawingSocket()
         SocketHandler.establishDrawingSocketConnection()
-        println(SocketHandler.getDrawingSocket().isActive)
         DrawingUtils.currentTool = pencilString
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
         val canvas = CanvasView(this)
