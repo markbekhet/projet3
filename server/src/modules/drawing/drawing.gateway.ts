@@ -15,6 +15,8 @@ import { DrawingRepository } from './drawing.repository';
 import { JoinDrawingDto, LeaveDrawingDto } from './joinDrawing.dto';
 import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
 import * as bcrypt from 'bcrypt';
+import { ChatGateway } from 'src/chat.gateway';
+import { Status } from 'src/enumerators/user-status';
 
 @WebSocketGateway({namespace: '/drawing', cors:true})
 export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
@@ -29,7 +31,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
   constructor(@InjectRepository(DrawingContentRepository) private readonly drawingContentRepo: DrawingContentRepository,
               @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
               @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
-              @InjectRepository(UserRespository) private readonly userRepo: UserRespository){}
+              @InjectRepository(UserRespository) private readonly userRepo: UserRespository, private chatGateway: ChatGateway){}
 
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`client connected: ${client.id}`);
@@ -86,7 +88,8 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
       newEditionHistory.user = user;
       newEditionHistory.action = "join";
       await this.userRepo.update(user.id, {
-        numberAuthoredDrawings: user.numberCollaboratedDrawings+1
+        numberAuthoredDrawings: user.numberCollaboratedDrawings+1,
+        status: Status.BUSY,
       });
       await this.drawingEditionRepository.save(newEditionHistory);
       let drawingRet = this.drawingRepo.findOne({
@@ -94,6 +97,10 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
         select: ['bgColor', "height", "width", "visibility"],
         relations:['contents']
       })
+      const userRet = await this.userRepo.findOne(dtoMod.userId,{
+        select: ["id", "status", "pseudo"]
+      })
+      this.chatGateway.notifyUserUpdate(userRet);
       let drawingString = JSON.stringify(drawingRet);
       client.emit("drawingInformations", drawingString);
     }
@@ -108,7 +115,9 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date.toString()
     let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
     let timeEllapsedInSeconds = timeEllapsed/1000;
-    await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds})
+    await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds, status: Status.ONLINE})
+    user = await this.userRepo.findOne(dtoMod.userId, {select: ["id", "pseudo", "status"]});
+    this.chatGateway.notifyUserUpdate(user);
     client.leave(dtoMod.drawingName);
   }
 }

@@ -10,10 +10,10 @@ const DISCONNECT_URL = "/disconnect";
 export class UserController {
     constructor(private readonly databaseService: DatabaseService, private chatGateway: ChatGateway){}
 
-    @Get(PROFILE_URL+"/:userId")
-        async getUserProfile(@Param("userId") userId: string){
-        console.log(`Controller received ${userId} to get the user profile`)
-        return await this.databaseService.getUser(userId);
+    @Get(PROFILE_URL+"/:userId/:visitedId")
+        async getUserProfile(@Param("userId") userId: string, @Param("visitedId") visitedId: string){
+        console.log(`Controller received ${userId} wants to get the profile of ${visitedId}`)
+        return await this.databaseService.getUser(userId, visitedId);
     }
 
     

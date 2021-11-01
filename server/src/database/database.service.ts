@@ -56,13 +56,23 @@ export class DatabaseService {
         
     }
 
-    async getUser(userId: string) {
-        
-        return await this.userRepo.findOne(userId, {
-            select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
-                "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
-            relations:["connectionHistories", "disconnectionHistories"]
-        })
+    async getUser(userId: string, visitedId) {
+        if(userId === visitedId){
+            return await this.userRepo.findOne(userId, {
+                select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+                    "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
+                relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
+            })
+
+        }
+        else{
+            console.log('here');
+            let user =  await this.userRepo.findOne(visitedId,{
+                select:["id", "pseudo", "status"]
+            })
+            console.log(user);
+            return user;
+        }
     }
     
     async login(userCredentials: LoginDto){
