@@ -37,7 +37,7 @@ export abstract class DrawingTool extends InputObserver {
     }
 
     // Implement down() method to get the id?
-    down(position: Point) {
+    down(event: MouseEvent, position: Point) {
         // emit socket event to server to get the content id
         // this is a stub
         DrawingTool.drawingContentId++;
@@ -92,11 +92,11 @@ export abstract class DrawingTool extends InputObserver {
         }
     }
 
-    goingInsideCanvas(position: Point): void {
+    goingInsideCanvas(event: MouseEvent, position: Point): void {
         // if currently affecting the canvas
         if (this.isDown) {
           // start new drawing
-          this.down(position);
+          this.down(event, position);
         }
     }
 

@@ -30,10 +30,10 @@ export class Pencil extends DrawingTool {
         });
       }
 
-    down(position:Point){
+    down(event: MouseEvent, position:Point){
         this.currentPath = [];
         //console.log('here');
-        super.down(position);
+        super.down(event, position);
 
         this.ignoreNextUp = false;
 
@@ -47,7 +47,7 @@ export class Pencil extends DrawingTool {
         this.updateProgress(DrawingStatus.InProgress);
     }
 
-    up(position: Point, insideWorkspace: boolean){
+    up(event: MouseEvent, position: Point, insideWorkspace: boolean){
         if (!this.ignoreNextUp) {
             // the pencil should not affect the canvas
             this.isDown = false;
@@ -60,7 +60,7 @@ export class Pencil extends DrawingTool {
         }
     }
 
-    move(position: Point){
+    move(event: MouseEvent, position: Point){
         if(this.isDown){
             this.currentPath.push(position);
             this.updateProgress(DrawingStatus.InProgress);

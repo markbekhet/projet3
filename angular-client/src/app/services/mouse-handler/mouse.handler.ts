@@ -73,7 +73,7 @@ export class MouseHandler{
         this.insideWorkspace = this.validPoint(this.mouseCanvasPosition);
 
         if (this.startedInsideWorkspace) {
-            this.callObserverDown(e.button === 2);
+            this.callObserverDown(e, e.button === 2);
         }
     }
 
@@ -83,7 +83,7 @@ export class MouseHandler{
         this.insideWorkspace = this.validPoint(this.mouseCanvasPosition);
 
         if (this.startedInsideWorkspace) {
-            this.callObserverUp();
+            this.callObserverUp(e);
             this.startedInsideWorkspace = false;
         }
 
@@ -109,13 +109,13 @@ export class MouseHandler{
 
         if (this.insideWorkspace) {
             if (WAS_INSIDE) {
-                this.callObserverMove();
+                this.callObserverMove(e);
             } else {
-                this.callObserverInsideCanvas();
+                this.callObserverInsideCanvas(e);
             }
         } else {
             if (WAS_INSIDE) {
-                this.callObserverOutsideCanvas();
+                this.callObserverOutsideCanvas(e);
             }
         }
     }
@@ -135,46 +135,46 @@ export class MouseHandler{
         });
     }
 
-    callObserverMove(): void {
+    callObserverMove(event: MouseEvent): void {
         // console.log("MOVING");
         this.observers.forEach((element: InputObserver) => {
             if (element.selected) {
-                element.move(this.mouseCanvasPosition);
+                element.move(event, this.mouseCanvasPosition);
             }
         });
     }
 
-    callObserverDown(isRightClick: boolean): void {
+    callObserverDown(event: MouseEvent, isRightClick: boolean): void {
         // console.log("DOWN");
         this.observers.forEach((element: InputObserver) => {
             if (element.selected) {
-                element.down(this.mouseCanvasPosition, this.insideWorkspace, isRightClick);
+                element.down(event, this.mouseCanvasPosition, this.insideWorkspace, isRightClick);
             }
         });
     }
 
-    callObserverOutsideCanvas(): void {
+    callObserverOutsideCanvas(event: MouseEvent): void {
         this.observers.forEach((element: InputObserver) => {
             if (element.selected) {
-                element.goingOutsideCanvas(this.mouseCanvasPosition);
+                element.goingOutsideCanvas(event, this.mouseCanvasPosition);
             }
         });
     }
 
-    callObserverInsideCanvas(): void {
+    callObserverInsideCanvas(event: MouseEvent): void {
         // console.log("InsideCanvas");
         this.observers.forEach((element: InputObserver) => {
             if (element.selected) {
-                element.goingInsideCanvas(this.mouseCanvasPosition);
+                element.goingInsideCanvas(event, this.mouseCanvasPosition);
             }
         });
     }
 
-    callObserverUp(): void {
+    callObserverUp(event: MouseEvent): void {
         // console.log("UP");
         this.observers.forEach((element: InputObserver) => {
             if (element.selected) {
-                element.up(this.mouseCanvasPosition, this.insideWorkspace);
+                element.up(event, this.mouseCanvasPosition, this.insideWorkspace);
             }
         });
     }

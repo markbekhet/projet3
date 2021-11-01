@@ -39,7 +39,7 @@ export const toolsItems: MenuItem[] = [
         Une fois la sélection complétée, une boîte englobant tous les objets pris en compte apparaîtra. Il sera ensuite possible de déplacer cette sélection avec les flèches du clavier ou avec la souris et de faire tourner cette sélection.
         Pour faire tourner la sélection active, utilisez la roue de la souris pour appliquer une rotation de 15 degrés par cran ou de 1 degré, si la touche 'alt' est pressée. Appuyer sur 'shift' lors de la rotation fera tourner tous les objets sélectionnés autour de leur propre centre.
         Enfin, appuyer sur 'ctrl+A' sélectionnera tous les objets et la touche 'Delete' supprimera la sélection active.`,
-        icon: 'eraser',
+        icon: 'cursor',
     },
     {
         name: "Crayon",

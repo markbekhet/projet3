@@ -12,5 +12,6 @@ export class IconsService {
     iconRegistry.addSvgIcon('eraser', sanitizer.bypassSecurityTrustResourceUrl('../../../assets/Tools-images/eraser.svg'));
     iconRegistry.addSvgIcon('ellipse', sanitizer.bypassSecurityTrustResourceUrl('../../../assets/Tools-images/ellipse.svg'));
     iconRegistry.addSvgIcon('rectangle', sanitizer.bypassSecurityTrustResourceUrl('../../../assets/Tools-images/rectangle.svg'));
+    iconRegistry.addSvgIcon('cursor', sanitizer.bypassSecurityTrustResourceUrl('../../../assets/Tools-images/cursor.svg'));
   }
 }

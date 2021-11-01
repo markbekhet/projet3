@@ -25,7 +25,11 @@ export class Selection extends DrawingTool {
   render!: Renderer2;
   
   boxCenter: Point = new Point(INIT_BOX_CENTER, INIT_BOX_CENTER);
+  initPosition!: Point;
+  deltaX!: number;
+  deltaY!: number;
 
+  target!: SVGElement | null;
   itemUnderMouse!: number | null;
   canMoveSelection!: boolean;
   foundAnItem!: boolean;
@@ -76,7 +80,6 @@ export class Selection extends DrawingTool {
         console.log('tool changed');
         for (let i = 0; i < this.drawing.childElementCount; i++) {
             this.selectedItems = [];
-            //interactionService.createBoundingBox(this);
         }
         this.selectedItems = [];
         this.invertedItems = [];
@@ -87,24 +90,55 @@ export class Selection extends DrawingTool {
   
   }
 
-    down(position: Point) {
-      //console.log(position.x + ' ' + position.y);
-      for (let i = 0; i < this.drawing.childElementCount; i++) {
-        //console.log(this.drawing.childNodes.item(i) as SVGElement);
-        //const element = this.drawing.childNodes.item(i) as DrawingTool;
-        //console.log(element.objectPressed(position));
-        
-        
-
-
-                
-        
-    }
-    
+    down(event: MouseEvent, position: Point) {
+        if (this.drawing) {
+            this.initPosition = position;
+            this.target = event.target as SVGElement;
+            this.deltaX = position.x - this.initPosition.x;
+            this.deltaY = position.y - this.initPosition.y;
+        }
     }
 
-    up(position: Point) {
+    up(event: MouseEvent, position: Point) {
+        if(this.target) {
+            switch(this.target.localName) {
+                case 'polyline': this.savePolyline();
+                    break;
+                case 'rect': this.saveRect();
+                    break;
+                case 'ellipse': this.saveEllipse();
+                    break;
+            }
+            this.target = null;
+            this.initPosition = {
+                x: 0,
+                y: 0
+            };
+        }
+    }
 
+    savePolyline() {
+        if (this.target) {
+            let points = (this.target as SVGPolylineElement).points;
+            for (let i = 0; i < points.numberOfItems; i++) {
+                points[i].x += this.deltaX;
+                points[i].y += this.deltaY;
+            }
+            this.target.setAttribute('transform', '');
+        }
+    }
+
+    saveRect() {
+        if (this.target) {
+            let rect = this.target as SVGRectElement;
+            
+        }
+    }
+
+    saveEllipse() {
+        if (this.target) {
+            this.target.setAttribute('transform', '');
+        }
     }
 
     createPath (path: Point[]) {
@@ -119,8 +153,13 @@ export class Selection extends DrawingTool {
         
     }
 
-    move(position: Point){
-        
+    move(event: MouseEvent, position: Point) {
+        if (this.target && this.drawing.contains(this.target)) {
+            this.deltaX = position.x - this.initPosition.x;
+            this.deltaY = position.y - this.initPosition.y;
+            this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
+        }
+    
     }
 
     intersects(rect: DOMRect, position: Point):boolean {

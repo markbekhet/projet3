@@ -72,8 +72,8 @@ export class Shape extends DrawingTool {
     }
 
     // mouse down with shape in hand
-    down(position: Point): void {
-        super.down(position);
+    down(event: MouseEvent, position: Point): void {
+        super.down(event, position);
         // in case we changed tool while the mouse was down
         this.ignoreNextUp = false;
 
@@ -88,7 +88,7 @@ export class Shape extends DrawingTool {
     }
 
     // mouse up with shape in hand
-    up(position: Point): void {
+    up(event: MouseEvent, position: Point): void {
 
         // in case we changed tool while the mouse was down
         if (!this.ignoreNextUp) {
@@ -103,7 +103,7 @@ export class Shape extends DrawingTool {
     }
 
     // mouse move with shape in hand
-    move(position: Point): void {
+    move(event: MouseEvent, position: Point): void {
 
         // only if the shapeTool is currently affecting the canvas
         if (this.isDown) {
