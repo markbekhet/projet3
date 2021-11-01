@@ -75,6 +75,8 @@ Nest is [MIT licensed](LICENSE).
 ## usefull Docker commands
 ## To create a docker image
 sudo docker build -t <image-name> <DockerFilePath>
+## before creating the app container we should build the postgres container
+docker run --name postgresql-container -p 5432:5432 -e POSTGRES_PASSWORD=1234 -d postgres
 ## To create a docker container
 sudo docker create --name <container-name> -p <application-port>:<redirection-port> <image-name>
 ## To see all available docker images

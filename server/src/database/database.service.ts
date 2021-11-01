@@ -72,19 +72,13 @@ export class DatabaseService {
                 {emailAddress: userCredentials.username},
                 {pseudo: userCredentials.username}
             ],
-            select: ["password"],
+            select: ["id","password", "status"],
         })
         if(user === undefined){
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
         }
         else{
-            let user = await this.userRepo.findOne({
-                where: [
-                    {emailAddress: userCredentials.username},
-                    {pseudo: userCredentials.username}
-                ],
-                select:["id", "status", "pseudo"],
-            })
+            
             if(user.status == Status.ONLINE || user.status == Status.BUSY){
                 throw new HttpException("User is already logged in", HttpStatus.BAD_REQUEST);
             }
@@ -99,8 +93,14 @@ export class DatabaseService {
             let newConnection = new ConnectionHistory();
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
-            user.status = Status.ONLINE;
-            return user;
+            let userRet = await this.userRepo.findOne({
+                where: [
+                    {emailAddress: userCredentials.username},
+                    {pseudo: userCredentials.username}
+                ],
+                select:["id", "status", "pseudo"],
+            })
+            return userRet;
         }
     }
 

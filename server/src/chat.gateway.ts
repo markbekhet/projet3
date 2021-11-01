@@ -26,11 +26,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let users = await this.userRepo.find({
       select: ["id", "status", "pseudo"],
     })
-    let usersString = JSON.stringify(users);
+    let usersRet = {userList: users}
+    let usersString = JSON.stringify(usersRet);
     let teams = await this.teamRepo.find({
       select: ["id", "name","visibility"]
     })
-    let teamsString = JSON.stringify(teams);
+    let teamsRet = {teamList: teams}
+    let teamsString = JSON.stringify(teamsRet);
     client.emit("usersArrayToClient", usersString);
     client.emit("teamsArrayToClient", teamsString);
   }
