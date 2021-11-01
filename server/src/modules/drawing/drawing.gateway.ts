@@ -13,7 +13,7 @@ import { UserRespository } from '../user/user.repository';
 import { Drawing } from './drawing.entity';
 import { DrawingRepository } from './drawing.repository';
 import { JoinDrawingDto, LeaveDrawingDto } from './joinDrawing.dto';
-import { ContentDrawingSocket, SocketDrawing } from './socket-drawing.dto';
+import { ContentDrawingSocket} from './socket-drawing.dto';
 import * as bcrypt from 'bcrypt';
 import { ChatGateway } from 'src/chat.gateway';
 import { Status } from 'src/enumerators/user-status';
@@ -50,7 +50,7 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     console.log(drawing);
     const drawingMod: ContentDrawingSocket = JSON.parse(drawing);
     if(drawingMod.status === DrawingStatus.Done.valueOf()){
-      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing})
+      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing, toolName:drawingMod.toolName})
     }
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
       await this.drawingContentRepo.delete(drawingMod.contentId);
