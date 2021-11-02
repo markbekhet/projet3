@@ -30,9 +30,9 @@ class Chat : AppCompatActivity() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        setContentView(R.layout.chatfragment)
 
-        val displayMessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycle_view)
+        val displayMessage : RecyclerView? = findViewById<RecyclerView>(R.id.chatfragment)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         displayMessage?.layoutManager = linearLayoutManager
@@ -42,7 +42,7 @@ class Chat : AppCompatActivity() {
         mSocket?.connect()
 
         mClientService = ClientService()
-        val textMessage: EditText = findViewById(R.id.textView)
+        val textMessage: EditText = findViewById(R.id.textField)
         val sendButton: Button = findViewById(R.id.button)
 
 

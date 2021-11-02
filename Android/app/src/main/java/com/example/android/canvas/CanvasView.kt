@@ -61,29 +61,56 @@ class CanvasView(context: Context): View(context) {
                 }
                 else{
                     unSelectAllChildren()
-                    tool = Ellipse(drawingId,"ellipse", doc as AbstractDocument)
-                    tool!!.touchStart(this, event.x, event.y)
+                    when(DrawingUtils.currentTool){
+                        selectionString -> tool = Selection(drawingId, doc as AbstractDocument)
+                        ellipseString -> tool = Ellipse(drawingId,
+                            ellipseString, doc as AbstractDocument)
+                        rectString -> tool = Rectangle(drawingId,
+                            rectString, doc as AbstractDocument)
+                        pencilString -> tool = FreeHand(drawingId,
+                            pencilString, doc as AbstractDocument)
+                    }
+                    tool!!.touchStart( event.x, event.y, svgRoot)
                     mode = ""
                 }
             }
             MotionEvent.ACTION_MOVE ->{
-                when(mode){
-                    "translation" ->{
-                        val translation:Point = tool!!.startTransformPoint
-                            .difference(Point(event.x, event.y))
-                        tool!!.translate(this, translation)
+                if(tool is Selection &&
+                    (tool as Selection).getSelectedTool() != null){
+                    when(mode){
+                        "translation" ->{
+                            val translation:Point = tool!!.startTransformPoint
+                                .difference(Point(event.x, event.y))
+                            tool!!.translate(this, translation)
+                        }
+                        "scaling" ->{
+                            val scalingFactor =
+                                Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                    event.y - scalingPoint!!.key.y - totalScaling.y)
+                            tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                            totalScaling.plus(scalingFactor)
+                        }
                     }
-                    "scaling" ->{
-                        val scalingFactor =
-                            Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
-                                event.y - scalingPoint!!.key.y - totalScaling.y)
-                        tool!!.scale(this, scalingFactor, scalingPoint!!.value)
-                        totalScaling.plus(scalingFactor)
+                }
+                else{
+                    when(mode){
+                        "translation" ->{
+                            val translation:Point = tool!!.startTransformPoint
+                                .difference(Point(event.x, event.y))
+                            tool!!.translate(this, translation)
+                        }
+                        "scaling" ->{
+                            val scalingFactor =
+                                Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                    event.y - scalingPoint!!.key.y - totalScaling.y)
+                            tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                            totalScaling.plus(scalingFactor)
+                        }
+                        else -> tool!!.touchMove(context,event.x, event.y)
                     }
-                    else -> tool!!.touchMove(this, context,event.x, event.y)
                 }
             }
-            MotionEvent.ACTION_UP -> tool!!.touchUp(this, selectedTools)
+            MotionEvent.ACTION_UP -> tool!!.touchUp()
         }
 
         return true
@@ -139,7 +166,7 @@ class CanvasView(context: Context): View(context) {
         }
 
         str += "</svg>"
-        println(str)
+        //println(str)
         return str
     }
 
@@ -151,8 +178,8 @@ class CanvasView(context: Context): View(context) {
     }
 
     private fun unSelectAllChildren(){
-        for(tool in selectedTools){
-            tool.unselect()
+        if(tool != null){
+            tool!!.unselect()
         }
     }
 
@@ -163,26 +190,65 @@ class CanvasView(context: Context): View(context) {
             while(i < svgRoot.childNodes.length){
                 val tool = svgRoot.childNodes.item(i) as Tool
                 if(tool.contentID == drawingContent.contentId){
-                    tool.parse(drawingContent.drawing)
+                    try{
+                        tool.parse(drawingContent.drawing)
+                    } catch(e: Exception){}
                     exist = true
                     tool.selected = drawingContent.status == DrawingStatus.Selected
+                    tool.userId = drawingContent.userId
+                    if(drawingContent.status == DrawingStatus.Deleted){
+                        svgRoot.removeChild(tool)
+                    }
+
                     break
                 }
                 i++
             }
         }
         if(!exist){
-            val newTool = Ellipse(drawingContent.drawingId,
-                "ellipse", doc as AbstractDocument)
             try {
-                newTool.contentID = drawingContent.contentId!!
-                newTool.selected = drawingContent.status == DrawingStatus.Selected
-                newTool.parse(drawingContent.drawing)
+                var newTool: Tool? = null
+                when(drawingContent.toolName){
+                    ellipseString -> newTool = Ellipse(drawingId,
+                        ellipseString, doc as AbstractDocument)
+                    rectString -> newTool = Rectangle(drawingId,
+                        rectString, doc as AbstractDocument)
+                    pencilString -> newTool = FreeHand(drawingId,
+                        pencilString, doc as AbstractDocument)
+                }
+                newTool?.userId = drawingContent.userId
+                newTool?.contentID = drawingContent.contentId!!
+                newTool?.selected = drawingContent.status == DrawingStatus.Selected
+                newTool?.parse(drawingContent.drawing)
                 svgRoot.appendChild(newTool)
             } catch(e: Exception){
                 println(e.message)
             }
 
+        }
+    }
+    fun deleteTool(){
+        if(tool != null){
+            tool!!.delete()
+            tool = null
+        }
+    }
+
+    fun updateToolPrimaryColor(){
+        if(tool != null){
+            tool!!.updatePrimaryColor()
+        }
+    }
+
+    fun updateToolSecondaryColor(){
+        if(tool != null){
+            tool!!.updateSecondaryColor()
+        }
+    }
+
+    fun updateToolThickness(){
+        if(tool != null){
+            tool!!.updateThickness()
         }
     }
 }

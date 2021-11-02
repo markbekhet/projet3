@@ -6,11 +6,12 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMRectElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.abs
 
-class Rectangle(private var drawingId: Int?,
-                prefix: String, owner: AbstractDocument):
+open class Rectangle(private var drawingId: Int?,
+                     prefix: String, owner: AbstractDocument):
                 SVGOMRectElement(prefix, owner), Tool {
     override var currentX = 0f
     override var currentY = 0f
@@ -23,21 +24,22 @@ class Rectangle(private var drawingId: Int?,
     private var selectionOffset = 0f
     //override var drawingID = drawingId
     override var contentID: Int?= null
-    //var abstractTool = AbstractTool(this)
+    override var userId: String?  = ClientInfo.userId
 
-    override fun touchStart(view: View, eventX: Float,
-                            eventY: Float) {
+    override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         this.setAttribute("x", eventX.toString())
         this.setAttribute("y", eventY.toString())
         this.setAttribute("width", "0")
         this.setAttribute("height", "0")
-        this.setAttribute("transformTranslate", "translate(0,0)")
-        this.setAttribute("stroke-width", "3")
-        this.setAttribute("stroke", "#000000")
+        this.setAttribute("transform", "translate(0,0)")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
-    override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
+    override fun touchMove(context: Context, eventX: Float, eventY: Float) {
         val width = abs(eventX - this.getAttribute("x").toFloat())
         val height = abs(eventY - this.getAttribute("y").toFloat())
         this.setAttribute("width", width.toString())
@@ -54,7 +56,7 @@ class Rectangle(private var drawingId: Int?,
         }
     }
 
-    private fun setCriticalValues(){
+    override fun setCriticalValues(){
         val xCert = this.getAttribute("x").toFloat()
         val yCert = this.getAttribute("y").toFloat()
         val widthCert = this.getAttribute("width").toFloat()
@@ -63,24 +65,21 @@ class Rectangle(private var drawingId: Int?,
         startTransformPoint.y = yCert + (heightCert/2)
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
-        selected = true
-
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
+    override fun touchUp() {
         setCriticalValues()
         calculateScalingPositions()
-        sendProgressToServer(DrawingStatus.Selected)
+        select()
     }
 
     override fun getString(): String {
         str = ""
-        str += getOriginalString()
-        if(selected){
-            getSelectionString()
-            getScalingPositionsString()
-        }
+        try{
+            str += getOriginalString()
+            if(selected){
+                getSelectionString()
+                getScalingPositionsString()
+            }
+        }catch(e: Exception){}
 
         return str
     }
@@ -91,9 +90,10 @@ class Rectangle(private var drawingId: Int?,
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width")
         val height = this.getAttribute("height")
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
+        val fill = this.getAttribute("fill")
 
         result += "x=\"${x}\" "
         result += "y=\"${y}\" "
@@ -102,7 +102,7 @@ class Rectangle(private var drawingId: Int?,
         result += "transform=\"$transform\""
         result += " stroke=\"$stroke\""
         result += " stroke-width=\"$strokeWidth\""
-        result += " fill=\"none\""
+        result += " fill=\"$fill\""
 
         result += "/>\n"
         return result
@@ -161,9 +161,8 @@ class Rectangle(private var drawingId: Int?,
 
     override fun translate(view: View, translationPoint: Point) {
         totalTranslation.makeEqualTo(translationPoint)
-        this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}," +
-                "${totalTranslation.y})")
+        this.setAttribute("transform",
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         sendProgressToServer(DrawingStatus.Selected)
 
     }
@@ -174,7 +173,7 @@ class Rectangle(private var drawingId: Int?,
         val y = this.getAttribute("y").toFloat()
         val width = this.getAttribute("width").toFloat()
         val height = this.getAttribute("height").toFloat()
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
 
         str += "x=\"${x}\" "
         str += "y=\"${y}\" "
@@ -275,27 +274,31 @@ class Rectangle(private var drawingId: Int?,
         val matchTranslate = translateRegex.find(parceableString, 1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
-        this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        this.setAttribute("transform",
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
-        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
         this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
         val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
         this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
+        val fillRegex = Regex("""fill="([#a-zA-Z0-9]+ |none)"""")
+        val matchFill = fillRegex.find(parceableString)
+        this.setAttribute("fill", matchFill!!.groups[1]!!.value)
         setCriticalValues()
     }
 
-    private fun sendProgressToServer(status: DrawingStatus){
+    protected fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(), status = status)
+            contentId = contentID, drawing= getOriginalString(),
+            status = status, toolName = rectString)
         val socket = SocketHandler.getDrawingSocket()
         socket.emit("drawingToServer", drawingContent.toJson())
     }
 
-    private fun requestCreation(){
+    protected fun requestCreation(){
         SocketHandler.getDrawingSocket()
             .emit("createDrawingContent",
                 RequestCreation(drawingId).toJson())
@@ -304,5 +307,29 @@ class Rectangle(private var drawingId: Int?,
     override  fun unselect(){
         sendProgressToServer(DrawingStatus.Done)
         selected = false
+    }
+
+    override fun select(){
+        selected = true
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun delete(){
+        sendProgressToServer(DrawingStatus.Deleted)
+    }
+
+    override fun updateThickness() {
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updatePrimaryColor() {
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updateSecondaryColor() {
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
     }
 }
