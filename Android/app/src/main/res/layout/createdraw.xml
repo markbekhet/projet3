@@ -17,7 +17,7 @@
         <TextView
             android:id="@+id/nom_app"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:text="creation dessin"
             android:textColor="@color/black"
             android:textSize="30sp"
@@ -33,7 +33,7 @@
         <EditText
             android:id="@+id/drawingName"
             android:layout_width="229dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:ems="10"
@@ -45,7 +45,7 @@
         <EditText
             android:id="@+id/height"
             android:layout_width="229dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:ems="10"
@@ -57,7 +57,7 @@
         <EditText
             android:id="@+id/width"
             android:layout_width="229dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:width="40sp"
             android:hint="largeur du dessin"
@@ -115,7 +115,8 @@
                             android:layout_height="60sp"
                             android:background="#FFFFFF"
                             android:clickable="true"
-                            android:enabled="true"/>
+                            android:enabled="true"
+                            android:tooltipText="FFFFFF"/>
                     </LinearLayout>
                 </LinearLayout>
 

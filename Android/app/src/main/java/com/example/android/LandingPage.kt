@@ -43,9 +43,9 @@ class LandingPage : AppCompatActivity() {
         }
 
         //initialize drawing socket
-        SocketHandler.setDrawingSocket()
-        SocketHandler.establishDrawingSocketConnection()
-        drawingSocket = SocketHandler.getDrawingSocket()
+        //SocketHandler.setDrawingSocket()
+        //SocketHandler.establishDrawingSocketConnection()
+        //drawingSocket = SocketHandler.getDrawingSocket()
 
         profileButton.setOnClickListener {
             startActivity(Intent(this, OwnProfile::class.java))

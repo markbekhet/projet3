@@ -301,15 +301,14 @@ class Ellipse(private var drawingId:Int? ,
     private fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(),
+            id = contentID, content= getOriginalString(),
             status = status, toolName = ellipseString)
-        val socket = SocketHandler.getDrawingSocket()
-        socket.emit("drawingToServer", drawingContent.toJson())
+        val socket = SocketHandler.getChatSocket()
+        socket!!.emit("drawingToServer", drawingContent.toJson())
     }
 
     private fun requestCreation(){
-        SocketHandler.getDrawingSocket()
-            .emit("createDrawingContent",
+        SocketHandler.getChatSocket()!!.emit("createDrawingContent",
                 RequestCreation(drawingId).toJson())
     }
 

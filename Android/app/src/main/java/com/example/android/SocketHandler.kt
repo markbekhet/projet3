@@ -13,7 +13,7 @@ object SocketHandler {
     @Synchronized
     fun setChatSocket(){
         try{
-            chatSocket = IO.socket(url + chatNamespace)
+            chatSocket = IO.socket(url)
         } catch (e: Exception) {
             println(e.message)
             throw RuntimeException(e)
@@ -30,7 +30,7 @@ object SocketHandler {
         chatSocket.connect()
     }
 
-    @Synchronized
+    /*@Synchronized
     fun setDrawingSocket(){
         try{
             drawingSocket = IO.socket(url + drawingNamespace)
@@ -48,5 +48,5 @@ object SocketHandler {
     @Synchronized
     fun establishDrawingSocketConnection(){
         drawingSocket.connect()
-    }
+    }*/
 }

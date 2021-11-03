@@ -33,7 +33,7 @@ class CanvasView(context: Context): View(context) {
     private var width: String = "100"
     private var height: String = "100"
 
-    private var socket = SocketHandler.getDrawingSocket()
+    private var socket = SocketHandler.getChatSocket()
     // Drawing utils
     private var tool: Tool? = null
     private var impl = SVGDOMImplementation.getDOMImplementation()
@@ -124,8 +124,8 @@ class CanvasView(context: Context): View(context) {
         height = h.toString()
     }
 
-    fun receiveContentID(json: JSONObject){
-        val getContentId = GetContentId(0).fromJson(json.toString())
+    fun receiveContentID(json: String){
+        val getContentId = GetContentId(0).fromJson(json)
         tool!!.contentID = getContentId.contentId
     }
 
@@ -136,9 +136,9 @@ class CanvasView(context: Context): View(context) {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        socket.on("drawingContentCreated"){ args ->
+        socket!!.on("drawingContentCreated"){ args ->
             if(args[0] != null){
-                val data = args[0] as JSONObject
+                val data = args[0] as String
                 receiveContentID(data)
             }
         }
@@ -184,7 +184,7 @@ class CanvasView(context: Context): View(context) {
     }
     fun parseExistingDrawings(existingContent: ArrayList<ContentDrawingSocket>){
         for(content in existingContent){
-            if(content.drawing != null){
+            if(content.content != null){
                 try {
                     var newTool: Tool? = null
                     when(content.toolName){
@@ -195,9 +195,9 @@ class CanvasView(context: Context): View(context) {
                         pencilString -> newTool = FreeHand(drawingId,
                             pencilString, doc as AbstractDocument)
                     }
-                    newTool?.contentID = content.contentId!!
+                    newTool?.contentID = content.id!!
                     newTool?.selected = false
-                    newTool?.parse(content.drawing)
+                    newTool?.parse(content.content)
                     svgRoot.appendChild(newTool)
                 } catch(e: Exception){
                     println(e.message)
@@ -212,9 +212,9 @@ class CanvasView(context: Context): View(context) {
         if(svgRoot.childNodes.length > 0){
             while(i < svgRoot.childNodes.length){
                 val tool = svgRoot.childNodes.item(i) as Tool
-                if(tool.contentID == drawingContent.contentId){
+                if(tool.contentID == drawingContent.id){
                     try{
-                        tool.parse(drawingContent.drawing)
+                        tool.parse(drawingContent.content)
                     } catch(e: Exception){}
                     exist = true
                     tool.selected = drawingContent.status == DrawingStatus.Selected
@@ -240,9 +240,9 @@ class CanvasView(context: Context): View(context) {
                         pencilString, doc as AbstractDocument)
                 }
                 newTool?.userId = drawingContent.userId
-                newTool?.contentID = drawingContent.contentId!!
+                newTool?.contentID = drawingContent.id!!
                 newTool?.selected = drawingContent.status == DrawingStatus.Selected
-                newTool?.parse(drawingContent.drawing)
+                newTool?.parse(drawingContent.content)
                 svgRoot.appendChild(newTool)
             } catch(e: Exception){
                 println(e.message)

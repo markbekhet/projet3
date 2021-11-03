@@ -27,7 +27,7 @@ import retrofit2.Response
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
 
-var newDrawing = DrawingInformation()
+var newDrawing = DrawingInformation(color="FFFFFF")
 class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option: Spinner
@@ -146,9 +146,8 @@ class CreateDraw : AppCompatActivity() {
                     var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
                         ClientInfo.userId)
 
-                    SocketHandler.getDrawingSocket().emit("joinDrawing",
-                        joinRequest.toJson())
-                    SocketHandler.getDrawingSocket().on("drawingInformations"){ args ->
+                    SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
+                    SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
                         if(args[0]!=null){
                             val data = args[0] as String
                             DrawingUtils.drawingInformation =
