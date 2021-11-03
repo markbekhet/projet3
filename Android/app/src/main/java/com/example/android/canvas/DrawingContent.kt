@@ -9,10 +9,11 @@ enum class DrawingStatus(var int: Int){
 }
 data class ContentDrawingSocket(
     var drawingId: Int? = null,
-    private var userId: String? = null,
+    var userId: String? = null,
     var contentId: Int? = null,
     var drawing: String? = null,
-    var status: DrawingStatus? = null
+    var status: DrawingStatus? = null,
+    var toolName: String? = null
 ){
     fun toJson(): String{
         println(Gson().toJson(this))

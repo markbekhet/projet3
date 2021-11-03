@@ -6,6 +6,7 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMPolylineElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.max
 
@@ -25,17 +26,18 @@ class FreeHand(private var drawingId: Int?,
     override var scalingPositions = HashMap<Point, Point>()
     //override var drawingID = drawingId!!.toInt()
     override var contentID: Int? = null
+    override var userId: String?  = ClientInfo.userId
 
-    override fun touchStart(view: View, eventX: Float, eventY:Float){
+    override fun touchStart(eventX: Float, eventY:Float, svgRoot: Element){
         this.setAttribute("points", "$eventX $eventY")
-        this.setAttribute("transformTranslate", "translate(0,0)")
-        this.setAttribute("stroke-width", "3")
-        this.setAttribute("stroke", "#000000")
+        this.setAttribute("transform", "translate(0,0)")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
-    override fun touchMove(view: View,
-                           context: Context,
+    override fun touchMove(context: Context,
                            eventX: Float,
                            eventY: Float)
     {
@@ -46,14 +48,10 @@ class FreeHand(private var drawingId: Int?,
         }
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
-        selected = true
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
-        calculateDelimeterPoints()
+    override fun touchUp() {
+        setCriticalValues()
         calculateScalingPositions()
-        sendProgressToServer(DrawingStatus.Selected)
+        select()
     }
 
     override fun getString(): String {
@@ -69,7 +67,7 @@ class FreeHand(private var drawingId: Int?,
     override fun getOriginalString(): String{
         var result = "<polyline "
         val startPoint = this.getAttribute("points")
-        val translate = this.getAttribute("transformTranslate")
+        val translate = this.getAttribute("transform")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
         result += "points=\"$startPoint\" "
@@ -151,14 +149,14 @@ class FreeHand(private var drawingId: Int?,
                 i++
             }
         }
-        calculateDelimeterPoints()
+        setCriticalValues()
         calculateScalingPositions()
         sendProgressToServer(DrawingStatus.Selected)
     }
 
     override fun translate(view:View, translationPoint: Point){
         totalTranslation.makeEqualTo(translationPoint)
-        this.setAttribute("transformTranslate",
+        this.setAttribute("transform",
             "translate(${totalTranslation.x}," +
             "${totalTranslation.y})")
         calculateScalingPositions()
@@ -175,7 +173,7 @@ class FreeHand(private var drawingId: Int?,
         str += "y=\"$y\" "
         str += "width=\"$width\""
         str += "height=\"$height\""
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
         transform?.let{
             str += "transform=\"$it\""
         }
@@ -186,7 +184,7 @@ class FreeHand(private var drawingId: Int?,
         str += "/>\n"
     }
 
-    private fun calculateDelimeterPoints(){
+    override fun setCriticalValues(){
         minPoint = Point(Float.MAX_VALUE,Float.MAX_VALUE)
         maxPoint = Point(0f, 0f)
         val polylinePoints = this.points.points
@@ -290,25 +288,26 @@ class FreeHand(private var drawingId: Int?,
         // Point exist in group 1
         this.setAttribute("points", matchPoints!!.groups[1]!!.value)
         val translateRegex = Regex("""translate\(([-?0-9.?]+),([-?0-9.?]+)\)""")
-        val matchTranslate = translateRegex.find(parceableString, 1)
+        val matchTranslate = translateRegex.find(parceableString,1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
-        this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+        this.setAttribute("transform",
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
-        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
         this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
         val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
         this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
-        calculateDelimeterPoints()
+        setCriticalValues()
     }
 
     private fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(), status = status)
+            contentId = contentID, drawing= getOriginalString(),
+            status = status, toolName = pencilString)
         val socket = SocketHandler.getDrawingSocket()
         socket.emit("drawingToServer", drawingContent.toJson())
     }
@@ -317,4 +316,25 @@ class FreeHand(private var drawingId: Int?,
         selected = false
         sendProgressToServer(DrawingStatus.Done)
     }
+
+    override fun select(){
+        selected = true
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun delete(){
+        sendProgressToServer(DrawingStatus.Deleted)
+    }
+
+    override fun updateThickness() {
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updatePrimaryColor() {
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updateSecondaryColor() {/*Not needed*/}
 }

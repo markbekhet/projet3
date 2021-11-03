@@ -2,6 +2,7 @@ package com.example.android.canvas
 
 import android.content.Context
 import android.view.View
+import org.w3c.dom.Element
 import org.w3c.dom.svg.SVGElement
 
 var radius = 10
@@ -16,11 +17,11 @@ interface Tool: SVGElement{
     var scalingPositions: HashMap<Point, Point>
     //var drawingID: Int
     var contentID: Int?
+    var userId: String?
 
-    fun touchStart(view: View, eventX: Float, eventY:Float)
-    fun touchMove(view: View, context: Context,
-                  eventX: Float, eventY: Float)
-    fun touchUp(view: View, selectedTools: ArrayList<Tool>)
+    fun touchStart(eventX: Float, eventY:Float, svgRoot: Element)
+    fun touchMove(context: Context, eventX: Float, eventY: Float)
+    fun touchUp()
 
     fun getString(): String
     fun getOriginalString(): String
@@ -33,4 +34,10 @@ interface Tool: SVGElement{
     fun getScalingPositionsString()
     fun parse(parceableString: String?)
     fun unselect()
+    fun delete()
+    fun updateThickness()
+    fun updatePrimaryColor()
+    fun updateSecondaryColor()
+    fun select()
+    fun setCriticalValues()
 }

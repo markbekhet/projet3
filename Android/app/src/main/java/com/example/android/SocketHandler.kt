@@ -33,7 +33,7 @@ object SocketHandler {
     @Synchronized
     fun setDrawingSocket(){
         try{
-            drawingSocket = IO.socket(localUrl + drawingNamespace)
+            drawingSocket = IO.socket(url + drawingNamespace)
         } catch (e: Exception) {
             println(e.message)
             throw RuntimeException(e)

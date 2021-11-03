@@ -50,7 +50,7 @@
 
 
         <EditText
-            android:id="@+id/firstName"
+            android:id="@+id/longueur"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
@@ -74,7 +74,7 @@
             app:layout_constraintVertical_bias="0.504" />
 
         <EditText
-            android:id="@+id/lastName"
+            android:id="@+id/largeur"
             android:layout_width="229dp"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"

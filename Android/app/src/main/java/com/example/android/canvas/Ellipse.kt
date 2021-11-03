@@ -6,6 +6,7 @@ import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
 import org.apache.batik.anim.dom.SVGOMEllipseElement
 import org.apache.batik.dom.AbstractDocument
+import org.w3c.dom.Element
 import java.lang.Float.min
 import kotlin.math.abs
 
@@ -24,8 +25,9 @@ class Ellipse(private var drawingId:Int? ,
     override var scalingPositions = HashMap<Point, Point>()
     //override var drawingID = drawingId
     override var contentID: Int?=null
+    override var userId: String? = ClientInfo.userId
 
-    override fun touchStart(view: View, eventX: Float, eventY: Float) {
+    override fun touchStart(eventX: Float, eventY: Float, svgRoot: Element) {
         startingPositionX = eventX
         startingPositionY = eventY
         this.setAttribute("rx", "0")
@@ -33,12 +35,14 @@ class Ellipse(private var drawingId:Int? ,
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
         this.setAttribute("transformTranslate","translate(0,0)")
-        this.setAttribute("stroke-width", "3")
-        this.setAttribute("stroke", "#000000")
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
+        //svgRoot.appendChild(this)
         requestCreation()
     }
 
-    override fun touchMove(view: View, context: Context, eventX: Float, eventY: Float) {
+    override fun touchMove(context: Context, eventX: Float, eventY: Float) {
         val rx = abs(eventX - startingPositionX)/2
         val ry = abs(eventY - startingPositionY)/2
         this.setAttribute("rx", rx.toString())
@@ -53,29 +57,27 @@ class Ellipse(private var drawingId:Int? ,
         }
     }
 
-    private fun setCriticalValues(){
+    override fun setCriticalValues(){
         val cxCert = this.getAttribute("cx").toFloat()
         val cyCert = this.getAttribute("cy").toFloat()
         startTransformPoint = Point(cxCert, cyCert)
     }
 
-    override fun touchUp(view: View, selectedTools: ArrayList<Tool>) {
-        selected = true
-        if(!selectedTools.contains(this)){
-            selectedTools.add(this)
-        }
+    override fun touchUp() {
         setCriticalValues()
         calculateScalingPositions()
-        sendProgressToServer(DrawingStatus.Selected)
+        select()
     }
 
     override fun getString(): String {
         str = ""
-        str += getOriginalString()
-        if(selected){
-            getSelectionString()
-            getScalingPositionsString()
-        }
+        try{
+            str += getOriginalString()
+            if(selected){
+                getSelectionString()
+                getScalingPositionsString()
+            }
+        } catch(e: Exception){}
         return str
     }
 
@@ -86,6 +88,7 @@ class Ellipse(private var drawingId:Int? ,
         val transform = this.getAttribute("transformTranslate")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
+        val fill = this.getAttribute("fill")
 
         val mx = this.getAttribute("cx")
         result += "cx=\"$mx\" "
@@ -104,7 +107,7 @@ class Ellipse(private var drawingId:Int? ,
             result += "transform=\"$it\""
         }
         result += " stroke-width=\"$strokeWidth\""
-        result += " fill=\"none\""
+        result += " fill=\"$fill\""
 
         result += " stroke=\"$stroke\""
         result += "/>\n"
@@ -281,21 +284,25 @@ class Ellipse(private var drawingId:Int? ,
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
         this.setAttribute("transformTranslate",
-            "translate(${totalTranslation.x}, ${totalTranslation.y})")
+            "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
-        val strokeRegex = Regex("""stroke="([#0-9]+)"""")
+        val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
         val matchStroke = strokeRegex.find(parceableString, 1)
         this.setAttribute("stroke", matchStroke!!.groups[1]!!.value)
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
         val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
         this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
+        val fillRegex = Regex("""fill="([#a-zA-Z0-9]+| none)"""")
+        val matchFill = fillRegex.find(parceableString)
+        this.setAttribute("fill", matchFill!!.groups[1]!!.value)
         setCriticalValues()
     }
 
     private fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(), status = status)
+            contentId = contentID, drawing= getOriginalString(),
+            status = status, toolName = ellipseString)
         val socket = SocketHandler.getDrawingSocket()
         socket.emit("drawingToServer", drawingContent.toJson())
     }
@@ -309,5 +316,29 @@ class Ellipse(private var drawingId:Int? ,
     override fun unselect(){
         sendProgressToServer(DrawingStatus.Done)
         selected = false
+    }
+
+    override fun select(){
+        selected = true
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun delete(){
+        sendProgressToServer(DrawingStatus.Deleted)
+    }
+
+    override fun updateThickness() {
+        this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updatePrimaryColor() {
+        this.setAttribute("stroke", DrawingUtils.primaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
+    }
+
+    override fun updateSecondaryColor() {
+        this.setAttribute("fill", DrawingUtils.secondaryColor)
+        sendProgressToServer(DrawingStatus.Selected)
     }
 }
