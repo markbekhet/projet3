@@ -63,7 +63,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       await this.drawingContentRepo.update(drawingMod.id,{content:drawingMod.content, toolName:drawingMod.toolName})
     }
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
-      await this.drawingContentRepo.delete(drawingMod.content);
+      await this.drawingContentRepo.delete(drawingMod.id);
     }
     this.wss.to(drawingMod.drawingId.toString()).emit("drawingToClient", drawing);
   }
