@@ -31,7 +31,6 @@ export class DatabaseService {
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
         @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
-        private drawingGateway: DrawingGateway,
         @InjectRepository(TeamRepository) private teamRepo: TeamRepository
         ){
             this.logger.log("Initialized");
@@ -198,11 +197,12 @@ export class DatabaseService {
                 {ownerId: userId, visibility:visibility.PRIVATE},
                 {visibility: visibility.PROTECTED},
             ],
+            select: ["id", "visibility"],
             relations:["contents"],
         })
-        return await this.getGallery(drawings);
+        return drawings;
     }
-    async getGallery(drawings: Drawing[]){
+    /*async getGallery(drawings: Drawing[]){
         let drawingCollection: GalleryDrawing[] = []
         for(const drawing of drawings){
             let username: string = null;
@@ -222,7 +222,7 @@ export class DatabaseService {
         console.log(drawingCollection)
         return drawingCollection;
 
-    }
+    }*/
     //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
         if(drawingInformation.visibility === visibility.PROTECTED){
@@ -232,8 +232,11 @@ export class DatabaseService {
         }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
-        this.drawingGateway.notifyAllUsers(newDrawing);
-        return newDrawing.id;
+        const retDrawing = await this.drawingRepo.findOne(newDrawing.id, {
+            select:["id", "visibility"],
+            relations:["contents"]
+        })
+        return retDrawing;
     }
     async getDrawingById(drawingId: number, password: string){
         const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
