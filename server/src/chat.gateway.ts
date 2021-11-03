@@ -87,10 +87,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let dtoMod : JoinDrawingDto = JSON.parse(dto);
     console.log(`client ${client.id} has joined ${dtoMod.drawingId}`)
     
-    let drawing: Drawing = await this.drawingRepo.findOne({
-      where:[
-        {id: dtoMod.drawingId}
-      ],
+    let drawing: Drawing = await this.drawingRepo.findOne(dtoMod.drawingId, {
       select:["visibility", "password","name"],
     });
     let passwordMatch: boolean = false
@@ -110,8 +107,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       newEditionHistory.drawingVisibility = drawing.visibility;
       newEditionHistory.drawingId = dtoMod.drawingId;
       await this.drawingEditionRepository.save(newEditionHistory);
-      let drawingRet = await this.drawingRepo.findOne({
-        where: [{id: dtoMod.drawingId}],
+      let drawingRet = await this.drawingRepo.findOne(dtoMod.drawingId, {
         select: ['bgColor', "height", "width", "visibility", "name"],
         relations:['contents']
       })
