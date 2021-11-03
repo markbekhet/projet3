@@ -33,7 +33,9 @@ export class Drawing extends BaseEntity{
     @Column()
     width: number;
 
-    @Column()
+    @Column({
+        unique: true,
+    })
     name: string;
 
     @Column()
