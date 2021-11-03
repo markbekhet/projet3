@@ -49,21 +49,24 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
     console.log(drawing);
     const drawingMod: ContentDrawingSocket = JSON.parse(drawing);
     if(drawingMod.status === DrawingStatus.Done.valueOf()){
-      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing, toolName:drawingMod.toolName})
+      await this.drawingContentRepo.update(drawingMod.id,{content:drawingMod.content, toolName:drawingMod.toolName})
     }
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
-      await this.drawingContentRepo.delete(drawingMod.contentId);
+      await this.drawingContentRepo.delete(drawingMod.id);
     }
     this.wss.to(drawingMod.drawingId.toString()).emit("drawingToClient", drawing);
   }
 
   @SubscribeMessage("createDrawingContent")
-  async createContent(client: Socket, data: {drawingId: number}){
-    const drawing = await this.drawingRepo.findOne(data.drawingId);
+  async createContent(client: Socket, data: any){
+    let dataMod: {drawingId: number}= JSON.parse(data)
+    const drawing = await this.drawingRepo.findOne(dataMod.drawingId);
     let newContent = new DrawingContent();
     newContent.drawing = drawing;
     const newDrawing = await this.drawingContentRepo.save(newContent);
-    client.emit("drawingContentCreated",{contentId: newDrawing.id});
+    let contentRet = {contentId: newDrawing.id};
+    let contentIdString = JSON.stringify(contentRet)
+    client.emit("drawingContentCreated",contentIdString);
   }
 
   @SubscribeMessage("joinDrawing")

@@ -5,8 +5,8 @@ export interface ContentDrawingSocket{
     drawingName: string;
     userId: string,
     drawingId: number;
-    contentId: number;
-    drawing: string;
+    id: number;
+    content: string;
     status: DrawingStatus;
     toolName: string;
 }

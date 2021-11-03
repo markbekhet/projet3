@@ -60,10 +60,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(drawing);
     const drawingMod: ContentDrawingSocket = JSON.parse(drawing);
     if(drawingMod.status === DrawingStatus.Done.valueOf()){
-      await this.drawingContentRepo.update(drawingMod.contentId,{content:drawingMod.drawing, toolName:drawingMod.toolName})
+      await this.drawingContentRepo.update(drawingMod.id,{content:drawingMod.content, toolName:drawingMod.toolName})
     }
     if(drawingMod.status === DrawingStatus.Deleted.valueOf()){
-      await this.drawingContentRepo.delete(drawingMod.contentId);
+      await this.drawingContentRepo.delete(drawingMod.content);
     }
     this.wss.to(drawingMod.drawingId.toString()).emit("drawingToClient", drawing);
   }
@@ -77,7 +77,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let newContent = new DrawingContent();
     newContent.drawing = drawing;
     const newDrawing = await this.drawingContentRepo.save(newContent);
-    client.emit("drawingContentCreated",{contentId: newDrawing.id});
+    let contentRet = {contentId: newDrawing.id};
+    let contentIdString = JSON.stringify(contentRet);
+    client.emit("drawingContentCreated",contentIdString);
   }
 
   @SubscribeMessage("joinDrawing")
@@ -105,6 +107,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         status: Status.BUSY,
       });
       newEditionHistory.drawingName = drawing.name;
+      newEditionHistory.drawingVisibility = drawing.visibility;
+      newEditionHistory.drawingId = dtoMod.drawingId;
       await this.drawingEditionRepository.save(newEditionHistory);
       let drawingRet = await this.drawingRepo.findOne({
         where: [{id: dtoMod.drawingId}],
