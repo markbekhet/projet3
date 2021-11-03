@@ -16,6 +16,32 @@ class DrawingInformation (
 
 }
 
+class ReceiveDrawingInformation(
+    var bgColor:String?= null,
+    var height: Int?= null,
+    var width: Int?= null,
+    var visibility: Int?= null,
+    var name: String?= null,
+    var contents: ArrayList<ContentDrawingSocket> = ArrayList<ContentDrawingSocket>()
+){
+    fun fromJson(json: String): ReceiveDrawingInformation{
+        return Gson().fromJson(json, ReceiveDrawingInformation::class.java)
+    }
+}
+
+class JoinDrawingDto(var drawingId:Int,
+                     var userId: String, var password:String?=null){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
+
+class LeaveDrawingDto(var drawingId:Int, var userId:String){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
+
 enum class Visibility(var int: Int){
     publicVisibility(0),
     protectedVisibility(1),

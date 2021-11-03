@@ -27,14 +27,13 @@ import retrofit2.Response
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
 
-
+var newDrawing = DrawingInformation()
 class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option: Spinner
         lateinit var result: TextView
         lateinit var switch: Switch
         val clientService = ClientService()
-        var newDrawing = DrawingInformation(color="#FFFFFF")
         var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
@@ -79,7 +78,7 @@ class CreateDraw : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, newDrawing.color?.let { it1 -> ColorPicker(btnColorSelected, it1) })
+                .show(ColorPicker(btnColorSelected))
         }
 
         drawingName.doAfterTextChanged {
@@ -129,6 +128,7 @@ class CreateDraw : AppCompatActivity() {
             newDrawing.width = width.text.toString().toInt()
             newDrawing.name = drawingName.text.toString()
             newDrawing.ownerId = ClientInfo.userId
+            newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
             if (canProcessQuery) {
                 var response: Response<ResponseBody>? = null
@@ -141,9 +141,21 @@ class CreateDraw : AppCompatActivity() {
                 }
                 if (response!!.isSuccessful) {
                     DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
-
+                    println(DrawingUtils.currentDrawingId)
                     //join the drawing
-                    startActivity(Intent(this, Drawing::class.java))
+                    var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
+                        ClientInfo.userId)
+
+                    SocketHandler.getDrawingSocket().emit("joinDrawing",
+                        joinRequest.toJson())
+                    SocketHandler.getDrawingSocket().on("drawingInformations"){ args ->
+                        if(args[0]!=null){
+                            val data = args[0] as String
+                            DrawingUtils.drawingInformation =
+                                ReceiveDrawingInformation().fromJson(data)
+                            startActivity(Intent(this, Drawing::class.java))
+                        }
+                    }
                 } else {
                     error.text = "Une erreur est arrivée lors de la création du dessin"
                 }
@@ -256,20 +268,18 @@ class CreateDraw : AppCompatActivity() {
         }
         return true
     }
-    private class ColorPicker(var button: View, var string:String): ColorPickerPopup.ColorPickerObserver() {
-        override fun onColorPicked(color: Int){
+
+    private class ColorPicker(var button: View):ColorPickerPopup.ColorPickerObserver() {
+        override fun onColorPicked(color: Int) {
             button.setBackgroundColor(color)
             val r = Color.red(color)
             val g = Color.green(color)
             val b = Color.blue(color)
-            string = String.format(Locale.getDefault(), "#%02X%02X%02X",r, g, b)
-
-
+            button.tooltipText = String.format(Locale.getDefault(), "%02X%02X%02X", r, g, b)
 
         }
+
     }
-
-
 }
 
 

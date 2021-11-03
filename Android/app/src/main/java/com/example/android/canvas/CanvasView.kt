@@ -39,7 +39,7 @@ class CanvasView(context: Context): View(context) {
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     private var svgRoot = doc.createElementNS(svgNS, "g")
-    private var drawingId = 1
+    private var drawingId = DrawingUtils.currentDrawingId
     //Action attributes
     var mode = ""
     var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
@@ -180,6 +180,29 @@ class CanvasView(context: Context): View(context) {
     private fun unSelectAllChildren(){
         if(tool != null){
             tool!!.unselect()
+        }
+    }
+    fun parseExistingDrawings(existingContent: ArrayList<ContentDrawingSocket>){
+        for(content in existingContent){
+            if(content.drawing != null){
+                try {
+                    var newTool: Tool? = null
+                    when(content.toolName){
+                        ellipseString -> newTool = Ellipse(drawingId,
+                            ellipseString, doc as AbstractDocument)
+                        rectString -> newTool = Rectangle(drawingId,
+                            rectString, doc as AbstractDocument)
+                        pencilString -> newTool = FreeHand(drawingId,
+                            pencilString, doc as AbstractDocument)
+                    }
+                    newTool?.contentID = content.contentId!!
+                    newTool?.selected = false
+                    newTool?.parse(content.drawing)
+                    svgRoot.appendChild(newTool)
+                } catch(e: Exception){
+                    println(e.message)
+                }
+            }
         }
     }
 
