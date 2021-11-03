@@ -13,8 +13,11 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".client.Gallery"
+            android:exported="true" />
+        <activity
             android:name=".canvas.CanvasActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,8 +50,7 @@
         <activity
             android:name=".LoginScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true" />
