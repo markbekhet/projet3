@@ -36,11 +36,14 @@ export class User extends BaseEntity{
     pseudo: string;
 
     @Column({
-        default: 0
+        default: 0,
+        type:"double precision"
     })
     averageCollaborationTime: number;
+
     @Column({
         default: 0,
+        type:"double precision"
     })
     totalCollaborationTime: number;
 
