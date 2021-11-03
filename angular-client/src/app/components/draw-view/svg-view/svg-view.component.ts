@@ -77,8 +77,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.backColor = canvas.canvasColor;
       if (canvas.wipeAll === true || canvas.wipeAll === undefined) { // if no attribute is specified, the doodle will be w
           this.canvBuilder.wipeDraw(this.doneDrawing);
-          //this.canvBuilder.wipeDraw(this.filterRef);
-          //this.canvBuilder.wipeDraw(this.selectedItems);
       }
     });
     this.canvBuilder.emitCanvas();
@@ -174,13 +172,10 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         //new elements
         let newObj!: SVGElement;
         if (data.drawing.includes('polyline')) {
-          console.log('pencil: ' + data.drawing);
           newObj = this.createSVGPolyline(data.drawing);
         } else if (data.drawing.includes('rect')) {
-          console.log('rect: ' + data.drawing);
           newObj = this.createSVGRect(data.drawing);
         } else if (data.drawing.includes('ellipse')) {
-          console.log('ell: ' + data.contentId);
           newObj = this.createSVGEllipse(data.drawing);
         }
         
@@ -192,14 +187,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       else {
         let element = this.contents.get(data.contentId)
         if (element !== undefined){
-          //this.renderer.removeChild(this.inProgress.nativeElement,element);
           if (data.drawing.includes('polyline')) {
             this.modifyPolyline(data.drawing, element);
           } else if (data.drawing.includes('rect')) {
             this.modifyRect(data.drawing, element);
           } else if (data.drawing.includes('ellipse')) {
             this.modifyEllipse(data.drawing, element);
-            //console.log(data.drawing);
          }
           this.renderer.appendChild(this.doneDrawing.nativeElement, element);
         }
@@ -218,6 +211,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
         this.renderer.appendChild(this.doneDrawing.nativeElement, element);
       }
+    } else if (data.status === DrawingStatus.Selected.valueOf()) {
+      //draw the box around the shape???
     }
   }
   
@@ -252,7 +247,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     let fill = FILL_REGEX.exec(drawing);
     
     if (points_array !== null && stroke_width !== null && stroke !== null && fill !== null) {
-      this.renderer.setAttribute(element,'points', points_array[1].toString());
+      this.renderer.setAttribute(element, 'points', points_array[1].toString());
       this.renderer.setAttribute(element, 'stroke', stroke[1].toString().substring(0, 7));
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', fill[1].toString().substring(0, 7));
@@ -275,7 +270,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'y', y[1].toString());
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
-      this.renderer.setAttribute(element,'stroke', stroke[1].toString().substring(0, 7));
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString().substring(0, 7));
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', fill[1].toString().substring(0, 7));
     }
@@ -297,7 +292,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'width', width[1].toString());
       this.renderer.setAttribute(element, 'height', height[1].toString());
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
-      this.renderer.setAttribute(element,'stroke', stroke[1].toString().substring(0, 7));
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString().substring(0, 7));
       this.renderer.setAttribute(element, 'fill', fill[1].toString().substring(0, 7));
     }
   }
@@ -319,7 +314,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element,'stroke', stroke[1].toString().substring(0, 7));
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString().substring(0, 7));
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', fill[1].toString().substring(0, 7));
     }
@@ -340,7 +335,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.setAttribute(element, 'cy', cy[1].toString());
       this.renderer.setAttribute(element, 'rx', rx[1].toString());
       this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element,'stroke', stroke[1].toString().substring(0, 7));
+      this.renderer.setAttribute(element, 'stroke', stroke[1].toString().substring(0, 7));
       this.renderer.setAttribute(element, 'stroke-width', stroke_width[1].toString());
       this.renderer.setAttribute(element, 'fill', fill[1].toString().substring(0, 7));
     }

@@ -2,7 +2,7 @@ import { Renderer2 } from '@angular/core';
 import { ColorPickingService } from '../color-picker/color-picking.service';
 import { InteractionService } from '../interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
-import { Pencil } from './pencil';
+import { DrawingContent, DrawingStatus } from "src/app/models/drawing-content";
 import { Point } from './point';
 
 const OUTLINE_COLOR = '0, 102, 204, 0.9';
@@ -24,10 +24,11 @@ export class Selection extends DrawingTool {
 
   render!: Renderer2;
   
-  boxCenter: Point = new Point(INIT_BOX_CENTER, INIT_BOX_CENTER);
   initPosition!: Point;
   deltaX!: number;
   deltaY!: number;
+
+  isPressed!: boolean;
 
   target!: SVGElement | null;
   itemUnderMouse!: number | null;
@@ -42,7 +43,10 @@ export class Selection extends DrawingTool {
   wrapperDimensions: [Point, Point] = [new Point(INIT_VALUE, INIT_VALUE), new Point(INIT_VALUE, INIT_VALUE)];
   
 
-  constructor(selected: boolean, interactionService: InteractionService, colorPick: ColorPickingService, private drawing: HTMLElement){
+  constructor(selected: boolean, 
+    interactionService: InteractionService, 
+    colorPick: ColorPickingService, 
+    private drawing: HTMLElement) {
     super(selected, interactionService, colorPick);
     this.updateAttributes();
     this.updateColors();
@@ -91,12 +95,46 @@ export class Selection extends DrawingTool {
   }
 
     down(event: MouseEvent, position: Point) {
-        if (this.drawing) {
+        /*if (this.drawing) {
             this.initPosition = position;
             this.target = event.target as SVGElement;
             this.deltaX = position.x - this.initPosition.x;
             this.deltaY = position.y - this.initPosition.y;
         }
+
+        if (this.target && !this.drawing.contains(this.target)) {
+            this.target = null;
+            this.initPosition = {
+                x: 0,
+                y: 0
+            };
+        }*/
+        
+        if (this.target) {
+            this.target.setAttribute('stroke', this.chosenColor.primColor);
+
+            this.target = null;
+            this.initPosition = {
+                x: 0,
+                y: 0
+            };
+        }
+
+        if (event.target && this.drawing.contains(event.target as SVGElement)) {
+            this.initPosition = position;
+            this.target = event.target as SVGElement;
+
+            this.deltaX = position.x - this.initPosition.x;
+            this.deltaY = position.y - this.initPosition.y;
+
+            this.isPressed = true;
+
+            //draw box around
+            this.target.setAttribute('stroke', this.chosenColor.secColor);
+            
+            //how to set drawing status to "SELECTED"
+        } 
+
     }
 
     up(event: MouseEvent, position: Point) {
@@ -109,12 +147,8 @@ export class Selection extends DrawingTool {
                 case 'ellipse': this.saveEllipse();
                     break;
             }
-            this.target = null;
-            this.initPosition = {
-                x: 0,
-                y: 0
-            };
         }
+        this.isPressed = false;
     }
 
     savePolyline() {
@@ -130,20 +164,24 @@ export class Selection extends DrawingTool {
 
     saveRect() {
         if (this.target) {
-            let rect = (this.target as SVGRectElement).x;
-
-            
+            let rect = (this.target as SVGRectElement);
+            rect.x.baseVal.value += this.deltaX;
+            rect.y.baseVal.value += this.deltaY;
+            this.target.setAttribute('transform', '');
         }
     }
 
     saveEllipse() {
         if (this.target) {
-            //this.target.setAttribute('transform', '');
+            let ellipse = (this.target as SVGEllipseElement);
+            ellipse.cx.baseVal.value += this.deltaX;
+            ellipse.cy.baseVal.value += this.deltaY;
+            this.target.setAttribute('transform', '');
         }
     }
 
     createPath (path: Point[]) {
-
+        
     }
 
     doubleClick() {
@@ -155,12 +193,17 @@ export class Selection extends DrawingTool {
     }
 
     move(event: MouseEvent, position: Point) {
-        if (this.target && this.drawing.contains(this.target)) {
+        /*if (this.target && this.drawing.contains(this.target)) {
             this.deltaX = position.x - this.initPosition.x;
             this.deltaY = position.y - this.initPosition.y;
             this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
         }
-    
+    */
+        if (this.isPressed && this.target) {
+            this.deltaX = position.x - this.initPosition.x;
+            this.deltaY = position.y - this.initPosition.y;
+            this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
+        }
     }
 
     intersects(rect: DOMRect, position: Point):boolean {
