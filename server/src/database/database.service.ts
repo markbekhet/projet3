@@ -22,6 +22,7 @@ import { TeamRepository } from 'src/modules/team/team.repository';
 import { CreateTeamDto } from 'src/modules/team/create-team.dto';
 import { Team } from 'src/modules/team/team.entity';
 import { DeleteTeamDto } from 'src/modules/team/delete-team.dto';
+import { threadId } from 'worker_threads';
 
 @Injectable()
 export class DatabaseService {
@@ -225,6 +226,12 @@ export class DatabaseService {
     }*/
     //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
+        const user = await this.userRepo.findOne(drawingInformation.ownerId);
+        if(user!== undefined){
+            await this.userRepo.update(user.id, {
+                numberAuthoredDrawings: user.numberAuthoredDrawings + 1,
+            })
+        }
         if(drawingInformation.visibility === visibility.PROTECTED){
             if(drawingInformation.password === undefined || drawingInformation.password === null){
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST)

@@ -69,8 +69,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage("createDrawingContent")
-  async createContent(client: Socket, data: {drawingId: number}){
-    const drawing = await this.drawingRepo.findOne(data.drawingId);
+  async createContent(client: Socket, data: any){
+    //{drawingId: number}
+    const dataMod: {drawingId: number} = JSON.parse(data);
+    console.log(dataMod);
+    const drawing = await this.drawingRepo.findOne(dataMod.drawingId);
     let newContent = new DrawingContent();
     newContent.drawing = drawing;
     const newDrawing = await this.drawingContentRepo.save(newContent);
@@ -98,7 +101,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       newEditionHistory.user = user;
       newEditionHistory.action = "join";
       await this.userRepo.update(user.id, {
-        numberAuthoredDrawings: user.numberCollaboratedDrawings+1,
+        numberCollaboratedDrawings: user.numberCollaboratedDrawings+1,
         status: Status.BUSY,
       });
       newEditionHistory.drawingName = drawing.name;
@@ -124,7 +127,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let dtoMod :LeaveDrawingDto = JSON.parse(dto)
     let user = await this.userRepo.findOne(dtoMod.userId, {
       select:['totalCollaborationTime'],
-      relations: ['drawingEditionHistory']
+      relations: ['drawingEditionHistories']
     });
     let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date.toString()
     let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
