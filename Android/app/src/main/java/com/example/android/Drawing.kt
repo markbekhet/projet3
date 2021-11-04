@@ -21,6 +21,8 @@ class Drawing : AppCompatActivity() {
         socket = SocketHandler.getChatSocket()
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"
+        DrawingUtils.primaryColor = black
+        DrawingUtils.secondaryColor = none
 
         //primaryColor.setBackgroundColor(Color.parseColor("#000000"))
         //secondaryColor.setBackgroundColor(Color.parseColor("#FFFFFF"))

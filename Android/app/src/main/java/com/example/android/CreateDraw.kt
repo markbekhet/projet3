@@ -89,6 +89,7 @@ class CreateDraw : AppCompatActivity() {
                 create.isEnabled = true
                 create.isClickable = true
             }
+            error.text = ""
         }
         height.doAfterTextChanged {
             if (!isNotBlank()) {
@@ -143,7 +144,7 @@ class CreateDraw : AppCompatActivity() {
                     DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
                     println(DrawingUtils.currentDrawingId)
                     //join the drawing
-                    var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
+                    val joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
                         ClientInfo.userId)
 
                     SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
@@ -152,11 +153,17 @@ class CreateDraw : AppCompatActivity() {
                             val data = args[0] as String
                             DrawingUtils.drawingInformation =
                                 ReceiveDrawingInformation().fromJson(data)
+                            height.text.clear()
+                            width.text.clear()
+                            drawingName.text.clear()
+                            btnColorSelected.tooltipText = "FFFFFF"
+                            btnColorSelected.setBackgroundColor(Color.WHITE)
                             startActivity(Intent(this, Drawing::class.java))
                         }
                     }
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du dessin"
+                    error.text = "Une erreur est arrivée lors de la création du dessin." +
+                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
                 }
 
             }

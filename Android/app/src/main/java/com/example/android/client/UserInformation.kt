@@ -19,6 +19,7 @@ data class UserProfileInformation(
     var numberAuthoredDrawings: Int? = null,
     private var connectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
     private var disconnectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
+    private var drawingEditionHistories: ArrayList<DrawingEditionHistories> ?= null
 ){
     fun fromJson(information: String?): UserProfileInformation{
         return Gson().fromJson(information, UserProfileInformation::class.java)
@@ -31,10 +32,23 @@ data class UserProfileInformation(
     fun getDisconnectionHistory(): ArrayList<ConnectionDisconnectionHistories>?{
         return disconnectionHistories
     }
+
+    fun getDrawingHistories(): ArrayList<DrawingEditionHistories>?{
+        return drawingEditionHistories
+    }
 }
 
 data class ConnectionDisconnectionHistories(
     var id: Int? = null,
+    var date: String? = null
+)
+
+data class DrawingEditionHistories(
+    var id: Int? = null,
+    var action: String? = null,
+    var drawingName: String?= null,
+    var drawingId: Int?= null,
+    var drawingVisibility: Int?= null,
     var date: String? = null
 )
 
