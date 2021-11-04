@@ -5,18 +5,59 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.android.client.*
+import com.example.android.profile.OwnProfile
+import com.google.gson.Gson
+import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class LandingPage : AppCompatActivity() {
     private var texte: TextView? = null
     private var button: Button? = null
+    private var clientService = ClientService()
+    private var chatSocket: Socket? = null
+    private var drawingSocket: Socket?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
+        //Initialize chat socket
+        SocketHandler.setChatSocket()
+        SocketHandler.establishChatSocketConnection()
+        chatSocket = SocketHandler.getChatSocket()
 
+        chatSocket?.on("usersArrayToClient"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                ClientInfo.usersList= Gson().fromJson(data, UsersArrayList::class.java)
+            }
+        }
 
-        creerSalon.setOnClickListener(){
+        chatSocket?.on("teamsArrayToClient"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                ClientInfo.teamsList = Gson().fromJson(data, TeamsArrayList::class.java)
+            }
+        }
+
+        //initialize drawing socket
+        //SocketHandler.setDrawingSocket()
+        //SocketHandler.establishDrawingSocketConnection()
+        //drawingSocket = SocketHandler.getDrawingSocket()
+
+        profileButton.setOnClickListener {
+            startActivity(Intent(this, OwnProfile::class.java))
+        }
+
+        creerSalon.setOnClickListener{
             startActivity(Intent(this, CreateDraw::class.java))}
+
+        disconnect.setOnClickListener {
+            disconnect()
+        }
+
 //            if (createDrawing == null) {
 //                createDrawing = Dialog(this)
 //                createDrawing!!.setContentView(R.layout.createdraw)
@@ -36,5 +77,19 @@ class LandingPage : AppCompatActivity() {
 //
 //        }
 
+    }
+    fun disconnect(){
+        runBlocking{
+            launch{
+                clientService.disconnect()
+            }
+
+        }
+        chatSocket?.disconnect()
+        drawingSocket?.disconnect()
+    }
+    override fun onDestroy() {
+        disconnect()
+        super.onDestroy()
     }
 }

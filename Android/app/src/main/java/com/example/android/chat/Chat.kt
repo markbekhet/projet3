@@ -37,9 +37,7 @@ class Chat : AppCompatActivity() {
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         displayMessage?.layoutManager = linearLayoutManager
 
-        SocketHandler.setSocket()
-        mSocket = SocketHandler.getMSocket()
-        mSocket?.connect()
+        mSocket = SocketHandler.getChatSocket()
 
         mClientService = ClientService()
         val textMessage: EditText = findViewById(R.id.textField)
@@ -116,17 +114,6 @@ class Chat : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mSocket?.disconnect()
-        runBlocking{
-            async {
-                launch {
-                    mClientService!!.disconnect(ClientInfo.username)
-                }
-            }
-        }
-    }
 }
 class UserMessage : Item<GroupieViewHolder>() {
     private var message = "bonjour"

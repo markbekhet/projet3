@@ -12,4 +12,8 @@ object DrawingUtils {
     var primaryColor = black
     var secondaryColor = none
     var thickness = 3
+    var currentDrawingId = 0
+    var drawingInformation: ReceiveDrawingInformation?= null
 }
+
+

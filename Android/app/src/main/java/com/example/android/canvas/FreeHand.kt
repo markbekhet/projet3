@@ -276,8 +276,7 @@ class FreeHand(private var drawingId: Int?,
     }
 
     private fun requestCreation(){
-        SocketHandler.getDrawingSocket()
-            .emit("createDrawingContent",
+        SocketHandler.getChatSocket()!!.emit("createDrawingContent",
                 RequestCreation(drawingId).toJson())
     }
 
@@ -306,10 +305,10 @@ class FreeHand(private var drawingId: Int?,
     private fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(),
+            id = contentID, content= getOriginalString(),
             status = status, toolName = pencilString)
-        val socket = SocketHandler.getDrawingSocket()
-        socket.emit("drawingToServer", drawingContent.toJson())
+        val socket = SocketHandler.getChatSocket()
+        socket!!.emit("drawingToServer", drawingContent.toJson())
     }
 
     override fun unselect(){

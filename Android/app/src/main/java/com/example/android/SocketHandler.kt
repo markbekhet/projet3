@@ -11,9 +11,9 @@ object SocketHandler {
     private lateinit var drawingSocket: Socket
 
     @Synchronized
-    fun setSocket(){
+    fun setChatSocket(){
         try{
-            chatSocket = IO.socket(localUrl)
+            chatSocket = IO.socket(url)
         } catch (e: Exception) {
             println(e.message)
             throw RuntimeException(e)
@@ -21,16 +21,16 @@ object SocketHandler {
     }
 
     @Synchronized
-    fun getMSocket(): Socket? {
+    fun getChatSocket(): Socket? {
         return chatSocket
     }
 
     @Synchronized
-    fun establishConnection(){
+    fun establishChatSocketConnection(){
         chatSocket.connect()
     }
 
-    @Synchronized
+    /*@Synchronized
     fun setDrawingSocket(){
         try{
             drawingSocket = IO.socket(url + drawingNamespace)
@@ -48,5 +48,5 @@ object SocketHandler {
     @Synchronized
     fun establishDrawingSocketConnection(){
         drawingSocket.connect()
-    }
+    }*/
 }
