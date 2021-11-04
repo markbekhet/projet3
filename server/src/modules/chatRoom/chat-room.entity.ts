@@ -6,9 +6,9 @@ import { Team } from "../team/team.entity";
 @Entity("chatRoom")
 export class ChatRoom extends BaseEntity{
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @OneToMany(()=>ChatHistory, chatHistory => chatHistory.ChatRoom, {nullable: true})

@@ -66,6 +66,9 @@ export class Drawing extends BaseEntity{
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
         newDrawing.bgColor = drawingInformation.color;
+        let newChatRoom = new ChatRoom();
+        newChatRoom.name = drawingInformation.name;
+        newDrawing.chatRoom = newChatRoom;
         return newDrawing;
     }
 }
