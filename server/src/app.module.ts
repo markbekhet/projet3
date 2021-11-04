@@ -16,6 +16,9 @@ import { DrawingRepository } from './modules/drawing/drawing.repository';
 import { DrawingController } from './modules/drawing/drawing.controller';
 import { DrawingGateway } from './modules/drawing/drawing.gateway';
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
+import { CollaborationTeamController } from './modules/team/collaboration-team.controller';
+import { TeamRepository } from './modules/team/team.repository';
+import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawingEditionHistory.repository';
 import { typeormConfigProdDB } from './config/typeorm.config.prod';
 
 @Module({
@@ -27,9 +30,11 @@ import { typeormConfigProdDB } from './config/typeorm.config.prod';
       DisconnectionHistoryRespository,
       DrawingRepository,
       DrawingContentRepository,
+      TeamRepository,
+      DrawingEditionRepository,
     ])
   ],
-  controllers: [AppController, ConnectionController, UserController, DrawingController],
+  controllers: [AppController, ConnectionController, UserController, DrawingController, CollaborationTeamController],
   providers: [AppService, ConnectionService, ChatGateway, DatabaseService, DrawingGateway],
 })
 export class AppModule {}
