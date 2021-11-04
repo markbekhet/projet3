@@ -19,6 +19,8 @@ import { TeamRepository } from './modules/team/team.repository';
 import { User } from './modules/user/user.entity';
 import { UserRespository } from './modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
+import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
+import { ChatRoom } from './modules/chatRoom/chat-room.entity';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -30,10 +32,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @InjectRepository(TeamRepository) private readonly teamRepo: TeamRepository,
     @InjectRepository(DrawingContentRepository) private readonly drawingContentRepo: DrawingContentRepository,
     @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
-    @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,){}
+    @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
+    @InjectRepository(ChatRoomRepository) private readonly chatRoomRepo: ChatRoomRepository){}
   
-  afterInit(server: Server) {
-    this.logger.log("Initialized");
+  async afterInit(server: Server) {
+    try{
+      this.logger.log("Initialized");
+      let newChatRoom = new ChatRoom();
+      newChatRoom.name = "General";
+      await this.chatRoomRepo.save(newChatRoom);
+      this.logger.log("executed");
+    } catch(error){
+      this.logger.log(error.message)
+    };
   }
   handleDisconnect(client: Socket) {
     this.logger.log(`Client diconnected: ${client.id}`);

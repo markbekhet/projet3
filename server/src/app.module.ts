@@ -20,6 +20,8 @@ import { CollaborationTeamController } from './modules/team/collaboration-team.c
 import { TeamRepository } from './modules/team/team.repository';
 import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawingEditionHistory.repository';
 import { typeormConfigProdDB } from './config/typeorm.config.prod';
+import { ChatHistoryRepository } from './modules/chatHistory/chat-history.repository';
+import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { typeormConfigProdDB } from './config/typeorm.config.prod';
       DrawingContentRepository,
       TeamRepository,
       DrawingEditionRepository,
+      ChatHistoryRepository,
+      ChatRoomRepository,
     ])
   ],
   controllers: [AppController, ConnectionController, UserController, DrawingController, CollaborationTeamController],
