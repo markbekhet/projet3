@@ -1,8 +1,9 @@
 import { visibility } from "src/enumerators/visibility";
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { CreateDrawingDto } from "./create-drawing.dto";
 import * as bcrypt from 'bcrypt';
 import { DrawingContent } from "../drawing-content/drawing-content.entity";
+import { ChatRoom } from "../chatRoom/chat-room.entity";
 
 @Entity("drawing")
 export class Drawing extends BaseEntity{
@@ -44,6 +45,9 @@ export class Drawing extends BaseEntity{
     @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true})
     contents: DrawingContent[];
 
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true})
+    @JoinColumn()
+    chatRoom: ChatRoom
     
     @BeforeInsert()
     async setPassword(){

@@ -1,7 +1,8 @@
 import { visibility } from "src/enumerators/visibility";
-import { BaseEntity, BeforeInsert, Column, Entity,PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity,JoinColumn,OneToOne,PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt'
 import { CreateTeamDto } from "./create-team.dto";
+import { ChatRoom } from "../chatRoom/chat-room.entity";
 
 @Entity("team")
 export class Team extends BaseEntity{
@@ -14,7 +15,7 @@ export class Team extends BaseEntity{
     @Column({nullable: true})
     password: string;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @Column()
@@ -22,6 +23,10 @@ export class Team extends BaseEntity{
 
     @Column({default:4})
     nbCollaborators: number;
+
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true})
+    @JoinColumn()
+    chatRoom: ChatRoom; 
 
     @BeforeInsert()
     async setPassword(){
