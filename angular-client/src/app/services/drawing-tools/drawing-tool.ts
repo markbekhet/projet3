@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { ChosenColors } from '@models/ChosenColors';
 import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
-import { InteractionService } from '@services/interaction-service/interaction.service';
+import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
 

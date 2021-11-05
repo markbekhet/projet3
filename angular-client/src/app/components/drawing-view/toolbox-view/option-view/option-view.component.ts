@@ -6,8 +6,8 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-import { ShapeTypes } from '@services/draw-tool/tools-attributes';
-import { InteractionService } from '@services/interaction-service/interaction.service';
+import { ShapeTypes } from '@services/drawing-tools/tools-attributes';
+import { InteractionService } from '@services/interaction/interaction.service';
 
 @Component({
   selector: 'app-option-view',

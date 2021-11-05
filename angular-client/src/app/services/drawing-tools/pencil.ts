@@ -1,6 +1,6 @@
-import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingStatus } from '@models/DrawingMeta';
-import { InteractionService } from '@services/interaction-service/interaction.service';
+import { ColorPickingService } from '@services/color-picker/color-picking.service';
+import { InteractionService } from '@services/interaction/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { ToolsAttributes } from './tools-attributes';

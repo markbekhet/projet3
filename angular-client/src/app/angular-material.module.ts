@@ -55,11 +55,8 @@ export class AngularMaterialModule {}
 // Note (Paul) : Modules Material utilisés en Projet 2 et pouvant être utiles
 // CommonModule
 // MatButtonToggleModule
-// MatMenuModule
 // MatTabsModule
 // MatChipsModule
-// FormsModule
-// ReactiveFormsModule
 // MatCheckboxModule
 // MatProgressSpinnerModule
 // MatPaginatorModule

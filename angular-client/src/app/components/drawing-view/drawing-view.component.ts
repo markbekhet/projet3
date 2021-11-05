@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { InteractionService } from '@services/interaction-service/interaction.service';
+import { InteractionService } from '@services/interaction/interaction.service';
 
 @Component({
   selector: 'app-drawing-view',

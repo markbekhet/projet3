@@ -1,13 +1,13 @@
 // import { DrawingStatus } from '@models/DrawingMeta';
-import { ColorPickingService } from '../color-picker/color-picking.service';
-import { InteractionService } from '../interaction-service/interaction.service';
+import { ColorPickingService } from '@services/color-picker/color-picking.service';
+import { InteractionService } from '@services/interaction/interaction.service';
 // import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { Shape } from './shape';
 import { ToolsAttributes } from './tools-attributes';
 
 // const DEFAULT_LINE_THICKNESS = 5;
-export class Rectangle extends Shape {
+export class Ellipse extends Shape {
   constructor(
     selected: boolean,
     interactionService: InteractionService,
@@ -36,6 +36,7 @@ export class Rectangle extends Shape {
     this.startY = this.height > 0 ? p[0].y : p[p.length - 1].y;
 
     super.setDimensions(p);
+    // Rectangle
   }
 
   // this is the function used to write the string
@@ -43,10 +44,10 @@ export class Rectangle extends Shape {
     this.svgString = '';
 
     this.setDimensions(p);
-    this.svgString += `<rect x="${this.startX}" y="${this.startY}" `;
-    this.svgString += `width="${Math.abs(this.width)}" height="${Math.abs(
-      this.height
-    )}"`;
+    this.svgString += `<ellipse cx="${this.startX + Math.abs(this.width / 2)}"`;
+    this.svgString += ` cy="${this.startY + Math.abs(this.height / 2)}"`;
+    this.svgString += ` rx="${Math.abs(this.width / 2)}"`;
+    this.svgString += ` ry="${Math.abs(this.height / 2)}"`;
 
     this.setAttributesToPath();
 

@@ -3,8 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Message, CustomDate } from '@models/MessageMeta';
-import { ChatService } from '@services/chat/chat.service';
 import { AuthService } from '@services/authentication/auth.service';
+import { ChatService } from '@services/chat/chat.service';
 
 @Component({
   selector: 'app-communication-page',

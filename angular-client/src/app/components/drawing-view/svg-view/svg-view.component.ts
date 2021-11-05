@@ -15,13 +15,13 @@ import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
-import { DrawingTool } from '@services/draw-tool/drawing-tool';
-import { Ellipse } from '@services/draw-tool/ellipse';
-import { InputObserver } from '@services/draw-tool/input-observer';
-import { InteractionService } from '@services/interaction-service/interaction.service';
-import { MouseHandler } from '@services/mouse-handler/mouse.handler';
-import { Pencil } from '@services/draw-tool/pencil';
-import { Rectangle } from '@services/draw-tool/rectangle';
+import { DrawingTool } from '@services/drawing-tools/drawing-tool';
+import { Ellipse } from '@services/drawing-tools/ellipse';
+import { InputObserver } from '@services/drawing-tools/input-observer';
+import { InteractionService } from '@services/interaction/interaction.service';
+import { MouseHandler } from '@services/mouse-handler/mouse-handler';
+import { Pencil } from '@services/drawing-tools/pencil';
+import { Rectangle } from '@services/drawing-tools/rectangle';
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);

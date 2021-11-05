@@ -15,7 +15,7 @@ import { ColorConvertingService } from './services/color-picker/color-converting
 import { ColorPickingService } from './services/color-picker/color-picking.service';
 import { DrawingSocketService } from './services/drawing-socket/drawing-socket.service';
 import { IconsService } from './services/icons/icons.service';
-import { InteractionService } from './services/interaction-service/interaction.service';
+import { InteractionService } from './services/interaction/interaction.service';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
 
 import { AppComponent } from './components/app-component/app.component';
