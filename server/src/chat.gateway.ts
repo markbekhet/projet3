@@ -10,7 +10,7 @@ import { DrawingContent } from './modules/drawing-content/drawing-content.entity
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 import { Drawing } from './modules/drawing/drawing.entity';
 import { DrawingRepository } from './modules/drawing/drawing.repository';
-import { JoinDrawingDto, LeaveDrawingDto } from './modules/drawing/joinDrawing.dto';
+import { JoinDrawingDto, JoinTeamDto, LeaveDrawingDto, LeaveTeamDto } from './modules/drawing/joinDrawing.dto';
 import { ContentDrawingSocket } from './modules/drawing/socket-drawing.dto';
 import { DrawingEditionHistory } from './modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawingEditionHistory.repository';
@@ -107,7 +107,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage("joinDrawing")
   async joinDrawing(client:Socket, dto: any){
     let dtoMod : JoinDrawingDto = JSON.parse(dto);
-    console.log(`client ${client.id} has joined ${dtoMod.drawingId}`)
     
     let drawing: Drawing = await this.drawingRepo.findOne(dtoMod.drawingId, {
       select:["visibility", "password","name"],
@@ -151,6 +150,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       // TODO: emit to the user the list of the users
       // TODO: emit to the users who are in the room to notify them that a user has joined
       client.emit("drawingInformations", drawingString);
+      console.log(`client ${client.id} has succesfully joined ${dtoMod.drawingId}`)
     }
   }
   @SubscribeMessage("leaveDrawing")
@@ -172,7 +172,50 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.leave(drawing.name);
     client.leave(dtoMod.drawingId.toString());
   }
+  // --------------------------------------------------- team secteion ----------------------------------
+  @SubscribeMessage("joinTeam")
+  async joinTeam(client: Socket, dto:any){
+    let data: JoinTeamDto = JSON.parse(dto);
+    let team = await this.teamRepo.findOne({
+      where: [{name: data.teamName}],
+      select: ["id", "visibility", "password"]
+    })
+    let passwordMatches: boolean = false;
+    if(team.visibility === visibility.PROTECTED){
+      passwordMatches = await bcrypt.compare(dto.password, team.password);
+    }
+    if(passwordMatches|| team.visibility === visibility.PUBLIC){
+      let teamGallery = await this.drawingRepo.find({
+        where:[
+          {visibility: visibility.PUBLIC},
+          {ownerId: team.id, visibility: visibility.PRIVATE},
+          {visibility: visibility.PROTECTED}
+        ],
+        select: ["id", "visibility", "name", "bgColor"],
+        relations:["contents"]
+      })
+      let gallery = {drawingsList: teamGallery};
+      let chatRoom = await this.chatRoomRepo.findOne({
+        where: [{name: data.teamName}],
+        relations:["chatHistories"],
+      })
+      let user = await this.userRepo.findOne(data.userId,{
+        select:["numberCollaborationTeams"],
+      })
+      await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
+      let chatHistoryList = {chatHistoryList: chatRoom.chatHistories}
+      client.join(data.teamName);
+      client.emit("teamsGallery", JSON.stringify(gallery));
+      client.emit("RoomChatHistories", JSON.stringify(chatHistoryList));
+    }
+  }
 
+  @SubscribeMessage("leaveTeam")
+  async leaveTeam(client: Socket, dto: any){
+    let data: LeaveTeamDto = JSON.parse(dto);
+
+
+  }
   //-----------------------------------------------------messages section --------------------------------
   @SubscribeMessage('msgToServer')
   async handleMessage(client: Socket, data: any){
