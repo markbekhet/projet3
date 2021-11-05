@@ -10,7 +10,7 @@ import {
 
 import { Canvas } from '@models/CanvasInfo';
 import { ChosenColors } from '@models/ChosenColors';
-import { DrawingContent, DrawingStatus } from '@models/DrawingContent';
+import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { ColorPickingService } from '@services/colorPicker/color-picking.service';

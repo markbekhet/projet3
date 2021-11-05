@@ -1,6 +1,6 @@
 import { ElementRef, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { DrawingContent } from '@models/DrawingContent';
+import { DrawingContent } from '@models/DrawingMeta';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -28,5 +28,4 @@ export class InteractionService {
   emitSelectedTool(tool: string) {
     this.selectedTool.next(tool);
   }
-  constructor() {}
 }

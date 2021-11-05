@@ -1,5 +1,5 @@
 // import { Renderer2 } from '@angular/core';
-import { DrawingStatus } from '@models/DrawingContent';
+import { DrawingStatus } from '@models/DrawingMeta';
 import { InteractionService } from '@services/interaction-service/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';

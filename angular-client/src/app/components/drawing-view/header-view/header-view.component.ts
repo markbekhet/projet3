@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { menuItems } from '@src/app/features';
+import { menuItems, FeatureItem } from '@models/FeatureMeta';
 import { Canvas } from '@models/CanvasInfo';
-import { FeatureItem } from '@models/FeatureItem';
 // import { InteractionService } from '@services/interaction-service/interaction.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
@@ -14,13 +13,15 @@ import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.
   styleUrls: ['./header-view.component.scss'],
 })
 export class HeaderViewComponent implements OnInit {
-  funcMenu: FeatureItem[] = menuItems;
+  menuItems: FeatureItem[];
   canvasSub!: Subscription;
   currentCanvas!: Canvas;
 
   constructor(
     private winService: ModalWindowService // private interaction: InteractionService
-  ) {}
+  ) {
+    this.menuItems = menuItems;
+  }
 
   openNewDrawingForm() {
     // eslint-disable-next-line no-alert

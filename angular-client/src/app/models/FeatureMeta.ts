@@ -1,4 +1,10 @@
-import { FeatureItem } from '@models/FeatureItem';
+export interface FeatureItem {
+  name: string;
+  shortcutName: string;
+  shortDescription: string;
+  description: string;
+  icon: string;
+}
 
 export const menuItems: FeatureItem[] = [
   {

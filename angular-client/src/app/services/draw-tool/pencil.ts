@@ -1,4 +1,4 @@
-import { DrawingStatus } from '@models/DrawingContent';
+import { DrawingStatus } from '@models/DrawingMeta';
 import { InteractionService } from '@services/interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
