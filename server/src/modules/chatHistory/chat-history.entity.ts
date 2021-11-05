@@ -1,3 +1,4 @@
+import { ServerMessage } from "src/MessageMeta";
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ChatRoom } from "../chatRoom/chat-room.entity";
 
@@ -18,6 +19,12 @@ export class ChatHistory extends BaseEntity{
     message: string;
 
     @ManyToOne(()=> ChatRoom, chatRoom=> chatRoom.chatHistories)
-    ChatRoom;
+    chatRoom: ChatRoom;
     
+    static createChatHistory(dto: ServerMessage){
+        let newChatHistory = new ChatHistory();
+        newChatHistory.from = dto.from;
+        newChatHistory.message = dto.message;
+        return newChatHistory;
+    }
 }

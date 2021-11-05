@@ -5,7 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from './enumerators/drawing-status';
 import { Status } from './enumerators/user-status';
 import { visibility } from './enumerators/visibility';
-import{ServerMessage, CustomDate, ClientMessage} from'./MessageMeta'
+import{ServerMessage} from'./MessageMeta'
 import { DrawingContent } from './modules/drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 import { Drawing } from './modules/drawing/drawing.entity';
@@ -21,6 +21,8 @@ import { UserRespository } from './modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
 import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
 import { ChatRoom } from './modules/chatRoom/chat-room.entity';
+import { ChatHistoryRepository } from './modules/chatHistory/chat-history.repository';
+import { ChatHistory } from './modules/chatHistory/chat-history.entity';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -33,7 +35,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @InjectRepository(DrawingContentRepository) private readonly drawingContentRepo: DrawingContentRepository,
     @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
     @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
-    @InjectRepository(ChatRoomRepository) private readonly chatRoomRepo: ChatRoomRepository){}
+    @InjectRepository(ChatRoomRepository) private readonly chatRoomRepo: ChatRoomRepository,
+    @InjectRepository(ChatHistoryRepository)private readonly chatHistoryRepo: ChatHistoryRepository){}
   
   async afterInit(server: Server) {
     try{
@@ -48,6 +51,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
   handleDisconnect(client: Socket) {
     this.logger.log(`Client diconnected: ${client.id}`);
+    client.leave("General")
   }
   
   async handleConnection(client: Socket, ...args: any[]) {
@@ -61,9 +65,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       select: ["id", "name","visibility"]
     })
     let teamsRet = {teamList: teams}
+    let generalRoom = await this.chatRoomRepo.findOne({
+      where: [{name: "General"}],
+      relations: ["chatHistories"]
+    });
+    client.join("General");
+    let chatHistories = {chatHistoryList: generalRoom.chatHistories}
+    let chatHistoriesString = JSON.stringify(chatHistories);
     let teamsString = JSON.stringify(teamsRet);
     client.emit("usersArrayToClient", usersString);
     client.emit("teamsArrayToClient", teamsString);
+    client.emit("RoomChatHistories", chatHistoriesString);
   }
   //---------------------------------------------------- drawing section --------------------------------
   @SubscribeMessage("drawingToServer")
@@ -81,7 +93,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage("createDrawingContent")
   async createContent(client: Socket, data: any){
-    //{drawingId: number}
     const dataMod: {drawingId: number} = JSON.parse(data);
     console.log(dataMod);
     const drawing = await this.drawingRepo.findOne(dataMod.drawingId);
@@ -127,9 +138,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       })
       this.notifyUserUpdate(userRet);
       let drawingString = JSON.stringify(drawingRet);
+      let chatRoom = await this.chatRoomRepo.findOne({
+        where: [{name: drawingRet.name}],
+        relations: ["chatHistories"],
+      })
+      let chatHistories = {chatHistoryList: chatRoom.chatHistories}
       client.join(dtoMod.drawingId.toString());
       // TODO: join client to the chat room
+      client.join(drawingRet.name);
       // TODO: emit all the chat history when done 
+      client.emit("RoomChatHistories", JSON.stringify(chatHistories));
+      // TODO: emit to the user the list of the users
+      // TODO: emit to the users who are in the room to notify them that a user has joined
       client.emit("drawingInformations", drawingString);
     }
   }
@@ -142,25 +162,37 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     });
     let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date.toString()
     let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
-    let timeEllapsedInSeconds = timeEllapsed/1000;
+    let timeEllapsedInSeconds = timeEllapsed/(1000*60);
     await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds, status: Status.ONLINE})
     user = await this.userRepo.findOne(dtoMod.userId, {select: ["id", "pseudo", "status"]});
+    let drawing = await this.drawingRepo.findOne(dtoMod.drawingId);
+    // TODO: emit to the users who are in the room to notify them that a user has joined
     this.notifyUserUpdate(user);
+    client.leave(drawing.name);
     client.leave(dtoMod.drawingId.toString());
   }
 
   //-----------------------------------------------------messages section --------------------------------
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, data: any): void {
-    var formattedData: ServerMessage = JSON.parse(data)
-    formattedData.date = {
-        hour: ('0' + formattedData.date.hour).slice(-2),
-        minutes: ('0' + formattedData.date.minutes).slice(-2),
-        seconds: ('0' + formattedData.date.seconds).slice(-2)
+  async handleMessage(client: Socket, data: any){
+    var dataMod: ServerMessage = JSON.parse(data)
+    let chatHistory = ChatHistory.createChatHistory(dataMod);
+    if(dataMod.roomName === undefined || dataMod.roomName === 'General'){
+      const chatRoom = await this.chatRoomRepo.findOne({
+        where: [{name: 'General'}]
+      })
+      chatHistory.chatRoom = chatRoom;
+      const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      this.wss.to("General").emit("msgToClient", JSON.stringify(savedChatHistory));
     }
-    this.logger.log("client: " + formattedData.clientName + " sent " + formattedData.message + " at" + formattedData.date.hour + ":" + formattedData.date.minutes + ":" +formattedData.date.seconds);
-    //return {event: 'msgToClient', data: text}
-    this.wss.emit("msgToClient", formattedData);
+    else{
+      const chatRoom = await this.chatRoomRepo.findOne({
+        where: [{name: dataMod.roomName}]
+      })
+      chatHistory.chatRoom = chatRoom;
+      const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      this.wss.to(dataMod.roomName).emit("msgToClient", JSON.stringify(savedChatHistory));
+    }
   }
   //-------------------------------------- notifications section-------------------------------------------------
   notifyUserUpdate(user: User){

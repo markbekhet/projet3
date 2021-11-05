@@ -11,7 +11,7 @@ export class ChatRoom extends BaseEntity{
     @Column({unique: true})
     name: string;
 
-    @OneToMany(()=>ChatHistory, chatHistory => chatHistory.ChatRoom, {nullable: true})
+    @OneToMany(()=>ChatHistory, chatHistory => chatHistory.chatRoom, {nullable: true})
     chatHistories: ChatHistory[]
 
     @OneToOne(()=> Drawing, drawing => drawing.chatRoom, {nullable: true})
