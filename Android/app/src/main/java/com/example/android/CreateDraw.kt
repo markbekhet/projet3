@@ -131,6 +131,11 @@ class CreateDraw : AppCompatActivity() {
             newDrawing.ownerId = ClientInfo.userId
             newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
+            height.text.clear()
+            width.text.clear()
+            drawingName.text.clear()
+            btnColorSelected.tooltipText = "FFFFFF"
+            btnColorSelected.setBackgroundColor(Color.WHITE)
             if (canProcessQuery) {
                 var response: Response<ResponseBody>? = null
                 runBlocking {
@@ -147,18 +152,16 @@ class CreateDraw : AppCompatActivity() {
                     val joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
                         ClientInfo.userId)
 
-                    SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
-                    SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
-                        if(args[0]!=null){
+
+                    var i = 0
+                    SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                    SocketHandler.getChatSocket().on("drawingInformations"){ args ->
+                        if(args[0]!=null && i == 0){
                             val data = args[0] as String
                             DrawingUtils.drawingInformation =
                                 ReceiveDrawingInformation().fromJson(data)
-                            height.text.clear()
-                            width.text.clear()
-                            drawingName.text.clear()
-                            btnColorSelected.tooltipText = "FFFFFF"
-                            btnColorSelected.setBackgroundColor(Color.WHITE)
                             startActivity(Intent(this, Drawing::class.java))
+                            i++
                         }
                     }
                 } else {

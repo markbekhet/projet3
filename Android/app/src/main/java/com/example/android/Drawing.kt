@@ -14,11 +14,11 @@ import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
 
 class Drawing : AppCompatActivity() {
-    private var socket: Socket?= null
+    private var socket = SocketHandler.getChatSocket()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
-        socket = SocketHandler.getChatSocket()
+        DrawingUtils.currentTool = pencilString
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"
         DrawingUtils.primaryColor = black
@@ -31,7 +31,6 @@ class Drawing : AppCompatActivity() {
         //Button new width
         //Button new width
         nom.text = DrawingUtils.drawingInformation!!.name
-        DrawingUtils.currentTool = pencilString
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
         val canvas = CanvasView(this)
         canvas.parseExistingDrawings(DrawingUtils.drawingInformation!!.contents)
@@ -43,11 +42,17 @@ class Drawing : AppCompatActivity() {
         canvas.setBackgroundColor(
             Color.parseColor("#ff${DrawingUtils.drawingInformation!!.bgColor}"))
         fl_drawing_view_container.addView(canvas)
-        socket!!.on("drawingToClient"){ args ->
+        socket.on("drawingToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
                 canvas.onReceivedDrawing(dataTransformed)
+            }
+        }
+        socket.on("drawingContentCreated"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                canvas.receiveContentID(data)
             }
         }
         pencil.setOnClickListener {
@@ -135,7 +140,7 @@ class Drawing : AppCompatActivity() {
     private fun leaveDrawing(){
         val leaveDrawing = LeaveDrawingDto(DrawingUtils.currentDrawingId, ClientInfo.userId)
         socket!!.emit("leaveDrawing", leaveDrawing.toJson())
-        finish()
+        //finish()
     }
 
     private class ColorPicker(var button: View, var string: String, var canvas: CanvasView):
