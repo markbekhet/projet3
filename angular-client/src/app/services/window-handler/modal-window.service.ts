@@ -12,10 +12,9 @@ export class ModalWindowService {
   constructor(private dialog: MatDialog) {
     this.dialogConfig = new MatDialogConfig();
     this.dialogConfig.id = 'modalWindow';
-    this.dialogConfig.height = '70vh';
-    this.dialogConfig.width = '20vw';
-    this.dialogConfig.minWidth = '400px';
-    this.dialogConfig.maxWidth = '25vw';
+    this.dialogConfig.height = '84vh';
+    this.dialogConfig.width = '35vw';
+    this.dialogConfig.minWidth = '470px';
     this.dialogConfig.disableClose = false;
     this.dialogConfig.hasBackdrop = true;
     this.dialogConfig.restoreFocus = false;

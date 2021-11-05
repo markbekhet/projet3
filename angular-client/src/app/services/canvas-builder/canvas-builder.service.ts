@@ -8,6 +8,7 @@ import { Canvas } from '@models/CanvasInfo';
 export class CanvasBuilderService {
   newCanvas: Canvas;
   canvSubject: Subject<Canvas>;
+
   constructor() {
     this.canvSubject = new Subject<Canvas>();
     this.newCanvas = {
