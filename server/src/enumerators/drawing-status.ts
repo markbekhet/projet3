@@ -1,6 +1,6 @@
 export enum DrawingStatus{
-    InProgress,
-    Done,
-    Selected,
-    Deleted,
+    InProgress= "InProgress",
+    Done = "Done",
+    Selected = "Selected",
+    Deleted = "Deleted",
 }

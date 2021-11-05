@@ -1,8 +1,4 @@
-:host {
-    padding:20px;
-    //background-color: green;
-    display: flex;
-    flex: 1;
-    //border-style: solid;
-    overflow: auto;
+#canvas,
+canvas {
+    box-shadow: 3px 3px 7px;
 }

@@ -33,11 +33,10 @@ export class Drawing extends BaseEntity{
     @Column()
     width: number;
 
-    @Column()
+    @Column({
+        unique: true,
+    })
     name: string;
-
-    @Column({type:"boolean"})
-    useOwnerPrivateInformation: boolean;
 
     @Column()
     bgColor: string;
@@ -53,13 +52,7 @@ export class Drawing extends BaseEntity{
             this.password = await bcrypt.hash(this.password, salt)
         }
     }
-    @BeforeInsert()
-    setUsagePrivateInfo(){
-        if(this.useOwnerPrivateInformation=== undefined){
-            this.useOwnerPrivateInformation = false;
-        }
-    }
-
+    
     static createDrawing(drawingInformation: CreateDrawingDto) {
         let newDrawing = new Drawing()
         newDrawing.ownerId = drawingInformation.ownerId;
@@ -68,7 +61,6 @@ export class Drawing extends BaseEntity{
         newDrawing.height = drawingInformation.height;
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
-        newDrawing.useOwnerPrivateInformation = drawingInformation.useOwnerPrivateInformation;
         newDrawing.bgColor = drawingInformation.color;
         return newDrawing;
     }

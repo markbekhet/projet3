@@ -1,37 +1,62 @@
-import { Renderer2 } from "@angular/core";
+import { Subscription } from "rxjs";
+import { ChosenColors } from "src/app/models/chosen-colors.model";
 import { DrawingStatus } from "src/app/models/drawing-content";
+import { ColorPickingService } from "../color-picker/color-picking.service";
 import { InteractionService } from "../interaction-service/interaction.service";
 import { InputObserver } from "./input-observer";
 import { Point } from "./point";
+
+const DEFAULT_PRIMARY_COLOR = 'ff0000ff';
+const DEFAULT_SECONDARY_COLOR = '000000';
+const DEFAULT_BACK_COLOR = 'ffffffff';
+
 
 export abstract class DrawingTool extends InputObserver{
     isDown: boolean;
     currentPath : Point[];
     //selected: boolean;
     ignoreNextUp: boolean;
-    drawingContentId: number;
-
+    colorPick: ColorPickingService;
+    chosenColor!: ChosenColors;
+    colorSub!: Subscription;
+    
     abstract createPath(path: Point[], doubleClickCheck?: boolean, removePerimeter?: boolean): void;
+    static drawingContentId: number = -1;
 
-    constructor(selected: boolean, private interactionService: InteractionService){
+    constructor(selected: boolean, protected interactionService: InteractionService, colorPick: ColorPickingService){
         super(selected);
         this.isDown = false;
         this.currentPath = [];
         this.ignoreNextUp = false;
-        this.drawingContentId = -1;
+        
+        this.colorPick = colorPick;
+        this.chosenColor = {
+            primColor: DEFAULT_PRIMARY_COLOR, secColor: DEFAULT_SECONDARY_COLOR,
+            backColor: DEFAULT_BACK_COLOR
+          };
     }
 
     // Implement down() method to get the id?
-    down(position: Point){
+    down(position: Point) {
         // emit socket event to server to get the content id
         // this is a stub
-        this.drawingContentId ++;
+        DrawingTool.drawingContentId++;
         //console.log(this.drawingContentId)
     }
     // To update the colors with the colors given by the draw view
-    updateColors(){
-
-    }
+    updateColors(): void {
+        const DEFPRIM = '#000000ff';
+        const DEFSEC = '#ff0000ff';
+        const DEFBACK = '#ff0000ff';
+        this.colorSub = this.colorPick.colorSubject.subscribe(
+          (color: ChosenColors) => {
+            if (color === undefined) {
+              color = { primColor: DEFPRIM, secColor: DEFSEC, backColor: DEFBACK };
+            }
+            this.chosenColor = { primColor: color.primColor, secColor: color.secColor, backColor: color.backColor };
+          });
+        this.colorPick.emitColors();
+      }
 
     abstract updateAttributes(): void;
 
@@ -46,7 +71,7 @@ export abstract class DrawingTool extends InputObserver{
         let d = '';
         d += this.createPath(this.currentPath);
         // emit event with the string d
-        this.interactionService.emitDrawingContent({contentId: this.drawingContentId, drawing:d, status:drawingStatus});
+        this.interactionService.emitDrawingContent({contentId: DrawingTool.drawingContentId, drawing:d, status:drawingStatus});
     }
     // I think we dont need this method
     updateDrawing(endIt?: boolean){

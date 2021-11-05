@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,13 +17,28 @@
             android:name=".client.Gallery"
             android:exported="true" />
         <activity
-            android:name=".canvas.CanvasActivity"
-            android:exported="true">
+            android:name=".canvas."
+            android:exported="true"
+            tools:ignore="MissingClass">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <activity
+            android:name=".CreateDraw"
+            android:exported="true"
+            android:label="@string/title_activity_createdraw"
+            android:theme="@style/Theme.Android.NoActionBar" />
+
+        <activity
+            android:name=".Drawing"
+            android:exported="true" />
+        <activity
+            android:name=".LandingPage"
+            android:exported="true"
+            android:label="@string/title_activity_landing_page" />
         </activity>
         <activity
             android:name=".profile.HistoryAndStatistics"
@@ -50,8 +66,9 @@
         <activity
             android:name=".LoginScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity
+
+            android:windowSoftInputMode="adjustPan"/>
+      <activity
             android:name=".MainActivity"
             android:exported="true" />
     </application>

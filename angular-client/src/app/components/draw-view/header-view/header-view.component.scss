@@ -1,5 +1,16 @@
-header {
+/*header {
     padding: 20px;
     //background-color: skyblue;
     //border-style: solid;
+}*/
+.topToolBar {
+    height: 9vh; //risque d'être changé pour un %
+}
+
+.topBtn {
+    margin-right: 3px;
+}
+#roots-container{
+    margin-left: 75%;
+    margin-top: 2%;
 }

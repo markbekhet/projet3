@@ -1,3 +1,7 @@
+.body {
+    margin: 0;
+}
+
 .container {
     display: grid;
     grid-template-columns: 0.5fr 1fr 1fr 1fr;
@@ -7,16 +11,39 @@
     height: 100vh;
 }
 
-:host {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+header {
+    grid-area: header;
 }
 
-.toolbox {
-    width: 25%;
+nav {
+    grid-area: nav;
+    background-color: rgb(161, 157, 157);
+   
 }
 
-.canvas {
-    width: 100%
+main {
+    background-color: rgb(182, 179, 179);
+    grid-area: content;
+
+    overflow: auto;
+    
+}
+
+.wrapper {
+    //margin-left: auto;
+    //margin-right: auto;
+    
+    width: auto;
+    height: auto;
+}
+
+#colorPicker{
+  float:left; 
+}
+
+#toolBox{
+  float:left; 
+}
+#toolAttributes{
+  float:left; 
 }
