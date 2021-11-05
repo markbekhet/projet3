@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
-import { menuItems } from '@src/app/features';
-import { FeatureItem } from '@models/FeatureItem';
+import { menuItems, FeatureItem } from '@models/FeatureMeta';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 
@@ -15,19 +14,20 @@ import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.
 export class LandingPageComponent implements OnInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
+
   constructor(private snackBar: MatSnackBar, private dialog: MatDialog) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
   }
 
   ngOnInit(): void {
-    this.onOpen();
+    this.showWelcomeMsg();
   }
 
-  onOpen(): void {
+  showWelcomeMsg(): void {
     const CONFIG = new MatSnackBarConfig();
-    const DURATION = 2500;
-    CONFIG.duration = DURATION; // temps de visibilité de la barre de bienvenue (ms)
+    const DURATION = 2000;
+    CONFIG.duration = DURATION;
     this.snackBar.open('Bienvenue !', undefined, CONFIG);
   }
 
@@ -41,14 +41,12 @@ export class LandingPageComponent implements OnInit {
 
   execute(shortcutName: string) {
     switch (shortcutName) {
-      case 'Créer': {
+      case 'Créer':
         this.openCreateNewDrawing();
         break;
-      }
-      case 'Ouvrir': {
+      case 'Ouvrir':
         this.openGallery();
         break;
-      }
       default:
         break;
     }

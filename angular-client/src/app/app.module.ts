@@ -13,6 +13,7 @@ import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.s
 import { ChatService } from './services/chat/chat.service';
 import { ColorConvertingService } from './services/colorPicker/color-converting.service';
 import { ColorPickingService } from './services/colorPicker/color-picking.service';
+import { DrawingSocketService } from './services/drawing-socket/drawing-socket.service';
 import { IconsService } from './services/icons/icons.service';
 import { InteractionService } from './services/interaction-service/interaction.service';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
@@ -63,6 +64,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ChatService,
     ColorConvertingService,
     ColorPickingService,
+    DrawingSocketService,
     IconsService,
     InteractionService,
     ModalWindowService,
