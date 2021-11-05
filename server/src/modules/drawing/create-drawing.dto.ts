@@ -1,24 +1,32 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { visibility } from "src/enumerators/visibility";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { visibility } from 'src/enumerators/visibility';
 
-export class CreateDrawingDto{
-    @IsEnum(visibility)
-    visibility: visibility;
+export class CreateDrawingDto {
+  @IsString()
+  name: string;
 
-    password: string;
+  @IsEnum(visibility)
+  visibility: visibility;
 
-    @IsNotEmpty()
-    ownerId: string;
+  @IsString()
+  @IsOptional()
+  password: string;
 
-    @IsNumber()
-    height: number;
+  @IsNumber()
+  width: number;
 
-    @IsNumber()
-    width: number;
+  @IsNumber()
+  height: number;
 
-    @IsNotEmpty()
-    name: string;
+  @IsNotEmpty()
+  color: string;
 
-    @IsNotEmpty()
-    color: string;
+  @IsNotEmpty()
+  ownerId: string;
 }
