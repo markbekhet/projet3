@@ -129,9 +129,11 @@ class HistoryAndStatistics : AppCompatActivity() {
                 collaborationAdapter?.add(collaborationInstance)
             }
             runOnUiThread {
-                disconnectionRecycleView?.adapter = collaborationAdapter
+                collaborationRecycleView?.adapter = collaborationAdapter
             }
         }
+
+        setCollaborationHistory()
     }
     fun startDrawingActivity(){
         startActivity(Intent(this, Drawing::class.java))
@@ -150,7 +152,7 @@ class ConnectionDisconnectionEntry : Item<GroupieViewHolder>() {
     }
 
     fun set(date: String?){
-        this.date = date
+        this.date = date.toString()
     }
 
 }
@@ -170,14 +172,15 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
             val joinRequest = JoinDrawingDto(
                 DrawingUtils.currentDrawingId,
                 ClientInfo.userId)
-
+            var i = 0
             SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
             SocketHandler.getChatSocket()!!.on("drawingInformations") { args ->
-                if (args[0] != null) {
+                if (args[0] != null && i == 0) {
                     val data = args[0] as String
                     DrawingUtils.drawingInformation =
                         ReceiveDrawingInformation().fromJson(data)
                     activity.startDrawingActivity()
+                    i++
                 }
             }
         }

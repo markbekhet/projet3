@@ -122,9 +122,20 @@ class Drawing : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        leaveDrawing()
+        super.onDestroy()
+    }
+
+    /*override fun onBackPressed() {
+        leaveDrawing()
+        super.onBackPressed()
+
+    }*/
+
+    private fun leaveDrawing(){
         val leaveDrawing = LeaveDrawingDto(DrawingUtils.currentDrawingId, ClientInfo.userId)
         socket!!.emit("leaveDrawing", leaveDrawing.toJson())
-        super.onDestroy()
+        finish()
     }
 
     private class ColorPicker(var button: View, var string: String, var canvas: CanvasView):
