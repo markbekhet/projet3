@@ -5,7 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from './enumerators/drawing-status';
 import { Status } from './enumerators/user-status';
 import { visibility } from './enumerators/visibility';
-import{ServerMessage} from'./MessageMeta'
+import{ClientMessage, ServerMessage} from'./MessageMeta'
 import { DrawingContent } from './modules/drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
 import { Drawing } from './modules/drawing/drawing.entity';
@@ -157,13 +157,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async leaveDrawing(client: Socket, dto: any){
     let dtoMod :LeaveDrawingDto = JSON.parse(dto)
     let user = await this.userRepo.findOne(dtoMod.userId, {
-      select:['totalCollaborationTime'],
+      select:['totalCollaborationTime', 'numberCollaboratedDrawings'],
       relations: ['drawingEditionHistories']
     });
     let editionHistoryDate = user.drawingEditionHistories[user.drawingEditionHistories.length-1].date.toString()
     let timeEllapsed: number = new Date().getTime() - new Date(editionHistoryDate).getTime()
-    let timeEllapsedInSeconds = timeEllapsed/(1000*60);
-    await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: user.totalCollaborationTime + timeEllapsedInSeconds, status: Status.ONLINE})
+    let totalCollaborationTime = timeEllapsed/(1000*60) + user.totalCollaborationTime;
+    let averageCollaborationTime = totalCollaborationTime/user.numberCollaboratedDrawings
+    await this.userRepo.update(dtoMod.userId, {totalCollaborationTime: totalCollaborationTime, status: Status.ONLINE, averageCollaborationTime: averageCollaborationTime})
     user = await this.userRepo.findOne(dtoMod.userId, {select: ["id", "pseudo", "status"]});
     let drawing = await this.drawingRepo.findOne(dtoMod.drawingId);
     // TODO: emit to the users who are in the room to notify them that a user has joined
@@ -183,7 +184,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       })
       chatHistory.chatRoom = chatRoom;
       const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
-      this.wss.to("General").emit("msgToClient", JSON.stringify(savedChatHistory));
+      let message: ClientMessage = {from:dataMod.from, message: dataMod.message, date: savedChatHistory.date, roomName: dataMod.roomName};
+      this.wss.to("General").emit("msgToClient", JSON.stringify(message));
     }
     else{
       const chatRoom = await this.chatRoomRepo.findOne({
@@ -191,7 +193,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       })
       chatHistory.chatRoom = chatRoom;
       const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
-      this.wss.to(dataMod.roomName).emit("msgToClient", JSON.stringify(savedChatHistory));
+      let message: ClientMessage = {from:dataMod.from, message: dataMod.message, date: savedChatHistory.date, roomName: dataMod.roomName};
+      this.wss.to(dataMod.roomName).emit("msgToClient", JSON.stringify(message));
     }
   }
   //-------------------------------------- notifications section-------------------------------------------------

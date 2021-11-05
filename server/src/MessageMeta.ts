@@ -5,7 +5,8 @@ export interface ServerMessage{
 }
 
 export interface ClientMessage{
-    clientName: string,
+    from: string,
     message: string,
-    timeStamp: string,
+    date: string,
+    roomName: string,
 }

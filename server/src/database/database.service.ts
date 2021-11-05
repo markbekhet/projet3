@@ -198,7 +198,7 @@ export class DatabaseService {
                 {ownerId: userId, visibility:visibility.PRIVATE},
                 {visibility: visibility.PROTECTED},
             ],
-            select: ["id", "visibility"],
+            select: ["id", "visibility", "name", "bgColor"],
             relations:["contents"],
         })
         return drawings;
