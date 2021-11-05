@@ -67,7 +67,7 @@ export class Drawing extends BaseEntity {
     newDrawing.password = drawingInformation.password;
     newDrawing.width = drawingInformation.width;
     newDrawing.height = drawingInformation.height;
-    newDrawing.bgColor = drawingInformation.color;
+    newDrawing.bgColor = drawingInformation.bgColor;
     newDrawing.ownerId = drawingInformation.ownerId;
     return newDrawing;
   }

@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Drawing } from '@models/DrawingMeta';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-const PATH = 'localhost:3000';
+const PATH = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root',

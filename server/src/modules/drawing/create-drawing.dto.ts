@@ -24,8 +24,9 @@ export class CreateDrawingDto {
   @IsNumber()
   height: number;
 
+  @IsString()
   @IsNotEmpty()
-  color: string;
+  bgColor: string;
 
   @IsNotEmpty()
   ownerId: string;

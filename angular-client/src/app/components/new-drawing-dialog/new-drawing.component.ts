@@ -19,6 +19,9 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 // import { SocketService } from '@services/socket/socket.service';
 
+// TODO: à changer, juste pour tester
+const PAUL_USER_ID = 'a7e2dd1a-4746-40e1-b3a0-b7b6f611600a';
+
 @Component({
   selector: 'app-new-drawing',
   templateUrl: './new-drawing.component.html',
@@ -35,9 +38,9 @@ export class NewDrawingComponent implements OnInit {
   width: number;
   height: number;
   bgColor: string;
+  ownerId: string = PAUL_USER_ID; // TODO: à changer, juste pour tester
 
-  newDrawingToSendToDB: Drawing = {
-    drawingId: undefined,
+  newDrawing: Drawing = {
     name: '',
     visibility: VisibilityLevel.PUBLIC,
     password: undefined,
@@ -122,18 +125,22 @@ export class NewDrawingComponent implements OnInit {
   onSubmit() {
     // TODO: To change while integrating with socket
     const VALUES = this.newDrawingForm.value;
-    this.newDrawingToSendToDB = VALUES;
 
-    console.log(
-      'TURBO 🚀 - file: new-drawing.component.ts - line 83 - NewDrawingComponent - VALUES',
-      VALUES
-    );
-    console.log(
-      'TURBO 🚀 - file: new-drawing.component.ts - line 125 - NewDrawingComponent - this.newDrawingToSendToDB',
-      this.newDrawingToSendToDB
-    );
+    if (VALUES.drawingPassword === '') {
+      VALUES.drawingPassword = undefined;
+    }
 
-    this.drawingService.createDrawing(VALUES);
+    this.newDrawing = {
+      name: VALUES.drawingName,
+      visibility: VALUES.drawingVisibility,
+      password: VALUES.drawingPassword,
+      width: VALUES.canvWidth,
+      height: VALUES.canvHeight,
+      bgColor: VALUES.canvColor,
+      ownerId: this.ownerId,
+    };
+
+    this.drawingService.createDrawing(this.newDrawing);
 
     this.canvasBuilder.setCanvasFromForm(
       +VALUES.canvWidth,
@@ -141,8 +148,8 @@ export class NewDrawingComponent implements OnInit {
       VALUES.canvColor
     );
 
-    this.canvasBuilder.emitCanvas();
     this.closeModalForm();
+    this.canvasBuilder.emitCanvas();
     this.router.navigate(['/draw']);
     const LOAD_TIME = 15;
     setTimeout(() => {
