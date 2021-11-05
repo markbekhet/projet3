@@ -90,10 +90,11 @@ class LoginScreen : AppCompatActivity() {
                 }
             }
 
-            if (!verifyAuth(clientService!!.authentify)) {
+            if (response!!.isSuccessful) {
                 println(clientService!!.authentify)
                 ClientInfo.userId = response?.body()?.string().toString()
-                startActivity(Intent(this, OwnProfile::class.java))
+                println("Client id: ${ClientInfo.userId}")
+                startActivity(Intent(this, LandingPage::class.java))
                 print(username.toString())
 
             } else {

@@ -1,44 +1,77 @@
-// import { Renderer2 } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Subscription } from 'rxjs';
+import { ChosenColors } from '@models/ChosenColors';
 import { DrawingStatus } from '@models/DrawingMeta';
+import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction-service/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
+
+const DEFAULT_PRIMARY_COLOR = 'ff0000ff';
+const DEFAULT_SECONDARY_COLOR = '000000';
+const DEFAULT_BACK_COLOR = 'ffffffff';
 
 export abstract class DrawingTool extends InputObserver {
   isDown: boolean;
   currentPath: Point[];
   // selected: boolean;
   ignoreNextUp: boolean;
-  drawingContentId: number;
+  colorPick: ColorPickingService;
+  chosenColor!: ChosenColors;
+  colorSub!: Subscription;
 
   abstract createPath(
     path: Point[],
     doubleClickCheck?: boolean,
     removePerimeter?: boolean
   ): void;
+  static drawingContentId: number = -1;
 
   constructor(
     selected: boolean,
-    private interactionService: InteractionService
+    protected interactionService: InteractionService,
+    colorPick: ColorPickingService
   ) {
     super(selected);
     this.isDown = false;
     this.currentPath = [];
     this.ignoreNextUp = false;
-    this.drawingContentId = -1;
+
+    this.colorPick = colorPick;
+    this.chosenColor = {
+      primColor: DEFAULT_PRIMARY_COLOR,
+      secColor: DEFAULT_SECONDARY_COLOR,
+      backColor: DEFAULT_BACK_COLOR,
+    };
   }
 
   // Implement down() method to get the id?
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   down(position: Point) {
     // emit socket event to server to get the content id
     // this is a stub
-    this.drawingContentId++;
+    DrawingTool.drawingContentId++;
     // console.log(this.drawingContentId)
   }
-
   // To update the colors with the colors given by the draw view
-  updateColors() {}
+  updateColors(): void {
+    const DEFPRIM = '#000000ff';
+    const DEFSEC = '#ff0000ff';
+    const DEFBACK = '#ff0000ff';
+    this.colorSub = this.colorPick.colorSubject.subscribe(
+      (color: ChosenColors) => {
+        if (color === undefined) {
+          // eslint-disable-next-line no-param-reassign
+          color = { primColor: DEFPRIM, secColor: DEFSEC, backColor: DEFBACK };
+        }
+        this.chosenColor = {
+          primColor: color.primColor,
+          secColor: color.secColor,
+          backColor: color.backColor,
+        };
+      }
+    );
+    this.colorPick.emitColors();
+  }
 
   abstract updateAttributes(): void;
 
@@ -48,14 +81,13 @@ export abstract class DrawingTool extends InputObserver {
     this.isDown = false;
     // emit event with empty string
   }
-
-  // Called while the mouse is moving
+  // called while the mouse is moving
   updateProgress(drawingStatus: DrawingStatus) {
     let d = '';
     d += this.createPath(this.currentPath);
     // emit event with the string d
     this.interactionService.emitDrawingContent({
-      contentId: this.drawingContentId,
+      contentId: DrawingTool.drawingContentId,
       drawing: d,
       status: drawingStatus,
       // TODO: 0 for drawingId here is just a placeholder to remove compile error
@@ -63,9 +95,8 @@ export abstract class DrawingTool extends InputObserver {
     });
   }
   // I think we dont need this method
-  updateDrawing(endIt?: boolean) {
+  updateDrawing(endIt?: boolean): string {
     let d = '';
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     d += this.createPath(this.currentPath, endIt);
     return d;
     // emit event with the string d and status === done (temp)

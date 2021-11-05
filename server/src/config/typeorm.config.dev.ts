@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 // Kyro DB
-// export const typeormConfig: TypeOrmModuleOptions = {
+// export const typeormConfigDevDB: TypeOrmModuleOptions = {
 //   type: 'postgres',
 //   host: 'localhost',
 //   port: 5432,
@@ -14,7 +14,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 // };
 
 // Paul DB
-export const typeormConfig: TypeOrmModuleOptions = {
+export const typeormConfigDevDB: TypeOrmModuleOptions = {
   type: 'postgres',
   host: 'localhost',
   port: 5432,

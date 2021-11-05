@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:focusableInTouchMode="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <!--        <fragment-->
+                <!--            android:id="@+id/playersInGame"-->
+                <!--            android:layout_width="200dp"-->
+                <!--            android:layout_height="match_parent"-->
+                <!--            android:name="com.polymtl.faismoiundessin.FragmentPlayersInGame"/>-->
+                <TextView
+                    android:id="@+id/nom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="nom du dessin"
+                    android:textColor="@color/main_color"
+                    android:textSize="32dp"
+                    android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/ll_action_buttons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/selection"
+                            android:layout_width="70dp"
+                            android:layout_height="50dp"
+                            android:contentDescription="image"
+                            android:src="@drawable/select"
+                            android:scaleType="fitXY"
+                            android:visibility="visible"
+                            android:layout_marginTop="5dp"/>
+
+                        <ImageButton
+                            android:id="@+id/rectangle"
+                            android:layout_width="70dp"
+                            android:layout_height="50dp"
+                            android:contentDescription="image"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/rectangle"
+                            android:layout_marginTop="5dp"
+                            android:visibility="visible" />
+
+                        <ImageButton
+                            android:id="@+id/ellipse"
+                            android:layout_width="70dp"
+                            android:layout_height="50dp"
+                            android:contentDescription="image"
+                            android:scaleType="fitXY"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/ellipse"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/pencil"
+                            android:layout_width="70dp"
+                            android:layout_height="50dp"
+                            android:contentDescription="image"
+                            android:scaleType="fitXY"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/pencil"
+                            android:tag="@color/white" />
+
+                        <Button
+                            android:id="@+id/delete"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:background="@drawable/rectangle_background"
+                            android:backgroundTint="@color/white"
+                            android:layout_marginTop="5dp"
+                            android:text="Supprimer"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Épaisseur du trait"
+                            android:layout_marginTop="5dp"/>
+
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/thickness"
+                            style="@style/Widget.AppCompat.SeekBar.Discrete"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:valueFrom="1f"
+                            android:layout_marginTop="5dp"
+                            android:valueTo="36f"
+                            android:stepSize="1"
+                            />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Couleur du trait/bordure"
+                            android:layout_marginTop="5dp"/>
+
+                        <LinearLayout
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:background="@drawable/rectangle_background"
+                            android:layout_marginTop="5dp">
+                            <View
+                                android:id="@+id/primaryColor"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:clickable="true"
+                                android:background="#000000"
+                                android:enabled="true"/>
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Couleur du fond de la forme"
+                            android:layout_marginTop="5dp"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/rectangle_background"
+                            android:layout_marginTop="5dp">
+                            <View
+                                android:id="@+id/secondaryColor"
+                                android:background="#FFFFFF"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:clickable="true"
+                                android:enabled="true"/>
+                        </LinearLayout>
+
+                        <CheckBox
+                            android:id="@+id/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Fond transparent"
+                            android:checked="true"/>
+                    </LinearLayout>
+                    <ScrollView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <FrameLayout
+                                android:id="@+id/fl_drawing_view_container"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/background"
+                                android:padding="1dp">
+
+                                <!-- In FrameLayout the component which are
+                               added below are in foreground and added above are in Background.-->
+                                <ImageView
+                                    android:id="@+id/background"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/rectangle_background"
+                                    android:contentDescription="image"
+                                    android:scaleType="centerCrop" />
+
+
+                            </FrameLayout>
+                        </LinearLayout>
+                    </ScrollView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

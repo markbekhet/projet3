@@ -77,6 +77,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   disconnect(): void {
     try {
       this.auth.disconnect().subscribe(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (code) => {
           this.router.navigate(['/']);
         }, // this.username = username

@@ -1,9 +1,23 @@
+/* eslint-disable no-restricted-syntax */
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-
 import { ChosenColors } from '@models/ChosenColors';
-import { colorData } from '@components/mini-color-picker/color-data';
+import { colorData } from '@components/color-picker/color-data';
 import { ColorConvertingService } from './color-converting.service';
+
+/* -----------------------------Color valur table-----------------------------------------*
+ * RGBA min/max value : R [0,255] , G [0,255] , B [0,255] , A [0,1]                       *
+ * HSL  min/max value : H [0,360] , S [0,1] , L [0,1]                                     *
+ * HEX  min/max value : R [00,FF] , G [00,FF] , B [00,FF] , A [00,FF] ( i.e FF = 255 )    *
+ * Display min/max value : RGB [0,255] , H [0,360] , ASL [0,100]% , HEX [00,FF]           *
+ * Conversion methode for display : RBAH HEX  the same value, ASL * 100 for poucent value *
+ * HEX color string 9 number total: #RRGGBBAA                                             *
+ * # is not needed for math so it need to be cut from formula (i.e substring(1,X))        *
+ * RR is red value.To get use substring(1,3) if # is present else substring(0,2)          *
+ * GG is green value.To get use substring(3,5) if # is present else substring(2,4)        *
+ * BB is blue value.To get use substring(5,7) if # is present else substring(4,6)         *
+ * AA is opacity value.To get use substring(7,9) if # is present else substring(6,8)      *
+ *---------------------------------------------------------------------------------------*/
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +27,10 @@ export class ColorPickingService {
   cData = colorData; // Interface for Color data
   colors!: ChosenColors;
   colorSubject: Subject<ChosenColors> = new Subject<ChosenColors>(); // le constuire à qqpart
+
   constructor(public colorConvert: ColorConvertingService) {}
 
   emitColors(): void {
-    // observerved-observer design pattern
     this.colorSubject.next(this.colors);
   }
 
@@ -101,6 +115,7 @@ export class ColorPickingService {
         break;
     }
   }
+
   getSaturation(): number {
     const RET = -1;
     switch (this.cData.colorMode) {
@@ -287,7 +302,7 @@ export class ColorPickingService {
     this.updateDisplayRGB(rgb);
     // HSL value of last color for display
     this.updateDisplayHSL(hsl);
-    this.upadateDisplayHex(hex);
+    this.updateDisplayHex(hex);
     this.setColorsFromForm(
       this.cData.primaryColor,
       this.cData.secondaryColor,
@@ -325,7 +340,7 @@ export class ColorPickingService {
     );
   }
 
-  upadateDisplayHex(hex: string): void {
+  updateDisplayHex(hex: string): void {
     const BIG_SUB = 7;
     const AVERAGE_SUB = 5;
     const SMALL_SUB = 3;
@@ -452,7 +467,6 @@ export class ColorPickingService {
       default:
         break;
     }
-
     switch (this.cData.colorMode) {
       case this.cData.PRIMARY_COLOR_MODE:
         ret += this.colorConvert.alphaRGBToHex(this.cData.primaryAlpha);

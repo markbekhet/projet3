@@ -1,24 +1,40 @@
+import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingStatus } from '@models/DrawingMeta';
 import { InteractionService } from '@services/interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
+import { ToolsAttributes } from './tools-attributes';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// const DEFAULT_LINE_THICKNESS = 5;
+const DEF_LINE_THICKNESS = 5;
+
 export class Pencil extends DrawingTool {
-  constructor(selected: boolean, interactionService: InteractionService) {
-    super(selected, interactionService);
-    // this.updateColors();
+  attr: ToolsAttributes;
+
+  constructor(
+    selected: boolean,
+    interactionService: InteractionService,
+    colorPick: ColorPickingService
+  ) {
+    super(selected, interactionService, colorPick);
+    this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
     this.updateAttributes();
+    this.updateColors();
   }
-  updateAttributes() {}
+
+  updateAttributes(): void {
+    this.interactionService.$toolsAttributes.subscribe(
+      (attr: ToolsAttributes) => {
+        if (attr) {
+          this.attr = { pencilLineThickness: attr.pencilLineThickness };
+        }
+      }
+    );
+  }
 
   down(position: Point) {
     this.currentPath = [];
     // console.log('here');
     super.down(position);
-
-    this.ignoreNextUp = false;
 
     // the pencil should affect the canvas
     this.isDown = true;
@@ -52,6 +68,7 @@ export class Pencil extends DrawingTool {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   doubleClick(Position: Point) {}
+
   // this is the function used to write the string
   createPath(p: Point[]): string {
     let s = '';
@@ -67,10 +84,10 @@ export class Pencil extends DrawingTool {
       }
     }
     // eslint-disable-next-line no-useless-escape
-    s += `\" stroke="#000000" fill="none" `;
+    s += `\" stroke="${this.chosenColor.primColor}" fill="none"`;
     // Replace the number by the width chosen in the component
-    s += `stroke-width="5" `;
-    s += `transform="translate(0,0)"`;
+    s += ` stroke-width="${this.attr.pencilLineThickness}"`;
+    s += ` transform="translate(0,0)"`;
     s += '/>\n';
     // console.log(s)
     return s;

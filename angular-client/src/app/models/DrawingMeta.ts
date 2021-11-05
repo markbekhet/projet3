@@ -21,8 +21,8 @@ export interface DrawingContent {
 }
 
 export enum DrawingStatus {
-  InProgress,
-  Done,
-  Selected,
-  Deleted,
+  InProgress = 'In Progress',
+  Done = 'Done',
+  Selected = 'Selected',
+  Deleted = 'Deleted',
 }

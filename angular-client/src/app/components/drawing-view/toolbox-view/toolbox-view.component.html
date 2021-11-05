@@ -1,10 +1,10 @@
-<!--BOITE A OUTILS
-<div fxLayout="column" fxLayoutAlign="end center" fxFlex="66" fxFlexOffset="100">
-    <app-option-view fxFlex></app-option-view>
-</div>-->
+<div>
+    <app-color-picker></app-color-picker>
+</div>
 <div class="drawingTools" *ngFor="let func of toolItems">
     <button class=" toolBtn" mat-icon-button color="primary" matTooltip={{func.name}} matTooltipPosition="after"
-            (click)="buttonAction(func.name)">
+            (click)="buttonAction(func.name)" [disabled]="func.name === 'Efface'">
+        <!--j'ai disable le bouton de l'efface pour le moment car ca brise un peu le reste des tools-->
         <mat-icon [ngClass]="(activeButton === func.name)? 'selected':'notSelected'" svgIcon={{func.icon}}>
         </mat-icon>
     </button>
