@@ -10,13 +10,14 @@ import { AngularMaterialModule } from './angular-material.module';
 
 import { AuthService } from './services/authentication/auth.service';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
-import { ChatService } from './services/chat/chat.service';
 import { ColorConvertingService } from './services/color-picker/color-converting.service';
 import { ColorPickingService } from './services/color-picker/color-picking.service';
-import { DrawingSocketService } from './services/drawing-socket/drawing-socket.service';
+import { DrawingService } from './services/drawing/drawing.service';
 import { IconsService } from './services/icons/icons.service';
 import { InteractionService } from './services/interaction/interaction.service';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
+import { SocketService } from './services/socket/socket.service';
+import { ValidationService } from './services/validation/validation.service';
 
 import { AppComponent } from './components/app-component/app.component';
 import { ColorPickerComponent } from './components/color-picker/color-picker.component';
@@ -67,13 +68,14 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
   providers: [
     AuthService,
     CanvasBuilderService,
-    ChatService,
     ColorConvertingService,
     ColorPickingService,
-    DrawingSocketService,
+    DrawingService,
     IconsService,
     InteractionService,
     ModalWindowService,
+    SocketService,
+    ValidationService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

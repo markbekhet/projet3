@@ -15,8 +15,9 @@ import {
   VisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-import { DrawingSocketService } from '@services/drawing-socket/drawing-socket.service';
+import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+// import { SocketService } from '@services/socket/socket.service';
 
 @Component({
   selector: 'app-new-drawing',
@@ -48,7 +49,7 @@ export class NewDrawingComponent implements OnInit {
 
   constructor(
     private canvasBuilder: CanvasBuilderService,
-    private drawingSocketService: DrawingSocketService,
+    private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
     private windowService: ModalWindowService
@@ -132,7 +133,7 @@ export class NewDrawingComponent implements OnInit {
       this.newDrawingToSendToDB
     );
 
-    this.drawingSocketService.createDrawing(VALUES);
+    this.drawingService.createDrawing(VALUES);
 
     this.canvasBuilder.setCanvasFromForm(
       +VALUES.canvWidth,

@@ -11,14 +11,13 @@
 
             <mat-form-field class="new-drawing-form-input-visibility">
                 <mat-label for="drawingVisibility">Niveau de visibilité</mat-label>
-                <mat-select formControlName="drawingVisibility" [(value)]="visibility">
+                <mat-select formControlName="drawingVisibility" [(value)]="visibility" required>
                     <mat-option *ngFor="let drawingVisibilityItem of drawingVisibilityItems"
                                 [value]="drawingVisibilityItem.value"> {{ drawingVisibilityItem.name }}
                     </mat-option>
                 </mat-select>
                 <mat-hint class="new-drawing-form-hint">{{ showVisibilityHint() }}</mat-hint>
             </mat-form-field>
-
 
             <mat-form-field *ngIf="showPasswordInput()" class="new-drawing-form-input-password">
                 <mat-label for="drawingPassword">Mot de passe</mat-label>

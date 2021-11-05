@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Message, CustomDate } from '@models/MessageMeta';
 import { AuthService } from '@services/authentication/auth.service';
-import { ChatService } from '@services/chat/chat.service';
+import { SocketService } from '@services/socket/socket.service';
 
 @Component({
   selector: 'app-communication-page',
@@ -17,11 +17,11 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   messageForm: FormGroup;
 
   constructor(
-    private router: Router,
     private activeRoute: ActivatedRoute,
+    private auth: AuthService,
     private formBuilder: FormBuilder,
-    private chat: ChatService,
-    private auth: AuthService
+    private router: Router,
+    private socketService: SocketService
   ) {
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [Validators.required]),
@@ -33,7 +33,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     this.messages = [];
     // this.chat.connect();
 
-    this.chat.getNewMessage().subscribe((message: Message) => {
+    this.socketService.getNewMessage().subscribe((message: Message) => {
       if (message.clientName) {
         this.messages.unshift(message);
       }
@@ -57,7 +57,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
       date,
     };
 
-    this.chat.sendMessage(message);
+    this.socketService.sendMessage(message);
     console.log(`client sent: ${message}`);
 
     this.messageForm.reset();
@@ -70,7 +70,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     this.messages = [];
-    this.chat.disconnect();
+    this.socketService.disconnect();
     this.disconnect();
   }
 

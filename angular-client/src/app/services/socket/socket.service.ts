@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-// import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject /* , Observable */ } from 'rxjs';
 import { io } from 'socket.io-client';
-import { Drawing } from '@models/DrawingMeta';
-// import { DrawingContent } from '@models/DrawingContent';
+
+import { Message } from '@models/MessageMeta';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'localhost:3000';
@@ -12,21 +11,18 @@ const PATH = 'localhost:3000';
 @Injectable({
   providedIn: 'root',
 })
-export class DrawingSocketService {
+export class SocketService {
   socket = io(PATH);
 
-  constructor(private httpClient: HttpClient) {}
-
-  createDrawing(newDrawing: Drawing) {
-    this.httpClient.post(`${PATH}/drawing`, newDrawing).subscribe(
-      (data) => {
-        console.log(data);
-      },
-      (error) => {
-        console.log(error.message);
-      }
-    );
-  }
+  public message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
+    clientName: '',
+    message: '',
+    date: {
+      hour: '',
+      minutes: '',
+      seconds: '',
+    },
+  });
 
   // drawingElement: Subject<DrawingContent> = new Subject<DrawingContent>();
   // $drawingElements: Observable<DrawingContent> =
@@ -52,4 +48,18 @@ export class DrawingSocketService {
   public getSocketID(): string {
     return this.socket.id;
   }
+
+  public sendMessage(message: Message) {
+    console.log(`chat service sent: ${message.message}`);
+    this.socket.emit('msgToServer', JSON.stringify(message));
+  }
+
+  public getNewMessage = () => {
+    this.socket.on('msgToClient', (message: Message) => {
+      console.log(`chat service received: ${message.message}`);
+      this.message$.next(message);
+    });
+
+    return this.message$.asObservable();
+  };
 }
