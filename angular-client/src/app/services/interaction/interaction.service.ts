@@ -9,14 +9,14 @@ import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
   providedIn: 'root',
 })
 export class InteractionService {
-  selectedTool: Subject<string> = new Subject<string>();
-  $selectedTool: Observable<string> = this.selectedTool.asObservable();
-
   drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
   $drawing: Observable<DrawingContent> = this.drawing.asObservable();
 
   ref: Subject<ElementRef> = new Subject<ElementRef>();
   $refObs: Observable<ElementRef> = this.ref.asObservable();
+
+  selectedTool: Subject<string> = new Subject<string>();
+  $selectedTool: Observable<string> = this.selectedTool.asObservable();
 
   toolsAttributes: Subject<ToolsAttributes> = new Subject<ToolsAttributes>();
   $toolsAttributes: Observable<ToolsAttributes> =

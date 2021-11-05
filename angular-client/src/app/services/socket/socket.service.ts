@@ -6,13 +6,25 @@ import { io } from 'socket.io-client';
 import { Message } from '@models/MessageMeta';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-const PATH = 'localhost:3000';
+const PATH = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
   socket = io(PATH);
+
+  public connect(): void {
+    this.socket = io(PATH);
+  }
+
+  public disconnect(): void {
+    this.socket.disconnect();
+  }
+
+  public getSocketID(): string {
+    return this.socket.id;
+  }
 
   public message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
     clientName: '',
@@ -36,18 +48,6 @@ export class SocketService {
 
   // ref: Subject<ElementRef> = new Subject<ElementRef>();
   // $refObs: Observable<ElementRef> = this.ref.asObservable();
-
-  public connect(): void {
-    this.socket = io(PATH);
-  }
-
-  public disconnect(): void {
-    this.socket.disconnect();
-  }
-
-  public getSocketID(): string {
-    return this.socket.id;
-  }
 
   public sendMessage(message: Message) {
     console.log(`chat service sent: ${message.message}`);

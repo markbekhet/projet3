@@ -23,4 +23,18 @@ export class DrawingService {
       }
     );
   }
+
+  // async createDrawing(newDrawing: Drawing): Promise<string | undefined> {
+  //   let drawingId: string | undefined;
+  //   this.httpClient.post(`${PATH}/drawing`, newDrawing).subscribe(
+  //     (data) => {
+  //       drawingId = data.toString();
+  //       console.log(data);
+  //     },
+  //     (error) => {
+  //       console.log(error.message);
+  //     }
+  //   );
+  //   return drawingId;
+  // }
 }

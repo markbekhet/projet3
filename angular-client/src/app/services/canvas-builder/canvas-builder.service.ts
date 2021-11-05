@@ -29,7 +29,7 @@ export class CanvasBuilderService {
   }
 
   getDefColor(): string {
-    const DEFCOLOR = 'ffffff';
+    const DEFCOLOR = 'FFFFFF';
     return DEFCOLOR;
   }
 

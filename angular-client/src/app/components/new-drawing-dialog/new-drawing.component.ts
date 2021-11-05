@@ -140,7 +140,11 @@ export class NewDrawingComponent implements OnInit {
       ownerId: this.ownerId,
     };
 
-    this.drawingService.createDrawing(this.newDrawing);
+    const drawingId = this.drawingService.createDrawing(this.newDrawing);
+    console.log(
+      'TURBO 🚀 - file: new-drawing.component.ts - line 144 - NewDrawingComponent - drawingId',
+      drawingId
+    );
 
     this.canvasBuilder.setCanvasFromForm(
       +VALUES.canvWidth,

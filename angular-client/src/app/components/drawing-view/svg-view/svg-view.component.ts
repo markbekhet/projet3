@@ -64,7 +64,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @ViewChild('inProgress', { static: false }) inProgress!: ElementRef;
   height!: number;
   width!: number;
-  backColor: string = '#ffffff';
+  backColor: string = '#FFFFFF';
   toolsContainer = new Map();
   mouseHandler!: MouseHandler;
   contents: Map<number, SVGElement> = new Map();

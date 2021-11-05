@@ -7,9 +7,9 @@ import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
 
-const DEFAULT_PRIMARY_COLOR = 'ff0000ff';
+const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
 const DEFAULT_SECONDARY_COLOR = '000000';
-const DEFAULT_BACK_COLOR = 'ffffffff';
+const DEFAULT_BACK_COLOR = 'FFFFFFFF';
 
 export abstract class DrawingTool extends InputObserver {
   isDown: boolean;

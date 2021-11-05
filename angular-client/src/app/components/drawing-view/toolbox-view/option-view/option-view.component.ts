@@ -89,9 +89,9 @@ export class ShapeTypePipe implements PipeTransform {
       case 'OUTLINE':
         return 'Contours';
       case 'FULL':
-        return 'Plein';
+        return 'Fond';
       case 'BOTH':
-        return 'Contours + Plein';
+        return 'Contours + Fond';
       default:
         break;
     }
