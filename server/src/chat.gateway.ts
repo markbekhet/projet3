@@ -26,6 +26,10 @@ import { ChatHistory } from './modules/chatHistory/chat-history.entity';
 import { ActiveUser } from './modules/active-users/active-users.entity';
 import { ACtiveUserRepository } from './modules/active-users/active-users.repository';
 import { timingSafeEqual } from 'crypto';
+import { JoinedTeam } from './modules/joined-teams/joined-teams.entity';
+import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.repository';
+import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
+import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -39,8 +43,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @InjectRepository(DrawingRepository) private readonly drawingRepo: DrawingRepository,
     @InjectRepository(DrawingEditionRepository) private readonly drawingEditionRepository: DrawingEditionRepository,
     @InjectRepository(ChatRoomRepository) private readonly chatRoomRepo: ChatRoomRepository,
-    @InjectRepository(ChatHistoryRepository)private readonly chatHistoryRepo: ChatHistoryRepository,
-    @InjectRepository(ACtiveUserRepository)private readonly activeUsersRepo: ACtiveUserRepository){}
+    @InjectRepository(ChatHistoryRepository) private readonly chatHistoryRepo: ChatHistoryRepository,
+    @InjectRepository(ACtiveUserRepository) private readonly activeUsersRepo: ACtiveUserRepository,
+    @InjectRepository(JoinedTeamRepository) private readonly joinedTeamRepo: JoinedTeamRepository,
+    @InjectRepository(JoinedDrawingRepository) private readonly joinedDrawingRepo: JoinedDrawingRepository){}
   
   async afterInit(server: Server) {
     try{
@@ -124,22 +130,40 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
     }
     if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
+      let user = await this.userRepo.findOne(dtoMod.userId,{
+        select:["id", 'pseudo'],
+        relations:["joinedDrawings"]
+      });
+      let haveJoinedDrawingBefore: boolean = false;
+      for(const joinedDrawing of user.joinedDrawings){
+        if(joinedDrawing.drawingId === dtoMod.drawingId){
+          haveJoinedDrawingBefore = true;
+        }
+      }
       let newJoin = new ActiveUser();
       newJoin.userId = dtoMod.userId;
       newJoin.drawing = drawing;
       await this.activeUsersRepo.save(newJoin);
-      let user = await this.userRepo.findOne(dtoMod.userId);
       let newEditionHistory = new DrawingEditionHistory();
       newEditionHistory.user = user;
       newEditionHistory.action = "join";
-      await this.userRepo.update(user.id, {
-        numberCollaboratedDrawings: user.numberCollaboratedDrawings+1,
-        status: Status.BUSY,
-      });
       newEditionHistory.drawingName = drawing.name;
       newEditionHistory.drawingVisibility = drawing.visibility;
       newEditionHistory.drawingId = dtoMod.drawingId;
       await this.drawingEditionRepository.save(newEditionHistory);
+      if(!haveJoinedDrawingBefore){
+        let newJoinedDrawing = new JoinedDrawing();
+        newJoinedDrawing.user = user;
+        newJoinedDrawing.drawingId = dtoMod.drawingId;
+        await this.joinedDrawingRepo.save(newJoinedDrawing);
+        await this.userRepo.update(user.id, {
+          numberCollaboratedDrawings: user.numberCollaboratedDrawings+1,
+          status: Status.BUSY,
+        });
+      }
+      else{
+        await this.userRepo.update(user.id, { status: Status.BUSY})
+      }
       let drawingRet = {bgColor: drawing.bgColor, name: drawing.name, width: drawing.width, height: drawing.height,
                        contents: drawing.contents, visibility: drawing.visibility};
       
@@ -201,6 +225,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit("cantJoinTeam", JSON.stringify({message:"Sorry the user can't join the team because it is complete"}));
       }
       else{
+        let user = await this.userRepo.findOne(data.userId,{
+          select:["numberCollaborationTeams", "id", "pseudo"],
+          relations:["joinedTeams"]
+        })
         let newJoin = new ActiveUser()
         newJoin.userId = data.userId;
         newJoin.team = team;
@@ -222,10 +250,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         for(const chatContent of chatRoom.chatHistories){
           chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
         }
-        let user = await this.userRepo.findOne(data.userId,{
-          select:["numberCollaborationTeams"],
-        })
-        await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
+        let haveJoinedTeamBefore: boolean = false;
+        for(const joinedTeam of user.joinedTeams){
+          if(joinedTeam.teamName === data.teamName){
+            haveJoinedTeamBefore = true;
+          }
+        }
+        if(!haveJoinedTeamBefore){
+          let newJoinedTeam = new JoinedTeam();
+          newJoinedTeam.teamName = data.teamName;
+          newJoinedTeam.user = user;
+          await this.joinedTeamRepo.save(newJoinedTeam);
+          await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
+        }
         this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
         client.join(data.teamName);
         let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, gallery: gallery};
