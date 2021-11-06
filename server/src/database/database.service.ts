@@ -58,12 +58,21 @@ export class DatabaseService {
 
     async getUser(userId: string, visitedId) {
         if(userId === visitedId){
-            return await this.userRepo.findOne(userId, {
+            let user =  await this.userRepo.findOne(userId, {
                 select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
                     "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
                 relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
             })
-
+            for(const connection of user.connectionHistories){
+                connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+            }
+            for(const disconnect of user.disconnectionHistories){
+                disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+            }
+            for(const drawingEdition of user.drawingEditionHistories){
+                drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+            }
+            return user;
         }
         else{
             console.log('here');
