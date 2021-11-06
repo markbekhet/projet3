@@ -13,3 +13,23 @@ class CreateTeamDto(var name: String?= null,
     }
 }
 
+class TeamGeneralInformation(
+    var id: Int?= null,
+    var visibility: Int?= null,
+    var name: String?= null
+){
+    fun fromJson(json: String): TeamGeneralInformation{
+        return Gson().fromJson(json, TeamGeneralInformation::class.java)
+    }
+}
+
+class JoinTeamDto(
+    var teamName: String?= null,
+    var userId: String?= null,
+    var password: String?= null){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
+
+

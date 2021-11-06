@@ -21,6 +21,9 @@ import com.example.android.client.UsersArrayList
 import com.example.android.profile.OwnProfile
 import com.example.android.profile.clientService
 import com.example.android.team.CreateTeamDto
+import com.example.android.team.JoinTeamDto
+import com.example.android.team.TeamGeneralInformation
+import com.example.android.team.TeamUtils
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
@@ -198,9 +201,16 @@ internal class CreateCollaborationTeamDialog(context: Context): Dialog(context){
                     }
                 }
                 if (response!!.isSuccessful) {
+                    val data = response!!.body()!!.string()
+                    TeamUtils.currentTeam = TeamGeneralInformation()
+                    val joinTeam = JoinTeamDto(
+                        teamName = createTeamDto.name,
+                        userId = createTeamDto.ownerId,
+                        password = createTeamDto.password)
+                    SocketHandler.getChatSocket().emit("joinTeam", joinTeam.toJson())
 
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du dessin." +
+                    error.text = "Une erreur est arrivée lors de la création du l'équipe." +
                         " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
                 }
             }
