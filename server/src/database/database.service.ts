@@ -212,7 +212,7 @@ export class DatabaseService {
             select: ["id", "visibility", "name", "bgColor"],
             relations:["contents"],
         })
-        return drawings;
+        return {drawingList:drawings};
     }
     /*async getGallery(drawings: Drawing[]){
         let drawingCollection: GalleryDrawing[] = []
@@ -267,14 +267,22 @@ export class DatabaseService {
         return drawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
-        const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
+        const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId,{
+            select:["id", "ownerId"],
+            relations:["activeUsers"],
+        });
         if(drawing.ownerId !== deleteInformation.userId){
             throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
         }
-        await this.drawingRepo.delete(drawing.id)
-        let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
-        for(const editionHistory of editionHistories){
-            await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+        if(drawing.activeUsers.length === 0){
+            await this.drawingRepo.delete(drawing.id)
+            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
+            for(const editionHistory of editionHistories){
+                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+            }
+        }
+        else{
+            throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
         }
     }
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
@@ -286,33 +294,40 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        let returnedTeam = await this.teamRepo.findOne(createdTeam.id, {
+        /*let returnedTeam = await this.teamRepo.findOne(createdTeam.id, {
             select: ["id", "visibility", "name"],
-        })
+        })*/
+        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name};
         return returnedTeam;
     }
 
     async deleteTeam(dto: DeleteTeamDto){
         const drawings = await this.drawingRepo.find({
-            where: [{ownerId: dto.teamId}]
+            where: [{ownerId: dto.teamId}],
+            relations:["activeUsers"]
         })
         const team = await this.teamRepo.findOne(dto.teamId,{
-            select: ["ownerId"],
+            select: ["ownerId","id","visibility","name"],
+            relations: ["activeUsers"],
         });
         if(team.ownerId !== dto.userId){
             throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
         }
+        if(team.activeUsers.length > 0){
+            throw new HttpException("can not delete the collaboration team because some users are in the collaboration team", HttpStatus.BAD_REQUEST);
+        }
         for(const drawing of drawings){
+            if(drawing.activeUsers.length > 0){
+                throw new HttpException("can not delete the collaboration team because there is a user editing a drawing associated to this team", HttpStatus.BAD_REQUEST);
+            }
             await this.drawingRepo.delete(drawing.id);
             let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
             for(const editionHistory of editionHistories){
                 await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
             }
         }
-        let retTeam = this.teamRepo.findOne(dto.teamId, {
-            select:["id", "visibility", "name"]
-        })
         await this.teamRepo.delete(dto.teamId);
+        let retTeam = {id: dto.teamId, visibility: team.visibility, name: team.name};
         return retTeam;
     }
     //--------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ import { ActiveUser } from "../active-users/active-users.entity";
 @Entity("team")
 export class Team extends BaseEntity{
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column()
     visibility: TeamVisibility;

@@ -267,11 +267,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let userString = JSON.stringify(user);
     this.wss.emit("userUpdate", userString);
   }
-  notifyTeamCreation(team:Team){
+  notifyTeamCreation(team:{id: string, visibility: TeamVisibility, name: string}){
     let teamString = JSON.stringify(team);
     this.wss.emit("newTeamCreated", teamString);
   }
-  notifyTeamDeletion(team: Team){
+  notifyTeamDeletion(team: {id: string, visibility: TeamVisibility, name: string}){
     let teamString = JSON.stringify(team);
     this.wss.emit("teamDeleted", teamString);
   }
