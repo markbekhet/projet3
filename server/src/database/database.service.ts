@@ -20,6 +20,10 @@ import { TeamRepository } from 'src/modules/team/team.repository';
 import { CreateTeamDto } from 'src/modules/team/create-team.dto';
 import { Team } from 'src/modules/team/team.entity';
 import { DeleteTeamDto } from 'src/modules/team/delete-team.dto';
+import { DrawingEditionRepository } from 'src/modules/drawingEditionHistory/drawingEditionHistory.repository';
+import { FindManyOptions } from 'typeorm';
+import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawingEditionHistory.entity';
+import { DrawingState } from 'src/enumerators/drawing-state';
 
 @Injectable()
 export class DatabaseService {
@@ -29,7 +33,8 @@ export class DatabaseService {
         @InjectRepository(ConnectionHistoryRespository) private connectionRepo: ConnectionHistoryRespository,
         @InjectRepository(DisconnectionHistoryRespository) private disconnectionRepo: DisconnectionHistoryRespository,
         @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
-        @InjectRepository(TeamRepository) private teamRepo: TeamRepository
+        @InjectRepository(TeamRepository) private teamRepo: TeamRepository,
+        @InjectRepository(DrawingEditionRepository) private drawingEditionRepo: DrawingEditionRepository,
         ){
             this.logger.log("Initialized");
         }
@@ -267,6 +272,10 @@ export class DatabaseService {
             throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
         }
         await this.drawingRepo.delete(drawing.id)
+        let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
+        for(const editionHistory of editionHistories){
+            await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+        }
     }
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
@@ -295,6 +304,10 @@ export class DatabaseService {
         }
         for(const drawing of drawings){
             await this.drawingRepo.delete(drawing.id);
+            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
+            for(const editionHistory of editionHistories){
+                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+            }
         }
         let retTeam = this.teamRepo.findOne(dto.teamId, {
             select:["id", "visibility", "name"]
