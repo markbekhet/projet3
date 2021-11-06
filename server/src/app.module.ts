@@ -22,6 +22,7 @@ import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawin
 import { typeormConfigProdDB } from './config/typeorm.config.prod';
 import { ChatHistoryRepository } from './modules/chatHistory/chat-history.repository';
 import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
+import { ACtiveUserRepository } from './modules/active-users/active-users.repository';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
       DrawingEditionRepository,
       ChatHistoryRepository,
       ChatRoomRepository,
+      ACtiveUserRepository,
     ])
   ],
   controllers: [AppController, ConnectionController, UserController, DrawingController, CollaborationTeamController],

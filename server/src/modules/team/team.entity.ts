@@ -1,8 +1,9 @@
 import {TeamVisibility } from "src/enumerators/visibility";
-import { BaseEntity, BeforeInsert, Column, Entity,JoinColumn,OneToOne,PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity,JoinColumn,OneToMany,OneToOne,PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt'
 import { CreateTeamDto } from "./create-team.dto";
 import { ChatRoom } from "../chatRoom/chat-room.entity";
+import { ActiveUser } from "../active-users/active-users.entity";
 
 @Entity("team")
 export class Team extends BaseEntity{
@@ -24,10 +25,12 @@ export class Team extends BaseEntity{
     @Column({default:4})
     nbCollaborators: number;
 
-    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true})
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE'})
     @JoinColumn()
     chatRoom: ChatRoom; 
 
+    @OneToMany(()=> ActiveUser, activeUser=> activeUser.team, {nullable: true})
+    activeUsers: ActiveUser[]
     @BeforeInsert()
     async setPassword(){
         if(this.password !== undefined){

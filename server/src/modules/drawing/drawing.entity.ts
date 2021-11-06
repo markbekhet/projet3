@@ -4,6 +4,7 @@ import { CreateDrawingDto } from "./create-drawing.dto";
 import * as bcrypt from 'bcrypt';
 import { DrawingContent } from "../drawing-content/drawing-content.entity";
 import { ChatRoom } from "../chatRoom/chat-room.entity";
+import { ActiveUser } from "../active-users/active-users.entity";
 
 @Entity("drawing")
 export class Drawing extends BaseEntity{
@@ -42,13 +43,16 @@ export class Drawing extends BaseEntity{
     @Column()
     bgColor: string;
 
-    @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true})
+    @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true,})
     contents: DrawingContent[];
 
-    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true})
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE'})
     @JoinColumn()
     chatRoom: ChatRoom
     
+    @OneToMany(()=> ActiveUser, activeUser=> activeUser.drawing, {nullable: true})
+    activeUsers: ActiveUser[]
+
     @BeforeInsert()
     async setPassword(){
         if(this.password !== undefined){
