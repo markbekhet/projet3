@@ -1,9 +1,11 @@
-import { Renderer2 } from '@angular/core';
+import { Renderer2, ElementRef } from '@angular/core';
 import { ColorPickingService } from '../color-picker/color-picking.service';
 import { InteractionService } from '../interaction-service/interaction.service';
 import { DrawingTool } from './drawing-tool';
 import { DrawingContent, DrawingStatus } from "src/app/models/drawing-content";
 import { Point } from './point';
+import { Canvas } from 'src/app/models/canvas';
+import { CanvasInteraction } from './canvas-interaction';
 
 const OUTLINE_COLOR = '0, 102, 204, 0.9';
 const FILL_COLOR = '0, 102, 204, 0.3';
@@ -23,13 +25,15 @@ const INIT_BOX_CENTER = 250;
 export class Selection extends DrawingTool {
 
   render!: Renderer2;
-  
+  selectedRef!: HTMLElement;
+
   initPosition!: Point;
   deltaX!: number;
   deltaY!: number;
 
   isPressed!: boolean;
 
+  canvas!: HTMLElement;
   target!: SVGElement | null;
   itemUnderMouse!: number | null;
   canMoveSelection!: boolean;
@@ -46,10 +50,12 @@ export class Selection extends DrawingTool {
   constructor(selected: boolean, 
     interactionService: InteractionService, 
     colorPick: ColorPickingService, 
-    private drawing: HTMLElement) {
+    private drawing: HTMLElement,
+    canvas: HTMLElement
+    ) {
     super(selected, interactionService, colorPick);
-    this.updateAttributes();
-    this.updateColors();
+    //this.selectedRef = drawing;
+    this.canvas = canvas;
 
     window.addEventListener('newDrawing', (e: Event) => {
         for (let i = 0; i < this.drawing.childElementCount; i++) {
@@ -94,6 +100,10 @@ export class Selection extends DrawingTool {
   
   }
 
+    updateAttributes(): void {
+    
+    }
+
     down(event: MouseEvent, position: Point) {
         /*if (this.drawing) {
             this.initPosition = position;
@@ -130,12 +140,14 @@ export class Selection extends DrawingTool {
             this.isPressed = true;
 
             //draw box around
-            this.target.setAttribute('stroke', this.chosenColor.secColor);
+            //this.target.setAttribute('stroke', this.chosenColor.secColor);
             
+
             //how to set drawing status to "SELECTED"
         } 
 
     }
+
 
     up(event: MouseEvent, position: Point) {
         if(this.target) {
@@ -186,10 +198,6 @@ export class Selection extends DrawingTool {
 
     doubleClick() {
 
-    }
-
-    updateAttributes(): void {
-        
     }
 
     move(event: MouseEvent, position: Point) {

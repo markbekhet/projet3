@@ -10,7 +10,7 @@ import { Pencil } from 'src/app/services/draw-tool/pencil';
 import { Rectangle } from 'src/app/services/draw-tool/rectangle';
 import { Selection } from 'src/app/services/draw-tool/selection';
 import { InteractionService } from 'src/app/services/interaction-service/interaction.service';
-import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';
+import { MouseHandler } from 'src/app/services/mouse-handler/mouse.handler';  
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
@@ -140,7 +140,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     const pencil = new Pencil(true, this.interactionService, this.colorPick);
     const rectangle = new Rectangle(false, this.interactionService, this.colorPick);
     const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
-    const select = new Selection(false, this.interactionService, this.colorPick, this.doneDrawing.nativeElement);
+    const select = new Selection(
+      false, 
+      this.interactionService, 
+      this.colorPick, 
+      this.doneDrawing.nativeElement,
+      this.canvas.nativeElement);
 
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
