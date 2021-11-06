@@ -12,3 +12,4 @@ const val url = localUrl
 
 const val drawingNamespace = "/drawing"
 const val chatNamespace = "/chat"
+const val collaborationTeam = "/collaborationTeam"

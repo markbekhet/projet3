@@ -27,4 +27,7 @@ interface RestAPI {
 
     @POST("$drawingNamespace")
     suspend fun createDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @POST("$collaborationTeam")
+    suspend fun createTeam(@Body requestBody: RequestBody): Response<ResponseBody>
 }

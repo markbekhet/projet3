@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.example.android.canvas.DrawingInformation
+import com.example.android.team.CreateTeamDto
 import com.example.android.url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -85,6 +86,21 @@ class ClientService : Service() {
         return response
     }
 
+    suspend fun createCollaborationTeam(team: CreateTeamDto): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+
+        val requestBody = team.toJson().toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response = service.createTeam(requestBody)
+            return@withContext response
+        }
+        return response
+    }
 
     suspend fun login(userInfo: LoginInfo): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
