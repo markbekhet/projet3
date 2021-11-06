@@ -23,6 +23,8 @@ import { typeormConfigProdDB } from './config/typeorm.config.prod';
 import { ChatHistoryRepository } from './modules/chatHistory/chat-history.repository';
 import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
 import { ACtiveUserRepository } from './modules/active-users/active-users.repository';
+import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
+import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.repository';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { ACtiveUserRepository } from './modules/active-users/active-users.reposi
       ChatHistoryRepository,
       ChatRoomRepository,
       ACtiveUserRepository,
+      JoinedDrawingRepository,
+      JoinedTeamRepository,
     ])
   ],
   controllers: [AppController, ConnectionController, UserController, DrawingController, CollaborationTeamController],

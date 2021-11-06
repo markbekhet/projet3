@@ -189,7 +189,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let data: JoinTeamDto = JSON.parse(dto);
     let team = await this.teamRepo.findOne({
       where: [{name: data.teamName}],
-      select: ["id", "visibility", "password"],
+      select: ["id", "visibility", "password","nbCollaborators"],
       relations:["activeUsers"],
     })
     let passwordMatches: boolean = false;
@@ -197,35 +197,40 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       passwordMatches = await bcrypt.compare(dto.password, team.password);
     }
     if(passwordMatches|| team.visibility === TeamVisibility.PUBLIC){
-      let newJoin = new ActiveUser()
-      newJoin.userId = data.userId;
-      newJoin.team = team;
-      await this.activeUsersRepo.save(newJoin);
-      let teamGallery = await this.drawingRepo.find({
-        where:[
-          {visibility: DrawingVisibility.PUBLIC},
-          {ownerId: team.id, visibility: DrawingVisibility.PRIVATE},
-          {visibility: DrawingVisibility.PROTECTED}
-        ],
-        select: ["id", "visibility", "name", "bgColor", "height", "width"],
-        relations:["contents"]
-      })
-      let gallery = {drawingsList: teamGallery};
-      let chatRoom = await this.chatRoomRepo.findOne({
-        where: [{name: data.teamName}],
-        relations:["chatHistories"],
-      })
-      for(const chatContent of chatRoom.chatHistories){
-        chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
+      if(team.activeUsers.length === team.nbCollaborators){
+        client.emit("cantJoinTeam", JSON.stringify({message:"Sorry the user can't join the team because it is complete"}));
       }
-      let user = await this.userRepo.findOne(data.userId,{
-        select:["numberCollaborationTeams"],
-      })
-      await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
-      this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
-      client.join(data.teamName);
-      let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, gallery: gallery};
-      client.emit("teamInformations", JSON.stringify(teamInformations))
+      else{
+        let newJoin = new ActiveUser()
+        newJoin.userId = data.userId;
+        newJoin.team = team;
+        await this.activeUsersRepo.save(newJoin);
+        let teamGallery = await this.drawingRepo.find({
+          where:[
+            {visibility: DrawingVisibility.PUBLIC},
+            {ownerId: team.id, visibility: DrawingVisibility.PRIVATE},
+            {visibility: DrawingVisibility.PROTECTED}
+          ],
+          select: ["id", "visibility", "name", "bgColor", "height", "width"],
+          relations:["contents"]
+        })
+        let gallery = {drawingsList: teamGallery};
+        let chatRoom = await this.chatRoomRepo.findOne({
+          where: [{name: data.teamName}],
+          relations:["chatHistories"],
+        })
+        for(const chatContent of chatRoom.chatHistories){
+          chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
+        }
+        let user = await this.userRepo.findOne(data.userId,{
+          select:["numberCollaborationTeams"],
+        })
+        await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
+        this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
+        client.join(data.teamName);
+        let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, gallery: gallery};
+        client.emit("teamInformations", JSON.stringify(teamInformations))
+      }
     }
   }
 
