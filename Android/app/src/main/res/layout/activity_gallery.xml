@@ -55,6 +55,7 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/gallery_drawings"
         android:layout_width="409dp"
         android:layout_height="610dp"
         tools:layout_editor_absoluteX="1dp"

@@ -27,4 +27,8 @@ interface RestAPI {
 
     @POST("$drawingNamespace")
     suspend fun createDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @GET("$user/gallery/{Id}")
+    suspend fun getGalleryDrawings(@Path("Id") userId: String): Response<ResponseBody>
+
 }

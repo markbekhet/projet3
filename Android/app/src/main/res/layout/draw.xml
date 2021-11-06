@@ -16,7 +16,7 @@
         <include
             android:id="@+id/avatarItem"
             layout="@layout/fragment_avatar"
-            android:layout_width="344dp"
+            android:layout_width="342dp"
             android:layout_height="match_parent" />
 
         <LinearLayout
@@ -40,11 +40,38 @@
                 tools:text="Message" />
 
             <TextView
-                android:id="@+id/nom_dessin"
+                android:id="@+id/bgColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="20sp"
-                android:text="nom_dessin"
+                android:text="bgColor"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20sp"
+                android:text="name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20sp"
+                android:text="color"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/visibiliti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20sp"
+                android:text="visibiliti"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
