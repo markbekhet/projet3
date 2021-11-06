@@ -1,9 +1,9 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { visibility } from "src/enumerators/visibility";
+import { DrawingVisibility } from "src/enumerators/visibility";
 
 export class CreateDrawingDto{
-    @IsEnum(visibility)
-    visibility: visibility;
+    @IsEnum(DrawingVisibility)
+    visibility: DrawingVisibility;
 
     password: string;
 

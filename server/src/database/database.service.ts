@@ -13,16 +13,13 @@ import { LoginDto } from 'src/modules/user/login.dto';
 import { UpdateUserDto } from 'src/modules/user/update-user.dto';
 import { DrawingRepository } from 'src/modules/drawing/drawing.repository';
 import { CreateDrawingDto } from 'src/modules/drawing/create-drawing.dto';
-import { visibility } from 'src/enumerators/visibility';
+import { DrawingVisibility, TeamVisibility } from 'src/enumerators/visibility';
 import { Drawing } from 'src/modules/drawing/drawing.entity';
-import { GalleryDrawing } from 'src/modules/drawing/gallery-drawing.interface';
 import { DeleteDrawingDto } from 'src/modules/drawing/delete-drawing.dto';
-import { DrawingGateway } from 'src/modules/drawing/drawing.gateway';
 import { TeamRepository } from 'src/modules/team/team.repository';
 import { CreateTeamDto } from 'src/modules/team/create-team.dto';
 import { Team } from 'src/modules/team/team.entity';
 import { DeleteTeamDto } from 'src/modules/team/delete-team.dto';
-import { threadId } from 'worker_threads';
 
 @Injectable()
 export class DatabaseService {
@@ -203,9 +200,9 @@ export class DatabaseService {
     async getUserDrawings(userId: string){
         const drawings = await this.drawingRepo.find({
             where: [
-                {visibility: visibility.PUBLIC},
-                {ownerId: userId, visibility:visibility.PRIVATE},
-                {visibility: visibility.PROTECTED},
+                {visibility: DrawingVisibility.PUBLIC},
+                {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
+                {visibility: DrawingVisibility.PROTECTED},
             ],
             select: ["id", "visibility", "name", "bgColor"],
             relations:["contents"],
@@ -241,7 +238,7 @@ export class DatabaseService {
                 numberAuthoredDrawings: user.numberAuthoredDrawings + 1,
             })
         }
-        if(drawingInformation.visibility === visibility.PROTECTED){
+        if(drawingInformation.visibility === DrawingVisibility.PROTECTED){
             if(drawingInformation.password === undefined || drawingInformation.password === null){
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
             } 
@@ -256,7 +253,7 @@ export class DatabaseService {
     }
     async getDrawingById(drawingId: number, password: string){
         const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
-        if(drawing.visibility === visibility.PROTECTED){
+        if(drawing.visibility === DrawingVisibility.PROTECTED){
             const passwordMatch = await bcrypt.compare(password, drawing.password);
             if(!passwordMatch){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
@@ -273,7 +270,7 @@ export class DatabaseService {
     }
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
-        if(dto.visibility === visibility.PROTECTED){
+        if(dto.visibility === TeamVisibility.PROTECTED){
             if(dto.password=== undefined || dto.password === null){
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
             }

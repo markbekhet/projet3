@@ -1,4 +1,4 @@
-import { visibility } from "src/enumerators/visibility";
+import { DrawingVisibility } from "src/enumerators/visibility";
 import { BaseEntity, BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { CreateDrawingDto } from "./create-drawing.dto";
 import * as bcrypt from 'bcrypt';
@@ -21,7 +21,7 @@ export class Drawing extends BaseEntity{
     ownerId: string;
 
     @Column()
-    visibility: visibility;
+    visibility: DrawingVisibility;
 
     @Column({
         nullable: true

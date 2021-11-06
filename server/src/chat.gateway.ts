@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from './enumerators/drawing-status';
 import { Status } from './enumerators/user-status';
-import { visibility } from './enumerators/visibility';
+import { DrawingVisibility, TeamVisibility } from './enumerators/visibility';
 import{ClientMessage, ServerMessage} from'./MessageMeta'
 import { DrawingContent } from './modules/drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from './modules/drawing-content/drawing-content.repository';
@@ -115,10 +115,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       select:["visibility", "password","name"],
     });
     let passwordMatch: boolean = false
-    if(drawing.visibility === visibility.PROTECTED){
+    if(drawing.visibility === DrawingVisibility.PROTECTED){
       passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
     }
-    if(passwordMatch || drawing.visibility === visibility.PUBLIC || drawing.visibility === visibility.PRIVATE){
+    if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
       let user = await this.userRepo.findOne(dtoMod.userId);
       let newEditionHistory = new DrawingEditionHistory();
       newEditionHistory.user = user;
@@ -187,15 +187,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       select: ["id", "visibility", "password"]
     })
     let passwordMatches: boolean = false;
-    if(team.visibility === visibility.PROTECTED){
+    if(team.visibility === TeamVisibility.PROTECTED){
       passwordMatches = await bcrypt.compare(dto.password, team.password);
     }
-    if(passwordMatches|| team.visibility === visibility.PUBLIC){
+    if(passwordMatches|| team.visibility === TeamVisibility.PUBLIC){
       let teamGallery = await this.drawingRepo.find({
         where:[
-          {visibility: visibility.PUBLIC},
-          {ownerId: team.id, visibility: visibility.PRIVATE},
-          {visibility: visibility.PROTECTED}
+          {visibility: DrawingVisibility.PUBLIC},
+          {ownerId: team.id, visibility: DrawingVisibility.PRIVATE},
+          {visibility: DrawingVisibility.PROTECTED}
         ],
         select: ["id", "visibility", "name", "bgColor"],
         relations:["contents"]
@@ -265,7 +265,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   notifyDrawingCreated(drawing: Drawing){
     // TODO:
     let drawingString = JSON.stringify(drawing);
-    if(drawing.visibility!== visibility.PRIVATE){
+    if(drawing.visibility!== DrawingVisibility.PRIVATE){
       this.wss.emit(drawingString);
     }
   }

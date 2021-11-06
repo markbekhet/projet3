@@ -1,4 +1,4 @@
-import { visibility } from "src/enumerators/visibility";
+import { DrawingVisibility } from "src/enumerators/visibility";
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Drawing } from "../drawing/drawing.entity";
 import { User } from "../user/user.entity";
@@ -21,7 +21,7 @@ export class DrawingEditionHistory extends BaseEntity{
     drawingId: number;
 
     @Column()
-    drawingVisibility: visibility;
+    drawingVisibility: DrawingVisibility;
 
     @Column({type: "timestamp", default:()=> "CURRENT_TIMESTAMP"})
     date: string;

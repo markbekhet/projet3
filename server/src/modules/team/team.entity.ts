@@ -1,4 +1,4 @@
-import { visibility } from "src/enumerators/visibility";
+import {TeamVisibility } from "src/enumerators/visibility";
 import { BaseEntity, BeforeInsert, Column, Entity,JoinColumn,OneToOne,PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt'
 import { CreateTeamDto } from "./create-team.dto";
@@ -10,7 +10,7 @@ export class Team extends BaseEntity{
     id: number;
 
     @Column()
-    visibility: visibility;
+    visibility: TeamVisibility;
 
     @Column({nullable: true})
     password: string;
