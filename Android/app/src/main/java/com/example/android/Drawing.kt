@@ -30,17 +30,18 @@ class Drawing : AppCompatActivity() {
         val params: ViewGroup.LayoutParams = fl_drawing_view_container.getLayoutParams()
         //Button new width
         //Button new width
-        nom.text = DrawingUtils.drawingInformation!!.name
+        val drawingRelatedInformation = DrawingUtils.drawingInformation!!.drawing
+        nom.text = drawingRelatedInformation!!.name
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
         val canvas = CanvasView(this)
-        canvas.parseExistingDrawings(DrawingUtils.drawingInformation!!.contents)
-        params.width= DrawingUtils.drawingInformation!!.width!!
-        params.height= DrawingUtils.drawingInformation!!.height!!
+        canvas.parseExistingDrawings(drawingRelatedInformation.contents)
+        params.width= drawingRelatedInformation.width!!
+        params.height= drawingRelatedInformation.height!!
 //        params.width = longueur.text.toString().toInt()
 //        params.height =largeur.text.toString().toInt()
         fl_drawing_view_container.setLayoutParams(params)
         canvas.setBackgroundColor(
-            Color.parseColor("#ff${DrawingUtils.drawingInformation!!.bgColor}"))
+            Color.parseColor("#ff${drawingRelatedInformation.bgColor}"))
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
