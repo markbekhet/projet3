@@ -14,9 +14,9 @@ export class ChatRoom extends BaseEntity{
     @OneToMany(()=>ChatHistory, chatHistory => chatHistory.chatRoom, {nullable: true})
     chatHistories: ChatHistory[]
 
-    @OneToOne(()=> Drawing, drawing => drawing.chatRoom, {nullable: true})
+    @OneToOne(()=> Drawing, drawing => drawing.chatRoom, {nullable: true, onDelete: 'CASCADE'})
     drawing: Drawing;
 
-    @OneToOne(()=> Team, team=> team.chatRoom, {nullable: true})
+    @OneToOne(()=> Team, team=> team.chatRoom, {nullable: true, onDelete: 'CASCADE'})
     team: Team;
 }

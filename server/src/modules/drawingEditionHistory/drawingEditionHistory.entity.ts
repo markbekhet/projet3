@@ -12,7 +12,7 @@ export class DrawingEditionHistory extends BaseEntity{
     @Column()
     action: string;
 
-    @ManyToOne(()=> User, user=> user.drawingEditionHistories)
+    @ManyToOne(()=> User, user=> user.drawingEditionHistories, {onDelete:'CASCADE'})
     user:User;
 
     @Column()

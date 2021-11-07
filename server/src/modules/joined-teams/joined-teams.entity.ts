@@ -9,6 +9,6 @@ export class JoinedTeam extends BaseEntity{
     @Column()
     teamName: string;
 
-    @ManyToOne(()=> User, user => user.joinedTeams)
+    @ManyToOne(()=> User, user => user.joinedTeams, {onDelete:'CASCADE'})
     user: User;
 }

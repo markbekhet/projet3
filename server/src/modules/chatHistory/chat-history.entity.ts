@@ -18,7 +18,7 @@ export class ChatHistory extends BaseEntity{
     @Column()
     message: string;
 
-    @ManyToOne(()=> ChatRoom, chatRoom=> chatRoom.chatHistories)
+    @ManyToOne(()=> ChatRoom, chatRoom=> chatRoom.chatHistories, {onDelete:'CASCADE'})
     chatRoom: ChatRoom;
     
     static createChatHistory(dto: ServerMessage){

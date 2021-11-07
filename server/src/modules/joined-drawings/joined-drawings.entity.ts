@@ -9,6 +9,6 @@ export class JoinedDrawing extends BaseEntity{
     @Column()
     drawingId: number;
 
-    @ManyToOne(()=> User, user => user.joinedDrawings)
+    @ManyToOne(()=> User, user => user.joinedDrawings, {onDelete: 'CASCADE'})
     user:User;
 }

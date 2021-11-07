@@ -24,6 +24,7 @@ import { DrawingEditionRepository } from 'src/modules/drawingEditionHistory/draw
 import { FindManyOptions } from 'typeorm';
 import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingState } from 'src/enumerators/drawing-state';
+import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
 
 @Injectable()
 export class DatabaseService {
@@ -35,6 +36,7 @@ export class DatabaseService {
         @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
         @InjectRepository(TeamRepository) private teamRepo: TeamRepository,
         @InjectRepository(DrawingEditionRepository) private drawingEditionRepo: DrawingEditionRepository,
+        @InjectRepository(ChatRoomRepository) private chatRoomRepo: ChatRoomRepository,
         ){
             this.logger.log("Initialized");
         }
@@ -218,7 +220,7 @@ export class DatabaseService {
                 {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
                 {visibility: DrawingVisibility.PROTECTED},
             ],
-            select: ["id", "visibility", "name", "bgColor"],
+            select: ["id", "visibility", "name", "bgColor", "height", "width"],
             relations:["contents"],
         })
         return {drawingList:drawings};
@@ -259,26 +261,13 @@ export class DatabaseService {
         }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
-        const retDrawing = await this.drawingRepo.findOne(newDrawing.id, {
-            select:["id", "visibility"],
-            relations:["contents"]
-        })
+        const retDrawing = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
+                             bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: []}
         return retDrawing;
-    }
-    async getDrawingById(drawingId: number, password: string){
-        const drawing = await this.drawingRepo.findOne(drawingId,{relations:["contents"]});
-        if(drawing.visibility === DrawingVisibility.PROTECTED){
-            const passwordMatch = await bcrypt.compare(password, drawing.password);
-            if(!passwordMatch){
-                throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
-            }
-        }
-        return drawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId,{
-            select:["id", "ownerId"],
-            relations:["activeUsers"],
+            relations:["activeUsers", "chatRoom"],
         });
         if(drawing.ownerId !== deleteInformation.userId){
             throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
@@ -289,6 +278,9 @@ export class DatabaseService {
             for(const editionHistory of editionHistories){
                 await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
             }
+            await this.chatRoomRepo.delete(drawing.chatRoom.id);
+            let retDrawing = {id: deleteInformation.drawingId};
+            return retDrawing;
         }
         else{
             throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
@@ -303,9 +295,6 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        /*let returnedTeam = await this.teamRepo.findOne(createdTeam.id, {
-            select: ["id", "visibility", "name"],
-        })*/
         let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name};
         return returnedTeam;
     }
@@ -313,11 +302,11 @@ export class DatabaseService {
     async deleteTeam(dto: DeleteTeamDto){
         const drawings = await this.drawingRepo.find({
             where: [{ownerId: dto.teamId}],
-            relations:["activeUsers"]
+            relations:["activeUsers", "chatRoom"]
         })
         const team = await this.teamRepo.findOne(dto.teamId,{
             select: ["ownerId","id","visibility","name"],
-            relations: ["activeUsers"],
+            relations: ["activeUsers", "chatRoom"],
         });
         if(team.ownerId !== dto.userId){
             throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
@@ -330,12 +319,14 @@ export class DatabaseService {
                 throw new HttpException("can not delete the collaboration team because there is a user editing a drawing associated to this team", HttpStatus.BAD_REQUEST);
             }
             await this.drawingRepo.delete(drawing.id);
+            await this.chatRoomRepo.delete(drawing.chatRoom.id);
             let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
             for(const editionHistory of editionHistories){
                 await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
             }
         }
         await this.teamRepo.delete(dto.teamId);
+        await this.chatRoomRepo.delete(team.chatRoom.id);
         let retTeam = {id: dto.teamId, visibility: team.visibility, name: team.name};
         return retTeam;
     }
