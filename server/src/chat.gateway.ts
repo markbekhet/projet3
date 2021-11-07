@@ -30,6 +30,7 @@ import { JoinedTeam } from './modules/joined-teams/joined-teams.entity';
 import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.repository';
 import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
+import { stringify } from 'querystring';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -262,7 +263,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
         this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
         client.join(data.teamName);
-        let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, gallery: gallery};
+        let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, drawingList: gallery};
         client.emit("teamInformations", JSON.stringify(teamInformations))
       }
     }
@@ -314,11 +315,41 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let teamString = JSON.stringify(team);
     this.wss.emit("teamDeleted", teamString);
   }
-  notifyDrawingCreated(drawing: Drawing){
+  async notifyDrawingCreated(drawing: {id: number, visibility: DrawingVisibility, name: string, 
+    bgColor: string, height: number, width: number, contents: string[], ownerId: string}){
     // TODO:
-    let drawingString = JSON.stringify(drawing);
+    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
+    let drawingString = JSON.stringify(retDrawing);
     if(drawing.visibility!== DrawingVisibility.PRIVATE){
-      this.wss.emit(drawingString);
+      this.wss.emit("newDrawingCreated",drawingString);
+    }
+    
+    else{
+      let team = await this.teamRepo.findOne({
+        where:[
+          {ownerId: drawing.ownerId}]
+      });
+      if(team!== undefined){
+        this.wss.to(team.name).emit("newDrawingCreated", drawingString);
+      }
+      
+    }
+  }
+  async notifyDrawingDeleted(drawing: {id: number, ownerId: string, visibility: DrawingVisibility}){
+    let retDrawing = {id: drawing.id}
+    let drawingString = JSON.stringify(retDrawing);
+    if(drawing.visibility!== DrawingVisibility.PRIVATE){
+      this.wss.emit('drawingDeleted', drawingString);
+    }
+    else{
+      let team = await this.teamRepo.findOne({
+        where:[{
+          ownerId: drawing.ownerId,
+        }]
+      })
+      if(team !== undefined){
+        this.wss.to(team.name).emit(drawingString);
+      }
     }
   }
 

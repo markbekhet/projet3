@@ -262,7 +262,8 @@ export class DatabaseService {
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
         const retDrawing = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
-                             bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: []}
+                             bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: [],
+                              ownerId: drawing.ownerId};
         return retDrawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
@@ -279,7 +280,7 @@ export class DatabaseService {
                 await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
             }
             await this.chatRoomRepo.delete(drawing.chatRoom.id);
-            let retDrawing = {id: deleteInformation.drawingId};
+            let retDrawing = {id: deleteInformation.drawingId, ownerId: drawing.ownerId, visibility: drawing.visibility};
             return retDrawing;
         }
         else{
