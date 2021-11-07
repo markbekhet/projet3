@@ -283,7 +283,7 @@ open class Rectangle(private var drawingId: Int?,
         val strokeWidthRegex = Regex("""stroke-width="([0-9]+)"""")
         val matchStrokeWidth = strokeWidthRegex.find(parceableString, 1)
         this.setAttribute("stroke-width", matchStrokeWidth!!.groups[1]!!.value)
-        val fillRegex = Regex("""fill="([#a-zA-Z0-9]+ |none)"""")
+        val fillRegex = Regex("""fill="([#a-zA-Z0-9]+| none)"""")
         val matchFill = fillRegex.find(parceableString)
         this.setAttribute("fill", matchFill!!.groups[1]!!.value)
         setCriticalValues()
@@ -292,15 +292,14 @@ open class Rectangle(private var drawingId: Int?,
     protected fun sendProgressToServer(status: DrawingStatus){
         val drawingContent = ContentDrawingSocket(
             drawingId = drawingId, userId = ClientInfo.userId,
-            contentId = contentID, drawing= getOriginalString(),
+            id = contentID, content= getOriginalString(),
             status = status, toolName = rectString)
-        val socket = SocketHandler.getDrawingSocket()
-        socket.emit("drawingToServer", drawingContent.toJson())
+        val socket = SocketHandler.getChatSocket()
+        socket!!.emit("drawingToServer", drawingContent.toJson())
     }
 
     protected fun requestCreation(){
-        SocketHandler.getDrawingSocket()
-            .emit("createDrawingContent",
+        SocketHandler.getChatSocket()!!.emit("createDrawingContent",
                 RequestCreation(drawingId).toJson())
     }
 

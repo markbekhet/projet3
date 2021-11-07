@@ -48,7 +48,15 @@
         <!--        android:src="@drawable/image_log_in"-->
         <!--        android:background="@drawable/rectangle_background"/>-->
 
-
+        <TextView
+            android:id="@+id/errorPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_marginBottom="20sp"
+            android:text=""
+            android:textColor="@color/red" />
         <EditText
             android:id="@+id/longueur"
             android:layout_width="229dp"

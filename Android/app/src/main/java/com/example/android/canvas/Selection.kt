@@ -31,7 +31,8 @@ class Selection(private var drawingId: Int?, private var owner: AbstractDocument
             while(i >= 0){
                 val tool = svgRoot.childNodes.item(i) as Tool
                 if(tool.inTranslationZone(eventX, eventY)){
-                    if(!(tool.selected && tool.userId != ClientInfo.userId)){
+                    if(tool.userId == null ||
+                        !(tool.selected && tool.userId != ClientInfo.userId)){
                         if (tool is FreeHand){
                             selectedTool = FreeHand(drawingId, pencilString, owner)
                         }

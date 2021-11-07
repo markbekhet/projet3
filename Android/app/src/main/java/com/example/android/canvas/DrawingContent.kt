@@ -10,8 +10,8 @@ enum class DrawingStatus(var int: Int){
 data class ContentDrawingSocket(
     var drawingId: Int? = null,
     var userId: String? = null,
-    var contentId: Int? = null,
-    var drawing: String? = null,
+    var id: Int? = null,
+    var content: String? = null,
     var status: DrawingStatus? = null,
     var toolName: String? = null
 ){

@@ -4,7 +4,8 @@
     <string name="username">Nom d\'utilisateur</string>
     <string name="send">envoyé</string>
     <string name="enter_message">Entrez votre message</string>
-    <string name="user_error">Le mot de passe ou le nom de l\'utilisateur est errone. .</string>
+    <string name="user_error">Le mot de passe ou le nom de l\'utilisateur est errone.
+        Assurrez-vous que vous n\'êtes pas connecté sur un autre appareil.</string>
     <string name="general_info">Information générale</string>
     <string name="modify_param">Modification des paramètres</string>
     <string name="history">Statistique et historique</string>
