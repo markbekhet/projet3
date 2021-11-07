@@ -51,8 +51,8 @@ export class NewDrawingComponent implements OnInit {
     password: undefined,
     width: 0,
     height: 0,
-    bgColor: '',
-    ownerID: undefined,
+    color: '',
+    ownerId: undefined,
   };
 
   constructor(
@@ -145,8 +145,8 @@ export class NewDrawingComponent implements OnInit {
       password: VALUES.drawingPassword,
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
-      bgColor: VALUES.canvColor,
-      ownerID: this.ownerID,
+      color: VALUES.canvColor,
+      ownerId: this.ownerID,
     };
 
     try {

@@ -7,8 +7,8 @@ export interface Drawing {
   password?: string;
   width: number;
   height: number;
-  bgColor: string;
-  ownerID: string | undefined;
+  color: string;
+  ownerId: string | undefined;
   // useOwnerPrivateInformation: boolean;
 }
 
