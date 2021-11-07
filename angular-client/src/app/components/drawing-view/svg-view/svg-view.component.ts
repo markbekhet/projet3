@@ -192,7 +192,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent) {
     if (data.status === DrawingStatus.InProgress.valueOf()) {
-      if (!this.contents.has(data.contentId)) {
+      if (!this.contents.has(data.contentID)) {
         // new elements
         let newObj!: SVGElement;
         if (data.drawing.includes('polyline')) {
@@ -202,16 +202,16 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           console.log(`rect: ${data.drawing}`);
           newObj = this.createSVGRect(data.drawing);
         } else if (data.drawing.includes('ellipse')) {
-          console.log(`ell: ${data.contentId}`);
+          console.log(`ell: ${data.contentID}`);
           newObj = this.createSVGEllipse(data.drawing);
         }
 
         if (newObj !== null) {
           this.renderer.appendChild(this.inProgress.nativeElement, newObj);
-          this.contents.set(data.contentId, newObj);
+          this.contents.set(data.contentID, newObj);
         }
       } else {
-        const element = this.contents.get(data.contentId);
+        const element = this.contents.get(data.contentID);
         if (element !== undefined) {
           // this.renderer.removeChild(this.inProgress.nativeElement,element);
           if (data.drawing.includes('polyline')) {
@@ -226,7 +226,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
       }
     } else if (data.status === DrawingStatus.Done.valueOf()) {
-      const element = this.contents.get(data.contentId);
+      const element = this.contents.get(data.contentID);
       if (element !== undefined) {
         this.renderer.removeChild(this.inProgress.nativeElement, element);
         if (data.drawing.includes('polyline')) {

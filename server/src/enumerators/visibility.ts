@@ -1,5 +1,5 @@
-export enum visibility{
-    PUBLIC,
-    PROTECTED,
-    PRIVATE,
+export enum visibility {
+  PUBLIC = 0,
+  PROTECTED = 1,
+  PRIVATE = 2,
 }

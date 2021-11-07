@@ -33,18 +33,23 @@ import { threadId } from 'worker_threads';
 @Injectable()
 export class DatabaseService {
   private logger: Logger = new Logger('DatabaseServiceLogger');
+
   constructor(
-    @InjectRepository(UserRespository) private userRepo: UserRespository,
+    @InjectRepository(UserRespository)
+    private userRepo: UserRespository,
     @InjectRepository(ConnectionHistoryRespository)
     private connectionRepo: ConnectionHistoryRespository,
     @InjectRepository(DisconnectionHistoryRespository)
     private disconnectionRepo: DisconnectionHistoryRespository,
-    @InjectRepository(DrawingRepository) private drawingRepo: DrawingRepository,
-    @InjectRepository(TeamRepository) private teamRepo: TeamRepository,
+    @InjectRepository(DrawingRepository)
+    private drawingRepo: DrawingRepository,
+    @InjectRepository(TeamRepository)
+    private teamRepo: TeamRepository,
   ) {
     this.logger.log('Initialized');
   }
-  //-------------------------------------------------- User services ---------------------------------------------------------------------
+
+  //----------- User services -----------
   async createUser(registrationInfo: CreateUserDto) {
     console.log(registrationInfo);
 
@@ -158,6 +163,7 @@ export class DatabaseService {
       return user;
     }
   }
+
   async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
     console.log(newParameters.newPassword, newParameters.newPseudo);
     const user = await this.userRepo.findOne(userId, {
@@ -212,7 +218,7 @@ export class DatabaseService {
             HttpStatus.BAD_REQUEST,
           );
         }
-        if (this.IsPasswordValide(newParameters.newPassword)) {
+        if (this.IsPasswordValid(newParameters.newPassword)) {
           const hashedPassword = await bcrypt.hash(
             newParameters.newPassword,
             10,
@@ -249,7 +255,7 @@ export class DatabaseService {
             HttpStatus.BAD_REQUEST,
           );
         }
-        if (this.IsPasswordValide(newParameters.newPassword)) {
+        if (this.IsPasswordValid(newParameters.newPassword)) {
           const hashedPassword = await bcrypt.hash(
             newParameters.newPassword,
             10,
@@ -267,11 +273,12 @@ export class DatabaseService {
       return retuser;
     }
   }
+
   async getUserDrawings(userId: string) {
     const drawings = await this.drawingRepo.find({
       where: [
         { visibility: visibility.PUBLIC },
-        { ownerId: userId, visibility: visibility.PRIVATE },
+        { ownerID: userId, visibility: visibility.PRIVATE },
         { visibility: visibility.PROTECTED },
       ],
       select: ['id', 'visibility'],
@@ -279,6 +286,7 @@ export class DatabaseService {
     });
     return drawings;
   }
+
   /*async getGallery(drawings: Drawing[]){
         let drawingCollection: GalleryDrawing[] = []
         for(const drawing of drawings){
@@ -287,7 +295,7 @@ export class DatabaseService {
             let lastName: string = null;
             let email: string = null;
             // to change with collaboration team
-            const user = await this.userRepo.findOne(drawing.ownerId);
+            const user = await this.userRepo.findOne(drawing.ownerID);
             username = user.pseudo;
             const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
                                         ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
@@ -300,14 +308,16 @@ export class DatabaseService {
         return drawingCollection;
 
     }*/
-  //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
+
+  //----------- Drawing services -----------
   async createDrawing(drawingInformation: CreateDrawingDto) {
-    const user = await this.userRepo.findOne(drawingInformation.ownerId);
+    const user = await this.userRepo.findOne(drawingInformation.ownerID);
     if (user !== undefined) {
       await this.userRepo.update(user.id, {
         numberAuthoredDrawings: user.numberAuthoredDrawings + 1,
       });
     }
+
     if (drawingInformation.visibility === visibility.PROTECTED) {
       if (
         drawingInformation.password === undefined ||
@@ -316,6 +326,7 @@ export class DatabaseService {
         throw new HttpException('Password required', HttpStatus.BAD_REQUEST);
       }
     }
+
     const drawing = Drawing.createDrawing(drawingInformation);
     const newDrawing = await this.drawingRepo.save(drawing);
     const retDrawing = await this.drawingRepo.findOne(newDrawing.id, {
@@ -324,6 +335,7 @@ export class DatabaseService {
     });
     return retDrawing;
   }
+
   async getDrawingById(drawingId: number, password: string) {
     const drawing = await this.drawingRepo.findOne(drawingId, {
       relations: ['contents'],
@@ -336,9 +348,10 @@ export class DatabaseService {
     }
     return drawing;
   }
+
   async deleteDrawing(deleteInformation: DeleteDrawingDto) {
     const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId);
-    if (drawing.ownerId !== deleteInformation.userId) {
+    if (drawing.ownerID !== deleteInformation.userId) {
       throw new HttpException(
         'User is not allowed to delete this drawing',
         HttpStatus.BAD_REQUEST,
@@ -346,7 +359,8 @@ export class DatabaseService {
     }
     await this.drawingRepo.delete(drawing.id);
   }
-  // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
+
+  // ------------- Team services -------------
   async createTeam(dto: CreateTeamDto) {
     if (dto.visibility === visibility.PROTECTED) {
       if (dto.password === undefined || dto.password === null) {
@@ -363,7 +377,7 @@ export class DatabaseService {
 
   async deleteTeam(dto: DeleteTeamDto) {
     const drawings = await this.drawingRepo.find({
-      where: [{ ownerId: dto.teamId }],
+      where: [{ ownerID: dto.teamId }],
     });
     const team = await this.teamRepo.findOne(dto.teamId, {
       select: ['ownerId'],
@@ -383,8 +397,9 @@ export class DatabaseService {
     await this.teamRepo.delete(dto.teamId);
     return retTeam;
   }
-  //--------------------------------------------------------------------------------------------------------------------------------------------------------
-  IsPasswordValide(password: string) {
+
+  //------------------------------------------------------------------------------------
+  IsPasswordValid(password: string) {
     if (password.length < 8) {
       throw new HttpException(
         'The password must be longer than or equal to 8 characters',

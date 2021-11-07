@@ -50,7 +50,7 @@ export class Drawing extends BaseEntity {
   contents: DrawingContent[];
 
   @Column()
-  ownerId: string;
+  ownerID: string;
 
   @BeforeInsert()
   async setPassword() {
@@ -68,7 +68,7 @@ export class Drawing extends BaseEntity {
     newDrawing.width = drawingInformation.width;
     newDrawing.height = drawingInformation.height;
     newDrawing.bgColor = drawingInformation.bgColor;
-    newDrawing.ownerId = drawingInformation.ownerId;
+    newDrawing.ownerID = drawingInformation.ownerID;
     return newDrawing;
   }
 }

@@ -1,34 +1,45 @@
-export enum VisibilityLevel {
+export enum DrawingVisibilityLevel {
   PUBLIC = 0,
   PROTECTED = 1,
   PRIVATE = 2,
 }
 
-export interface VisibilityItem {
+export enum TeamVisibilityLevel {
+  PUBLIC = 0,
+  PROTECTED = 1,
+}
+
+export interface DrawingVisibilityItem {
   name: string;
-  value: VisibilityLevel;
+  value: DrawingVisibilityLevel;
   desc: string;
 }
 
-export const drawingVisibilityItems: VisibilityItem[] = [
+export interface TeamVisibilityItem {
+  name: string;
+  value: TeamVisibilityLevel;
+  desc: string;
+}
+
+export const drawingVisibilityItems: DrawingVisibilityItem[] = [
   {
     name: 'Public',
     value: 0,
-    desc: 'Votre dessin sera accessible par les autres utilisateurs.',
+    desc: 'Le dessin sera accessible par les autres utilisateurs',
   },
   {
     name: 'Protégé',
     value: 1,
-    desc: 'Votre dessin sera accessible, en possession du bon mot de passe.',
+    desc: 'Le dessin sera accessible par quiconque connaît le mot de passe',
   },
   {
     name: 'Privé',
     value: 2,
-    desc: 'Votre dessin sera seulement accessible par vous.',
+    desc: 'Le dessin sera accessible exclusivement par vous',
   },
 ];
 
-export const teamVisibilityItems: VisibilityItem[] = [
+export const teamVisibilityItems: TeamVisibilityItem[] = [
   {
     name: 'Publique',
     value: 0,

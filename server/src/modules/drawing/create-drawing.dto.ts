@@ -29,5 +29,5 @@ export class CreateDrawingDto {
   bgColor: string;
 
   @IsNotEmpty()
-  ownerId: string;
+  ownerID: string;
 }

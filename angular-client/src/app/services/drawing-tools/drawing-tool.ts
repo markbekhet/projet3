@@ -25,7 +25,7 @@ export abstract class DrawingTool extends InputObserver {
     doubleClickCheck?: boolean,
     removePerimeter?: boolean
   ): void;
-  static drawingContentId: number = -1;
+  static drawingContentID: number = -1;
 
   constructor(
     selected: boolean,
@@ -49,8 +49,8 @@ export abstract class DrawingTool extends InputObserver {
   down(position: Point) {
     // emit socket event to server to get the content id
     // this is a stub
-    DrawingTool.drawingContentId++;
-    // console.log(this.drawingContentId)
+    DrawingTool.drawingContentID++;
+    // console.log(this.drawingContentID)
   }
   // To update the colors with the colors given by the draw view
   updateColors(): void {
@@ -87,11 +87,11 @@ export abstract class DrawingTool extends InputObserver {
     d += this.createPath(this.currentPath);
     // emit event with the string d
     this.interactionService.emitDrawingContent({
-      contentId: DrawingTool.drawingContentId,
+      contentID: DrawingTool.drawingContentID,
       drawing: d,
       status: drawingStatus,
-      // TODO: 0 for drawingId here is just a placeholder to remove compile error
-      // drawingId: 0,
+      // TODO: 0 for drawingID here is just a placeholder to remove compile error
+      // drawingID: 0,
     });
   }
   // I think we dont need this method
