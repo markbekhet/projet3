@@ -13,20 +13,21 @@ const PATH = 'http://localhost:3000';
 })
 export class SocketService {
   socket = io(PATH);
+  drawingID: string = '';
 
-  public connect(): void {
+  connect(): void {
     this.socket = io(PATH);
   }
 
-  public disconnect(): void {
+  disconnect(): void {
     this.socket.disconnect();
   }
 
-  public getSocketID(): string {
+  getSocketID(): string {
     return this.socket.id;
   }
 
-  public message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
+  message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
     clientName: '',
     message: '',
     date: {
@@ -35,6 +36,10 @@ export class SocketService {
       seconds: '',
     },
   });
+
+  setDrawingID = (value: string) => {
+    this.drawingID = value;
+  };
 
   // drawingElement: Subject<DrawingContent> = new Subject<DrawingContent>();
   // $drawingElements: Observable<DrawingContent> =

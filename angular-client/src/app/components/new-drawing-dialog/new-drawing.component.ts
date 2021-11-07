@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
+  FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
@@ -11,8 +12,8 @@ import { Router } from '@angular/router';
 import { Drawing } from '@models/DrawingMeta';
 import {
   drawingVisibilityItems,
-  VisibilityItem,
-  VisibilityLevel,
+  DrawingVisibilityItem,
+  DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { DrawingService } from '@services/drawing/drawing.service';
@@ -30,24 +31,28 @@ const PAUL_USER_ID = 'a7e2dd1a-4746-40e1-b3a0-b7b6f611600a';
 export class NewDrawingComponent implements OnInit {
   newDrawingForm!: FormGroup;
   inputEntered: boolean = false;
-  drawingVisibilityItems: VisibilityItem[];
+  drawingVisibilityItems: DrawingVisibilityItem[];
+  drawingVisibility = new FormControl(null, Validators.required);
+  showPasswordRequired: boolean = false;
 
+  drawingID?: string;
   name: string = '';
-  visibility: VisibilityLevel = 0;
+  visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';
   width: number;
   height: number;
   bgColor: string;
-  ownerId: string = PAUL_USER_ID; // TODO: à changer, juste pour tester
+  ownerID: string = PAUL_USER_ID; // TODO: à changer, juste pour tester
 
   newDrawing: Drawing = {
+    drawingID: undefined,
     name: '',
-    visibility: VisibilityLevel.PUBLIC,
+    visibility: DrawingVisibilityLevel.PUBLIC,
     password: undefined,
     width: 0,
     height: 0,
     bgColor: '',
-    ownerId: undefined,
+    ownerID: undefined,
   };
 
   constructor(
@@ -55,6 +60,7 @@ export class NewDrawingComponent implements OnInit {
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
+    // private socketService: SocketService,
     private windowService: ModalWindowService
   ) {
     this.width = this.canvasBuilder.getDefWidth();
@@ -86,11 +92,17 @@ export class NewDrawingComponent implements OnInit {
   initForm() {
     this.newDrawingForm = this.formBuilder.group({
       drawingName: ['', [Validators.required]],
-      drawingVisibility: ['', [Validators.required]],
+      drawingVisibility: [null, [Validators.required]],
       drawingPassword: ['', []],
-      canvWidth: ['', [Validators.pattern(/^\d+$/), Validators.min(1)]], // accepts only positive integers
-      canvHeight: ['', [Validators.pattern(/^\d+$/), Validators.min(1)]],
-      canvColor: ['', Validators.pattern(/^[a-fA-F0-9]{6}$/)], // only accepts 6-chars strings made of hex characters
+      canvWidth: [
+        '',
+        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
+      ], // accepts only positive integers
+      canvHeight: [
+        '',
+        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
+      ],
+      canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
     });
     this.newDrawingForm.setValue({
       drawingName: this.name,
@@ -116,13 +128,10 @@ export class NewDrawingComponent implements OnInit {
   }
 
   showPasswordInput(): boolean {
-    if (this.visibility === VisibilityLevel.PROTECTED) {
-      return true;
-    }
-    return false;
+    return this.visibility === DrawingVisibilityLevel.PROTECTED;
   }
 
-  onSubmit() {
+  async onSubmit() {
     // TODO: To change while integrating with socket
     const VALUES = this.newDrawingForm.value;
 
@@ -137,29 +146,46 @@ export class NewDrawingComponent implements OnInit {
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
       bgColor: VALUES.canvColor,
-      ownerId: this.ownerId,
+      ownerID: this.ownerID,
     };
 
-    const drawingId = this.drawingService.createDrawing(this.newDrawing);
-    console.log(
-      'TURBO 🚀 - file: new-drawing.component.ts - line 144 - NewDrawingComponent - drawingId',
-      drawingId
-    );
+    try {
+      if (
+        this.visibility === DrawingVisibilityLevel.PROTECTED &&
+        VALUES.drawingPassword === undefined
+      ) {
+        throw new Error('Un mot de passe est requis');
+      }
+      this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
+    } catch (err: any) {
+      this.showPasswordRequired = true;
+      console.error(err.message);
+    }
 
     this.canvasBuilder.setCanvasFromForm(
       +VALUES.canvWidth,
       +VALUES.canvHeight,
       VALUES.canvColor
     );
+    this.canvasBuilder.emitCanvas();
 
     this.closeModalForm();
-    this.canvasBuilder.emitCanvas();
     this.router.navigate(['/draw']);
+
+    // this.sendDrawingIDIntoService(this.drawingID);
+
     const LOAD_TIME = 15;
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, LOAD_TIME);
   }
+
+  // sendDrawingIDIntoService(value: string | undefined) {
+  //   if (value === undefined) {
+  //     return;
+  //   }
+  //   this.socketService.setDrawingID(value);
+  // }
 
   closeModalForm(): void {
     this.windowService.closeWindow();

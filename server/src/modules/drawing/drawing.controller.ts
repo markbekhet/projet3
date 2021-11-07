@@ -21,12 +21,14 @@ export class DrawingController {
   ) {}
 
   @Post()
-  async createDrawing(@Body() drawingInformation: CreateDrawingDto) {
+  async createDrawing(
+    @Body() drawingInformation: CreateDrawingDto,
+  ): Promise<string> {
     const createdDrawing = await this.databaseService.createDrawing(
       drawingInformation,
     );
     this.chatGateway.notifyDrawingCreated(createdDrawing);
-    return createdDrawing.id;
+    return createdDrawing.id.toString();
   }
 
   @Get('/:drawingId/:password')
