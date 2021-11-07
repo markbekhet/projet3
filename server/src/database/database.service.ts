@@ -259,6 +259,9 @@ export class DatabaseService {
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
             } 
         }
+        else if(drawingInformation.password === undefined){
+            drawingInformation.password = null;
+        }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
         const retDrawing = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
@@ -293,6 +296,9 @@ export class DatabaseService {
             if(dto.password=== undefined || dto.password === null){
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
             }
+        }
+        else if(dto.password === undefined){
+            dto.password = null;
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)

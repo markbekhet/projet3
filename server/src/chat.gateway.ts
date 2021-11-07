@@ -348,7 +348,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }]
       })
       if(team !== undefined){
-        this.wss.to(team.name).emit(drawingString);
+        this.wss.to(team.name).emit("'drawingDeleted'",drawingString);
       }
     }
   }

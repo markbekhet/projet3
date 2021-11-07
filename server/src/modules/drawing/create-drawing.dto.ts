@@ -5,6 +5,7 @@ export class CreateDrawingDto{
     @IsEnum(DrawingVisibility)
     visibility: DrawingVisibility;
 
+    @IsOptional()
     password: string;
 
     @IsNotEmpty()
