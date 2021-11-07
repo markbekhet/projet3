@@ -35,7 +35,7 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
-  drawingID?: string;
+  drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';

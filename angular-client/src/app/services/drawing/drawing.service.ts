@@ -13,11 +13,11 @@ const PATH = 'http://localhost:3000';
 export class DrawingService {
   constructor(private httpClient: HttpClient) {}
 
-  async createDrawing(newDrawing: Drawing): Promise<string | undefined> {
+  async createDrawing(newDrawing: Drawing): Promise<number | undefined> {
     let drawingID;
     this.httpClient.post(`${PATH}/drawing`, newDrawing).subscribe(
       (res) => {
-        drawingID = res.toString();
+        drawingID = res;
         console.log(res);
       },
       (error) => {

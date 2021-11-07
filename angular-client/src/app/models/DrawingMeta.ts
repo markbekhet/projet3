@@ -1,7 +1,7 @@
 import { DrawingVisibilityLevel } from '@models/VisibilityMeta';
 
 export interface Drawing {
-  drawingID?: string; // we don't have it prior to the request, it's the db that gives it to us
+  drawingID?: number; // we don't have it prior to the request, it's the db that gives it to us
   name: string;
   visibility: DrawingVisibilityLevel;
   password?: string;

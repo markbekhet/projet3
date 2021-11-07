@@ -1,9 +1,9 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from "class-validator";
 
-export class DeleteDrawingDto {
-  @IsNotEmpty()
-  drawingId: number;
+export class DeleteDrawingDto{
+    @IsNotEmpty()
+    drawingId: number;
 
-  @IsNotEmpty()
-  userId: string;
+    @IsNotEmpty()
+    userId: string;
 }
