@@ -6,4 +6,6 @@
 
 # VS Code Workspace File
 !.code-workspace
+
+# TypeORMConfig file
 server/src/config/typeorm.config.dev.ts
