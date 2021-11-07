@@ -122,7 +122,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let dtoMod : JoinDrawingDto = JSON.parse(dto);
     
     let drawing: Drawing = await this.drawingRepo.findOne(dtoMod.drawingId, {
-      select:["visibility", "password","name", 'bgColor', 'height', 'width'],
       relations:['contents', 'activeUsers']
     });
     let passwordMatch: boolean = false
@@ -131,7 +130,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
       let user = await this.userRepo.findOne(dtoMod.userId,{
-        select:["id", 'pseudo'],
         relations:["joinedDrawings"]
       });
       let haveJoinedDrawingBefore: boolean = false;
@@ -213,9 +211,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let data: JoinTeamDto = JSON.parse(dto);
     let team = await this.teamRepo.findOne({
       where: [{name: data.teamName}],
-      select: ["id", "visibility", "password","nbCollaborators"],
       relations:["activeUsers"],
     })
+    console.log(team.id, team.name)
     let passwordMatches: boolean = false;
     if(team.visibility === TeamVisibility.PROTECTED){
       passwordMatches = await bcrypt.compare(dto.password, team.password);
@@ -226,7 +224,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
       else{
         let user = await this.userRepo.findOne(data.userId,{
-          select:["numberCollaborationTeams", "id", "pseudo"],
           relations:["joinedTeams"]
         })
         let newJoin = new ActiveUser()
@@ -305,7 +302,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
   //-------------------------------------- notifications section-------------------------------------------------
-  notifyUserUpdate(user: User | {id: string, status: Status, pseudo: string}){
+  notifyUserUpdate(user: {id: string, status: Status, pseudo: string}){
     let userString = JSON.stringify(user);
     this.wss.emit("userUpdate", userString);
   }

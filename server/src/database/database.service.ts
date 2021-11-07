@@ -45,12 +45,13 @@ export class DatabaseService {
         
         let user = User.createUserProfile(registrationInfo);
         let connection = new ConnectionHistory()
-        await this.userRepo.save(user)
+        const savedUser = await this.userRepo.save(user)
         connection.user = user
         await this.connectionRepo.save(connection)
-        let returnedUser = await this.userRepo.findOne(user.id,{
+        let returnedUser = {id: savedUser.id, status:Status.ONLINE, pseudo: registrationInfo.pseudo};
+        /*let returnedUser = await this.userRepo.findOne(user.id,{
             select: ["status","id","pseudo"],
-        })
+        })*/
         console.log(connection.date)
         let date = connection.date.toString();
         console.log(date);
@@ -93,7 +94,7 @@ export class DatabaseService {
                 {emailAddress: userCredentials.username},
                 {pseudo: userCredentials.username}
             ],
-            select: ["id","password", "status"],
+            select: ["id","password", "status", "pseudo"],
         })
         if(user === undefined){
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
@@ -114,13 +115,14 @@ export class DatabaseService {
             let newConnection = new ConnectionHistory();
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
-            let userRet = await this.userRepo.findOne({
+            let userRet = {id: user.id, status: Status.ONLINE, pseudo: user.pseudo};
+            /*let userRet = await this.userRepo.findOne({
                 where: [
                     {emailAddress: userCredentials.username},
                     {pseudo: userCredentials.username}
                 ],
                 select:["id", "status", "pseudo"],
-            })
+            })*/
             return userRet;
         }
     }
@@ -140,14 +142,14 @@ export class DatabaseService {
             newDisconnection.user = user
             this.userRepo.update(userId, {status: Status.OFFLINE})
             this.disconnectionRepo.save(newDisconnection)
-            user.status = Status.OFFLINE;
+            let userRet = {id: user.id, pseudo: user.pseudo, status: Status.OFFLINE}
             return user;
         }
     }
     async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
         const user = await this.userRepo.findOne(userId, {
-            select:["pseudo","password"]
+            select:["pseudo","password", 'status', 'id']
         });
         if(user === undefined){
             throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
@@ -195,10 +197,17 @@ export class DatabaseService {
                 }
                 user.pseudo = newParameters.newPseudo;
             }
-            let retuser = this.userRepo.findOne(userId, {
+            let retUser: {id: string, pseudo:string, status: Status};
+            if(newParameters.newPseudo!== undefined){
+                retUser = {id: user.id, pseudo: user.pseudo, status: user.status}
+            }
+            else{
+                retUser = {id: user.id, pseudo: user.pseudo, status: user.status};
+            }
+            /*let retuser = this.userRepo.findOne(userId, {
                 select:["id", "pseudo", "status"]
-            })
-            return retuser;
+            })*/
+            return retUser;
 
         }
     }
