@@ -32,7 +32,6 @@ export class Selection extends DrawingTool {
   inverted!: boolean;
   wrapperDimensions: [Point, Point] = [new Point(INIT_VALUE, INIT_VALUE), new Point(INIT_VALUE, INIT_VALUE)];
   
-
   constructor(selected: boolean, 
     interactionService: InteractionService, 
     colorPick: ColorPickingService, 

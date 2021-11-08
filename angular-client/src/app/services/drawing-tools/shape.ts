@@ -12,6 +12,9 @@ const DEF_LINE_THICKNESS = 5;
 const DEF_COLOR = '#000000';
 
 export class Shape extends DrawingTool {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   attr: ToolsAttributes;
 
   // Shape's dimensions

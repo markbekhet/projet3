@@ -7,6 +7,9 @@ import { Shape } from './shape';
 import { ToolsAttributes } from './tools-attributes';
 
 export class Ellipse extends Shape {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     selected: boolean,
     interactionService: InteractionService,

@@ -8,6 +8,9 @@ import { ToolsAttributes } from './tools-attributes';
 const DEF_LINE_THICKNESS = 5;
 
 export class Pencil extends DrawingTool {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   attr: ToolsAttributes;
   minPoint: Point = {
     x: 0,
