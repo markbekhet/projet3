@@ -34,7 +34,7 @@ data class RequestCreation(
 }
 
 data class GetContentId(
-    var contentId:Int
+    var contentId:Int?= null
 )
 {
     fun fromJson(json: String): GetContentId{
