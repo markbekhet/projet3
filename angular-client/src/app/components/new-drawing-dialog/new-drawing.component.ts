@@ -20,10 +20,7 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
 import { SocketService } from '@src/app/services/socket/socket.service';
-// import { SocketService } from '@services/socket/socket.service';
-
-// TODO: à changer, juste pour tester
-const PAUL_USER_ID = 'a7e2dd1a-4746-40e1-b3a0-b7b6f611600a';
+import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
   selector: 'app-new-drawing',
@@ -37,14 +34,13 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
-  drawingID?: number;
+  //drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';
   width: number;
   height: number;
   bgColor: string;
-  ownerID: string = PAUL_USER_ID; // TODO: à changer, juste pour tester
 
   newDrawing: Drawing = {
     drawingID: undefined,
@@ -62,7 +58,6 @@ export class NewDrawingComponent implements OnInit {
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
-    // private socketService: SocketService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
   ) {
@@ -149,7 +144,7 @@ export class NewDrawingComponent implements OnInit {
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
       color: VALUES.canvColor,
-      ownerId: this.ownerID,
+      ownerId: UserToken.userToken,
     };
 
     try {
@@ -159,8 +154,9 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingService.createDrawing(this.newDrawing).then((drawingId: number)=>{
-        let joinDrawing: JoinDrawing = {drawingId: drawingId, userId: PAUL_USER_ID, password: this.password}
+      this.drawingService.createDrawing(this.newDrawing).then((drawingIdServer: number)=>{
+        console.log(drawingIdServer);
+        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: UserToken.userToken, password: this.password}
         this.socketService.sendJoinDrawingRequest(joinDrawing);
         this.canvasBuilder.setCanvasFromForm(
           +VALUES.canvWidth,

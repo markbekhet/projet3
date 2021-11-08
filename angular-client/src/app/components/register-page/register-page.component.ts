@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserRegistrationInfo } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
@@ -19,7 +19,7 @@ export class RegisterPageComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    // private router: Router,
+    private router: Router,
     private auth: AuthService,
     public errorDialog: MatDialog
   ) {
@@ -61,7 +61,7 @@ export class RegisterPageComponent implements OnInit {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
           console.log(this.auth.authentifiedUser);
-          // this.router.navigate(['/' + user.pseudo]);
+          this.router.navigate(['/home']);
         },
         (error) => {
           const errorCode = JSON.parse(

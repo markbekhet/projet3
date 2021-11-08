@@ -57,6 +57,8 @@ export class SocketService {
   };
 
   public sendJoinDrawingRequest(joinInformation: JoinDrawing){
+    let joinInformationString = JSON.stringify(joinInformation);
+    console.log(joinInformationString);
     this.socket.emit("joinDrawing", JSON.stringify(joinInformation));
   }
 }

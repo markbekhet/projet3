@@ -8,6 +8,7 @@ import { UserCredentials } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
 // import { ValidationService } from '@services/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -22,7 +23,8 @@ export class LoginPageComponent implements OnInit {
     private formBuilder: FormBuilder,
     // private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    public router: Router
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -46,7 +48,7 @@ export class LoginPageComponent implements OnInit {
       this.auth.login(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
-          // this.router.navigate(['/' + this.username]);
+          this.router.navigate(['/home']);
           console.log(`${user.username} is logged in`);
           form.reset();
         },
