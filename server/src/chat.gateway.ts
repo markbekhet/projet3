@@ -32,7 +32,7 @@ import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawin
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
 import { stringify } from 'querystring';
 
-@WebSocketGateway()
+@WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
