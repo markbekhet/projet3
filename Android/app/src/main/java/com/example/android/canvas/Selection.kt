@@ -65,7 +65,10 @@ class Selection(private var drawingId: Int?, private var owner: AbstractDocument
     }
     override fun touchUp() {
         //setCriticalValues()
-        calculateScalingPositions()
+        if(selectedTool!=null){
+            selectedTool!!.touchUp()
+        }
+        //calculateScalingPositions()
     }
 
     override fun getString(): String { return str}
