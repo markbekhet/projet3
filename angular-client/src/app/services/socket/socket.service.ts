@@ -4,6 +4,7 @@ import { BehaviorSubject /* , Observable */ } from 'rxjs';
 import { io } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
+import { JoinDrawing } from '@src/app/models/joinDrrawing';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -41,19 +42,6 @@ export class SocketService {
     this.drawingID = value;
   };
 
-  // drawingElement: Subject<DrawingContent> = new Subject<DrawingContent>();
-  // $drawingElements: Observable<DrawingContent> =
-  //   this.drawingElement.asObservable();
-
-  // selectedTool: Subject<string> = new Subject<string>();
-  // $selectedTool: Observable<string> = this.selectedTool.asObservable();
-
-  // drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
-  // $drawing: Observable<DrawingContent> = this.drawing.asObservable();
-
-  // ref: Subject<ElementRef> = new Subject<ElementRef>();
-  // $refObs: Observable<ElementRef> = this.ref.asObservable();
-
   public sendMessage(message: Message) {
     console.log(`chat service sent: ${message.message}`);
     this.socket.emit('msgToServer', JSON.stringify(message));
@@ -67,4 +55,8 @@ export class SocketService {
 
     return this.message$.asObservable();
   };
+
+  public sendJoinDrawingRequest(joinInformation: JoinDrawing){
+    
+  }
 }

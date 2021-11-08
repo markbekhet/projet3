@@ -136,7 +136,7 @@ export class NewDrawingComponent implements OnInit {
     const VALUES = this.newDrawingForm.value;
 
     if (VALUES.drawingPassword === '') {
-      VALUES.drawingPassword = undefined;
+      VALUES.drawingPassword = null;
     }
 
     this.newDrawing = {
@@ -152,11 +152,12 @@ export class NewDrawingComponent implements OnInit {
     try {
       if (
         this.visibility === DrawingVisibilityLevel.PROTECTED &&
-        VALUES.drawingPassword === undefined
+        VALUES.drawingPassword === null
       ) {
         throw new Error('Un mot de passe est requis');
       }
       this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
+      console.log(this.drawingID);
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);

@@ -13,9 +13,9 @@ const PATH = 'http://localhost:3000';
 export class DrawingService {
   constructor(private httpClient: HttpClient) {}
 
-  async createDrawing(newDrawing: Drawing): Promise<number | undefined> {
-    let drawingID;
-    this.httpClient.post(`${PATH}/drawing`, newDrawing).subscribe(
+  async createDrawing(newDrawing: Drawing): Promise<number> {
+    let drawingID!: number;
+    this.httpClient.post<number>(`${PATH}/drawing`, newDrawing).subscribe(
       (res) => {
         drawingID = res;
         console.log(res);
