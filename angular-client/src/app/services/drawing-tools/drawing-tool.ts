@@ -7,6 +7,7 @@ import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
 import { ActiveDrawing, UserToken } from '../static-services/user_token';
+import { SocketService } from '../socket/socket.service';
 
 const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
 const DEFAULT_SECONDARY_COLOR = '000000';
@@ -31,7 +32,8 @@ export abstract class DrawingTool extends InputObserver {
   constructor(
     selected: boolean,
     protected interactionService: InteractionService,
-    colorPick: ColorPickingService
+    colorPick: ColorPickingService,
+    private readonly socketService: SocketService,
   ) {
     super(selected);
     this.isDown = false;

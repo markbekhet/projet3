@@ -5,8 +5,10 @@ Subject} from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
-import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { DrawingContent } from '@src/app/models/DrawingMeta';
+import { ActiveDrawing, UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -18,6 +20,8 @@ export class SocketService {
   socket!: Socket;
   drawingID: string = '';
   drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
+  contentId$: Subject<{contentId: number}> = new Subject<{contentId: number}>();
+  drawingContent$: Subject<DrawingContent> = new Subject<DrawingContent>();
   connect(): void {
     this.socket = io(PATH);
   }
@@ -70,5 +74,34 @@ export class SocketService {
       this.drawingInformations$.next(dataMod);
     });
     return this.drawingInformations$.asObservable();
+  }
+
+  public createDrawingContentRequest(data:{drawingId: number}){
+    this.socket.emit("createDrawingContent", JSON.stringify(data));
+  }
+
+  public getDrawingContentId = ()=>{
+    this.socket.on("drawingContentCreated", (data:string)=>{
+      let dataMod: {contentId: number} = JSON.parse(data);
+      this.contentId$.next(dataMod);
+    })
+    return this.contentId$.asObservable();
+  }
+
+  public sendDrawingToServer(data: DrawingContent){
+    this.socket.emit("drawingToServer", JSON.stringify(data));
+  }
+
+  public getDrawingContent= ()=>{
+    this.socket.on("drawingToClient", (data:string)=>{
+      let dataMod: DrawingContent = JSON.parse(data);
+      this.drawingContent$.next(dataMod);
+    })
+    return this.drawingContent$.asObservable();
+  }
+
+  public leaveDrawing(){
+    let leaveDrawing: LeaveDrawing = {drawingId: ActiveDrawing.drawingId, userId: UserToken.userToken};
+    this.socket.emit("leaveDrawing", JSON.stringify(leaveDrawing));
   }
 }

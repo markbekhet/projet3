@@ -5,6 +5,7 @@ import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 //import { CanvasInteraction } from './canvas-interaction';
 import { InteractionService } from '../interaction/interaction.service';
+import { SocketService } from '../socket/socket.service';
 
 const INIT_VALUE = -1;
 
@@ -36,9 +37,10 @@ export class Selection extends DrawingTool {
     interactionService: InteractionService, 
     colorPick: ColorPickingService, 
     private drawing: HTMLElement,
-    canvas: HTMLElement
+    canvas: HTMLElement,
+    socketSerice: SocketService
     ) {
-    super(selected, interactionService, colorPick);
+    super(selected, interactionService, colorPick, socketSerice);
     //this.selectedRef = drawing;
     this.canvas = canvas;
 

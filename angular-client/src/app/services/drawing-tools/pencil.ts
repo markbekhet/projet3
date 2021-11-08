@@ -1,6 +1,7 @@
 import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
+import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { ToolsAttributes } from './tools-attributes';
@@ -18,9 +19,10 @@ export class Pencil extends DrawingTool {
   constructor(
     selected: boolean,
     interactionService: InteractionService,
-    colorPick: ColorPickingService
+    colorPick: ColorPickingService,
+    socketService: SocketService
   ) {
-    super(selected, interactionService, colorPick);
+    super(selected, interactionService, colorPick, socketService);
     this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
     this.updateAttributes();
     this.updateColors();

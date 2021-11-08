@@ -149,19 +149,20 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools() {
-    const pencil = new Pencil(true, this.interactionService, this.colorPick);
+    const pencil = new Pencil(true, this.interactionService, this.colorPick, this.socketService);
     const rectangle = new Rectangle(
       false,
       this.interactionService,
-      this.colorPick
+      this.colorPick,
+      this.socketService
     );
-    const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
+    const ellipse = new Ellipse(false, this.interactionService, this.colorPick, this.socketService);
     const select = new Selection(
       false, 
       this.interactionService, 
       this.colorPick, 
       this.doneDrawing.nativeElement,
-      this.canvas.nativeElement);
+      this.canvas.nativeElement, this.socketService);
 
 
     this.toolsContainer.set('Crayon', pencil);
