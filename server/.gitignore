@@ -35,4 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # TypeORMConfig file
-/src/config/typeorm.config.dev.ts
+./src/config/typeorm.config.dev.ts

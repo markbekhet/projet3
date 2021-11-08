@@ -5,6 +5,8 @@ import { DisconnectionHistory } from "../disconnectionHistory/disconnectionHisto
 import {v4 as uuidv4} from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { DrawingEditionHistory } from "../drawingEditionHistory/drawingEditionHistory.entity";
+import { JoinedDrawing } from "../joined-drawings/joined-drawings.entity";
+import { JoinedTeam } from "../joined-teams/joined-teams.entity";
 
 @Entity('User')
 export class User extends BaseEntity{
@@ -70,6 +72,12 @@ export class User extends BaseEntity{
 
     @OneToMany(()=>DrawingEditionHistory, drawingEditionHistory => drawingEditionHistory.user, {nullable: true})
     drawingEditionHistories: DrawingEditionHistory[] 
+
+    @OneToMany(()=>JoinedDrawing, joinedDrawing=> joinedDrawing.user,{nullable: true})
+    joinedDrawings: JoinedDrawing[]
+
+    @OneToMany(()=>JoinedTeam, joinedTeam=> joinedTeam.user,{nullable: true})
+    joinedTeams: JoinedTeam[]
 
     @BeforeInsert()
     async setPassword(){

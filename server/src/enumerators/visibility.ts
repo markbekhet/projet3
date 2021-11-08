@@ -1,5 +1,10 @@
-export enum visibility{
-  PUBLIC,
-  PROTECTED,
-  PRIVATE,
+export enum DrawingVisibility{
+    PUBLIC,
+    PROTECTED,
+    PRIVATE,
+}
+
+export enum TeamVisibility{
+    PUBLIC,
+    PROTECTED,
 }

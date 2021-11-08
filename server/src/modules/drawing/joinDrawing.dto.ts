@@ -4,6 +4,16 @@ export class JoinDrawingDto{
   password: string | undefined;
 }
 export interface LeaveDrawingDto{
-  drawingId: number;
-  userId: string;
+    drawingId: number;
+    userId: string;
+}
+export interface JoinTeamDto{
+    teamName: string;
+    userId: string;
+    password: string| undefined;
+}
+
+export interface LeaveTeamDto{
+    teamName: string;
+    userId: string;
 }

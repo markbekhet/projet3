@@ -1,4 +1,5 @@
-import { visibility } from "src/enumerators/visibility";
+import { DrawingState } from "src/enumerators/drawing-state";
+import { DrawingVisibility } from "src/enumerators/visibility";
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Drawing } from "../drawing/drawing.entity";
 import { User } from "../user/user.entity";
@@ -11,7 +12,7 @@ export class DrawingEditionHistory extends BaseEntity{
     @Column()
     action: string;
 
-    @ManyToOne(()=> User, user=> user.drawingEditionHistories)
+    @ManyToOne(()=> User, user=> user.drawingEditionHistories, {onDelete:'CASCADE'})
     user:User;
 
     @Column()
@@ -21,7 +22,10 @@ export class DrawingEditionHistory extends BaseEntity{
     drawingId: number;
 
     @Column()
-    drawingVisibility: visibility;
+    drawingVisibility: DrawingVisibility;
+
+    @Column(({default: DrawingState.AVAILABLE}))
+    drawingStae: DrawingState;
 
     @Column({type: "timestamp", default:()=> "CURRENT_TIMESTAMP"})
     date: string;

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MessageBody, OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DrawingStatus } from 'src/enumerators/drawing-status';
-import { visibility } from 'src/enumerators/visibility';
+import { DrawingVisibility } from 'src/enumerators/visibility';
 import { DrawingContent } from '../drawing-content/drawing-content.entity';
 import { DrawingContentRepository } from '../drawing-content/drawing-content.repository';
 import { DrawingEditionHistory } from '../drawingEditionHistory/drawingEditionHistory.entity';
@@ -81,10 +81,10 @@ export class DrawingGateway implements OnGatewayInit, OnGatewayConnection{
       select:["visibility", "password","name"],
     });
     let passwordMatch: boolean = false
-    if(drawing.visibility === visibility.PROTECTED){
+    if(drawing.visibility === DrawingVisibility.PROTECTED){
       passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
     }
-    if(passwordMatch || drawing.visibility === visibility.PUBLIC || drawing.visibility === visibility.PRIVATE){
+    if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
       let user = await this.userRepo.findOne(dtoMod.userId);
       let newEditionHistory = new DrawingEditionHistory();
       newEditionHistory.user = user;
