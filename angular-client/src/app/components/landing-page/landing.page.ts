@@ -8,10 +8,10 @@ import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.
 
 @Component({
   selector: 'app-landing-page',
-  templateUrl: './landing-page.component.html',
-  styleUrls: ['./landing-page.component.scss'],
+  templateUrl: './landing.page.html',
+  styleUrls: ['./landing.page.scss'],
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPage implements OnInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
 

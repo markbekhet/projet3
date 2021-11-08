@@ -11,10 +11,10 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 
 @Component({
   selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss'],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPage implements OnInit {
   inputForm: FormGroup;
   usernameExists: boolean = false;
 

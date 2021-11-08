@@ -80,6 +80,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initCanvas();
+  }
 
   bgroundChangedSubscription() {}
 

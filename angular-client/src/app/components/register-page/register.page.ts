@@ -11,10 +11,10 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 
 @Component({
   selector: 'app-register-page',
-  templateUrl: './register-page.component.html',
-  styleUrls: ['./register-page.component.scss'],
+  templateUrl: './register.page.html',
+  styleUrls: ['./register.page.scss'],
 })
-export class RegisterPageComponent implements OnInit {
+export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
