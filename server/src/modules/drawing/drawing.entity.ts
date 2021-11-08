@@ -55,7 +55,7 @@ export class Drawing extends BaseEntity{
 
     @BeforeInsert()
     async setPassword(){
-        if(this.password !== undefined){
+        if(this.password !== undefined && this.password !== null){
             const salt = 10;
             this.password = await bcrypt.hash(this.password, salt)
         }
