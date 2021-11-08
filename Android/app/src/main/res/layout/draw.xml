@@ -11,7 +11,8 @@
         android:layout_height="487dp"
         android:orientation="horizontal"
         tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="2dp">
+        tools:layout_editor_absoluteY="2dp"
+        tools:ignore="MissingConstraints">
 
         <include
             android:id="@+id/avatarItem"

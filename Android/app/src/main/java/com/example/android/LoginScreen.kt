@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.chat.Chat
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
+import com.example.android.client.Gallery
 import com.example.android.client.LoginInfo
 import com.example.android.profile.OwnProfile
 import kotlinx.android.synthetic.main.message.*
@@ -94,7 +95,7 @@ class LoginScreen : AppCompatActivity() {
                 println(clientService!!.authentify)
                 ClientInfo.userId = response?.body()?.string().toString()
                 println("Client id: ${ClientInfo.userId}")
-                startActivity(Intent(this, LandingPage::class.java))
+                startActivity(Intent(this, Gallery::class.java))
                 print(username.toString())
 
             } else {

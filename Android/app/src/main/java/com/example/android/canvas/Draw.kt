@@ -17,6 +17,7 @@ class DrawingInformation (
 }
 
 class ReceiveDrawingInformation(
+    var id: Int?= null,
     var bgColor:String?= null,
     var height: Int?= null,
     var width: Int?= null,
@@ -26,6 +27,12 @@ class ReceiveDrawingInformation(
 ){
     fun fromJson(json: String): ReceiveDrawingInformation{
         return Gson().fromJson(json, ReceiveDrawingInformation::class.java)
+    }
+}
+
+class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= null){
+    fun fromJson(json:String): GalleryDrawing{
+        return Gson().fromJson(json, GalleryDrawing::class.java)
     }
 }
 
