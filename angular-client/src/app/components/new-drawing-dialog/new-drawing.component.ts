@@ -16,7 +16,7 @@ import {
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-import { DrawingService } from '@services/drawing/drawing.service';
+//import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 // import { SocketService } from '@services/socket/socket.service';
 
@@ -57,7 +57,7 @@ export class NewDrawingComponent implements OnInit {
 
   constructor(
     private canvasBuilder: CanvasBuilderService,
-    private drawingService: DrawingService,
+    //private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
     // private socketService: SocketService,
@@ -156,7 +156,7 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
+      //this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);

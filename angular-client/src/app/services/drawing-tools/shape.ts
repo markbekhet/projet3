@@ -12,6 +12,9 @@ const DEF_LINE_THICKNESS = 5;
 const DEF_COLOR = '#000000';
 
 export class Shape extends DrawingTool {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   attr: ToolsAttributes;
 
   // Shape's dimensions
@@ -75,8 +78,8 @@ export class Shape extends DrawingTool {
   }
 
   // mouse down with shape in hand
-  down(position: Point): void {
-    super.down(position);
+  down(event: MouseEvent, position: Point): void {
+    super.down(event, position);
     // in case we changed tool while the mouse was down
     this.ignoreNextUp = false;
 

@@ -34,7 +34,7 @@ export class IconsService {
     iconRegistry.addSvgIcon(
       'cursor', 
       sanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/Tools-images/cursor.svg'
+        '../../../assets/tools/cursor.svg'
       )
     );
   }

@@ -22,6 +22,7 @@ import { InteractionService } from '@services/interaction/interaction.service';
 import { MouseHandler } from '@services/mouse-handler/mouse-handler';
 import { Pencil } from '@services/drawing-tools/pencil';
 import { Rectangle } from '@services/drawing-tools/rectangle';
+import { Selection } from '@services/drawing-tools/selection';
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
@@ -61,7 +62,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @ViewChild('drawingSpace', { static: false })
   drawingSpace: ElementRef | undefined;
   @ViewChild('actualDrawing', { static: false }) doneDrawing!: ElementRef;
-  @ViewChild('inProgress', { static: false }) inProgress!: ElementRef;
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
@@ -167,10 +167,22 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.colorPick
     );
     const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
-
+  
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
     this.toolsContainer.set('Ellipse', ellipse);
+  
+    if (this.doneDrawing !== undefined) {
+      const select = new Selection(
+        false,
+        this.interactionService,
+        this.colorPick,
+        this.doneDrawing.nativeElement,
+        this.canvas?.nativeElement
+      );
+
+      this.toolsContainer.set('Sélectionner', select);
+    }
   }
 
   updateSelectedTool(tool: string) {
@@ -207,7 +219,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
 
         if (newObj !== null) {
-          this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, newObj);
           this.contents.set(data.contentID, newObj);
         }
       } else {
@@ -222,13 +234,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             this.modifyEllipse(data.drawing, element);
             // console.log(data.drawing);
           }
-          this.renderer.appendChild(this.inProgress.nativeElement, element);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, element);
         }
       }
     } else if (data.status === DrawingStatus.Done.valueOf()) {
       const element = this.contents.get(data.contentID);
       if (element !== undefined) {
-        this.renderer.removeChild(this.inProgress.nativeElement, element);
+        this.renderer.removeChild(this.doneDrawing.nativeElement, element);
         if (data.drawing.includes('polyline')) {
           this.modifyPolyline(data.drawing, element);
         } else if (data.drawing.includes('rect')) {

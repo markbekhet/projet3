@@ -1,5 +1,5 @@
-import { InputObserver } from "../draw-tool/input-observer";
-import { Point } from "../draw-tool/point";
+import { InputObserver } from "../drawing-tools/input-observer";
+import { Point } from "../drawing-tools/point";
 
 export class MouseHandler{
     mouseWindowPosition: Point;

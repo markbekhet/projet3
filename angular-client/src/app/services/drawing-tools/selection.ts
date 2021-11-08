@@ -1,4 +1,4 @@
-import { Renderer2, ElementRef } from '@angular/core';
+import { Renderer2 } from '@angular/core';
 import { ColorPickingService } from '../color-picker/color-picking.service';
 import { InteractionService } from '../interaction/interaction.service';
 import { DrawingTool } from './drawing-tool';
@@ -7,20 +7,7 @@ import { Point } from './point';
 //import { Canvas } from 'src/app/models/canvas';
 //import { CanvasInteraction } from './canvas-interaction';
 
-const OUTLINE_COLOR = '0, 102, 204, 0.9';
-const FILL_COLOR = '0, 102, 204, 0.3';
-const INVERTED_OUTLINE_COLOR = '204, 0, 102, 0.9';
-const INVERTED_FILL_COLOR = '204, 0, 102, 0.3';
-
-const NO_MOUSE_MOVEMENT_TOLERANCE = 5;
-const MIN_OFFSET_FOR_SELECTION = 10;
-
-const LEFT_ARROW = 37;
-const UP_ARROW = 38;
-const RIGHT_ARROW = 39;
-const DOWN_ARROW = 40;
 const INIT_VALUE = -1;
-const INIT_BOX_CENTER = 250;
 
 export class Selection extends DrawingTool {
 
@@ -46,7 +33,6 @@ export class Selection extends DrawingTool {
   inverted!: boolean;
   wrapperDimensions: [Point, Point] = [new Point(INIT_VALUE, INIT_VALUE), new Point(INIT_VALUE, INIT_VALUE)];
   
-
   constructor(selected: boolean, 
     interactionService: InteractionService, 
     colorPick: ColorPickingService, 

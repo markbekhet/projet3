@@ -8,6 +8,9 @@ import { ToolsAttributes } from './tools-attributes';
 const DEF_LINE_THICKNESS = 5;
 
 export class Pencil extends DrawingTool {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   attr: ToolsAttributes;
 
   constructor(
@@ -31,10 +34,10 @@ export class Pencil extends DrawingTool {
     );
   }
 
-  down(position: Point) {
+  down(event: MouseEvent, position: Point) {
     this.currentPath = [];
     // console.log('here');
-    super.down(position);
+    super.down(event, position);
 
     // the pencil should affect the canvas
     this.isDown = true;
@@ -46,7 +49,7 @@ export class Pencil extends DrawingTool {
     this.updateProgress(DrawingStatus.InProgress);
   }
 
-  up(position: Point, insideWorkspace: boolean) {
+  up(event: MouseEvent, position: Point, insideWorkspace: boolean) {
     if (!this.ignoreNextUp) {
       // the pencil should not affect the canvas
       this.isDown = false;

@@ -8,6 +8,9 @@ import { ToolsAttributes } from './tools-attributes';
 
 // const DEFAULT_LINE_THICKNESS = 5;
 export class Ellipse extends Shape {
+  objectPressed(position: Point): boolean {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     selected: boolean,
     interactionService: InteractionService,
