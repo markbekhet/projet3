@@ -10,10 +10,8 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import { Canvas } from '@models/CanvasInfo';
 import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
-import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingTool } from '@services/drawing-tools/drawing-tool';
 import { Ellipse } from '@services/drawing-tools/ellipse';
@@ -22,6 +20,9 @@ import { InteractionService } from '@services/interaction/interaction.service';
 import { MouseHandler } from '@services/mouse-handler/mouse-handler';
 import { Pencil } from '@services/drawing-tools/pencil';
 import { Rectangle } from '@services/drawing-tools/rectangle';
+import { SocketService } from '@src/app/services/socket/socket.service';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ActiveDrawing } from '@src/app/services/static-services/user_token';
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
@@ -74,39 +75,31 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
-    private canvBuilder: CanvasBuilderService,
-    private colorPick: ColorPickingService
+    //private canvBuilder: CanvasBuilderService,
+    private colorPick: ColorPickingService,
+    private readonly socketService: SocketService,
   ) {}
 
   ngOnInit(): void {
-    this.initCanvas();
+    this.initDrawing();
   }
 
-  bgroundChangedSubscription() {}
-
-  initCanvas() {
-    this.canvBuilder.canvSubject.subscribe((canvas: Canvas) => {
-      if (canvas === undefined || canvas === null) {
-        canvas = this.canvBuilder.getDefCanvas();
+  initDrawing(){
+    this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
+      this.backColor = "#"+ drawingInformations.drawing.bgColor;
+      this.width = drawingInformations.drawing.width;
+      this.height = drawingInformations.drawing.height;
+      ActiveDrawing.drawingName = drawingInformations.drawing.name;
+      if(drawingInformations.drawing.contents.length > 0){
+        for(let content of drawingInformations.drawing.contents){
+          if(content.content!== null && content.content!== undefined){
+            this.drawExistingContent(content);
+          }
+        }
       }
-
-      this.width = canvas.canvasWidth;
-      this.height = canvas.canvasHeight;
-      this.backColor = canvas.canvasColor;
-      if (canvas.wipeAll === true || canvas.wipeAll === undefined) {
-        // if no attribute is specified, the doodle will be w
-        this.canvBuilder.wipeDraw(this.doneDrawing);
-        // this.canvBuilder.wipeDraw(this.filterRef);
-        // this.canvBuilder.wipeDraw(this.selectedItems);
-      }
-    });
-    this.canvBuilder.emitCanvas();
-
-    this.interactionService.$selectedTool.subscribe((tool: string) => {
-      this.updateSelectedTool(tool);
     });
   }
-
+  
   @HostListener('window:resize')
   onResize() {
     this.mouseHandler.updateWindowSize();
@@ -142,7 +135,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.toolsContainer.forEach((element: InputObserver) => {
         this.mouseHandler.addObserver(element);
       });
-      this.bgroundChangedSubscription();
       this.interactionService.$drawing.subscribe((data: DrawingContent) => {
         // console.log(data.drawing);
         if (this.drawingSpace !== undefined) {
@@ -188,53 +180,70 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       });
     }
   }
+  drawExistingContent(data: DrawingContent){
+    let newObj!: SVGElement;
+    if (data.content.includes('polyline')) {
+      console.log(`pencil: ${data.content}`);
+      newObj = this.createSVGPolyline(data.content);
+    } else if (data.content.includes('rect')) {
+      console.log(`rect: ${data.content}`);
+      newObj = this.createSVGRect(data.content);
+    } else if (data.content.includes('ellipse')) {
+      console.log(`ell: ${data.id}`);
+      newObj = this.createSVGEllipse(data.content);
+    }
 
+    if (newObj !== null) {
+      this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+      this.contents.set(data.id, newObj);
+    }
+  }
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent) {
     if (data.status === DrawingStatus.InProgress.valueOf()) {
-      if (!this.contents.has(data.contentID)) {
+      if (!this.contents.has(data.id)) {
         // new elements
         let newObj!: SVGElement;
-        if (data.drawing.includes('polyline')) {
-          console.log(`pencil: ${data.drawing}`);
-          newObj = this.createSVGPolyline(data.drawing);
-        } else if (data.drawing.includes('rect')) {
-          console.log(`rect: ${data.drawing}`);
-          newObj = this.createSVGRect(data.drawing);
-        } else if (data.drawing.includes('ellipse')) {
-          console.log(`ell: ${data.contentID}`);
-          newObj = this.createSVGEllipse(data.drawing);
+        if (data.content.includes('polyline')) {
+          console.log(`pencil: ${data.content}`);
+          newObj = this.createSVGPolyline(data.content);
+        } else if (data.content.includes('rect')) {
+          console.log(`rect: ${data.content}`);
+          newObj = this.createSVGRect(data.content);
+        } else if (data.content.includes('ellipse')) {
+          console.log(`ell: ${data.id}`);
+          newObj = this.createSVGEllipse(data.content);
         }
 
         if (newObj !== null) {
           this.renderer.appendChild(this.inProgress.nativeElement, newObj);
-          this.contents.set(data.contentID, newObj);
+          this.contents.set(data.id, newObj);
         }
       } else {
-        const element = this.contents.get(data.contentID);
+        const element = this.contents.get(data.id);
         if (element !== undefined) {
           // this.renderer.removeChild(this.inProgress.nativeElement,element);
-          if (data.drawing.includes('polyline')) {
-            this.modifyPolyline(data.drawing, element);
-          } else if (data.drawing.includes('rect')) {
-            this.modifyRect(data.drawing, element);
-          } else if (data.drawing.includes('ellipse')) {
-            this.modifyEllipse(data.drawing, element);
+          if (data.content.includes('polyline')) {
+            this.modifyPolyline(data.content, element);
+          } else if (data.content.includes('rect')) {
+            this.modifyRect(data.content, element);
+          } else if (data.content.includes('ellipse')) {
+            this.modifyEllipse(data.content, element);
             // console.log(data.drawing);
           }
           this.renderer.appendChild(this.inProgress.nativeElement, element);
         }
       }
     } else if (data.status === DrawingStatus.Done.valueOf()) {
-      const element = this.contents.get(data.contentID);
+      const element = this.contents.get(data.id);
       if (element !== undefined) {
         this.renderer.removeChild(this.inProgress.nativeElement, element);
-        if (data.drawing.includes('polyline')) {
-          this.modifyPolyline(data.drawing, element);
-        } else if (data.drawing.includes('rect')) {
-          this.modifyRect(data.drawing, element);
-        } else if (data.drawing.includes('ellipse')) {
-          this.modifyEllipse(data.drawing, element);
+        if (data.content.includes('polyline')) {
+          this.modifyPolyline(data.content, element);
+        } else if (data.content.includes('rect')) {
+          this.modifyRect(data.content, element);
+        } else if (data.content.includes('ellipse')) {
+          this.modifyEllipse(data.content, element);
         }
         this.renderer.appendChild(this.doneDrawing.nativeElement, element);
       }

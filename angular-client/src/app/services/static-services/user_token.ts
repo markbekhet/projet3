@@ -2,7 +2,7 @@ export class UserToken{
     static userToken: string;
 }
 
-export class activeDrawing{
+export class ActiveDrawing{
     static drawingId: number;
-    static drawingName: number;
+    static drawingName: string;
 }

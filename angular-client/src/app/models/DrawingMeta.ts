@@ -13,10 +13,12 @@ export interface Drawing {
 }
 
 export interface DrawingContent {
-  contentID: number; // ID of the svg element drawn onto the surface
-  drawing: string; // Actual content of the svg element
+  id: number; // ID of the svg element drawn onto the surface
+  userId: string;
+  content: string; // Actual content of the svg element
   status: DrawingStatus; // To know how to render the drawing and the server uses this value to save when the drawing is done.
-
+  drawingId: number;
+  toolName: string;
   // drawingID: number; // To use when connecting to socket
 }
 

@@ -158,17 +158,9 @@ export class NewDrawingComponent implements OnInit {
         console.log(drawingIdServer);
         let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: UserToken.userToken, password: this.password}
         this.socketService.sendJoinDrawingRequest(joinDrawing);
-        this.canvasBuilder.setCanvasFromForm(
-          +VALUES.canvWidth,
-          +VALUES.canvHeight,
-          VALUES.canvColor
-        );
-        this.canvasBuilder.emitCanvas();
-    
         this.closeModalForm();
         this.router.navigate(['/draw']);
     
-        // this.sendDrawingIDIntoService(this.drawingID);
     
         const LOAD_TIME = 15;
         setTimeout(() => {
@@ -182,13 +174,6 @@ export class NewDrawingComponent implements OnInit {
 
     
   }
-
-  // sendDrawingIDIntoService(value: string | undefined) {
-  //   if (value === undefined) {
-  //     return;
-  //   }
-  //   this.socketService.setDrawingID(value);
-  // }
 
   closeModalForm(): void {
     this.windowService.closeWindow();

@@ -6,6 +6,7 @@ import { ColorPickingService } from '@services/color-picker/color-picking.servic
 import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
+import { ActiveDrawing, UserToken } from '../static-services/user_token';
 
 const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
 const DEFAULT_SECONDARY_COLOR = '000000';
@@ -87,9 +88,12 @@ export abstract class DrawingTool extends InputObserver {
     d += this.createPath(this.currentPath);
     // emit event with the string d
     this.interactionService.emitDrawingContent({
-      contentID: DrawingTool.drawingContentID,
-      drawing: d,
+      id: DrawingTool.drawingContentID,
+      content: d,
       status: drawingStatus,
+      userId: UserToken.userToken,
+      drawingId: ActiveDrawing.drawingId,
+      toolName: 'pencil',
       // TODO: 0 for drawingID here is just a placeholder to remove compile error
       // drawingID: 0,
     });

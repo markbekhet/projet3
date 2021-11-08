@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject /* , Observable */ } from 'rxjs';
+import { BehaviorSubject, /* , Observable */ 
+Subject} from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -15,7 +17,7 @@ const PATH = 'http://localhost:3000';
 export class SocketService {
   socket!: Socket;
   drawingID: string = '';
-
+  drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
   connect(): void {
     this.socket = io(PATH);
   }
@@ -60,5 +62,13 @@ export class SocketService {
     let joinInformationString = JSON.stringify(joinInformation);
     console.log(joinInformationString);
     this.socket.emit("joinDrawing", JSON.stringify(joinInformation));
+  }
+
+  public getDrawingInformations= ()=>{
+    this.socket.on('drawingInformations', (data: string) =>{
+      let dataMod: DrawingInformations = JSON.parse(data);
+      this.drawingInformations$.next(dataMod);
+    });
+    return this.drawingInformations$.asObservable();
   }
 }
