@@ -1,5 +1,7 @@
 package com.example.android.profile
 
+import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -7,14 +9,22 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android.Drawing
 import com.example.android.R
+import com.example.android.SocketHandler
+import com.example.android.canvas.AllDrawingInformation
+import com.example.android.canvas.DrawingUtils
+import com.example.android.canvas.JoinDrawingDto
+import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.ClientInfo
 import com.example.android.client.ConnectionDisconnectionHistories
+import com.example.android.client.DrawingEditionHistories
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.collaboration_history.view.*
 import kotlinx.android.synthetic.main.connection_disconnection_item.view.*
+import kotlinx.android.synthetic.main.createdraw.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -24,6 +34,7 @@ class HistoryAndStatistics : AppCompatActivity() {
     private var connectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
     private var disconnectionArray: ArrayList<ConnectionDisconnectionHistories>?= null
     private var disconnectionAdapter: GroupAdapter<GroupieViewHolder>? = null
+    private var collaborationArray: ArrayList<DrawingEditionHistories>? = null
     private var collaborationAdapter: GroupAdapter<GroupieViewHolder>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,8 +89,7 @@ class HistoryAndStatistics : AppCompatActivity() {
         disconnectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
         disconnectionRecycleView?.layoutManager = disconnectionLayoutManager
 
-        disconnectionArray = ArrayList()
-        userInfo.getDisconnectionHistory()
+        disconnectionArray = userInfo.getDisconnectionHistory()
         fun setDisconnectionHistory(){
             disconnectionAdapter = GroupAdapter<GroupieViewHolder>()
             for(disconnection in disconnectionArray!!){
@@ -100,10 +110,34 @@ class HistoryAndStatistics : AppCompatActivity() {
         collaborationLayoutManager.orientation = LinearLayoutManager.VERTICAL
         collaborationRecycleView?.layoutManager = collaborationLayoutManager
 
+        collaborationArray = userInfo.getDrawingHistories()
+        fun setCollaborationHistory(){
+            collaborationAdapter = GroupAdapter<GroupieViewHolder>()
+            for(collaboration in collaborationArray!!){
+                val collaborationInstance = CollaborationEntry(this)
+                collaboration.drawingId?.let {
+                    collaboration.date?.let { it1 ->
+                        collaboration.drawingVisibility?.let { it2 ->
+                            collaboration.drawingName?.let { it3 ->
+                                collaborationInstance.set(
+                                    it, it1,
+                                    it2, it3
+                                )
+                            }
+                        }
+                    }
+                }
+                collaborationAdapter?.add(collaborationInstance)
+            }
+            runOnUiThread {
+                collaborationRecycleView?.adapter = collaborationAdapter
+            }
+        }
 
-
-
-
+        setCollaborationHistory()
+    }
+    fun startDrawingActivity(){
+        startActivity(Intent(this, Drawing::class.java))
     }
 }
 
@@ -119,27 +153,48 @@ class ConnectionDisconnectionEntry : Item<GroupieViewHolder>() {
     }
 
     fun set(date: String?){
-        this.date = date
+        this.date = date.toString()
     }
 
 }
 
-class CollaborationEntry : Item<GroupieViewHolder>() {
+class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewHolder>() {
 
     private var date: String ?= null
-    private var drawingId: String?= null
+    private var drawingId: Int?= null
+    private var drawingName: String?=null
+    private var visibility: Int?=null
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.collaborationTime.text = date
-        viewHolder.itemView.viewDrawing.text = drawingId
+        viewHolder.itemView.drawingName.text = drawingName
+        viewHolder.itemView.join.setOnClickListener {
+            DrawingUtils.currentDrawingId = drawingId!!
+            val joinRequest = JoinDrawingDto(
+                DrawingUtils.currentDrawingId,
+                ClientInfo.userId)
+            var i = 0
+            SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
+            SocketHandler.getChatSocket()!!.on("drawingInformations") { args ->
+                if (args[0] != null && i == 0) {
+                    val data = args[0] as String
+                    DrawingUtils.drawingInformation =
+                        AllDrawingInformation().fromJson(data)
+                    activity.startDrawingActivity()
+                    i++
+                }
+            }
+        }
     }
 
     override fun getLayout(): Int {
         return R.layout.collaboration_history
     }
 
-    fun set(date: String, drawingId: String){
+    fun set(drawingId: Int, date: String, visibility: Int, drawingName: String){
         this.date = date
         this.drawingId = drawingId
+        this.drawingName = drawingName
+        this.visibility =  visibility
     }
 }
