@@ -21,6 +21,8 @@
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
                 android:text="Nom de l'équipe"
+                android:textSize="30sp"
+                android:textStyle="bold"
             />
             <Button
                 android:id="@+id/createDrawingTeamButton"

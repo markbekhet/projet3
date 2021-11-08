@@ -5,15 +5,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.android.CreateDraw
 import com.example.android.R
+import com.example.android.SocketHandler
+import com.example.android.client.ClientInfo
 import kotlinx.android.synthetic.main.activity_team.*
 
 class TeamActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
-
+        teamNameTeamActivity.text = TeamUtils.currentTeam.name
         createDrawingTeamButton.setOnClickListener{
             startActivity(Intent(this, CreateDraw::class.java))
         }
+    }
+
+    override fun onDestroy() {
+        val leaveTeam = LeaveTeamDto(TeamUtils.currentTeam.name, ClientInfo.userId)
+        SocketHandler.getChatSocket().emit("leaveTeam", leaveTeam.toJson())
+        super.onDestroy()
     }
 }

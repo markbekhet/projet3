@@ -20,10 +20,7 @@ import com.example.android.client.TeamsArrayList
 import com.example.android.client.UsersArrayList
 import com.example.android.profile.OwnProfile
 import com.example.android.profile.clientService
-import com.example.android.team.CreateTeamDto
-import com.example.android.team.JoinTeamDto
-import com.example.android.team.TeamGeneralInformation
-import com.example.android.team.TeamUtils
+import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
@@ -118,6 +115,10 @@ class LandingPage : AppCompatActivity() {
         drawingSocket?.disconnect()
         finish()
     }
+    fun startTeamActivity(){
+        startActivity(Intent(this, TeamActivity::class.java))
+    }
+
     override fun onDestroy() {
         disconnect()
         super.onDestroy()
@@ -125,7 +126,7 @@ class LandingPage : AppCompatActivity() {
 }
 
 
-internal class CreateCollaborationTeamDialog(context: Context): Dialog(context){
+internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(context){
     private var createTeamDto = CreateTeamDto()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,12 +210,21 @@ internal class CreateCollaborationTeamDialog(context: Context): Dialog(context){
                 }
                 if (response!!.isSuccessful) {
                     val data = response!!.body()!!.string()
-                    TeamUtils.currentTeam = TeamGeneralInformation()
+                    TeamUtils.currentTeam = TeamGeneralInformation().fromJson(data)
                     val joinTeam = JoinTeamDto(
                         teamName = createTeamDto.name,
                         userId = createTeamDto.ownerId,
                         password = createTeamDto.password)
+                    var i = 0
                     SocketHandler.getChatSocket().emit("joinTeam", joinTeam.toJson())
+                    SocketHandler.getChatSocket().on("teamInformations"){ args ->
+                        if(args[0]!= null && i==0){
+                            //ToComplete: Collect the rest of information concerning
+                                // the team like the gallery and the list of users
+                            context.startTeamActivity()
+                            i++
+                        }
+                    }
 
                 } else {
                     error.text = "Une erreur est arrivée lors de la création du l'équipe." +
