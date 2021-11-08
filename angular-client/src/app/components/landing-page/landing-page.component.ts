@@ -5,6 +5,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { menuItems, FeatureItem } from '@models/FeatureMeta';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { SocketService } from '@src/app/services/socket/socket.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -15,13 +16,14 @@ export class LandingPageComponent implements OnInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
 
-  constructor(private snackBar: MatSnackBar, private dialog: MatDialog) {
+  constructor(private snackBar: MatSnackBar, private dialog: MatDialog, private readonly socketService: SocketService) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
   }
 
   ngOnInit(): void {
     this.showWelcomeMsg();
+    this.socketService.connect();
   }
 
   showWelcomeMsg(): void {

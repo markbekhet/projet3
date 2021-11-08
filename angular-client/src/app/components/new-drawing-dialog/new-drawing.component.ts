@@ -18,6 +18,8 @@ import {
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { SocketService } from '@src/app/services/socket/socket.service';
 // import { SocketService } from '@services/socket/socket.service';
 
 // TODO: à changer, juste pour tester
@@ -61,7 +63,8 @@ export class NewDrawingComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     // private socketService: SocketService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private readonly socketService: SocketService,
   ) {
     this.width = this.canvasBuilder.getDefWidth();
     this.height = this.canvasBuilder.getDefHeight();
@@ -156,29 +159,32 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
-      console.log(this.drawingID);
+      this.drawingService.createDrawing(this.newDrawing).then((drawingId: number)=>{
+        let joinDrawing: JoinDrawing = {drawingId: drawingId, userId: PAUL_USER_ID, password: this.password}
+        this.socketService.sendJoinDrawingRequest(joinDrawing);
+        this.canvasBuilder.setCanvasFromForm(
+          +VALUES.canvWidth,
+          +VALUES.canvHeight,
+          VALUES.canvColor
+        );
+        this.canvasBuilder.emitCanvas();
+    
+        this.closeModalForm();
+        this.router.navigate(['/draw']);
+    
+        // this.sendDrawingIDIntoService(this.drawingID);
+    
+        const LOAD_TIME = 15;
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, LOAD_TIME);    
+      });
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
     }
 
-    this.canvasBuilder.setCanvasFromForm(
-      +VALUES.canvWidth,
-      +VALUES.canvHeight,
-      VALUES.canvColor
-    );
-    this.canvasBuilder.emitCanvas();
-
-    this.closeModalForm();
-    this.router.navigate(['/draw']);
-
-    // this.sendDrawingIDIntoService(this.drawingID);
-
-    const LOAD_TIME = 15;
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, LOAD_TIME);
+    
   }
 
   // sendDrawingIDIntoService(value: string | undefined) {

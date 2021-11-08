@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject /* , Observable */ } from 'rxjs';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
@@ -13,7 +13,7 @@ const PATH = 'http://localhost:3000';
   providedIn: 'root',
 })
 export class SocketService {
-  socket = io(PATH);
+  socket!: Socket;
   drawingID: string = '';
 
   connect(): void {
@@ -57,6 +57,6 @@ export class SocketService {
   };
 
   public sendJoinDrawingRequest(joinInformation: JoinDrawing){
-    
+    this.socket.emit("joinDrawing", JSON.stringify(joinInformation));
   }
 }
