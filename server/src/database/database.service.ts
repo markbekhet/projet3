@@ -38,9 +38,9 @@ export class DatabaseService {
         }
         //-------------------------------------------------- User services ---------------------------------------------------------------------
     async createUser(registrationInfo: CreateUserDto){
-        
+
         console.log(registrationInfo)
-        
+
         let user = User.createUserProfile(registrationInfo);
         let connection = new ConnectionHistory()
         await this.userRepo.save(user)
@@ -53,7 +53,7 @@ export class DatabaseService {
         let date = connection.date.toString();
         console.log(date);
         return returnedUser;
-        
+
     }
 
     async getUser(userId: string, visitedId) {
@@ -74,7 +74,7 @@ export class DatabaseService {
             return user;
         }
     }
-    
+
     async login(userCredentials: LoginDto){
         let user: User;
         user = await this.userRepo.findOne({
@@ -88,7 +88,7 @@ export class DatabaseService {
             throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
         }
         else{
-            
+
             if(user.status == Status.ONLINE || user.status == Status.BUSY){
                 throw new HttpException("User is already logged in", HttpStatus.BAD_REQUEST);
             }
@@ -96,7 +96,7 @@ export class DatabaseService {
             if(!userExist){
                 throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
             }
-            
+
             await this.userRepo.update(user.id, {
                 status: Status.ONLINE
             })
@@ -235,7 +235,7 @@ export class DatabaseService {
         if(drawingInformation.visibility === visibility.PROTECTED){
             if(drawingInformation.password === undefined || drawingInformation.password === null){
                 throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
-            } 
+            }
         }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
