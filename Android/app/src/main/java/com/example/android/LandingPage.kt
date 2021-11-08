@@ -73,8 +73,15 @@ class LandingPage : AppCompatActivity() {
             startActivity(Intent(this, OwnProfile::class.java))
         }
 
-        creerSalon.setOnClickListener{
-            startActivity(Intent(this, CreateDraw::class.java))}
+        createDrawingHomeButton.setOnClickListener{
+            startActivity(Intent(this, CreateDraw::class.java))
+        }
+
+        createTeamHomeButton.setOnClickListener {
+            val createTeamDialog = CreateCollaborationTeamDialog(this)
+            createTeamDialog.create()
+            createTeamDialog.show()
+        }
 
         disconnect.setOnClickListener {
             disconnect()

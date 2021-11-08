@@ -38,7 +38,7 @@
             android:layout_height="200dp" />
 
         <Button
-            android:id="@+id/creerSalon"
+            android:id="@+id/createTeamHomeButton"
             android:layout_width="200sp"
             android:layout_height="wrap_content"
             android:text="Créer un Salon"
@@ -46,6 +46,14 @@
             android:textSize="20sp"
             app:backgroundTint="@color/white" />
 
+        <Button
+            android:id="@+id/createDrawingHomeButton"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:text="Créer un dessin"
+            android:textColor="@color/main_color"
+            android:textSize="20sp"
+            app:backgroundTint="@color/white" />
         <Button
             android:id="@+id/profileButton"
             android:layout_width="150sp"
