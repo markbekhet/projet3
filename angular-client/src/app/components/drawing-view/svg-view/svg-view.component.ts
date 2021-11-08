@@ -23,6 +23,8 @@ import { Rectangle } from '@services/drawing-tools/rectangle';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { ActiveDrawing } from '@src/app/services/static-services/user_token';
+import { Selection } from 'src/app/services/drawing-tools/selection';
+
 
 // Multi-purpose
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
@@ -46,11 +48,7 @@ const CY_REGEX = new RegExp(`cy="([-?0-9.?]*)"`);
 const RX_REGEX = new RegExp(`rx="([-?0-9.?]*)"`);
 const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// const TRANSLATE_REGX = new RegExp(
-//   // eslint-disable-next-line no-useless-escape
-//   `transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`
-// );
+//const TRANSLATE_REGEX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
 
 @Component({
   selector: 'app-svg-view',
@@ -58,11 +56,10 @@ const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
   styleUrls: ['./svg-view.component.scss'],
 })
 export class SvgViewComponent implements OnInit, AfterViewInit {
-  @ViewChild('canvas', { static: false }) canvas: ElementRef | undefined;
-  @ViewChild('drawingSpace', { static: false })
-  drawingSpace: ElementRef | undefined;
-  @ViewChild('actualDrawing', { static: false }) doneDrawing!: ElementRef;
-  @ViewChild('inProgress', { static: false }) inProgress!: ElementRef;
+  @ViewChild("canvas", {static:false}) canvas!: ElementRef;
+  @ViewChild("drawingSpace", {static: false}) drawingSpace!: ElementRef;
+  @ViewChild("actualDrawing", {static: false}) doneDrawing!: ElementRef;
+  
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
@@ -159,10 +156,18 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.colorPick
     );
     const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
+    const select = new Selection(
+      false, 
+      this.interactionService, 
+      this.colorPick, 
+      this.doneDrawing.nativeElement,
+      this.canvas.nativeElement);
+
 
     this.toolsContainer.set('Crayon', pencil);
     this.toolsContainer.set('Rectangle', rectangle);
     this.toolsContainer.set('Ellipse', ellipse);
+    this.toolsContainer.set('Sélectionner', select);
   }
 
   updateSelectedTool(tool: string) {
@@ -194,7 +199,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     }
 
     if (newObj !== null) {
-      this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+      this.renderer.appendChild(this.doneDrawing.nativeElement, newObj);
       this.contents.set(data.id, newObj);
     }
   }
@@ -216,7 +221,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         }
 
         if (newObj !== null) {
-          this.renderer.appendChild(this.inProgress.nativeElement, newObj);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, newObj);
           this.contents.set(data.id, newObj);
         }
       } else {
@@ -231,13 +236,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             this.modifyEllipse(data.content, element);
             // console.log(data.drawing);
           }
-          this.renderer.appendChild(this.inProgress.nativeElement, element);
+          this.renderer.appendChild(this.doneDrawing.nativeElement, element);
         }
       }
     } else if (data.status === DrawingStatus.Done.valueOf()) {
       const element = this.contents.get(data.id);
       if (element !== undefined) {
-        this.renderer.removeChild(this.inProgress.nativeElement, element);
+        this.renderer.removeChild(this.doneDrawing.nativeElement, element);
         if (data.content.includes('polyline')) {
           this.modifyPolyline(data.content, element);
         } else if (data.content.includes('rect')) {

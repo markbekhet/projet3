@@ -31,5 +31,11 @@ export class IconsService {
         '../../../assets/tools/rectangle.svg'
       )
     );
+    iconRegistry.addSvgIcon(
+      'cursor', 
+      sanitizer.bypassSecurityTrustResourceUrl(
+        '../../../assets/tools/cursor.svg'
+      )
+    );
   }
 }

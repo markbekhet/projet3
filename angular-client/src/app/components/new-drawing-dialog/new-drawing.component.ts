@@ -16,9 +16,10 @@ import {
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-import { DrawingService } from '@services/drawing/drawing.service';
+//import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { UserToken } from '@src/app/services/static-services/user_token';
 
