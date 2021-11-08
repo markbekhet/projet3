@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ChatGateway } from './chat.gateway';
 import { DatabaseService } from './database/database.service';
 import { CreateUserDto } from './modules/user/create-user.dto';
 import { LoginDto } from './modules/user/login.dto';
@@ -12,7 +13,9 @@ const REGISTRATION_URL = "/register";
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly databaseService: DatabaseService) {}
+  constructor(private readonly appService: AppService,
+            private readonly databaseService: DatabaseService,
+            private chatGateway: ChatGateway) {}
   // Leave this to validate that the server is deployed
   @Get("/getHello")
   getHello(): string {
@@ -25,15 +28,18 @@ export class AppController {
     debugger
     //let userInfo: UserRegistrationInfo = JSON.parse(registrationInfo);
     try{
-      let userId=  await this.databaseService.createUser(registrationInfo)
-      return userId;
+      let user=  await this.databaseService.createUser(registrationInfo);
+      this.chatGateway.notifyUserUpdate(user);
+      return user.id;
     }catch(ex){
       throw new HttpException(ex.message, HttpStatus.BAD_REQUEST);
     }
   }
   @Post(LOGIN_URL)
     async login(@Body() userCredentials: LoginDto){
-        return await this.databaseService.login(userCredentials)
+        let user= await this.databaseService.login(userCredentials)
+        this.chatGateway.notifyUserUpdate(user);
+        return user.id;
     }
   
 }

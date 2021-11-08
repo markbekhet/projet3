@@ -15,6 +15,7 @@ import com.example.android.R
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.client.ProfileModification
+import com.example.android.client.UserProfileInformation
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
@@ -25,17 +26,26 @@ import retrofit2.Response
 
 val clientService = ClientService()
 
-fun getProfile(){
+fun getProfile():UserProfileInformation{
+    var ret = UserProfileInformation()
+    var response: Response<ResponseBody>?= null
     runBlocking {
         launch {
-            clientService.getUserProfileInformation()
+            response = clientService.getUserProfileInformation(ClientInfo.userId)
         }
     }
+    if(response!!.isSuccessful){
+        val data = response?.body()!!.string()
+        ret = UserProfileInformation().fromJson(data)
+    }
+
+    return ret
 }
 
 fun updateUI(email:TextView, lastName: TextView,
              firstName: TextView, nickname: TextView) {
-    val userInformation = ClientInfo.userInformation
+
+    val userInformation = getProfile()
     email.text = userInformation.emailAddress
     lastName.text = userInformation.lastName
     nickname.text = userInformation.pseudo
@@ -54,9 +64,6 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
-
-        getProfile()
-
 
         updateUI(email, lastName, firstName, nickname)
 
@@ -243,7 +250,6 @@ class ModifyParams(context: Context, email: TextView,
                     }
                 }
                 if(response!!.isSuccessful){
-                    getProfile()
                     updateUI(this.emailValue, this.lastNameValue,
                         firstNameValue, nicknameValue)
                     dismiss()

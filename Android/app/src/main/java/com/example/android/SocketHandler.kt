@@ -6,14 +6,14 @@ import java.lang.Exception
 import java.lang.RuntimeException
 
 
-const val URL = "http://10.200.41.34:3000"
 object SocketHandler {
-    private lateinit var mSocket: Socket
+    private lateinit var chatSocket: Socket
+    private lateinit var drawingSocket: Socket
 
     @Synchronized
-    fun setSocket(){
+    fun setChatSocket(){
         try{
-            mSocket = IO.socket(URL)
+            chatSocket = IO.socket(url)
         } catch (e: Exception) {
             println(e.message)
             throw RuntimeException(e)
@@ -21,12 +21,32 @@ object SocketHandler {
     }
 
     @Synchronized
-    fun getMSocket(): Socket? {
-        return mSocket
+    fun getChatSocket(): Socket? {
+        return chatSocket
     }
 
     @Synchronized
-    fun establishConnection(){
-        mSocket.connect()
+    fun establishChatSocketConnection(){
+        chatSocket.connect()
     }
+
+    /*@Synchronized
+    fun setDrawingSocket(){
+        try{
+            drawingSocket = IO.socket(url + drawingNamespace)
+        } catch (e: Exception) {
+            println(e.message)
+            throw RuntimeException(e)
+        }
+    }
+
+    @Synchronized
+    fun getDrawingSocket(): Socket {
+        return drawingSocket
+    }
+
+    @Synchronized
+    fun establishDrawingSocketConnection(){
+        drawingSocket.connect()
+    }*/
 }

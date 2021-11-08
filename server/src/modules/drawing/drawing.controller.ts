@@ -1,17 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { ChatGateway } from 'src/chat.gateway';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateDrawingDto } from './create-drawing.dto';
 import { DeleteDrawingDto } from './delete-drawing.dto';
-import { DrawingGateway } from './drawing.gateway';
 
 
 @Controller('/drawing')
 export class DrawingController {
-    constructor(private readonly databaseService: DatabaseService){}
+    constructor(private readonly databaseService: DatabaseService, private readonly chatGateway: ChatGateway){}
 
     @Post()
     async createDrawing(@Body() drawingInformation: CreateDrawingDto){
-        return await this.databaseService.createDrawing(drawingInformation);
+        let createdDrawing = await this.databaseService.createDrawing(drawingInformation);
+        this.chatGateway.notifyDrawingCreated(createdDrawing);
+        return createdDrawing.id;
     }
 
     @Get("/:drawingId/:password")

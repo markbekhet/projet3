@@ -30,19 +30,17 @@ class Chat : AppCompatActivity() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        setContentView(R.layout.chatfragment)
 
-        val displayMessage : RecyclerView? = findViewById<RecyclerView>(R.id.recycle_view)
+        val displayMessage : RecyclerView? = findViewById<RecyclerView>(R.id.chatfragment)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         displayMessage?.layoutManager = linearLayoutManager
 
-        SocketHandler.setSocket()
-        mSocket = SocketHandler.getMSocket()
-        mSocket?.connect()
+        mSocket = SocketHandler.getChatSocket()
 
         mClientService = ClientService()
-        val textMessage: EditText = findViewById(R.id.textView)
+        val textMessage: EditText = findViewById(R.id.textField)
         val sendButton: Button = findViewById(R.id.button)
 
 
@@ -116,17 +114,6 @@ class Chat : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mSocket?.disconnect()
-        runBlocking{
-            async {
-                launch {
-                    mClientService!!.disconnect(ClientInfo.username)
-                }
-            }
-        }
-    }
 }
 class UserMessage : Item<GroupieViewHolder>() {
     private var message = "bonjour"
