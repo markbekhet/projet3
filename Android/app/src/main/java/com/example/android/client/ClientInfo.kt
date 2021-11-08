@@ -5,6 +5,7 @@ import com.example.android.team.TeamGeneralInformation
 object ClientInfo {
     var username:String ?= null
     var userId = ""
+    var userProfile = UserProfileInformation()
     var usersList = UsersArrayList()
     var teamsList = TeamsArrayList()
 }

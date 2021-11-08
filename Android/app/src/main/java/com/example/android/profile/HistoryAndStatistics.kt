@@ -41,7 +41,7 @@ class HistoryAndStatistics : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
 
-        val userInfo = getProfile()
+        val userInfo = ClientInfo.userProfile
         val meanCollaborationTime:TextView = findViewById(R.id.meanCollaborationTime)
         val totalCollaborationTime: TextView = findViewById(R.id.totalCollaborationTime)
         val teamCount: TextView = findViewById(R.id.teamCount)

@@ -26,8 +26,7 @@ import retrofit2.Response
 
 val clientService = ClientService()
 
-fun getProfile():UserProfileInformation{
-    var ret = UserProfileInformation()
+fun getProfile(){
     var response: Response<ResponseBody>?= null
     runBlocking {
         launch {
@@ -36,16 +35,15 @@ fun getProfile():UserProfileInformation{
     }
     if(response!!.isSuccessful){
         val data = response?.body()!!.string()
-        ret = UserProfileInformation().fromJson(data)
+        ClientInfo.userProfile = UserProfileInformation().fromJson(data)
     }
-
-    return ret
 }
 
 fun updateUI(email:TextView, lastName: TextView,
              firstName: TextView, nickname: TextView) {
 
-    val userInformation = getProfile()
+    getProfile()
+    val userInformation = ClientInfo.userProfile
     email.text = userInformation.emailAddress
     lastName.text = userInformation.lastName
     nickname.text = userInformation.pseudo
