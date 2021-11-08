@@ -1,8 +1,10 @@
-import { visibility } from "src/enumerators/visibility";
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { DrawingVisibility } from "src/enumerators/visibility";
+import { BaseEntity, BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { CreateDrawingDto } from "./create-drawing.dto";
 import * as bcrypt from 'bcrypt';
 import { DrawingContent } from "../drawing-content/drawing-content.entity";
+import { ChatRoom } from "../chatRoom/chat-room.entity";
+import { ActiveUser } from "../active-users/active-users.entity";
 
 @Entity("drawing")
 export class Drawing extends BaseEntity{
@@ -20,7 +22,7 @@ export class Drawing extends BaseEntity{
     ownerId: string;
 
     @Column()
-    visibility: visibility;
+    visibility: DrawingVisibility;
 
     @Column({
         nullable: true
@@ -33,33 +35,32 @@ export class Drawing extends BaseEntity{
     @Column()
     width: number;
 
-    @Column()
+    @Column({
+        unique: true,
+    })
     name: string;
-
-    @Column({type:"boolean"})
-    useOwnerPrivateInformation: boolean;
 
     @Column()
     bgColor: string;
 
-    @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true})
+    @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true,})
     contents: DrawingContent[];
 
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE'})
+    @JoinColumn()
+    chatRoom: ChatRoom
     
+    @OneToMany(()=> ActiveUser, activeUser=> activeUser.drawing, {nullable: true})
+    activeUsers: ActiveUser[]
+
     @BeforeInsert()
     async setPassword(){
-        if(this.password !== undefined){
+        if(this.password !== undefined && this.password !== null){
             const salt = 10;
             this.password = await bcrypt.hash(this.password, salt)
         }
     }
-    @BeforeInsert()
-    setUsagePrivateInfo(){
-        if(this.useOwnerPrivateInformation=== undefined){
-            this.useOwnerPrivateInformation = false;
-        }
-    }
-
+    
     static createDrawing(drawingInformation: CreateDrawingDto) {
         let newDrawing = new Drawing()
         newDrawing.ownerId = drawingInformation.ownerId;
@@ -68,8 +69,10 @@ export class Drawing extends BaseEntity{
         newDrawing.height = drawingInformation.height;
         newDrawing.width = drawingInformation.width;
         newDrawing.name = drawingInformation.name;
-        newDrawing.useOwnerPrivateInformation = drawingInformation.useOwnerPrivateInformation;
         newDrawing.bgColor = drawingInformation.color;
+        let newChatRoom = new ChatRoom();
+        newChatRoom.name = drawingInformation.name;
+        newDrawing.chatRoom = newChatRoom;
         return newDrawing;
     }
 }

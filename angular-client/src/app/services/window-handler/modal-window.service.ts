@@ -1,29 +1,31 @@
 import { ComponentType } from '@angular/cdk/portal';
-import { Component, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { NewDrawComponent } from 'src/app/components/new-draw/new-draw.component';
+import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModalWindowService {
   dialogConfig: MatDialogConfig;
+
   constructor(private dialog: MatDialog) {
     this.dialogConfig = new MatDialogConfig();
+    this.dialogConfig.id = 'modalWindow';
+    this.dialogConfig.height = '84vh';
+    this.dialogConfig.width = '35vw';
+    this.dialogConfig.minWidth = '470px';
     this.dialogConfig.disableClose = false;
     this.dialogConfig.hasBackdrop = true;
-    this.dialogConfig.id = 'modalWindow';
-    this.dialogConfig.height = 'auto';
-    this.dialogConfig.width = 'auto';
-    this.dialogConfig.maxWidth = '100vw';
     this.dialogConfig.restoreFocus = false;
   }
 
-  openWindow(component: ComponentType<NewDrawComponent>){
-    this.closeWindow()
+  openWindow(component: ComponentType<NewDrawingComponent>) {
+    this.closeWindow();
     this.dialog.open(component, this.dialogConfig);
   }
-  closeWindow(){
+
+  closeWindow() {
     this.dialog.closeAll();
   }
 }

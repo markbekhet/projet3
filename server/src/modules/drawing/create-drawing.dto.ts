@@ -1,27 +1,27 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { visibility } from "src/enumerators/visibility";
+import { DrawingVisibility } from "src/enumerators/visibility";
 
 export class CreateDrawingDto{
-    @IsEnum(visibility)
-    visibility: visibility;
+    @IsEnum(DrawingVisibility,{message:'La visibilité du dessin doit être privée ou publique ou protégé'})
+    visibility: DrawingVisibility;
 
+    @IsOptional()
     password: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message: 'Le dessin doit avoir un propriétaire'})
     ownerId: string;
 
+    @IsNotEmpty({message: 'Le dessin doit avoir une hauteur'})
     @IsNumber()
     height: number;
 
+    @IsNotEmpty({message:'Le dessin doit avoir une largeur'})
     @IsNumber()
     width: number;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message: 'Le dessin doit avoir un nom'})
     name: string;
 
-    @IsOptional()
-    useOwnerPrivateInformation: boolean;
-
-    @IsNotEmpty()
+    @IsNotEmpty({message: 'Le dessin doit avoir une couleur de fonds'})
     color: string;
 }
