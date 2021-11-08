@@ -5,6 +5,7 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { LoginPageComponent } from './components/login-page/login-page.component';
 import { RegisterPageComponent } from './components/register-page/register-page.component';
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
+import { ProfilePage } from './components/profile-page/profile.page';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -12,6 +13,7 @@ const appRoutes: Routes = [
   { path: 'draw', component: DrawingViewComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
+  { path: 'profile', component: ProfilePage },
   // { path: ':username', component: CommunicationPageComponent },
 ];
 

@@ -33,6 +33,7 @@ import {
   OptionViewComponent,
   ShapeTypePipe,
 } from './components/drawing-view/toolbox-view/option-view/option-view.component';
+import { ProfilePage } from './components/profile-page/profile.page';
 import { RegisterPageComponent } from './components/register-page/register-page.component';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
@@ -50,6 +51,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     MiniColorPickerComponent,
     NewDrawingComponent,
     OptionViewComponent,
+    ProfilePage,
     RegisterPageComponent,
     ShapeTypePipe,
     SvgViewComponent,
