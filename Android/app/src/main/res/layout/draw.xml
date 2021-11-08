@@ -14,11 +14,26 @@
         tools:layout_editor_absoluteY="2dp"
         tools:ignore="MissingConstraints">
 
-        <include
-            android:id="@+id/avatarItem"
-            layout="@layout/fragment_avatar"
-            android:layout_width="342dp"
-            android:layout_height="match_parent" />
+        <FrameLayout
+            android:id="@+id/fl_drawing_view_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/background"
+            android:padding="1dp">
+
+            <!-- In FrameLayout the component which are
+           added below are in foreground and added above are in Background.-->
+            <ImageView
+                android:id="@+id/background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rectangle_background"
+                android:contentDescription="image"
+                android:scaleType="centerCrop" />
+
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="388dp"
@@ -28,51 +43,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <TextView
-                android:id="@+id/user"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_user"
-                android:drawablePadding="10dp"
-                android:padding="20sp"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                tools:text="Message" />
 
-            <TextView
-                android:id="@+id/bgColor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="20sp"
-                android:text="bgColor"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="20sp"
                 android:text="name"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
-            <TextView
-                android:id="@+id/color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="20sp"
-                android:text="color"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
-            <TextView
-                android:id="@+id/visibiliti"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="20sp"
-                android:text="visibiliti"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
