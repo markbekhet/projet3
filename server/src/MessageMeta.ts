@@ -1,16 +1,12 @@
 export interface ServerMessage{
-  clientName:string;
-  message: string;
-  date: CustomDate;
-}
-
-export interface CustomDate{
-  hour: string,
-  minutes: string,
-  seconds: string,
+    from:string;
+    message: string;
+    roomName:string;
 }
 
 export interface ClientMessage{
-  clientName: string,
-  message: string,
+    from: string,
+    message: string,
+    date: string,
+    roomName: string,
 }
