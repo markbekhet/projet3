@@ -87,6 +87,7 @@ class LandingPage : AppCompatActivity() {
         }
         chatSocket?.disconnect()
         drawingSocket?.disconnect()
+        finish()
     }
     override fun onDestroy() {
         disconnect()

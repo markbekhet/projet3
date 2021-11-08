@@ -89,6 +89,7 @@ class CreateDraw : AppCompatActivity() {
                 create.isEnabled = true
                 create.isClickable = true
             }
+            error.text = ""
         }
         height.doAfterTextChanged {
             if (!isNotBlank()) {
@@ -130,6 +131,11 @@ class CreateDraw : AppCompatActivity() {
             newDrawing.ownerId = ClientInfo.userId
             newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
+            height.text.clear()
+            width.text.clear()
+            drawingName.text.clear()
+            btnColorSelected.tooltipText = "FFFFFF"
+            btnColorSelected.setBackgroundColor(Color.WHITE)
             if (canProcessQuery) {
                 var response: Response<ResponseBody>? = null
                 runBlocking {
@@ -143,20 +149,24 @@ class CreateDraw : AppCompatActivity() {
                     DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
                     println(DrawingUtils.currentDrawingId)
                     //join the drawing
-                    var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
+                    val joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
                         ClientInfo.userId)
 
-                    SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
-                    SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
-                        if(args[0]!=null){
+
+                    var i = 0
+                    SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                    SocketHandler.getChatSocket().on("drawingInformations"){ args ->
+                        if(args[0]!=null && i == 0){
                             val data = args[0] as String
                             DrawingUtils.drawingInformation =
-                                ReceiveDrawingInformation().fromJson(data)
+                                AllDrawingInformation().fromJson(data)
                             startActivity(Intent(this, Drawing::class.java))
+                            i++
                         }
                     }
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du dessin"
+                    error.text = "Une erreur est arrivée lors de la création du dessin." +
+                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
                 }
 
             }

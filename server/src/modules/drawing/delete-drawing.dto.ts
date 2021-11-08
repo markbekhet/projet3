@@ -1,9 +1,9 @@
 import { IsNotEmpty } from "class-validator";
 
 export class DeleteDrawingDto{
-    @IsNotEmpty()
+    @IsNotEmpty({message:`L'identifiant du dessin doit être fourni`})
     drawingId: number;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message: `L'identifiant de l'utilisateur doit être fourni`})
     userId: string;
 }

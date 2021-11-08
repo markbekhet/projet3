@@ -35,6 +35,15 @@ class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= nul
         return Gson().fromJson(json, GalleryDrawing::class.java)
     }
 }
+// This class encapsulates all the details needed for the chat,
+// drawing informations and connected users for a given drawing
+class AllDrawingInformation(
+    var drawing: ReceiveDrawingInformation?= null
+){
+    fun fromJson(json: String): AllDrawingInformation{
+        return Gson().fromJson(json, AllDrawingInformation::class.java)
+    }
+}
 
 class JoinDrawingDto(var drawingId:Int,
                      var userId: String, var password:String?=null){
