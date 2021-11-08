@@ -159,7 +159,7 @@ class CreateDraw : AppCompatActivity() {
                         if(args[0]!=null && i == 0){
                             val data = args[0] as String
                             DrawingUtils.drawingInformation =
-                                ReceiveDrawingInformation().fromJson(data)
+                                AllDrawingInformation().fromJson(data)
                             startActivity(Intent(this, Drawing::class.java))
                             i++
                         }

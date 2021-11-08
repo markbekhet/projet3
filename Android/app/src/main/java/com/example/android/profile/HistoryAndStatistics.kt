@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
 import com.example.android.R
 import com.example.android.SocketHandler
+import com.example.android.canvas.AllDrawingInformation
 import com.example.android.canvas.DrawingUtils
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
@@ -178,7 +179,7 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
                 if (args[0] != null && i == 0) {
                     val data = args[0] as String
                     DrawingUtils.drawingInformation =
-                        ReceiveDrawingInformation().fromJson(data)
+                        AllDrawingInformation().fromJson(data)
                     activity.startDrawingActivity()
                     i++
                 }
