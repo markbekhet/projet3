@@ -21,19 +21,21 @@ export abstract class DrawingTool extends InputObserver {
   colorPick: ColorPickingService;
   chosenColor!: ChosenColors;
   colorSub!: Subscription;
+  toolName!: string;
 
   abstract createPath(
     path: Point[],
+    drawingStatus: DrawingStatus,
     doubleClickCheck?: boolean,
-    removePerimeter?: boolean
+    removePerimeter?: boolean,
   ): void;
-  static drawingContentID: number = -1;
+  drawingContentID!: number;
 
   constructor(
     selected: boolean,
     protected interactionService: InteractionService,
     colorPick: ColorPickingService,
-    private readonly socketService: SocketService,
+    public readonly socketService: SocketService,
   ) {
     super(selected);
     this.isDown = false;
@@ -52,7 +54,8 @@ export abstract class DrawingTool extends InputObserver {
   down(event: MouseEvent, position: Point) {
     // emit socket event to server to get the content id
     // this is a stub
-    DrawingTool.drawingContentID++;
+    //DrawingTool.drawingContentID++;
+    this.socketService.createDrawingContentRequest({drawingId: ActiveDrawing.drawingId});
     // console.log(this.drawingContentID)
   }
   // To update the colors with the colors given by the draw view
@@ -90,10 +93,10 @@ export abstract class DrawingTool extends InputObserver {
   // called while the mouse is moving
   updateProgress(drawingStatus: DrawingStatus) {
     let d = '';
-    d += this.createPath(this.currentPath);
+    d += this.createPath(this.currentPath, drawingStatus);
     // emit event with the string d
     this.interactionService.emitDrawingContent({
-      id: DrawingTool.drawingContentID,
+      id: this.drawingContentID,
       content: d,
       status: drawingStatus,
       userId: UserToken.userToken,
@@ -106,7 +109,7 @@ export abstract class DrawingTool extends InputObserver {
   // I think we dont need this method
   updateDrawing(endIt?: boolean): string {
     let d = '';
-    d += this.createPath(this.currentPath, endIt);
+    //d += this.createPath(this.currentPath, endIt, d);
     return d;
     // emit event with the string d and status === done (temp)
   }

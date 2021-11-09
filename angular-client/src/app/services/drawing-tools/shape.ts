@@ -89,7 +89,10 @@ export class Shape extends DrawingTool {
     this.currentPath.push(position);
     this.currentPath.push(position);
 
-    this.updateProgress(DrawingStatus.InProgress);
+    this.socketService.getDrawingContentId().subscribe((data: {contentId: number})=>{
+      this.drawingContentID = data.contentId;
+      this.updateProgress(DrawingStatus.InProgress);
+    })
   }
 
   // mouse up with shape in hand
@@ -144,7 +147,7 @@ export class Shape extends DrawingTool {
   }
 
   // Creates an svg shape
-  createPath(p: Point[], removePerimeter?: boolean): void {
+  createPath(p: Point[],drawingStatus: DrawingStatus,removePerimeter?: boolean): void {
     // Shape is only virtual, so we do not create a path
   }
 

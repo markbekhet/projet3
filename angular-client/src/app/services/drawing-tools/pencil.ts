@@ -1,7 +1,8 @@
-import { DrawingStatus } from '@models/DrawingMeta';
+import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '../socket/socket.service';
+import { ActiveDrawing, UserToken } from '../static-services/user_token';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { ToolsAttributes } from './tools-attributes';
@@ -15,7 +16,7 @@ export class Pencil extends DrawingTool {
     y: 0
   };
   maxPoint: Point = this.minPoint;
-
+  toolName = 'pencil';
   constructor(
     selected: boolean,
     interactionService: InteractionService,
@@ -48,9 +49,11 @@ export class Pencil extends DrawingTool {
     // add the same point twice in case the mouse doesnt move
     this.currentPath.push(position);
     this.currentPath.push(position);
-
+    this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
+      this.drawingContentID = data.contentId;
+      this.updateProgress(DrawingStatus.InProgress);
+    })
     // should be inside the listening event when integrated with socket
-    this.updateProgress(DrawingStatus.InProgress);
   }
 
   up(event: MouseEvent, position: Point, insideWorkspace: boolean) {
@@ -78,7 +81,7 @@ export class Pencil extends DrawingTool {
   doubleClick(Position: Point) {}
 
   // this is the function used to write the string
-  createPath(p: Point[]): string {
+  createPath(p: Point[], drawingStatus: DrawingStatus): string {
     let s = '';
     if (p.length < 2) {
       return s;
@@ -98,6 +101,10 @@ export class Pencil extends DrawingTool {
     s += ` transform="translate(0,0)"`;
     s += '/>\n';
     // console.log(s)
+    console.log(ActiveDrawing.drawingId);
+    let data: DrawingContent = {id: this.drawingContentID, userId: UserToken.userToken,
+       content: s, status: drawingStatus, drawingId: ActiveDrawing.drawingId, toolName: this.toolName};
+    this.socketService.sendDrawingToServer(data);
     return s;
   }
 
