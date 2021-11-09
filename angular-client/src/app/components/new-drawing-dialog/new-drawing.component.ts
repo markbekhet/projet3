@@ -155,7 +155,7 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingService.createDrawing(this.newDrawing).then((drawingIdServer: number)=>{
+      (await this.drawingService.createDrawing(this.newDrawing)).subscribe((drawingIdServer: number)=>{
         console.log(drawingIdServer);
         let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: UserToken.userToken, password: this.password}
         this.socketService.sendJoinDrawingRequest(joinDrawing);
