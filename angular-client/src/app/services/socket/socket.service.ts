@@ -89,6 +89,7 @@ export class SocketService {
   }
 
   public sendDrawingToServer(data: DrawingContent){
+    console.log(data);
     this.socket.emit("drawingToServer", JSON.stringify(data));
   }
 

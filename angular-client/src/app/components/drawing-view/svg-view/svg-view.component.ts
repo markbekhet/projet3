@@ -24,6 +24,8 @@ import { SocketService } from '@src/app/services/socket/socket.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { ActiveDrawing } from '@src/app/services/static-services/user_token';
 import { Selection } from 'src/app/services/drawing-tools/selection';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { AuthService } from '@src/app/services/authentication/auth.service';
 
 
 // Multi-purpose
@@ -75,6 +77,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     //private canvBuilder: CanvasBuilderService,
     private colorPick: ColorPickingService,
     private readonly socketService: SocketService,
+    private readonly drawingService: DrawingService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -86,6 +90,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.backColor = "#"+ drawingInformations.drawing.bgColor;
       this.width = drawingInformations.drawing.width;
       this.height = drawingInformations.drawing.height;
+      this.drawingService.drawingName.next(drawingInformations.drawing.name);
       ActiveDrawing.drawingName = drawingInformations.drawing.name;
       if(drawingInformations.drawing.contents.length > 0){
         for(let content of drawingInformations.drawing.contents){
@@ -155,20 +160,24 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   // To create tools and add them to the map
   // A map is used instead of if/else
   createTools() {
-    const pencil = new Pencil(true, this.interactionService, this.colorPick, this.socketService);
+    const pencil = new Pencil(true, this.interactionService, this.colorPick, this.socketService, this.drawingService, this.authService);
     const rectangle = new Rectangle(
       false,
       this.interactionService,
       this.colorPick,
-      this.socketService
+      this.socketService,
+      this.drawingService,
+      this.authService
     );
-    const ellipse = new Ellipse(false, this.interactionService, this.colorPick, this.socketService);
+    const ellipse = new Ellipse(false, this.interactionService, this.colorPick, this.socketService, this.drawingService, this.authService);
     const select = new Selection(
       false, 
       this.interactionService, 
       this.colorPick, 
       this.doneDrawing.nativeElement,
-      this.canvas.nativeElement, this.socketService);
+      this.canvas.nativeElement, this.socketService,
+      this.drawingService,
+      this.authService);
 
 
     this.toolsContainer.set('Crayon', pencil);

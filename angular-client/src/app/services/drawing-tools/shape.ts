@@ -2,6 +2,8 @@
 import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
+import { AuthService } from '../authentication/auth.service';
+import { DrawingService } from '../drawing/drawing.service';
 import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
@@ -37,14 +39,18 @@ export class Shape extends DrawingTool {
     selected: boolean,
     interactionService: InteractionService,
     colorPick: ColorPickingService,
-    socketService: SocketService
+    socketService: SocketService,
+    drawingService: DrawingService,
+    authService: AuthService
   ) {
-    super(selected, interactionService, colorPick, socketService);
+    super(selected, interactionService, colorPick, socketService, drawingService, authService);
     this.attr = {
       shapeLineThickness: DEF_LINE_THICKNESS,
       shapeType: DEF_SHAPE_TYPE,
     };
     this.updateColors();
+    this.getUserToken();
+    this.getDrawingId();
     this.updateAttributes();
     this.width = 0;
     this.height = 0;
@@ -147,7 +153,7 @@ export class Shape extends DrawingTool {
   }
 
   // Creates an svg shape
-  createPath(p: Point[],drawingStatus: DrawingStatus,removePerimeter?: boolean): void {
+  createPath(p: Point[],removePerimeter?: boolean): void {
     // Shape is only virtual, so we do not create a path
   }
 

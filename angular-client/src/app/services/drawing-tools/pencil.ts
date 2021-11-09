@@ -1,8 +1,10 @@
-import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
+import { /*DrawingContent,*/ DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
+import { AuthService } from '../authentication/auth.service';
+import { DrawingService } from '../drawing/drawing.service';
 import { SocketService } from '../socket/socket.service';
-import { ActiveDrawing, UserToken } from '../static-services/user_token';
+//import { ActiveDrawing, UserToken } from '../static-services/user_token';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { ToolsAttributes } from './tools-attributes';
@@ -21,12 +23,16 @@ export class Pencil extends DrawingTool {
     selected: boolean,
     interactionService: InteractionService,
     colorPick: ColorPickingService,
-    socketService: SocketService
+    socketService: SocketService,
+    drawingService: DrawingService,
+    authService: AuthService,
   ) {
-    super(selected, interactionService, colorPick, socketService);
+    super(selected, interactionService, colorPick, socketService, drawingService, authService);
     this.attr = { pencilLineThickness: DEF_LINE_THICKNESS };
     this.updateAttributes();
     this.updateColors();
+    this.getUserToken();
+    this.getDrawingId();
   }
 
   updateAttributes(): void {
@@ -81,7 +87,7 @@ export class Pencil extends DrawingTool {
   doubleClick(Position: Point) {}
 
   // this is the function used to write the string
-  createPath(p: Point[], drawingStatus: DrawingStatus): string {
+  createPath(p: Point[]): string {
     let s = '';
     if (p.length < 2) {
       return s;
@@ -101,10 +107,10 @@ export class Pencil extends DrawingTool {
     s += ` transform="translate(0,0)"`;
     s += '/>\n';
     // console.log(s)
-    console.log(ActiveDrawing.drawingId);
-    let data: DrawingContent = {id: this.drawingContentID, userId: UserToken.userToken,
-       content: s, status: drawingStatus, drawingId: ActiveDrawing.drawingId, toolName: this.toolName};
-    this.socketService.sendDrawingToServer(data);
+    console.log(this.drawingId);
+    //let data: DrawingContent = {id: this.drawingContentID, userId: this.userToken,
+    //   content: s, status: drawingStatus, drawingId: this.drawingId, toolName: this.toolName};
+    //this.socketService.sendDrawingToServer(data);
     return s;
   }
 

@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Subscription } from 'rxjs';
 import { ChosenColors } from '@models/ChosenColors';
-import { DrawingStatus } from '@models/DrawingMeta';
+import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
 import { ActiveDrawing, UserToken } from '../static-services/user_token';
 import { SocketService } from '../socket/socket.service';
+import { DrawingService } from '../drawing/drawing.service';
+import { AuthService } from '../authentication/auth.service';
+import { User } from '@src/app/models/UserMeta';
 
 const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
 const DEFAULT_SECONDARY_COLOR = '000000';
@@ -22,10 +25,11 @@ export abstract class DrawingTool extends InputObserver {
   chosenColor!: ChosenColors;
   colorSub!: Subscription;
   toolName!: string;
+  userToken!: string;
+  drawingId!: number;
 
   abstract createPath(
     path: Point[],
-    drawingStatus: DrawingStatus,
     doubleClickCheck?: boolean,
     removePerimeter?: boolean,
   ): void;
@@ -36,6 +40,8 @@ export abstract class DrawingTool extends InputObserver {
     protected interactionService: InteractionService,
     colorPick: ColorPickingService,
     public readonly socketService: SocketService,
+    public readonly drawingService: DrawingService,
+    public readonly authService: AuthService,
   ) {
     super(selected);
     this.isDown = false;
@@ -48,6 +54,8 @@ export abstract class DrawingTool extends InputObserver {
       secColor: DEFAULT_SECONDARY_COLOR,
       backColor: DEFAULT_BACK_COLOR,
     };
+    this.getUserToken();
+    this.getDrawingId();
   }
 
   // Implement down() method to get the id?
@@ -55,8 +63,20 @@ export abstract class DrawingTool extends InputObserver {
     // emit socket event to server to get the content id
     // this is a stub
     //DrawingTool.drawingContentID++;
-    this.socketService.createDrawingContentRequest({drawingId: ActiveDrawing.drawingId});
+    this.socketService.createDrawingContentRequest({drawingId: this.drawingId});
     // console.log(this.drawingContentID)
+  }
+  getUserToken(){
+    this.authService.authentifiedUser.subscribe((user:User)=>{
+      this.userToken = user.id;
+      console.log(this,this.userToken);
+    })
+  }
+  getDrawingId(){
+    this.drawingService.drawingId.subscribe((id: number)=>{
+      this.drawingId = id;
+      console.log(this.drawingId);
+    })
   }
   // To update the colors with the colors given by the draw view
   updateColors(): void {
@@ -93,8 +113,12 @@ export abstract class DrawingTool extends InputObserver {
   // called while the mouse is moving
   updateProgress(drawingStatus: DrawingStatus) {
     let d = '';
-    d += this.createPath(this.currentPath, drawingStatus);
+    d += this.createPath(this.currentPath);
     // emit event with the string d
+    console.log(this.toolName);
+    let drawingContent: DrawingContent = {userId: this.userToken, drawingId: ActiveDrawing.drawingId, id: this.drawingContentID,
+                  content: d, status: drawingStatus, toolName: this.toolName};
+    this.socketService.sendDrawingToServer(drawingContent);
     this.interactionService.emitDrawingContent({
       id: this.drawingContentID,
       content: d,

@@ -6,6 +6,8 @@ import { Point } from './point';
 //import { CanvasInteraction } from './canvas-interaction';
 import { InteractionService } from '../interaction/interaction.service';
 import { SocketService } from '../socket/socket.service';
+import { DrawingService } from '../drawing/drawing.service';
+import { AuthService } from '../authentication/auth.service';
 
 const INIT_VALUE = -1;
 
@@ -38,11 +40,15 @@ export class Selection extends DrawingTool {
     colorPick: ColorPickingService, 
     private drawing: HTMLElement,
     canvas: HTMLElement,
-    socketSerice: SocketService
+    socketSerice: SocketService,
+    drawingService: DrawingService,
+    authService: AuthService
     ) {
-    super(selected, interactionService, colorPick, socketSerice);
+    super(selected, interactionService, colorPick, socketSerice, drawingService, authService);
     //this.selectedRef = drawing;
     this.canvas = canvas;
+    this.getUserToken();
+    this.getDrawingId();
 
     window.addEventListener('newDrawing', (e: Event) => {
         for (let i = 0; i < this.drawing.childElementCount; i++) {

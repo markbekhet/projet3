@@ -1,9 +1,11 @@
 // import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
-import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
+//import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
+import { AuthService } from '../authentication/auth.service';
+import { DrawingService } from '../drawing/drawing.service';
 import { SocketService } from '../socket/socket.service';
-import { ActiveDrawing, UserToken } from '../static-services/user_token';
+//import { ActiveDrawing, UserToken } from '../static-services/user_token';
 // import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { Shape } from './shape';
@@ -18,11 +20,15 @@ export class Ellipse extends Shape {
     selected: boolean,
     interactionService: InteractionService,
     colorPick: ColorPickingService,
-    socketService: SocketService
+    socketService: SocketService,
+    drawingService: DrawingService,
+    authService: AuthService,
   ) {
-    super(selected, interactionService, colorPick, socketService);
+    super(selected, interactionService, colorPick, socketService, drawingService, authService);
     this.updateColors();
     this.updateAttributes();
+    this.getUserToken();
+    this.getDrawingId();
   }
 
   updateAttributes() {
@@ -47,7 +53,7 @@ export class Ellipse extends Shape {
   }
 
   // this is the function used to write the string
-  createPath(p: Point[], drawingStatus: DrawingStatus): string {
+  createPath(p: Point[]): string {
     this.svgString = '';
 
     this.setDimensions(p);
@@ -65,9 +71,9 @@ export class Ellipse extends Shape {
     if (this.width === 0 || this.height === 0) {
       // this.svgString = '';
     }
-    let data: DrawingContent ={id: this.drawingContentID, userId: UserToken.userToken,
-       content: this.svgString, status: drawingStatus, drawingId: ActiveDrawing.drawingId, toolName: this.toolName};
-    this.socketService.sendDrawingToServer(data);
+    //let data: DrawingContent ={id: this.drawingContentID, userId: this.userToken,
+      // content: this.svgString, status: drawingStatus, drawingId: this.drawingId, toolName: this.toolName};
+    //this.socketService.sendDrawingToServer(data);
     return this.svgString;
   }
 }
