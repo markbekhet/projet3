@@ -115,6 +115,7 @@ export abstract class DrawingTool extends InputObserver {
     let d = '';
     d += this.createPath(this.currentPath);
     // emit event with the string d
+    this.toolName = this.toolName;
     console.log(this.toolName);
     let drawingContent: DrawingContent = {userId: this.userToken, drawingId: ActiveDrawing.drawingId, id: this.drawingContentID,
                   content: d, status: drawingStatus, toolName: this.toolName};

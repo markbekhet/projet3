@@ -9,13 +9,14 @@ import { SocketService } from '../socket/socket.service';
 // import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { Shape } from './shape';
+import { ELLIPSE_TOOL_NAME } from './tool-names';
 import { ToolsAttributes } from './tools-attributes';
 
 export class Ellipse extends Shape {
   objectPressed(position: Point): boolean {
     throw new Error('Method not implemented.');
   }
-  toolName = 'ellipse';
+  toolName = ELLIPSE_TOOL_NAME;
   constructor(
     selected: boolean,
     interactionService: InteractionService,
@@ -54,6 +55,7 @@ export class Ellipse extends Shape {
 
   // this is the function used to write the string
   createPath(p: Point[]): string {
+    this.toolName = ELLIPSE_TOOL_NAME;
     this.svgString = '';
 
     this.setDimensions(p);

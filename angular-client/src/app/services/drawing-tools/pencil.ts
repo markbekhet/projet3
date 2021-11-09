@@ -7,6 +7,7 @@ import { SocketService } from '../socket/socket.service';
 //import { ActiveDrawing, UserToken } from '../static-services/user_token';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
+import { PENCIL_TOOL_NAME } from './tool-names';
 import { ToolsAttributes } from './tools-attributes';
 
 const DEF_LINE_THICKNESS = 5;
@@ -18,7 +19,7 @@ export class Pencil extends DrawingTool {
     y: 0
   };
   maxPoint: Point = this.minPoint;
-  toolName = 'pencil';
+  toolName = PENCIL_TOOL_NAME;
   constructor(
     selected: boolean,
     interactionService: InteractionService,
@@ -49,7 +50,7 @@ export class Pencil extends DrawingTool {
     this.currentPath = [];
     // console.log('here');
     super.down(event, position);
-
+    //this.toolName = 'pencil';
     // the pencil should affect the canvas
     this.isDown = true;
     // add the same point twice in case the mouse doesnt move
@@ -88,6 +89,7 @@ export class Pencil extends DrawingTool {
 
   // this is the function used to write the string
   createPath(p: Point[]): string {
+    this.toolName = PENCIL_TOOL_NAME;
     let s = '';
     if (p.length < 2) {
       return s;
