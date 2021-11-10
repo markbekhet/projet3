@@ -26,7 +26,7 @@ import { ActiveDrawing } from '@src/app/services/static-services/user_token';
 import { Selection } from 'src/app/services/drawing-tools/selection';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
-import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
+//import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
 
 
 // Multi-purpose
@@ -225,20 +225,18 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent) {
-    console.log(data);
-    console.log(data.toolName === RECT_TOOL_NAME)
     if (data.status === DrawingStatus.InProgress.valueOf()) {
       if (!this.contents.has(data.id)) {
         // new elements
         let newObj!: SVGElement;
-        if (data.toolName.includes(PENCIL_TOOL_NAME)) {
+        if (data.content.includes('polyline')) {
           console.log(`pencil: ${data.content}`);
           newObj = this.createSVGPolyline(data.content);
-        } else if (data.toolName.includes(RECT_TOOL_NAME)) {
+        } else if (data.content.includes('rect')) {
           console.log(`rect: ${data.content}`);
           newObj = this.createSVGRect(data.content);
-        } else if (data.toolName.includes(ELLIPSE_TOOL_NAME)) {
-          console.log(`ell: ${data.id}`);
+        } else if (data.content.includes('ellipse')) {
+          console.log(`ell: ${data.content}`);
           newObj = this.createSVGEllipse(data.content);
         }
 
@@ -250,32 +248,33 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         const element = this.contents.get(data.id);
         if (element !== undefined) {
           // this.renderer.removeChild(this.inProgress.nativeElement,element);
-          if (data.toolName.includes(PENCIL_TOOL_NAME)) {
+          if (data.content.includes('polyline')) {
             this.modifyPolyline(data.content, element);
-          } else if (data.toolName.includes(RECT_TOOL_NAME)) {
+          } else if (data.content.includes('rect')) {
             this.modifyRect(data.content, element);
-          } else if (data.toolName.includes(ELLIPSE_TOOL_NAME)) {
+          } else if (data.content.includes('ellipse')) {
             this.modifyEllipse(data.content, element);
             // console.log(data.drawing);
           }
-          this.renderer.appendChild(this.doneDrawing.nativeElement, element);
+          //this.renderer.appendChild(this.doneDrawing.nativeElement, element);
         }
       }
     } else if (data.status === DrawingStatus.Done.valueOf()) {
       const element = this.contents.get(data.id);
       if (element !== undefined) {
-        this.renderer.removeChild(this.doneDrawing.nativeElement, element);
-        if (data.toolName.includes(PENCIL_TOOL_NAME)) {
+        //this.renderer.removeChild(this.doneDrawing.nativeElement, element);
+        if (data.content.includes('polyline')) {
           this.modifyPolyline(data.content, element);
-        } else if (data.toolName.includes(RECT_TOOL_NAME)) {
+        } else if (data.content.includes('rect')) {
           this.modifyRect(data.content, element);
-        } else if (data.toolName.includes(ELLIPSE_TOOL_NAME)) {
+        } else if (data.content.includes('ellipse')) {
           this.modifyEllipse(data.content, element);
         }
-        this.renderer.appendChild(this.doneDrawing.nativeElement, element);
+        //this.renderer.appendChild(this.doneDrawing.nativeElement, element);
       }
     }
   }
+
 
   createSVGPolyline(drawing: string) {
     // console.log(drawing);
@@ -334,6 +333,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   createSVGRect(drawing: string) {
+    console.log('here');
     const element = this.renderer.createElement(
       'rect',
       'svg'

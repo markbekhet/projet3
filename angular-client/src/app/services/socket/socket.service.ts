@@ -82,8 +82,10 @@ export class SocketService {
 
   public getDrawingContentId = ()=>{
     this.socket.on("drawingContentCreated", (data:string)=>{
-      let dataMod: {contentId: number} = JSON.parse(data);
-      this.contentId$.next(dataMod);
+      if(data.length !== 0){
+        let dataMod: {contentId: number} = JSON.parse(data);
+        this.contentId$.next(dataMod);
+      }
     })
     return this.contentId$.asObservable();
   }
@@ -95,8 +97,10 @@ export class SocketService {
 
   public getDrawingContent= ()=>{
     this.socket.on("drawingToClient", (data:string)=>{
-      let dataMod: DrawingContent = JSON.parse(data);
-      this.drawingContent$.next(dataMod);
+      if(data.length!== 0){
+        let dataMod: DrawingContent = JSON.parse(data);
+        this.drawingContent$.next(dataMod);
+      }
     })
     return this.drawingContent$.asObservable();
   }

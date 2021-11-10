@@ -6,7 +6,7 @@ import { ColorPickingService } from '@services/color-picker/color-picking.servic
 import { InteractionService } from '@services/interaction/interaction.service';
 import { InputObserver } from './input-observer';
 import { Point } from './point';
-import { ActiveDrawing, UserToken } from '../static-services/user_token';
+import { ActiveDrawing/*, UserToken*/ } from '../static-services/user_token';
 import { SocketService } from '../socket/socket.service';
 import { DrawingService } from '../drawing/drawing.service';
 import { AuthService } from '../authentication/auth.service';
@@ -33,7 +33,7 @@ export abstract class DrawingTool extends InputObserver {
     doubleClickCheck?: boolean,
     removePerimeter?: boolean,
   ): void;
-  drawingContentID!: number;
+  static drawingContentID: number;
 
   constructor(
     selected: boolean,
@@ -117,10 +117,10 @@ export abstract class DrawingTool extends InputObserver {
     // emit event with the string d
     this.toolName = this.toolName;
     console.log(this.toolName);
-    let drawingContent: DrawingContent = {userId: this.userToken, drawingId: ActiveDrawing.drawingId, id: this.drawingContentID,
+    let drawingContent: DrawingContent = {userId: this.userToken, drawingId: ActiveDrawing.drawingId, id: DrawingTool.drawingContentID,
                   content: d, status: drawingStatus, toolName: this.toolName};
     this.socketService.sendDrawingToServer(drawingContent);
-    this.interactionService.emitDrawingContent({
+    /*this.interactionService.emitDrawingContent({
       id: this.drawingContentID,
       content: d,
       status: drawingStatus,
@@ -129,7 +129,7 @@ export abstract class DrawingTool extends InputObserver {
       toolName: 'pencil',
       // TODO: 0 for drawingID here is just a placeholder to remove compile error
       // drawingID: 0,
-    });
+    });*/
   }
   // I think we dont need this method
   updateDrawing(endIt?: boolean): string {

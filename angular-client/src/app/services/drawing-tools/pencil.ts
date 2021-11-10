@@ -57,7 +57,7 @@ export class Pencil extends DrawingTool {
     this.currentPath.push(position);
     this.currentPath.push(position);
     this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
-      this.drawingContentID = data.contentId;
+      DrawingTool.drawingContentID = data.contentId;
       this.updateProgress(DrawingStatus.InProgress);
     })
     // should be inside the listening event when integrated with socket

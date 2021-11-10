@@ -96,7 +96,7 @@ export class Shape extends DrawingTool {
     this.currentPath.push(position);
 
     this.socketService.getDrawingContentId().subscribe((data: {contentId: number})=>{
-      this.drawingContentID = data.contentId;
+      DrawingTool.drawingContentID = data.contentId;
       this.updateProgress(DrawingStatus.InProgress);
     })
   }
@@ -109,7 +109,7 @@ export class Shape extends DrawingTool {
       this.isDown = false;
 
       // add everything to the canvas
-      this.updateDrawing(true);
+      this.updateProgress(DrawingStatus.Done);
       this.currentPath = [];
     }
   }
@@ -177,7 +177,7 @@ export class Shape extends DrawingTool {
 
     this.svgString += ` fill="${this.fill}"`;
     this.svgString += ` stroke-width="${this.attr.shapeLineThickness}" stroke="${this.stroke}"`;
-    this.svgString += ` style="transform: translate(0px, 0px)"/>\n`;
+    this.svgString += ` transform="translate(0,0)"/>\n`;
   }
 
   
