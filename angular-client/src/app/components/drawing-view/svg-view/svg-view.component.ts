@@ -26,7 +26,7 @@ import { ActiveDrawing } from '@src/app/services/static-services/user_token';
 import { Selection } from 'src/app/services/drawing-tools/selection';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
-//import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
+import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
 
 
 // Multi-purpose
@@ -225,17 +225,19 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
   // This method will be modified especially with the introduction of selected status and deleted status
   drawContent(data: DrawingContent) {
+    debugger
+    console.log(`drawing content: ${data.content}, drawing tool: ${data.toolName}`)
     if (data.status === DrawingStatus.InProgress.valueOf()) {
       if (!this.contents.has(data.id)) {
         // new elements
         let newObj!: SVGElement;
-        if (data.content.includes('polyline')) {
+        if (data.toolName === PENCIL_TOOL_NAME) {
           console.log(`pencil: ${data.content}`);
           newObj = this.createSVGPolyline(data.content);
-        } else if (data.content.includes('rect')) {
+        } else if (data.toolName === RECT_TOOL_NAME) {
           console.log(`rect: ${data.content}`);
           newObj = this.createSVGRect(data.content);
-        } else if (data.content.includes('ellipse')) {
+        } else if (data.toolName === ELLIPSE_TOOL_NAME) {
           console.log(`ell: ${data.content}`);
           newObj = this.createSVGEllipse(data.content);
         }
@@ -248,11 +250,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         const element = this.contents.get(data.id);
         if (element !== undefined) {
           // this.renderer.removeChild(this.inProgress.nativeElement,element);
-          if (data.content.includes('polyline')) {
+          if (data.toolName === PENCIL_TOOL_NAME) {
             this.modifyPolyline(data.content, element);
-          } else if (data.content.includes('rect')) {
+          } else if (data.toolName === RECT_TOOL_NAME) {
+            console.log(`rect: ${data.content}`);
             this.modifyRect(data.content, element);
-          } else if (data.content.includes('ellipse')) {
+          } else if (data.toolName === ELLIPSE_TOOL_NAME) {
+            console.log(`ell: ${data.content}`);
             this.modifyEllipse(data.content, element);
             // console.log(data.drawing);
           }
@@ -263,11 +267,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       const element = this.contents.get(data.id);
       if (element !== undefined) {
         //this.renderer.removeChild(this.doneDrawing.nativeElement, element);
-        if (data.content.includes('polyline')) {
+        if (data.toolName === PENCIL_TOOL_NAME) {
           this.modifyPolyline(data.content, element);
-        } else if (data.content.includes('rect')) {
+        } else if (data.toolName === RECT_TOOL_NAME) {
+          console.log(`rect: ${data.content}`);
           this.modifyRect(data.content, element);
-        } else if (data.content.includes('ellipse')) {
+        } else if (data.toolName === ELLIPSE_TOOL_NAME) {
+          console.log(`ell: ${data.content}`);
           this.modifyEllipse(data.content, element);
         }
         //this.renderer.appendChild(this.doneDrawing.nativeElement, element);
@@ -278,6 +284,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   createSVGPolyline(drawing: string) {
     // console.log(drawing);
+    console.log('here pencil')
     const element = this.renderer.createElement(
       'polyline',
       'svg'
@@ -308,6 +315,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   modifyPolyline(drawing: string, element: SVGElement) {
+    console.log('here modifying pencil')
     this.renderer.removeAttribute(element, 'points');
 
     const pointsArray = POINTS_REGEX.exec(drawing);
@@ -346,7 +354,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
     const stroke = STROKE_REGEX.exec(drawing);
     const fill = FILL_REGEX.exec(drawing);
-
+    
+    console.log(`x: ${x}, y: ${y}, width: ${width}`);
     if (
       x !== null &&
       y !== null &&

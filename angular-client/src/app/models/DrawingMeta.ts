@@ -19,7 +19,6 @@ export interface DrawingContent {
   content: string; // Actual content of the svg element
   status: DrawingStatus; // To know how to render the drawing and the server uses this value to save when the drawing is done.
   toolName: string;
-  // drawingID: number; // To use when connecting to socket
 }
 
 export enum DrawingStatus {
