@@ -5,6 +5,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { menuItems, FeatureItem } from '@models/FeatureMeta';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { AuthService } from '@src/app/services/authentication/auth.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -15,7 +16,11 @@ export class LandingPage implements OnInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
 
-  constructor(private snackBar: MatSnackBar, private dialog: MatDialog) {
+  constructor(
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private auth: AuthService
+  ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
   }
@@ -50,5 +55,9 @@ export class LandingPage implements OnInit {
       default:
         break;
     }
+  }
+
+  getCurrentUser() {
+    return this.auth.authentifiedUser.value.token;
   }
 }
