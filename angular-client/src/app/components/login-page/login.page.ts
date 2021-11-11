@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserCredentials } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
@@ -20,7 +20,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    // private router: Router,
+    private router: Router,
     private auth: AuthService,
     public errorDialog: MatDialog
   ) {
@@ -49,6 +49,7 @@ export class LoginPage implements OnInit {
           // this.router.navigate(['/' + this.username]);
           console.log(`${user.username} is logged in`);
           form.reset();
+          this.router.navigate(['/']);
         },
         (error) => {
           const errorCode = JSON.parse(

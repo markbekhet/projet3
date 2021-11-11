@@ -85,11 +85,15 @@ export class AuthService {
 
   // this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
-    return this.httpClient.post(
-      PATH + DISCONNECT_PATH + this.authentifiedUser.value.token,
-      null,
-      { responseType: 'text' }
-    );
+    return this.httpClient
+      .post(PATH + DISCONNECT_PATH + this.authentifiedUser.value.token, null, {
+        responseType: 'text',
+      })
+      .pipe(
+        tap(() => {
+          this.authentifiedUser.next(this.NULL_USER);
+        })
+      );
   }
 
   getProfile() {

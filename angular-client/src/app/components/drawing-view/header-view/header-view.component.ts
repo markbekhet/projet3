@@ -7,6 +7,7 @@ import { Canvas } from '@models/CanvasInfo';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header-view',
@@ -20,7 +21,8 @@ export class HeaderViewComponent implements OnInit {
 
   constructor(
     private winService: ModalWindowService, // private interaction: InteractionService
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.menuItems = menuItems;
   }
@@ -37,7 +39,9 @@ export class HeaderViewComponent implements OnInit {
   }
 
   disconnect() {
-    this.authService.disconnect();
+    this.authService.disconnect().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method

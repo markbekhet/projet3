@@ -6,6 +6,7 @@ import { menuItems, FeatureItem } from '@models/FeatureMeta';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
@@ -19,7 +20,8 @@ export class LandingPage implements OnInit {
   constructor(
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
@@ -44,6 +46,14 @@ export class LandingPage implements OnInit {
     // TODO: Implement
   }
 
+  disconnect() {
+    this.auth.disconnect().subscribe(
+      (token) => {
+        this.router.navigate(['/login']);
+    }
+    );
+  }
+
   execute(shortcutName: string) {
     switch (shortcutName) {
       case 'Créer':
@@ -51,6 +61,9 @@ export class LandingPage implements OnInit {
         break;
       case 'Ouvrir':
         this.openGallery();
+        break;
+      case 'Disconnect':
+        this.disconnect();
         break;
       default:
         break;
