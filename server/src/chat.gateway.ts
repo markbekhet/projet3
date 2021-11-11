@@ -82,7 +82,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       relations: ["chatHistories"]
     });
     client.join("General");
-    for(const chatContent of generalRoom.chatHistories){
+    for(let chatContent of generalRoom.chatHistories){
       chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
     }
     let chatHistories = {chatHistoryList: generalRoom.chatHistories}
@@ -173,7 +173,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         where: [{name: drawingRet.name}],
         relations: ["chatHistories"],
       })
-      for(const chatContent of chatRoom.chatHistories){
+      for(let chatContent of chatRoom.chatHistories){
         chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
       }
       let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
@@ -246,7 +246,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           where: [{name: data.teamName}],
           relations:["chatHistories"],
         })
-        for(const chatContent of chatRoom.chatHistories){
+        for(let chatContent of chatRoom.chatHistories){
           chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
         }
         let haveJoinedTeamBefore: boolean = false;
@@ -288,7 +288,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         where: [{name: 'General'}]
       })
       chatHistory.chatRoom = chatRoom;
-      const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      let savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
       savedChatHistory.date = new Date(savedChatHistory.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
       let message: ClientMessage = {from:dataMod.from, message: dataMod.message, date: savedChatHistory.date, roomName: dataMod.roomName};
       this.wss.to("General").emit("msgToClient", JSON.stringify(message));
