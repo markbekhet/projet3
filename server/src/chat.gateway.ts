@@ -31,6 +31,7 @@ import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.reposi
 import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
 import { stringify } from 'querystring';
+import { UserProfileRequest } from './modules/user/user-profile-request.dto';
 
 @WebSocketGateway({cors:true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -360,6 +361,34 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if(team!== undefined){
         this.wss.to(team.name).emit("drawingModified", drawingString);
       }     
+    }
+  }
+  //-------------------------------------------user profile section ---------------------------------------------
+  @SubscribeMessage("getUserProfileRequest")
+  async sendUserProfile(client: Socket, data: any){
+    let dataMod: UserProfileRequest = JSON.parse(data);
+    if(dataMod.userId === dataMod.visitedId){
+        let user =  await this.userRepo.findOne(dataMod.userId, {
+          select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+              "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
+          relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
+      })
+      for(const connection of user.connectionHistories){
+          connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      for(const disconnect of user.disconnectionHistories){
+          disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      for(const drawingEdition of user.drawingEditionHistories){
+          drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      client.emit("profileToClient", JSON.stringify(user));
+    }
+    else{
+      let user =  await this.userRepo.findOne(dataMod.visitedId,{
+        select:["id", "pseudo", "status"]
+      })
+      client.emit("profileToClient", JSON.stringify(user));
     }
   }
 
