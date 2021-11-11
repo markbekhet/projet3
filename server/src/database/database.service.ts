@@ -224,7 +224,7 @@ export class DatabaseService {
                 {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
                 {visibility: DrawingVisibility.PROTECTED},
             ],
-            select: ["id", "visibility", "name", "bgColor", "height", "width"],
+            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId"],
             relations:["contents"],
         })
         return {drawingList:drawings};
@@ -277,62 +277,60 @@ export class DatabaseService {
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId,{
             relations:["activeUsers", "chatRoom"],
         });
-        let team = await this.teamRepo.findOne(drawing.ownerId);
-        let isTeamOwner: boolean = false;
-        if(team !== undefined && team !== null){
-           isTeamOwner = team.ownerId === deleteInformation.userId;
-        }
-        else if(drawing.ownerId !== deleteInformation.userId || !isTeamOwner){
-            throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
-        }
-        if(drawing.activeUsers.length === 0){
-            await this.drawingRepo.delete(drawing.id)
-            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
-            for(const editionHistory of editionHistories){
-                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+        if(drawing.ownerId !== deleteInformation.userId){
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
+                throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
             }
-            await this.chatRoomRepo.delete(drawing.chatRoom.id);
-            let retDrawing = {id: deleteInformation.drawingId, ownerId: drawing.ownerId, visibility: drawing.visibility};
-            return retDrawing;
         }
-        else{
+        
+        if(drawing.activeUsers.length > 0){
             throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
         }
+        await this.drawingRepo.delete(drawing.id)
+        let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
+        for(const editionHistory of editionHistories){
+            await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+        }
+        await this.chatRoomRepo.delete(drawing.chatRoom.id);
+        let retDrawing = {id: deleteInformation.drawingId, ownerId: drawing.ownerId, visibility: drawing.visibility};
+        return retDrawing;
+
     }
+
     async modifyDrawing(dto: ModifyDrawingDto){
         let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
-        let team = await this.teamRepo.findOne(drawing.ownerId);
-        let isTeamOwner: boolean= false;
-        if(team !== undefined && team !== null){
-           isTeamOwner = team.ownerId === dto.userId;
+        // validating that the user is allowed to modify the drawing
+        if(drawing.ownerId !== dto.userId){
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
+                throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
+            }
         }
-        else if(drawing.ownerId !== dto.userId || !isTeamOwner){
-            throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
-        }
+        // validating that the password exist if the new visibility is protected
         if(dto.newVisibility === DrawingVisibility.PROTECTED && (dto.password === undefined || dto.password === null)){
             throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
         }
-        else{
-            let updateName: boolean = dto.newName!== undefined && dto.newName !== null
-            let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
-            if(updateName && !updateVisibility){
-                await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
-            }
-            else if(!updateName && updateVisibility){
-                await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
-            }
-            else if(updateName && updateVisibility){
-                await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
-            }
-            if(updateVisibility){
-                drawing.visibility = dto.newVisibility;
-            }
+        let updateName: boolean = dto.newName!== undefined && dto.newName !== null
+        let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
+        if(updateName && !updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
+        }
+        else if(!updateName && updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
+        }
+        else if(updateName && updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
+        }
+        if(updateVisibility){
+            drawing.visibility = dto.newVisibility;
         }
         let drawingMod = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
             ownerId: drawing.ownerId};
         return drawingMod;
     }
+
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
         if(dto.visibility === TeamVisibility.PROTECTED){

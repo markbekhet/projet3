@@ -349,7 +349,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async notifyDrawingModified(drawing: {id: number, visibility: DrawingVisibility, name: string, 
     bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
     let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
-       bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
+       bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
     let drawingString = JSON.stringify(retDrawing);
     if(drawing.visibility!== DrawingVisibility.PRIVATE){
       this.wss.emit("drawingModified",drawingString);
