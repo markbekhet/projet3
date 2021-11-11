@@ -25,6 +25,7 @@ import { FindManyOptions } from 'typeorm';
 import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
+import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -290,6 +291,32 @@ export class DatabaseService {
             throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
         }
     }
+    async modifyDrawing(dto: ModifyDrawingDto){
+        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
+        if(drawing.ownerId !== dto.userId){
+            throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
+        }
+        if(dto.newVisibility === DrawingVisibility.PROTECTED && dto.password === "undefined"){
+            throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
+        }
+        else{
+            let updateName: boolean = dto.newName!== undefined && dto.newName !== null
+            let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
+            if(updateName && !updateVisibility){
+                await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
+            }
+            else if(!updateName && updateVisibility){
+                await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
+            }
+            else{
+                await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
+            }
+        }
+        let drawingMod = {id: dto.drawingId, visibility: dto.newVisibility, name: drawing.name,
+             bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
+            ownerId: drawing.ownerId};
+        return drawingMod;
+    }
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
         if(dto.visibility === TeamVisibility.PROTECTED){
@@ -321,16 +348,22 @@ export class DatabaseService {
         if(team.activeUsers.length > 0){
             throw new HttpException("can not delete the collaboration team because some users are in the collaboration team", HttpStatus.BAD_REQUEST);
         }
+        let drawingOccupied: boolean = false
         for(const drawing of drawings){
             if(drawing.activeUsers.length > 0){
-                throw new HttpException("can not delete the collaboration team because there is a user editing a drawing associated to this team", HttpStatus.BAD_REQUEST);
+                drawingOccupied = true;
             }
-            await this.drawingRepo.delete(drawing.id);
-            await this.chatRoomRepo.delete(drawing.chatRoom.id);
-            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
-            for(const editionHistory of editionHistories){
-                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+            else{
+                await this.drawingRepo.delete(drawing.id);
+                await this.chatRoomRepo.delete(drawing.chatRoom.id);
+                let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
+                for(const editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+                }
             }
+        }
+        if(drawingOccupied){
+            throw new HttpException("Can not delete team because there is at least one drawing in edition", HttpStatus.BAD_REQUEST);
         }
         await this.teamRepo.delete(dto.teamId);
         await this.chatRoomRepo.delete(team.chatRoom.id);
