@@ -30,6 +30,13 @@ export const menuItems: FeatureItem[] = [
     description: `deconnexion`,
     icon: 'camera',
   },
+  {
+    name: 'Profile',
+    shortcutName: 'Profile',
+    shortDescription: `profile`,
+    description: `profile`,
+    icon: 'camera',
+  },
 ];
 
 export const toolItems: FeatureItem[] = [

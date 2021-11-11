@@ -47,11 +47,9 @@ export class LandingPage implements OnInit {
   }
 
   disconnect() {
-    this.auth.disconnect().subscribe(
-      (token) => {
-        this.router.navigate(['/login']);
-    }
-    );
+    this.auth.disconnect().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   execute(shortcutName: string) {
@@ -65,9 +63,15 @@ export class LandingPage implements OnInit {
       case 'Disconnect':
         this.disconnect();
         break;
+      case 'Profile':
+        this.profile();
+        break;
       default:
         break;
     }
+  }
+  profile() {
+    this.router.navigate(['/profile']);
   }
 
   getCurrentUser() {
