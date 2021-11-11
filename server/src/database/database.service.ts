@@ -70,13 +70,13 @@ export class DatabaseService {
                     "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
                 relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
             })
-            for(const connection of user.connectionHistories){
+            for(let connection of user.connectionHistories){
                 connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
-            for(const disconnect of user.disconnectionHistories){
+            for(let disconnect of user.disconnectionHistories){
                 disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
-            for(const drawingEdition of user.drawingEditionHistories){
+            for(let drawingEdition of user.drawingEditionHistories){
                 drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
             return user;

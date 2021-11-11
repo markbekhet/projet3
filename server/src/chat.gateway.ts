@@ -368,18 +368,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async sendUserProfile(client: Socket, data: any){
     let dataMod: UserProfileRequest = JSON.parse(data);
     if(dataMod.userId === dataMod.visitedId){
-        let user =  await this.userRepo.findOne(dataMod.userId, {
-          select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
-              "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
-          relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
+      let user =  await this.userRepo.findOne(dataMod.userId, {
+        select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+            "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
+        relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
       })
-      for(const connection of user.connectionHistories){
+      for(let connection of user.connectionHistories){
           connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
       }
-      for(const disconnect of user.disconnectionHistories){
+      for(let disconnect of user.disconnectionHistories){
           disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
       }
-      for(const drawingEdition of user.drawingEditionHistories){
+      for(let drawingEdition of user.drawingEditionHistories){
           drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
       }
       client.emit("profileToClient", JSON.stringify(user));
