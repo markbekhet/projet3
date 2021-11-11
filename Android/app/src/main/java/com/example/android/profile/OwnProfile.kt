@@ -24,26 +24,28 @@ import org.json.JSONObject
 import retrofit2.Response
 
 
-val clientService = ClientService()
+//val clientService = ClientService()
 
-fun getProfile(){
+/*fun getProfile(){
     var response: Response<ResponseBody>?= null
     runBlocking {
-        launch {
-            response = clientService.getUserProfileInformation(ClientInfo.userId)
+        async{
+            launch {
+                response = clientService.getUserProfileInformation(ClientInfo.userId)
+            }
         }
+
     }
     if(response!!.isSuccessful){
         val data = response?.body()!!.string()
         ClientInfo.userProfile = UserProfileInformation().fromJson(data)
     }
-}
+}*/
 
-fun updateUI(email:TextView, lastName: TextView,
+fun updateUI(userInformation: UserProfileInformation,email:TextView, lastName: TextView,
              firstName: TextView, nickname: TextView) {
 
-    getProfile()
-    val userInformation = ClientInfo.userProfile
+    //getProfile()
     email.text = userInformation.emailAddress
     lastName.text = userInformation.lastName
     nickname.text = userInformation.pseudo
@@ -57,13 +59,13 @@ class OwnProfile : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
-
+        val data = intent.extras?.getString("profileInformation")
         val email: TextView = findViewById(R.id.emailValue)
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
-
-        updateUI(email, lastName, firstName, nickname)
+        val dataForm = UserProfileInformation().fromJson(data)
+        updateUI(dataForm,email, lastName, firstName, nickname)
 
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
@@ -83,7 +85,10 @@ class OwnProfile : AppCompatActivity() {
         val viewHistory: Button = findViewById(R.id.viewHistory)
 
         viewHistory.setOnClickListener {
-            startActivity(Intent(this,HistoryAndStatistics::class.java))
+            val bundle = Bundle()
+            bundle.putString("profileInformation", data)
+            startActivity(Intent(this,HistoryAndStatistics::class.java)
+                .putExtras(bundle))
 
         }
     }
@@ -248,7 +253,9 @@ class ModifyParams(context: Context, email: TextView,
                     }
                 }
                 if(response!!.isSuccessful){
-                    updateUI(this.emailValue, this.lastNameValue,
+                    val data = response!!.body()!!.string()
+                    val dataForm = UserProfileInformation().fromJson(data)
+                    updateUI(dataForm,this.emailValue, this.lastNameValue,
                         firstNameValue, nicknameValue)
                     dismiss()
                 }

@@ -14,12 +14,9 @@ import com.example.android.canvas.DrawingUtils
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
-import com.example.android.client.ClientInfo
-import com.example.android.client.ClientService
-import com.example.android.client.TeamsArrayList
-import com.example.android.client.UsersArrayList
+import com.example.android.client.*
 import com.example.android.profile.OwnProfile
-import com.example.android.profile.clientService
+//import com.example.android.profile.clientService
 import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
@@ -46,11 +43,15 @@ class LandingPage : AppCompatActivity() {
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         chatSocket = SocketHandler.getChatSocket()
-
+        val manager = supportFragmentManager
+        val fragmentTransaction = manager.beginTransaction()
+        val usersAndTeamsFragment = UsersAndTeamsFragment()
+        fragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.usersList= Gson().fromJson(data, UsersArrayList::class.java)
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
             }
         }
 
@@ -60,14 +61,42 @@ class LandingPage : AppCompatActivity() {
                 ClientInfo.teamsList = Gson().fromJson(data, TeamsArrayList::class.java)
             }
         }
-
         //initialize drawing socket
         //SocketHandler.setDrawingSocket()
         //SocketHandler.establishDrawingSocketConnection()
         //drawingSocket = SocketHandler.getDrawingSocket()
 
         profileButton.setOnClickListener {
-            startActivity(Intent(this, OwnProfile::class.java))
+            /*var response: Response<ResponseBody>?= null
+            runBlocking {
+                async{
+                    launch {
+                        response = clientService.getUserProfileInformation(ClientInfo.userId)
+                    }
+                }
+
+            }
+            if(response!!.isSuccessful){
+                val data = response?.body()!!.string()
+                println(data)
+                val bundle = Bundle()
+
+                bundle.putString("profileInformation", data)
+                startActivity(Intent(this, OwnProfile::class.java).putExtras(bundle))
+            }*/
+            val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+            chatSocket!!.emit("getUserProfileRequest", joinRequest.toJson())
+            var i = 0
+            chatSocket!!.on("profileToClient"){ args ->
+                if(args[0]!=null && i==0){
+                    val data = args[0] as String
+                    val bundle = Bundle()
+
+                    bundle.putString("profileInformation", data)
+                    startActivity(Intent(this, OwnProfile::class.java).putExtras(bundle))
+                    i++
+                }
+            }
         }
 
         createDrawingHomeButton.setOnClickListener{

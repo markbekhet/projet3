@@ -9,10 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center">
 
         <TextView
@@ -35,6 +31,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="left">
 
                 <TextView
                     android:id="@+id/nickname"
@@ -44,18 +45,46 @@
                     android:textStyle="bold"
                     android:layout_marginTop="20dp"
                     android:text="@string/nickname" />
+                <TextView
+                    android:id="@+id/statusLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="20dp"
+                    android:text="Status" />
+
+
+        </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="left">
+
 
                 <TextView
                     android:id="@+id/nicknameValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="36sp"
                     android:layout_marginTop="20dp"
+                    android:text="DoeMyBoy"
+                    android:textSize="36sp"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/design_default_color_secondary"/>
+
+                <TextView
+                    android:id="@+id/foreignStatusValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="5dp"
+                    android:textSize="36sp"
                     android:text="DoeMyBoy"
                     android:textColor="@color/design_default_color_secondary"/>
         </LinearLayout>
 
-
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

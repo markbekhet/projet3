@@ -5,10 +5,28 @@
     android:layout_height="match_parent"
     tools:context=".UsersAndTeamsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Users and teams" />
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Utilisateurs" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/usersRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Les équipes" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/teamsRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+    </LinearLayout>
 
 </FrameLayout>

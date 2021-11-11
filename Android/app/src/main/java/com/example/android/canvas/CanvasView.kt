@@ -97,14 +97,18 @@ class CanvasView(context: Context): View(context) {
                         "translation" ->{
                             val translation:Point = tool!!.startTransformPoint
                                 .difference(Point(event.x, event.y))
-                            tool!!.translate(this, translation)
+                            if(tool!= null){
+                                tool!!.translate(this, translation)
+                            }
                         }
                         "scaling" ->{
                             val scalingFactor =
                                 Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
                                     event.y - scalingPoint!!.key.y - totalScaling.y)
-                            tool!!.scale(this, scalingFactor, scalingPoint!!.value)
-                            totalScaling.plus(scalingFactor)
+                            if(tool != null){
+                                tool!!.scale(this, scalingFactor, scalingPoint!!.value)
+                                totalScaling.plus(scalingFactor)
+                            }
                         }
                         else -> tool!!.touchMove(context,event.x, event.y)
                     }
