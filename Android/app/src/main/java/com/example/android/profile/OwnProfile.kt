@@ -12,10 +12,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.R
-import com.example.android.client.ClientInfo
-import com.example.android.client.ClientService
-import com.example.android.client.ProfileModification
-import com.example.android.client.UserProfileInformation
+import com.example.android.SocketHandler
+import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
@@ -42,16 +40,6 @@ import retrofit2.Response
     }
 }*/
 
-fun updateUI(userInformation: UserProfileInformation,email:TextView, lastName: TextView,
-             firstName: TextView, nickname: TextView) {
-
-    //getProfile()
-    email.text = userInformation.emailAddress
-    lastName.text = userInformation.lastName
-    nickname.text = userInformation.pseudo
-    firstName.text = userInformation.firstName
-}
-
 class OwnProfile : AppCompatActivity() {
 
     var modifyParamsDialog : Dialog? =null
@@ -65,16 +53,21 @@ class OwnProfile : AppCompatActivity() {
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
         val dataForm = UserProfileInformation().fromJson(data)
-        updateUI(dataForm,email, lastName, firstName, nickname)
+        updateUI(dataForm)
 
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
 
         modifyParams.setOnClickListener{
-            modifyParamsDialog = ModifyParams(this, email,
-                lastName, firstName, nickname)
+            modifyParamsDialog = ModifyParams(this)
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
+            modifyParamsDialog!!.setOnDismissListener {
+                val newData = intent.extras!!.getString("newProfileInformation")
+                val dataForm = UserProfileInformation().fromJson(newData)
+                updateUI(dataForm)
+            }
+
         }
 
         //Nous allons avoir besoin de mettre a jour les
@@ -92,15 +85,18 @@ class OwnProfile : AppCompatActivity() {
 
         }
     }
+    fun updateUI(userInformation: UserProfileInformation) {
+
+        //getProfile()
+        emailValue.text = userInformation.emailAddress
+        lastNameValue.text = userInformation.lastName
+        nicknameValue.text = userInformation.pseudo
+        firstNameValue.text = userInformation.firstName
+    }
 }
 
-class ModifyParams(context: Context, email: TextView,
-                   lastName: TextView, firstName: TextView, nickname: TextView) : Dialog(context){
+class ModifyParams(var context: OwnProfile) : Dialog(context){
 
-    private var emailValue = email
-    private var lastNameValue = lastName
-    private var firstNameValue = firstName
-    private var nicknameValue = nickname
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -253,11 +249,19 @@ class ModifyParams(context: Context, email: TextView,
                     }
                 }
                 if(response!!.isSuccessful){
-                    val data = response!!.body()!!.string()
-                    val dataForm = UserProfileInformation().fromJson(data)
-                    updateUI(dataForm,this.emailValue, this.lastNameValue,
-                        firstNameValue, nicknameValue)
-                    dismiss()
+                    val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+                    SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+                    var i = 0
+                    SocketHandler.getChatSocket().on("profileToClient"){ args ->
+                        if(args[0]!=null && i==0){
+                            val data = args[0] as String
+                            val newBundle = Bundle()
+                            newBundle.putString("newProfileInformation", data)
+                            context.intent.replaceExtras(newBundle)
+                            dismiss()
+                            i++
+                        }
+                    }
                 }
                 else{
                     println(response!!.errorBody()!!.string())
