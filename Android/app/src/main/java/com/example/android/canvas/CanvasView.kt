@@ -136,15 +136,10 @@ class CanvasView(context: Context): View(context) {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        socket!!.on("drawingContentCreated"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                receiveContentID(data)
-            }
-        }
-
-        val svgString = getSVGString()
         try{
+
+            val svgString = getSVGString()
+
             val svg = SVG.getFromString(svgString)
             svg.renderToCanvas(canvas)
         } catch(e: Exception){
