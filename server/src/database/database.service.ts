@@ -26,6 +26,7 @@ import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawing
 import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
 import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
+import { DrawingContent } from 'src/modules/drawing-content/drawing-content.entity';
 
 @Injectable()
 export class DatabaseService {
@@ -158,12 +159,14 @@ export class DatabaseService {
             throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
         else{
-            if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
+            let updatePassword: Boolean = newParameters.newPassword !== undefined&& newParameters.newPassword !== null
+            let updatePseudo: boolean = newParameters.newPseudo !== undefined && newParameters.newPseudo!== null
+            if(!updatePassword&& updatePseudo){
                 await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
                 user.pseudo = newParameters.newPseudo;
             }
-            else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
-                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+            else if(updatePassword && !updatePseudo){
+                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
                     throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
@@ -179,8 +182,8 @@ export class DatabaseService {
                     await this.userRepo.update(userId,{password: hashedPassword})
                 }
             }
-            else{
-                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+            else if(updatePseudo && updatePassword){
+                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
                     throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
@@ -296,7 +299,7 @@ export class DatabaseService {
         if(drawing.ownerId !== dto.userId){
             throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
         }
-        if(dto.newVisibility === DrawingVisibility.PROTECTED && dto.password === "undefined"){
+        if(dto.newVisibility === DrawingVisibility.PROTECTED && (dto.password === undefined || dto.password === null)){
             throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
         }
         else{
@@ -308,11 +311,14 @@ export class DatabaseService {
             else if(!updateName && updateVisibility){
                 await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
             }
-            else{
+            else if(updateName && updateVisibility){
                 await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
             }
+            if(updateVisibility){
+                drawing.visibility = dto.newVisibility;
+            }
         }
-        let drawingMod = {id: dto.drawingId, visibility: dto.newVisibility, name: drawing.name,
+        let drawingMod = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
             ownerId: drawing.ownerId};
         return drawingMod;
