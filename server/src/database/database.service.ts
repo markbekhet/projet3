@@ -63,7 +63,7 @@ export class DatabaseService {
 
     }
 
-    async getUser(userId: string, visitedId) {
+    async getUser(userId: string, visitedId: string) {
         if(userId === visitedId){
             let user =  await this.userRepo.findOne(userId, {
                 select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
@@ -277,7 +277,12 @@ export class DatabaseService {
         const drawing = await this.drawingRepo.findOne(deleteInformation.drawingId,{
             relations:["activeUsers", "chatRoom"],
         });
-        if(drawing.ownerId !== deleteInformation.userId){
+        let team = await this.teamRepo.findOne(drawing.ownerId);
+        let isTeamOwner: boolean = false;
+        if(team !== undefined && team !== null){
+           isTeamOwner = team.ownerId === deleteInformation.userId;
+        }
+        else if(drawing.ownerId !== deleteInformation.userId || !isTeamOwner){
             throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
         }
         if(drawing.activeUsers.length === 0){
@@ -296,7 +301,12 @@ export class DatabaseService {
     }
     async modifyDrawing(dto: ModifyDrawingDto){
         let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
-        if(drawing.ownerId !== dto.userId){
+        let team = await this.teamRepo.findOne(drawing.ownerId);
+        let isTeamOwner: boolean= false;
+        if(team !== undefined && team !== null){
+           isTeamOwner = team.ownerId === dto.userId;
+        }
+        else if(drawing.ownerId !== dto.userId || !isTeamOwner){
             throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
         }
         if(dto.newVisibility === DrawingVisibility.PROTECTED && (dto.password === undefined || dto.password === null)){
@@ -335,7 +345,7 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name};
+        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name, ownerId: dto.ownerId};
         return returnedTeam;
     }
 

@@ -307,7 +307,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let userString = JSON.stringify(user);
     this.wss.emit("userUpdate", userString);
   }
-  notifyTeamCreation(team:{id: string, visibility: TeamVisibility, name: string}){
+  notifyTeamCreation(team:{id: string, visibility: TeamVisibility, name: string, ownerId: string}){
     let teamString = JSON.stringify(team);
     this.wss.emit("newTeamCreated", teamString);
   }
@@ -318,7 +318,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async notifyDrawingCreated(drawing: {id: number, visibility: DrawingVisibility, name: string, 
     bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
     // TODO:
-    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
+    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor,
+       height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
     let drawingString = JSON.stringify(retDrawing);
     if(drawing.visibility!== DrawingVisibility.PRIVATE){
       this.wss.emit("newDrawingCreated",drawingString);
@@ -347,7 +348,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
   async notifyDrawingModified(drawing: {id: number, visibility: DrawingVisibility, name: string, 
     bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
-    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
+    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+       bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
     let drawingString = JSON.stringify(retDrawing);
     if(drawing.visibility!== DrawingVisibility.PRIVATE){
       this.wss.emit("drawingModified",drawingString);
