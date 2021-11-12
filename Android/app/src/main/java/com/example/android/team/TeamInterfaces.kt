@@ -17,7 +17,8 @@ class TeamGeneralInformation(
     var id: String?= null,
     var visibility: Int?= null,
     var name: String?= null,
-    var password: String?= null
+    var password: String?= null,
+    var ownerId: String?= null
 ){
     fun fromJson(json: String): TeamGeneralInformation{
         return Gson().fromJson(json, TeamGeneralInformation::class.java)

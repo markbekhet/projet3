@@ -59,6 +59,7 @@ class LandingPage : AppCompatActivity() {
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.teamsList = Gson().fromJson(data, TeamsArrayList::class.java)
+                usersAndTeamsFragment.setTeamsList(ClientInfo.teamsList.teamList!!)
             }
         }
         //initialize drawing socket
@@ -67,25 +68,8 @@ class LandingPage : AppCompatActivity() {
         //drawingSocket = SocketHandler.getDrawingSocket()
 
         profileButton.setOnClickListener {
-            /*var response: Response<ResponseBody>?= null
-            runBlocking {
-                async{
-                    launch {
-                        response = clientService.getUserProfileInformation(ClientInfo.userId)
-                    }
-                }
-
-            }
-            if(response!!.isSuccessful){
-                val data = response?.body()!!.string()
-                println(data)
-                val bundle = Bundle()
-
-                bundle.putString("profileInformation", data)
-                startActivity(Intent(this, OwnProfile::class.java).putExtras(bundle))
-            }*/
-            val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
-            chatSocket!!.emit("getUserProfileRequest", joinRequest.toJson())
+            val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+            chatSocket!!.emit("getUserProfileRequest", profileRequest.toJson())
             var i = 0
             chatSocket!!.on("profileToClient"){ args ->
                 if(args[0]!=null && i==0){
@@ -144,7 +128,9 @@ class LandingPage : AppCompatActivity() {
         drawingSocket?.disconnect()
         finish()
     }
-    fun startTeamActivity(){
+    fun startTeamActivity(data:String){
+        val bundle = Bundle()
+        bundle.putString("teamInformation", data)
         startActivity(Intent(this, TeamActivity::class.java))
     }
 
@@ -250,7 +236,8 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                         if(args[0]!= null && i==0){
                             //ToComplete: Collect the rest of information concerning
                                 // the team like the gallery and the list of users
-                            context.startTeamActivity()
+                            val extraData = args[0] as String
+                            context.startTeamActivity(extraData)
                             i++
                         }
                     }
