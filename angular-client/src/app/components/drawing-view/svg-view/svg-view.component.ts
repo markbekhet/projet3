@@ -27,6 +27,9 @@ import { Selection } from 'src/app/services/drawing-tools/selection';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
+import { User } from '@src/app/models/UserMeta';
+import { Point } from '@src/app/services/drawing-tools/point';
+import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
 
 
 // Multi-purpose
@@ -52,7 +55,10 @@ const RX_REGEX = new RegExp(`rx="([-?0-9.?]*)"`);
 const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
 
 //const TRANSLATE_REGEX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
-
+const PENCIL_COMP_TOOL_NAME = 'Crayon';
+const RECT_COMP_TOOL_NAME = 'Rectangle';
+const ELLIPSE_COMP_TOOL_NAME = 'Ellipse';
+const SELECT_COMP_TOOL_NAME = "Sélectionner";
 @Component({
   selector: 'app-svg-view',
   templateUrl: './svg-view.component.html',
@@ -66,12 +72,15 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
-  toolsContainer = new Map();
-  mouseHandler!: MouseHandler;
-  contents: Map<number, SVGElement> = new Map();
-  // temporary
-  itemCounter: number = 0;
 
+  currentTool!: DrawingTool;
+  toolsList: DrawingTool[];
+  currentToolName = "Crayon"
+  drawingId!: number;
+  userId!: string;
+  scalingPoint: [Point, Point] | null | undefined
+  mode: string = "";
+  totalScaling: Point = new Point(0.0, 0.0);
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
@@ -80,9 +89,24 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     private readonly socketService: SocketService,
     private readonly drawingService: DrawingService,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+    this.toolsList = []
+  }
 
   ngOnInit(): void {
+    this.authService.authentifiedUser.subscribe((user: User)=>{
+      this.userId = user.id;
+    })
+    this.drawingService.drawingId.subscribe((id: number)=>{
+      this.drawingId = id
+    })
+    this.interactionService.$selectedTool.subscribe((toolName: string)=>{
+      if(toolName) this.currentToolName = toolName;
+    })
+    
+    this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
+      this.currentTool.contentId = data.contentId;
+    })
     this.initDrawing();
   }
 
@@ -96,7 +120,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       if(drawingInformations.drawing.contents.length > 0){
         for(let content of drawingInformations.drawing.contents){
           if(content.content!== null && content.content!== undefined){
-            this.drawExistingContent(content);
+            //this.drawExistingContent(content);
           }
         }
       }
@@ -105,54 +129,62 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   
   @HostListener('window:resize')
   onResize() {
-    this.mouseHandler.updateWindowSize();
   }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(e: MouseEvent) {
-    this.mouseHandler.down(e);
+    if(this.currentTool !== undefined){
+      this.scalingPoint = this.currentTool.getScalingPoint(new Point(e.x, e.y));
+    }
+    if(this.scalingPoint !== null){
+      this.mode = "scaling";
+    }
+    else if(this.isInsideTheSelection(e)){
+      this.mode = "translation";
+    }
+    else{
+      this.currentTool.unselect()
+      if(this.currentToolName === PENCIL_COMP_TOOL_NAME){
+        this.currentTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.drawingId, this.userId);
+      }
+      else if(this.currentToolName === RECT_COMP_TOOL_NAME){
+        //TODO
+      }
+      else if(this.currentToolName === ELLIPSE_COMP_TOOL_NAME){
+        // TODO
+      }
+      else if(this.currentToolName === SELECT_COMP_TOOL_NAME){
+        // TODO
+      }
+      this.currentTool.onMouseDown(e)
+      this.mode = ""
+    }
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(e: MouseEvent) {
-    this.mouseHandler.up(e);
+    this.currentTool.onMouseUp();
   }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(e: MouseEvent) {
-    this.mouseHandler.move(e);
+    // TODO
+    this.currentTool.onMouseMove(e)
   }
 
   @HostListener('wheel', ['$event'])
   onWheel(e: WheelEvent) {
-    this.mouseHandler.wheel(e);
   }
 
   ngAfterViewInit(): void {
     // TODO; Use interactionService to unselect all the tools and select the tool chosen by the user
     if (this.canvas !== undefined) {
-      this.mouseHandler = new MouseHandler(this.canvas.nativeElement);
-      this.createTools();
-
-      // subscribe each tool to the mouse handler
-      this.toolsContainer.forEach((element: InputObserver) => {
-        this.mouseHandler.addObserver(element);
-      });
-      /*this.interactionService.$drawing.subscribe((data: DrawingContent) => {
-        // console.log(data.drawing);
-        if (this.drawingSpace !== undefined) {
-          // console.log(data)
-          this.drawContent(data);
-        } else {
-          console.log('drawing space undefined');
-        }
-      });*/
-      this.interactionService.$selectedTool.subscribe((toolName: string)=>{
-        this.updateSelectedTool(toolName);
-      })
+      
+      
       this.socketService.getDrawingContent().subscribe((data: DrawingContent)=>{
         if(this.drawingSpace !== undefined){
-          this.drawContent(data);
+          //this.drawContent(data);
+          this.manipulateReceivedDrawing(data);
         }
       })
     } 
@@ -161,10 +193,57 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     }
   }
 
+  manipulateReceivedDrawing(drawingContent: DrawingContent){
+    let i = 0;
+    let exist = false;
+    if(this.toolsList.length > 0){
+      while(i< this.toolsList.length){
+        let tool = this.toolsList[i] as DrawingTool;
+        if(tool.contentId === drawingContent.id){
+          try{
+            tool.parse(drawingContent.content);
+          }catch(e){}
+          exist = true;
+          tool.selected = drawingContent.status === DrawingStatus.Selected;
+          tool.userId = drawingContent.userId;
+          if(drawingContent.status === DrawingStatus.Deleted){
+            this.renderer.removeChild(this.doneDrawing.nativeElement, tool.element);
+          }
+        }
+      }
+    }
+    if(!exist){
+      try{
+        let newTool!: DrawingTool;
+        switch(drawingContent.toolName){
+          case PENCIL_TOOL_NAME:
+            newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.drawingId, this.userId);
+            break;
+          
+          case RECT_TOOL_NAME:
+            //TODO
+            break;
+          case ELLIPSE_TOOL_NAME:
+            //TODO
+            break;
+          default:
+            break;
+        }
+        newTool.userId = drawingContent.userId;
+        newTool.contentId = drawingContent.id;
+        newTool.selected = drawingContent.status === DrawingStatus.Selected;
+        newTool.parse(drawingContent.content);
+        this.renderer.appendChild(this.doneDrawing.nativeElement, newTool.element);
+        this.toolsList.push(newTool);
+      }catch(err){
+        //console.log(err.message)
+      }
+    }
+  }
   // To create tools and add them to the map
   // A map is used instead of if/else
-  createTools() {
-    const pencil = new Pencil(true, this.interactionService, this.colorPick, this.socketService, this.drawingService, this.authService);
+  /*createTools() {
+    const pencil = new Pencil(this.interactionService, this.colorPick, this.socketService, this.drawingService, this.authService);
     const rectangle = new Rectangle(
       false,
       this.interactionService,
@@ -188,9 +267,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.toolsContainer.set('Rectangle', rectangle);
     this.toolsContainer.set('Ellipse', ellipse);
     this.toolsContainer.set('Sélectionner', select);
-  }
+  }*/
 
-  updateSelectedTool(tool: string) {
+  /*updateSelectedTool(tool: string) {
     if (tool) {
       // Unselect every tool which isn't tool
       this.toolsContainer.forEach((element) => {
@@ -204,8 +283,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         if (element.selected) console.log(element);
       });
     }
-  }
-  drawExistingContent(data: DrawingContent){
+  }*/
+  /*drawExistingContent(data: DrawingContent){
     let newObj!: SVGElement;
     if (data.content.includes('polyline')) {
       console.log(`pencil: ${data.content}`);
@@ -222,9 +301,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.renderer.appendChild(this.doneDrawing.nativeElement, newObj);
       this.contents.set(data.id, newObj);
     }
-  }
+  }*/
   // This method will be modified especially with the introduction of selected status and deleted status
-  drawContent(data: DrawingContent) {
+  /*drawContent(data: DrawingContent) {
     debugger
     console.log(`drawing content: ${data.content}, drawing tool: ${data.toolName}`)
     if (data.status === DrawingStatus.InProgress.valueOf()) {
@@ -480,5 +559,13 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       );
       this.renderer.setAttribute(element, 'fill', fill[1].toString());
     }
+  }*/
+  isInsideTheSelection(e: MouseEvent): boolean {
+    //throw new Error('Function not implemented.');
+    if(this.currentTool !== undefined && this.currentTool.inTranslationZone(e)){
+      return true;
+    }
+    return false
   }
 }
+
