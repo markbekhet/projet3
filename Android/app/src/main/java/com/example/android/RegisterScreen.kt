@@ -1,6 +1,8 @@
 package com.example.android
 
+import android.app.Activity
 import android.content.Intent
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -18,10 +20,17 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import android.text.TextUtils
 import android.util.Patterns
+import android.widget.ImageView
+import com.github.dhaval2404.imagepicker.ImagePicker
+import kotlinx.android.synthetic.main.avatar.view.*
+import kotlinx.android.synthetic.main.fragment_avatar.*
+import kotlinx.android.synthetic.main.fragment_avatar.view.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 
 
 class RegisterScreen : AppCompatActivity() {
+
+    private var imagePicker: ImageView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
@@ -32,127 +41,168 @@ class RegisterScreen : AppCompatActivity() {
         val password: EditText = findViewById(R.id.password)
         val confirmPassword: EditText = findViewById(R.id.confirm_password)
         val email: EditText = findViewById(R.id.editTextTextEmailAddress)
-        val button: Button = findViewById(R.id.button)
-
+        val button: Button = findViewById<Button>(R.id.button)
+        val camera: Button = findViewById<Button>(fragmentAvatar.camera.id)
+        val gallery: Button = findViewById<Button>(fragmentAvatar.gallery.id)
+        imagePicker = findViewById(fragmentAvatar.img_save.id)
         var clientService = ClientService()
 
-        firstName.doAfterTextChanged {
-            (validater(firstName.text.toString(), lastName.text.toString(),
-                pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()))
+        gallery.setOnClickListener() {
+            ImagePicker.with(this).galleryOnly().galleryMimeTypes(arrayOf("image/*")).crop()
+                .maxResultSize(400, 400).start()
+        }
+        camera.setOnClickListener() {
+            ImagePicker.with(this).cameraOnly().crop().maxResultSize(400, 400).start()
         }
 
-        lastName.doAfterTextChanged {
-            (validater(firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()))
-        }
+        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
 
-        pseudo.doAfterTextChanged {
-            validater(firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString())
-            errorPassword.text = ""
-        }
-
-        password.doAfterTextChanged {
-            (validater(firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()))
-            errorPassword.text = ""
-        }
-
-        confirmPassword.doAfterTextChanged {
-            (validater(firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()))
-            errorPassword.text = ""
-        }
+            if (resultCode == Activity.RESULT_OK && requestCode == ImagePicker.REQUEST_CODE) {
 
 
-        email.doAfterTextChanged {
-            (validater(firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()))
-            errorPassword.text = ""
-        }
+                imagePicker?.setImageURI(data?.data)
 
-
-        button.setOnClickListener {
-            val user = UserRegistrationInfo(firstName.text.toString(),
-                lastName.text.toString(), pseudo.text.toString(),
-                email.text.toString(), password.text.toString())
-
-            var response: Response<ResponseBody>? = null
-            var canProcessQuery = true
-
-            if(password.text.length < 8){
-                errorPassword.append("Le mot de passe doit avoir au moins 8 caractères")
-                canProcessQuery = false
             }
-            val regex = Regex(
-                """((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$""")
-            if(!regex.matches(password.text.toString())){
-                errorPassword.append("Le mot de passe ne doit pas avoir d'espace " +
-                    "et doit contenir au moins: " +
-                    "* Un caractèere en majuscule " +
-                    "* Un caractère en miniscule " +
-                    "* Un caractère spécial " +
-                    "* Un chiffre")
-                canProcessQuery = false
+        }
+
+
+            firstName.doAfterTextChanged {
+                (validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                ))
             }
 
-            if(canProcessQuery) {
+            lastName.doAfterTextChanged {
+                (validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                ))
+            }
 
-                runBlocking {
-                    async {
-                        launch {
-                            response = clientService.createUser(user)
+            pseudo.doAfterTextChanged {
+                validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                )
+                errorPassword.text = ""
+            }
+
+            password.doAfterTextChanged {
+                (validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                ))
+                errorPassword.text = ""
+            }
+
+            confirmPassword.doAfterTextChanged {
+                (validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                ))
+                errorPassword.text = ""
+            }
+
+
+            email.doAfterTextChanged {
+                (validater(
+                    firstName.text.toString(), lastName.text.toString(),
+                    pseudo.text.toString(), password.text.toString(),
+                    confirmPassword.text.toString(), email.text.toString()
+                ))
+                errorPassword.text = ""
+            }
+
+
+            button.setOnClickListener {
+                val user = UserRegistrationInfo(
+                    firstName.text.toString(),
+                    lastName.text.toString(), pseudo.text.toString(),
+                    email.text.toString(), password.text.toString()
+                )
+
+                var response: Response<ResponseBody>? = null
+                var canProcessQuery = true
+
+                if (password.text.length < 8) {
+                    errorPassword.append("Le mot de passe doit avoir au moins 8 caractères")
+                    canProcessQuery = false
+                }
+                val regex = Regex(
+                    """((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"""
+                )
+                if (!regex.matches(password.text.toString())) {
+                    errorPassword.append(
+                        "Le mot de passe ne doit pas avoir d'espace " +
+                                "et doit contenir au moins: " +
+                                "* Un caractèere en majuscule " +
+                                "* Un caractère en miniscule " +
+                                "* Un caractère spécial " +
+                                "* Un chiffre"
+                    )
+                    canProcessQuery = false
+                }
+
+                if (canProcessQuery) {
+
+                    runBlocking {
+                        async {
+                            launch {
+                                response = clientService.createUser(user)
+                            }
                         }
                     }
+                    if (response?.isSuccessful == true) {
+                        ClientInfo.userId = response?.body()?.string().toString()
+                        startActivity(Intent(this, LandingPage::class.java))
+                    } else {
+                        errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
+                                " adresse courriel ou le même pseudonyme."
+                    }
                 }
-                if(response?.isSuccessful == true){
-                    ClientInfo.userId = response?.body()?.string().toString()
-                    startActivity(Intent(this, LandingPage::class.java))
-                }
-                else{
-                    errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
-                        " adresse courriel ou le même pseudonyme."
-                }
+            }
+
+            login.setOnClickListener() {
+                startActivity(Intent(this, LoginScreen::class.java))
             }
         }
 
-        login.setOnClickListener(){
-            startActivity(Intent(this, LoginScreen::class.java))
+        private fun validater(
+            firstName: String,
+            lastName: String,
+            pseudo: String,
+            password: String,
+            confirmPassword: String,
+            email: String
+        ): Boolean {
+            if (((firstName.isNotEmpty() &&
+                        lastName.isNotEmpty() && pseudo.isNotEmpty()
+                        && password.isNotEmpty() && confirmPassword.isNotEmpty()
+                        && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword))
+            ) {
+                button.isEnabled = true
+                button.isClickable = true
+                return true
+            } else {
+                button.isEnabled = false
+                button.isClickable = false
+                return false
+            }
+        }
+
+        fun isValidEmail(target: CharSequence?): Boolean {
+            return if (TextUtils.isEmpty(target)) {
+                false
+            } else {
+                Patterns.EMAIL_ADDRESS.matcher(target).matches()
+            }
         }
     }
 
-    private fun validater(firstName : String,
-                                         lastName : String,
-                                         pseudo : String,
-                                         password : String,
-                                         confirmPassword : String,
-                                         email : String): Boolean{
-        if(((firstName.isNotEmpty() &&
-                    lastName.isNotEmpty() && pseudo.isNotEmpty()
-                    && password.isNotEmpty() && confirmPassword.isNotEmpty()
-                    && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword)))
-        {button.isEnabled = true
-        button.isClickable = true
-            return true}
-
-            else{
-            button.isEnabled = false
-            button.isClickable = false
-            return false
-        }
-    }
-
-    fun isValidEmail(target: CharSequence?): Boolean {
-        return if (TextUtils.isEmpty(target)) {
-            false
-        } else {
-            Patterns.EMAIL_ADDRESS.matcher(target).matches()
-        }
-    }
-}
