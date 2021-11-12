@@ -14,26 +14,26 @@ import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingTool } from '@services/drawing-tools/drawing-tool';
-import { Ellipse } from '@services/drawing-tools/ellipse';
-import { InputObserver } from '@services/drawing-tools/input-observer';
+//import { Ellipse } from '@services/drawing-tools/ellipse';
+//import { InputObserver } from '@services/drawing-tools/input-observer';
 import { InteractionService } from '@services/interaction/interaction.service';
-import { MouseHandler } from '@services/mouse-handler/mouse-handler';
+//import { MouseHandler } from '@services/mouse-handler/mouse-handler';
 import { Pencil } from '@services/drawing-tools/pencil';
-import { Rectangle } from '@services/drawing-tools/rectangle';
+//import { Rectangle } from '@services/drawing-tools/rectangle';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { ActiveDrawing } from '@src/app/services/static-services/user_token';
-import { Selection } from 'src/app/services/drawing-tools/selection';
+//import { Selection } from 'src/app/services/drawing-tools/selection';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
 import { User } from '@src/app/models/UserMeta';
 import { Point } from '@src/app/services/drawing-tools/point';
-import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
+//import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
 
 
 // Multi-purpose
-const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
+/*const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
 const STROKE_REGEX = new RegExp(`stroke="(#([0-9a-fA-F]{8})|none)"`);
 const FILL_REGEX = new RegExp(`fill="(#([0-9a-fA-F]{8})|none)"`);
 
@@ -52,7 +52,7 @@ const HEIGHT_REGEX = new RegExp(`height="([-?0-9.?]*)"`);
 const CX_REGEX = new RegExp(`cx="([-?0-9.?]*)"`);
 const CY_REGEX = new RegExp(`cy="([-?0-9.?]*)"`);
 const RX_REGEX = new RegExp(`rx="([-?0-9.?]*)"`);
-const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
+const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);*/
 
 //const TRANSLATE_REGEX = new RegExp(`transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`);
 const PENCIL_COMP_TOOL_NAME = 'Crayon';

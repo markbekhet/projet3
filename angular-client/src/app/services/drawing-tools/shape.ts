@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DrawingStatus } from '@models/DrawingMeta';
+/*import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { AuthService } from '../authentication/auth.service';
@@ -181,4 +181,4 @@ export class Shape extends DrawingTool {
   }
 
   
-}
+}*/

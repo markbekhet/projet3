@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Subscription } from 'rxjs';
-import { ChosenColors } from '@models/ChosenColors';
-import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
-import { ColorPickingService } from '@services/color-picker/color-picking.service';
-import { InteractionService } from '@services/interaction/interaction.service';
-import { InputObserver } from './input-observer';
+//import { Subscription } from 'rxjs';
+//import { ChosenColors } from '@models/ChosenColors';
+//import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
+//import { ColorPickingService } from '@services/color-picker/color-picking.service';
+//import { InteractionService } from '@services/interaction/interaction.service';
+//import { InputObserver } from './input-observer';
 import { Point } from './point';
-import { ActiveDrawing/*, UserToken*/ } from '../static-services/user_token';
-import { SocketService } from '../socket/socket.service';
-import { DrawingService } from '../drawing/drawing.service';
-import { AuthService } from '../authentication/auth.service';
-import { User } from '@src/app/models/UserMeta';
+//import { ActiveDrawing/*, UserToken*/ } from '../static-services/user_token';
+//import { SocketService } from '../socket/socket.service';
+//import { DrawingService } from '../drawing/drawing.service';
+//import { AuthService } from '../authentication/auth.service';
+//import { User } from '@src/app/models/UserMeta';
 
-const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
+/*const DEFAULT_PRIMARY_COLOR = 'FF0000FF';
 const DEFAULT_SECONDARY_COLOR = '000000';
-const DEFAULT_BACK_COLOR = 'FFFFFFFF';
+const DEFAULT_BACK_COLOR = 'FFFFFFFF';*/
 
 export interface DrawingTool {
   currentX: number;

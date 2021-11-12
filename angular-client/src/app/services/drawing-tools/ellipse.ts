@@ -1,4 +1,4 @@
-// import { DrawingStatus } from '@models/DrawingMeta';
+/*// import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 //import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
@@ -78,4 +78,4 @@ export class Ellipse extends Shape {
     //this.socketService.sendDrawingToServer(data);
     return this.svgString;
   }
-}
+}*/

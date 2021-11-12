@@ -1,9 +1,10 @@
+//import { ComponentFactoryResolver } from '@angular/core';
 import { /*DrawingContent,*/ DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
 import { SocketService } from '../socket/socket.service';
-import { ActiveDrawing, UserToken } from '../static-services/user_token';
+//import { ActiveDrawing, UserToken } from '../static-services/user_token';
 //import { ActiveDrawing, UserToken } from '../static-services/user_token';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
@@ -204,10 +205,10 @@ export class Pencil implements DrawingTool {
     let y = this.minPoint.y
     let width = this.maxPoint.x - this.minPoint.x
     let height = this.maxPoint.y - this.minPoint.y
-    this.str += "x=\"$x\" "
-    this.str += "y=\"$y\" "
-    this.str += "width=\"$width\""
-    this.str += "height=\"$height\""
+    this.str += `x=\"${x}\" `
+    this.str += `y=\"${y}\" `
+    this.str += `width=\"${width}\"`
+    this.str += `height=\"${height}\"`
     let transform = this.element.getAttribute("transform")
     if(transform!== undefined && transform !== null){
       this.str += `transform=${transform}`;
@@ -293,6 +294,7 @@ export class Pencil implements DrawingTool {
     let matchTranslate = TRANSLATE_REGEX.exec(parceableString);
     let matchStroke = STROKE_REGEX.exec(parceableString);
     let matchStrokeWidth = STROKE_WIDTH_REGEX.exec(parceableString);
+    let matchFill = FILL_REGEX.exec(parceableString);
     if(matchPoints === null){
       console.log("there is a problem with points regex");
     }
@@ -320,6 +322,12 @@ export class Pencil implements DrawingTool {
     else{
       this.element.setAttribute("stroke-width", matchStrokeWidth[1])
     }
+    if(matchFill=== null){
+      console.log("there is a problem with fill regex");
+    }
+    else{
+      this.element.setAttribute('fill', matchFill[1]);
+    }
     this.setCriticalValues()
   }
   unselect(): void {
@@ -337,6 +345,9 @@ export class Pencil implements DrawingTool {
       (attr: ToolsAttributes) => {
         if (attr) {
           this.attr = { pencilLineThickness: attr.pencilLineThickness };
+        }
+        else{
+          this.attr = {pencilLineThickness: DEF_LINE_THICKNESS};
         }
       }
     )
@@ -382,10 +393,10 @@ export class Pencil implements DrawingTool {
   }
   requestCreation(): void{
     // To change
-    this.socketService.createDrawingContentRequest({drawingId: ActiveDrawing.drawingId});
+    this.socketService.createDrawingContentRequest({drawingId: this.drawaingId});
   }
   sendProgressToServer(drawingStatus: DrawingStatus){
-    let drawingContent: DrawingContent = {drawingId: ActiveDrawing.drawingId, userId: this.userId,
+    let drawingContent: DrawingContent = {drawingId: this.drawaingId, userId: this.userId,
                                   id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
     this.socketService.sendDrawingToServer(drawingContent);                              
   }

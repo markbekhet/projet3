@@ -1,4 +1,4 @@
-import { Renderer2 } from '@angular/core';
+/*import { Renderer2 } from '@angular/core';
 import { ColorPickingService } from '../color-picker/color-picking.service';
 import { DrawingTool } from './drawing-tool';
 //import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
@@ -113,7 +113,7 @@ export class Selection extends DrawingTool {
             };
         }*/
         
-        if (this.target) {
+/*        if (this.target) {
             this.target.setAttribute('stroke', this.chosenColor.primColor);
 
             this.target = null;
@@ -200,7 +200,7 @@ export class Selection extends DrawingTool {
             this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
         }
     */
-        if (this.isPressed && this.target) {
+/*        if (this.isPressed && this.target) {
             this.deltaX = position.x - this.initPosition.x;
             this.deltaY = position.y - this.initPosition.y;
             this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
@@ -218,4 +218,4 @@ export class Selection extends DrawingTool {
 
 
       
-}
+}*/
