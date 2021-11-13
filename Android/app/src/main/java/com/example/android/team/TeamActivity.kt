@@ -14,7 +14,7 @@ class TeamActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
         //The extra data will be needed for the gallery and for the chat
-        val data = intent.extras!!.getString("teamInformation")
+        //val data = intent.extras!!.getString("teamInformation")
         teamNameTeamActivity.text = TeamUtils.currentTeam.name
         createDrawingTeamButton.setOnClickListener{
             startActivity(Intent(this, CreateDraw::class.java))

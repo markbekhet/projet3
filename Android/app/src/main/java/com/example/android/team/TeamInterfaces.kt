@@ -25,6 +25,12 @@ class TeamGeneralInformation(
     }
 }
 
+class DeleteTeamDto(var teamId: String?= null, var userId: String?= null){
+    fun toJson():String{
+        return Gson().toJson(this)
+    }
+}
+
 class LeaveTeamDto(
     var teamName:String?= null,
     var userId:String?= null

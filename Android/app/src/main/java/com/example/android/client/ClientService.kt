@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.example.android.canvas.DrawingInformation
 import com.example.android.team.CreateTeamDto
+import com.example.android.team.DeleteTeamDto
 import com.example.android.url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -133,6 +134,29 @@ class ClientService : Service() {
         withContext(Dispatchers.IO){
             response =
                     service.modifyProfileParams(ClientInfo.userId, requestBody)
+            if(response != null){
+                println(response!!.code())
+            }
+            return@withContext response
+        }
+        return response
+    }
+
+
+    suspend fun deleteTeam(team: DeleteTeamDto): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        val jsonString = team.toJson()
+        println(jsonString)
+        val requestBody = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        println(ClientInfo.userId)
+        withContext(Dispatchers.IO){
+            response =
+                service.deleteTeam(requestBody)
             if(response != null){
                 println(response!!.code())
             }

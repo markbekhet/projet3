@@ -7,20 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.canvas.DrawingStatus
 import com.example.android.canvas.Visibility
-import com.example.android.client.ClientInfo
-import com.example.android.client.User
-import com.example.android.client.UserProfileRequest
-import com.example.android.client.clientStatusFroInt
+import com.example.android.client.*
 import com.example.android.profile.OwnProfile
 import com.example.android.profile.VisitorProfileView
-import com.example.android.team.JoinTeamDto
-import com.example.android.team.TeamActivity
-import com.example.android.team.TeamGeneralInformation
-import com.example.android.team.TeamUtils
+import com.example.android.team.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -28,6 +23,11 @@ import kotlinx.android.synthetic.main.connection_disconnection_item.view.*
 import kotlinx.android.synthetic.main.fragment_users_and_teams.*
 import kotlinx.android.synthetic.main.team_item.view.*
 import kotlinx.android.synthetic.main.user_item.view.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,8 +43,7 @@ class UsersAndTeamsFragment() : Fragment() {
     private var usersAdapter : GroupAdapter<GroupieViewHolder>? = null
     private var teamsAdapter: GroupAdapter<GroupieViewHolder>?= null
     private var usersList: ArrayList<User>?= null
-    private var teamsList: ArrayList<TeamGeneralInformation>?= null
-
+    private var clientService = ClientService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         /*arguments?.let {
@@ -91,8 +90,7 @@ class UsersAndTeamsFragment() : Fragment() {
             }
         }
     }
-    fun setTeamsList(teamsList:ArrayList<TeamGeneralInformation>){
-        this.teamsList = teamsList
+    fun setTeamsList(){
         updateTeamsRecycleView()
     }
     fun setUsersList(usersList: ArrayList<User>){
@@ -102,26 +100,50 @@ class UsersAndTeamsFragment() : Fragment() {
 
     fun updateUserListInformation(user: User){
         if(usersList != null){
+            var exist = false
+            var i = 0
             for(existingUser in usersList!!){
                 if(existingUser.id == user.id){
-                    usersList!!.remove(existingUser)
+                    exist = true
+                    break
                 }
+                i++
+            }
+            if(exist){
+                usersList!!.removeAt(i)
             }
             usersList!!.add(user)
         }
         updateUsersRecycleView()
     }
 
-    fun updateTeamsListInformation(team: TeamGeneralInformation){
-        if(teamsList != null){
-            for(existingTeam in teamsList!!){
+    fun addTeam(team: TeamGeneralInformation){
+        if(ClientInfo.teamsList.teamList != null){
+            var alreadyExist = false
+            for(existingTeam in ClientInfo.teamsList.teamList!!){
                 if(existingTeam.id == team.id){
-                    teamsList!!.remove(existingTeam)
+                    alreadyExist = true
                 }
             }
-            teamsList!!.add(team)
+            if(!alreadyExist){
+                ClientInfo.teamsList.teamList!!.add(team)
+            }
         }
         updateTeamsRecycleView()
+    }
+
+    fun removeTeam(team: TeamGeneralInformation){
+        if(ClientInfo.teamsList.teamList != null){
+            var i = 0
+            for(existingTeam in ClientInfo.teamsList.teamList!!){
+                if(existingTeam.id == team.id){
+                    break
+                }
+                i++
+            }
+            ClientInfo.teamsList.teamList!!.removeAt(i)
+            updateTeamsRecycleView()
+        }
     }
 
     override fun onCreateView(
@@ -163,10 +185,10 @@ class UsersAndTeamsFragment() : Fragment() {
     }
 
     fun updateTeamsRecycleView(){
-        if(teamsList != null){
+        if(ClientInfo.teamsList.teamList != null){
             teamsAdapter = GroupAdapter<GroupieViewHolder>()
-            for(team in teamsList!!){
-                val newTeamItem = TeamItem(this)
+            for(team in ClientInfo.teamsList.teamList!!){
+                val newTeamItem = TeamItem(clientService,this)
                 newTeamItem.set(team)
                 teamsAdapter?.add(newTeamItem)
             }
@@ -222,8 +244,8 @@ class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
 
 }
 
-class TeamItem(var fragment: UsersAndTeamsFragment): Item<GroupieViewHolder>(){
-
+class TeamItem(var clientService: ClientService,
+               var fragment: UsersAndTeamsFragment): Item<GroupieViewHolder>(){
     var team: TeamGeneralInformation?= null
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.teamName.text = team!!.name
@@ -244,6 +266,28 @@ class TeamItem(var fragment: UsersAndTeamsFragment): Item<GroupieViewHolder>(){
             viewHolder.itemView.deleteBin.isEnabled = true
             viewHolder.itemView.deleteBin.setOnClickListener {
                 // launch request to delete the drawing
+                var response: Response<ResponseBody>? = null
+                runBlocking {
+                    async{
+                       launch{
+                            val deleteTeam = DeleteTeamDto(teamId = team!!.id,
+                                userId = ClientInfo.userId)
+                            response = clientService.deleteTeam(deleteTeam)
+                       }
+                    }
+                }
+                if(response!!.isSuccessful){
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, "Équipe supprimée avec succès",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    val error = response!!.errorBody()!!.string()
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, error,Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
 

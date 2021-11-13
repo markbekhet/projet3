@@ -30,4 +30,7 @@ interface RestAPI {
 
     @POST("$collaborationTeam")
     suspend fun createTeam(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @HTTP(method = "DELETE",path = "$collaborationTeam", hasBody = true)
+    suspend fun deleteTeam(@Body requestBody: RequestBody): Response<ResponseBody>
 }

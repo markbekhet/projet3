@@ -47,11 +47,12 @@ class LandingPage : AppCompatActivity() {
         val fragmentTransaction = manager.beginTransaction()
         val usersAndTeamsFragment = UsersAndTeamsFragment()
         fragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
+        var usersList =  UsersArrayList()
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                ClientInfo.usersList= Gson().fromJson(data, UsersArrayList::class.java)
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                usersList = Gson().fromJson(data, UsersArrayList::class.java)
+                usersAndTeamsFragment.setUsersList(usersList.userList!!)
             }
         }
 
@@ -59,9 +60,45 @@ class LandingPage : AppCompatActivity() {
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.teamsList = Gson().fromJson(data, TeamsArrayList::class.java)
-                usersAndTeamsFragment.setTeamsList(ClientInfo.teamsList.teamList!!)
+                usersAndTeamsFragment.setTeamsList()
             }
         }
+        /*====================================================================*/
+        // it needs a function to encapsulate this block
+        /*chatSocket?.on("teamDeleted"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val team = TeamGeneralInformation().fromJson(data)
+                usersAndTeamsFragment.removeTeam(team)
+            }
+        }
+        chatSocket?.on("newTeamCreated"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val team = TeamGeneralInformation().fromJson(data)
+                usersAndTeamsFragment.addTeam(team)
+            }
+        }
+        chatSocket?.on("userUpdate"){ args ->
+            if(args[0]!= null){
+                val userUpdated = User().fromJson(args[0] as String)
+                if(ClientInfo.usersList.userList != null){
+                    for(existingUser in ClientInfo.usersList.userList!!){
+                        if(existingUser.id == userUpdated.id){
+                            ClientInfo.usersList.userList!!.remove(existingUser)
+                        }
+                    }
+                    ClientInfo.usersList.userList!!.add(userUpdated)
+                }
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+            }
+
+        }*/
+        socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment,
+            usersList.userList)
+
+
+        /*========================================================================*/
         //initialize drawing socket
         //SocketHandler.setDrawingSocket()
         //SocketHandler.establishDrawingSocketConnection()
@@ -96,27 +133,8 @@ class LandingPage : AppCompatActivity() {
         disconnect.setOnClickListener {
             disconnect()
         }
-
-//            if (createDrawing == null) {
-//                createDrawing = Dialog(this)
-//                createDrawing!!.setContentView(R.layout.createdraw)
-//                createDrawing!!.show()
-//                button = createDrawing!!.findViewById(R.id.button)
-//                button?.setOnClickListener(){
-//                    startActivity(Intent(this, Drawing::class.java))
-//                    createDrawing!!.hide()
-//                    createDrawing = null
-//                }
-////                texte = createDrawing!!.findViewById(R.id.fermer)
-//                texte?.isEnabled = true
-//                texte?.setOnClickListener {
-//                    createDrawing!!.hide()
-//                    createDrawing = null
-//                }
-//
-//        }
-
     }
+
     fun disconnect(){
         runBlocking{
             launch{
@@ -128,10 +146,11 @@ class LandingPage : AppCompatActivity() {
         drawingSocket?.disconnect()
         finish()
     }
+
     fun startTeamActivity(data:String){
         val bundle = Bundle()
         bundle.putString("teamInformation", data)
-        startActivity(Intent(this, TeamActivity::class.java))
+        startActivity(Intent(this, TeamActivity::class.java).putExtras(bundle))
     }
 
     override fun onDestroy() {
@@ -239,6 +258,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                             val extraData = args[0] as String
                             context.startTeamActivity(extraData)
                             i++
+                            dismiss()
                         }
                     }
 
@@ -256,5 +276,33 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
             return false
         }
         return true
+    }
+}
+
+//To add a similar method for the gallery
+fun socketUpdatesForUsersAndTeam(socket:Socket?,
+                                 fragment: UsersAndTeamsFragment,
+                                 usersList: ArrayList<User>?){
+
+    socket?.on("teamDeleted"){ args ->
+        if(args[0] != null){
+            val data = args[0] as String
+            val team = TeamGeneralInformation().fromJson(data)
+            fragment.removeTeam(team)
+        }
+    }
+    socket?.on("newTeamCreated"){ args ->
+        if(args[0] != null){
+            val data = args[0] as String
+            val team = TeamGeneralInformation().fromJson(data)
+            fragment.addTeam(team)
+        }
+    }
+    socket?.on("userUpdate"){ args ->
+        if(args[0]!= null){
+            val userUpdated = User().fromJson(args[0] as String)
+            fragment.updateUserListInformation(userUpdated)
+        }
+
     }
 }
