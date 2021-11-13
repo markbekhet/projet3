@@ -117,19 +117,26 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   initDrawing(){
+    this.toolsList =[]
     this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
       this.backColor = "#"+ drawingInformations.drawing.bgColor;
       this.width = drawingInformations.drawing.width;
       this.height = drawingInformations.drawing.height;
       this.drawingService.drawingName.next(drawingInformations.drawing.name);
       ActiveDrawing.drawingName = drawingInformations.drawing.name;
-      if(drawingInformations.drawing.contents.length > 0){
+      drawingInformations.drawing.contents.forEach((content) => {
+        if(content.content!== null && content.content!== undefined){
+          this.manipulateReceivedDrawing(content);
+        }        
+      });
+      this.draw();
+      /*if(drawingInformations.drawing.contents.length > 0){
         for(let content of drawingInformations.drawing.contents){
           if(content.content!== null && content.content!== undefined){
             //this.drawExistingContent(content);
           }
         }
-      }
+      }*/
     });
   }
   
@@ -158,7 +165,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
       if(this.currentToolName === PENCIL_COMP_TOOL_NAME.valueOf()){
         console.log("here");
-        this.currentTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer);
+        this.currentTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
         this.currentTool.drawingId = this.drawingId;
       }
       else if(this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()){
@@ -253,7 +260,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         let newTool!: DrawingTool;
         switch(drawingContent.toolName){
           case PENCIL_TOOL_NAME:
-            newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer);
+            newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
             break;
           
           case RECT_TOOL_NAME:

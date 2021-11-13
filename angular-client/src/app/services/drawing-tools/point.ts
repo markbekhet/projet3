@@ -23,4 +23,10 @@ export class Point{
         this.x += point.x
         this.y += point.y
     }
+    static rpositionMouse(e: MouseEvent, canvas: HTMLElement){
+        let clientRect = canvas.getBoundingClientRect()
+        let x = e.x - clientRect.left;
+        let y = e.y - clientRect.top;
+        return new Point(x,y);
+    }
 }
