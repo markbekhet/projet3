@@ -5,21 +5,23 @@
         <div class="information">
             <button (click)="goLaunchingPage()">Go home</button>
             <span></span>
-            <h1>Username: {{ user.pseudo }}</h1>
+            <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+            <h1>{{ user.pseudo }}</h1>
+            <h1>{{ user.emailAddress }}</h1>
         </div>
     </div>
 
     <div class="content">
         <mat-tab-group mat-align-tabs="start" animationDuration="1000ms">
             <mat-tab label="Informations">
-                <div class="info-field">
-                    <mat-icon></mat-icon>
-                </div>
-                <div class="info-field"></div>
-                <div class="info-field"></div>
-                <div class="info-field"></div>
-                <div class="info-field"></div>
-                <div class="info-field"></div>
+                <form [formGroup]="updatePseudo" (ngSubmit)="onSubmit(updatePseudo)">
+                    <mat-form-field class="pseudo-field">
+                        <mat-label>Nouveau pseudonyme</mat-label>
+                        <input type="text" matInput formControlName="pseudo" />
+                    </mat-form-field>
+
+                    <button mat-icon-button>Soumettre</button>
+                </form>
             </mat-tab>
 
             <mat-tab label="Statistiques">
