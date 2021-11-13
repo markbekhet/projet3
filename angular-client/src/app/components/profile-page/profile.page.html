@@ -25,7 +25,17 @@
             </mat-tab>
 
             <mat-tab label="Statistiques">
-
+                <!--averageCollaborationTime: number;
+                    totalCollaborationTime: number;
+                    numberCollaborationTeams: number;
+                    numberCollaboratedDrawings: number;
+                    numberAuthoredDrawings: number;-->
+                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}}</div>
+                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}}</div>
+                <br>
+                <div class="info-field">Nombre d'équipes de collaboration: {{user.numberCollaborationTeams}}</div>
+                <div class="info-field">Nombre de dessins: {{user.numberAuthoredDrawings}}</div>
+                <div class="info-field">Nombre de collaborations: {{user.numberCollaboratedDrawings}}</div>
             </mat-tab>
 
             <mat-tab label="Historiques">
