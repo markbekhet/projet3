@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UsersAndTeamsFragment">
+    tools:context=".chat.ChatSwitchFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,25 +12,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Utilisateurs"
+            android:text="La liste des cannaux de conversation"
             android:textSize="18sp"
             android:textStyle="bold"/>
-
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/usersRecycleView"
-            android:layout_width="match_parent"
-            android:layout_height="300dp" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Les équipes"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/teamsRecycleView"
+            android:id="@+id/chatSwitchRecycleView"
             android:layout_width="match_parent"
             android:layout_height="300dp" />
     </LinearLayout>
-
 </FrameLayout>

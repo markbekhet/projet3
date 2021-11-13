@@ -40,19 +40,29 @@ class LandingPage : AppCompatActivity() {
         val manager = supportFragmentManager
         val usersFragmentTransaction = manager.beginTransaction()
         val usersAndTeamsFragment = UsersAndTeamsFragment()
+
         usersFragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
         var usersList =  UsersArrayList()
 
         //A hash map that has all the fragments
         val chatRoomsFragmentMap = HashMap<String, Chat>()
         ChatRooms.chatRooNames.add("General")
+
+        val chatSwitchFragmentTransaction = manager.beginTransaction()
+        val chatSwitchFragment = ChatSwitchFragment()
+        chatSwitchFragment.showChatSwitch()
+        chatSwitchFragmentTransaction.replace(R.id.landingPageChatSwitch,
+            chatSwitchFragment).commit()
+
         for(room in ChatRooms.chatRooNames){
             chatRoomsFragmentMap[room] = Chat(room)
         }
 
         val chatFragmentTransaction = manager.beginTransaction()
-        chatFragmentTransaction.replace(R.id.chatsFrame, chatRoomsFragmentMap["General"]!!).commit()
+        chatFragmentTransaction.replace(R.id.landingPageChatsFrame,
+            chatRoomsFragmentMap["General"]!!).commit()
 
+/*======================Socket interactions to br added for the gallery==================================*/
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
@@ -89,17 +99,11 @@ class LandingPage : AppCompatActivity() {
                 chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
             }
         }
-        /*====================================================================*/
         socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment,
             usersList.userList)
+        /*========================================================================================*/
 
-
-        /*========================================================================*/
-        //initialize drawing socket
-        //SocketHandler.setDrawingSocket()
-        //SocketHandler.establishDrawingSocketConnection()
-        //drawingSocket = SocketHandler.getDrawingSocket()
-
+        /*==================Buttons actions=====================================================*/
         profileButton.setOnClickListener {
             val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
             chatSocket!!.emit("getUserProfileRequest", profileRequest.toJson())
@@ -129,6 +133,7 @@ class LandingPage : AppCompatActivity() {
         disconnect.setOnClickListener {
             disconnect()
         }
+        /*=======================================================================================*/
     }
 
     fun disconnect(){

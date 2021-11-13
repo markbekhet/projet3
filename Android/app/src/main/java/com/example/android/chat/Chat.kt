@@ -83,7 +83,6 @@ class Chat(var name:String) : Fragment() {
     fun showMessages(){
         messageDisplay = GroupAdapter<GroupieViewHolder>()
         for(serverMessage in serverMessagesArray){
-            println(serverMessage.from + "has sent " +serverMessage.message)
             val userMessage = UserMessage()
             serverMessage.message?.let { serverMessage.from?.let { it1 ->
                 userMessage.set(it,

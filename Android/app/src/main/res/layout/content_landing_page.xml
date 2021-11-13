@@ -20,9 +20,13 @@
         <FrameLayout
             android:id="@+id/usersAndTeamsFrame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="500dp">
 
         </FrameLayout>
+        <FrameLayout
+            android:id="@+id/landingPageChatSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="275dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -97,7 +101,7 @@
         android:backgroundTint="@color/white">
 
         <FrameLayout
-            android:id="@+id/chatsFrame"
+            android:id="@+id/landingPageChatsFrame"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
