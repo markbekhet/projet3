@@ -1,4 +1,5 @@
 //import { ComponentFactoryResolver } from '@angular/core';
+import { Renderer2 } from '@angular/core';
 import { /*DrawingContent,*/ DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
@@ -13,17 +14,19 @@ import { ToolsAttributes } from './tools-attributes';
 
 const DEF_LINE_THICKNESS = 5;
 const RADUIS = 5;
-const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
-const STROKE_REGEX = new RegExp(`stroke="(#([0-9a-fA-F]{8})|none)"`);
-const FILL_REGEX = new RegExp(`fill="(#([0-9a-fA-F]{8})|none)"`);
+const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`);
+const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`);
+//const FILL_REGEX = new RegExp(`fill="(#([0-9a-fA-F]{8})|none)"`);
 
 // Crayon
 const POINTS_REGEX = new RegExp(
-  `points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`
+  `points="([-?0-9.?]*( )*[-?0-9.?]*(,[-?0-9.?]*( )*[-?0-9.?]*)*)"`
 );
 const TRANSLATE_REGEX = new RegExp(
-  `translate(([-?0-9.?]+),([-?0-9.?]+))`
+  /translate\((-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)\)/
 )
+
+const DEFPRIM = '#000000ff';
 
 export class Pencil implements DrawingTool {
   attr!: ToolsAttributes;
@@ -43,18 +46,24 @@ export class Pencil implements DrawingTool {
   scalingPositions: Map<Point, Point> = new Map<Point, Point>();
   contentId!: number;
   userId: string;
-  element: SVGPolylineElement = new SVGPolylineElement();
+  element!: SVGPolylineElement;
   primaryColor! :string;
+  drawingId!: number;
   constructor(
     private interactionService: InteractionService,
     private colorPick: ColorPickingService,
     private socketService: SocketService,
-    private drawaingId: number,
+    //private drawaingId: number,
     userId: string,
+    private rendrer: Renderer2,
   ) {
+    this.element = this.rendrer.createElement("polyline", "svg") as SVGPolylineElement;
+    //super();
     this.updateThickness();
     this.updatePrimaryColor();
     this.userId = userId;
+    this.primaryColor = DEFPRIM;
+    this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
   }
   onMouseDown(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
@@ -87,9 +96,9 @@ export class Pencil implements DrawingTool {
   onMouseMove(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
     let existingPoints = this.element.getAttribute("points")
-    this.element.setAttribute("points", `${existingPoints}, ${event.x} ${event.y}`)
+    this.element.setAttribute("points", `${existingPoints},${event.x} ${event.y}`)
     if(this.contentId !== null && this.contentId !== undefined){
-      
+      this.sendProgressToServer(DrawingStatus.InProgress);
     }
   }
   getString(): string {
@@ -107,15 +116,16 @@ export class Pencil implements DrawingTool {
     let result = "<polyline ";
     let startingPoint = this.element.getAttribute("points")
     let translate = this.element.getAttribute("transform");
+    console.log(translate);
     let stroke = this.element.getAttribute("stroke");
     let strokeWidth = this.element.getAttribute("stroke-width");
-    result += `points=${startingPoint} `;
-    result += `transform=${translate} `;
-    result += ` stroke${stroke}`;
-    result += ` stroke-width=${strokeWidth}`;
-    result += ` fill=none`;
-    result += ` stroke-linecap=round`;
-    result += ` stroke-linejoin=round`;
+    result += `points="${startingPoint}" `;
+    result += `transform="${translate}" `;
+    result += ` "stroke="${stroke}"`;
+    result += ` stroke-width="${strokeWidth}"`;
+    result += ` fill="none"`;
+    result += ` stroke-linecap="round"`;
+    result += ` stroke-linejoin="round"`;
     result += `/>\n`
     return result;
   }
@@ -132,7 +142,9 @@ export class Pencil implements DrawingTool {
     this.totalTranslation.makeEqualTo(translationPoint)
     this.element.setAttribute("transform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
     this.calculateScalingPositions();
-    this.sendProgressToServer(DrawingStatus.Selected);
+    if(this.contentId !== null && this.contentId !== undefined){
+      this.sendProgressToServer(DrawingStatus.Selected);
+    }
   }
   scale(scalePoint: Point, direction: Point): void {
     //throw new Error('Method not implemented.');
@@ -196,7 +208,10 @@ export class Pencil implements DrawingTool {
     }
     this.setCriticalValues()
     this.calculateScalingPositions()
-    this.sendProgressToServer(DrawingStatus.Selected)
+    if(this.contentId !== null && this.contentId !== undefined){
+      this.sendProgressToServer(DrawingStatus.Selected);
+    }
+    //this.sendProgressToServer(DrawingStatus.Selected)
   }
   getSelectionString(): void {
     //throw new Error('Method not implemented.');
@@ -294,7 +309,7 @@ export class Pencil implements DrawingTool {
     let matchTranslate = TRANSLATE_REGEX.exec(parceableString);
     let matchStroke = STROKE_REGEX.exec(parceableString);
     let matchStrokeWidth = STROKE_WIDTH_REGEX.exec(parceableString);
-    let matchFill = FILL_REGEX.exec(parceableString);
+    //let matchFill = FILL_REGEX.exec(parceableString);
     if(matchPoints === null){
       console.log("there is a problem with points regex");
     }
@@ -303,11 +318,14 @@ export class Pencil implements DrawingTool {
       this.element.setAttribute('points', pointsGroup);
     }
     if(matchTranslate === null){
+      console.log(parceableString)
       console.log("there is a problem with translate regex");
     }
     else{
       this.totalTranslation.x = Number(matchTranslate[1])
+      console.log(this.totalTranslation.x)
       this.totalTranslation.y = Number(matchTranslate[2])
+      console.log(this.totalTranslation.y);
       this.element.setAttribute("tranform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
     }
     if(matchStroke === null){
@@ -322,22 +340,27 @@ export class Pencil implements DrawingTool {
     else{
       this.element.setAttribute("stroke-width", matchStrokeWidth[1])
     }
-    if(matchFill=== null){
+    /*if(matchFill=== null){
       console.log("there is a problem with fill regex");
     }
     else{
       this.element.setAttribute('fill', matchFill[1]);
-    }
+    }*/
     this.setCriticalValues()
   }
   unselect(): void {
     //throw new Error('Method not implemented.');
     this.selected = false;
-    this.sendProgressToServer(DrawingStatus.Selected);
+    if(this.contentId !== null && this.contentId !== undefined){
+      this.sendProgressToServer(DrawingStatus.Done);
+    }
+    //this.sendProgressToServer(DrawingStatus.Done);
   }
   delete(): void {
     //throw new Error('Method not implemented.');
-    this.sendProgressToServer(DrawingStatus.Deleted);
+    if(this.contentId !== null && this.contentId !== undefined){
+      this.sendProgressToServer(DrawingStatus.Deleted);
+    }
   }
   updateThickness(): void {
     //throw new Error('Method not implemented.');
@@ -354,7 +377,7 @@ export class Pencil implements DrawingTool {
   }
   updatePrimaryColor(): void {
     //throw new Error('Method not implemented.');
-    const DEFPRIM = '#000000ff';
+    
     this.colorPick.colorSubject.subscribe((color:ChosenColors)=>{
       if(color === undefined){
         this.primaryColor = DEFPRIM;
@@ -393,10 +416,10 @@ export class Pencil implements DrawingTool {
   }
   requestCreation(): void{
     // To change
-    this.socketService.createDrawingContentRequest({drawingId: this.drawaingId});
+    this.socketService.createDrawingContentRequest({drawingId: this.drawingId});
   }
   sendProgressToServer(drawingStatus: DrawingStatus){
-    let drawingContent: DrawingContent = {drawingId: this.drawaingId, userId: this.userId,
+    let drawingContent: DrawingContent = {drawingId: this.drawingId, userId: this.userId,
                                   id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
     this.socketService.sendDrawingToServer(drawingContent);                              
   }

@@ -28,6 +28,7 @@ export interface DrawingTool {
   contentId: number;
   userId: string;
   element: SVGElement;
+  drawingId: number;
 
   onMouseDown(event: MouseEvent): void
 

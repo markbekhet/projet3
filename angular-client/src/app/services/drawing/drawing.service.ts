@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Drawing } from '@models/DrawingMeta';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable} from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ActiveDrawing } from '../static-services/user_token';
 
@@ -16,8 +16,10 @@ const PATH = 'http://localhost:3000';
 export class DrawingService {
   constructor(private httpClient: HttpClient) {}
 
-  drawingId: Subject<number> = new Subject<number>()
-  drawingName: Subject<string> = new Subject<string>();
+  readonly id: number = 0
+  readonly name: string = ''
+  drawingId: BehaviorSubject<number> = new BehaviorSubject<number>(this.id)
+  drawingName: BehaviorSubject<string> = new BehaviorSubject<string>(this.name);
   
   createDrawing(newDrawing: Drawing): Observable<number>{
     //let drawingID!: number;
