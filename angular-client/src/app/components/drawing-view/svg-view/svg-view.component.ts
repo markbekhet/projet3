@@ -32,6 +32,7 @@ import { Point } from '@src/app/services/drawing-tools/point';
 //import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
 import { Renderer2 } from '@angular/core';
 import { Rectangle } from '@src/app/services/drawing-tools/rectangle';
+import { Ellipse } from '@src/app/services/drawing-tools/ellipse';
 
 // Multi-purpose
 /*const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
@@ -176,6 +177,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
       else if(this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()){
         // TODO
+        this.currentTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+        this.currentTool.drawingId = this.drawingId
       }
       else if(this.currentToolName === SELECT_COMP_TOOL_NAME){
         // TODO
@@ -272,6 +275,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             break;
           case ELLIPSE_TOOL_NAME:
             //TODO
+            newTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
             break;
           default:
             break;

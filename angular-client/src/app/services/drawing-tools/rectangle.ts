@@ -46,7 +46,7 @@ export class Rectangle implements  DrawingTool{
   mouseIsDown: boolean = false;
   primaryColor!: string;
   secondaryColor!: string;
-  pointsArray: Point[];
+  //pointsArray: Point[];
   selectionOffset: number = 0;
   constructor(
     private interactionService: InteractionService,
@@ -64,13 +64,13 @@ export class Rectangle implements  DrawingTool{
     this.userId = userId;
     this.primaryColor = DEFPRIM;
     this.secondaryColor = DEFSEC;
-    this.pointsArray = []
+    //this.pointsArray = []
   }
   
   onMouseDown(event: MouseEvent): void {
     this.mouseIsDown = true;
     let position = Point.rpositionMouse(event, this.canvas.nativeElement);
-    this.pointsArray.push(position)
+    //this.pointsArray.push(position)
     this.renderer.setAttribute(this.element, "x", position.x.toString())
     this.renderer.setAttribute(this.element, "y", position.y.toString())
     this.renderer.setAttribute(this.element, "width", "0");
