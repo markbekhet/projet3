@@ -75,6 +75,6 @@ export class LandingPage implements OnInit {
   }
 
   getCurrentUser() {
-    return this.auth.authentifiedUser.value.token;
+    return this.auth.token$.value;
   }
 }

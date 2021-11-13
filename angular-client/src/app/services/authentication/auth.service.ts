@@ -30,12 +30,7 @@ export class AuthService {
   readonly DUPLICATE_USERNAME =
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
-  readonly NULL_USER: User = {
-    token: '',
-  };
-  authentifiedUser: BehaviorSubject<User> = new BehaviorSubject<User>(
-    this.NULL_USER
-  );
+  token$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private httpClient: HttpClient) {}
 
@@ -62,10 +57,7 @@ export class AuthService {
       .post(PATH + LOGIN_PATH, user, { responseType: 'text' })
       .pipe(
         tap((token) => {
-          const loggedInUser: User = {
-            token,
-          };
-          this.authenticateUser(loggedInUser);
+          this.authenticateUser(token);
         })
       );
   }
@@ -75,10 +67,7 @@ export class AuthService {
       .post(PATH + REGISTER_PATH, user, { responseType: 'text' })
       .pipe(
         tap((token) => {
-          const registeredUser: User = {
-            token,
-          };
-          this.authenticateUser(registeredUser);
+          this.authenticateUser(token);
         })
       );
   }
@@ -86,24 +75,28 @@ export class AuthService {
   // this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
     return this.httpClient
-      .post(PATH + DISCONNECT_PATH + this.authentifiedUser.value.token, null, {
+      .post(PATH + DISCONNECT_PATH + this.token$.value, null, {
         responseType: 'text',
       })
       .pipe(
         tap(() => {
-          this.authentifiedUser.next(this.NULL_USER);
+          this.token$.next('');
         })
       );
   }
 
   getProfile() {
     return this.httpClient.get<User>(
-      PATH + GET_PROFILE_PATH + this.authentifiedUser.value.token
+      PATH + GET_PROFILE_PATH + this.token$.value
     );
   }
 
-  private authenticateUser(user: User) {
-    if (user.token) this.authentifiedUser.next(user);
+  getToken() {
+    return this.token$.value;
+  }
+
+  private authenticateUser(token: string) {
+    if (token) this.token$.next(token);
   }
 
   // A little bit weird you dont need that

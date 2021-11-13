@@ -4,6 +4,8 @@ import { BehaviorSubject /* , Observable */ } from 'rxjs';
 import { io } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
+import { Status, User, UserProfileRequest } from '@src/app/models/UserMeta';
+// import { AuthService } from '../authentication/auth.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -37,13 +39,39 @@ export class SocketService {
     },
   });
 
+  profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
+    token: '',
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
+    password: '',
+    status: Status.OFFLINE,
+    pseudo: '',
+
+    averageCollaborationTime: 0,
+    totalCollaborationTime: 0,
+    numberCollaborationTeams: 0,
+    numberCollaboratedDrawings: 0,
+    numberAuthoredDrawings: 0,
+
+    connectionHistory: {
+      id: 0,
+      date: '',
+    },
+    disconnectionHistory: {
+      id: 0,
+      date: '',
+    },
+    drawingEditionHistories: [],
+  });
+
   setDrawingID = (value: string) => {
     this.drawingID = value;
   };
 
   // drawingElement: Subject<DrawingContent> = new Subject<DrawingContent>();
   // $drawingElements: Observable<DrawingContent> =
-  //   this.drawingElement.asObservable();
+  // this.drawingElement.asObservable();
 
   // selectedTool: Subject<string> = new Subject<string>();
   // $selectedTool: Observable<string> = this.selectedTool.asObservable();
@@ -66,5 +94,21 @@ export class SocketService {
     });
 
     return this.message$.asObservable();
+  };
+
+  public getUserProfile(profileRequest: UserProfileRequest) {
+    console.log(`profile socket sent: ${profileRequest.userId}`);
+    this.socket.emit('getUserProfileRequest', JSON.stringify(profileRequest));
+  }
+
+  public receiveUserProfile = () => {
+    console.log('socket service received user profile');
+    this.socket.on('profileToClient', (profile: any) => {
+      console.log(`socket received ${profile}`);
+      const user: User = JSON.parse(profile);
+      this.profile$.next(user);
+    });
+
+    return this.profile$.asObservable();
   };
 }

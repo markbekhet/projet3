@@ -26,3 +26,14 @@ export enum DrawingStatus {
   Selected = 'Selected',
   Deleted = 'Deleted',
 }
+
+export enum DrawingState {
+  AVAILABLE,
+  DELETED,
+}
+
+export enum DrawingVisibility {
+  PUBLIC,
+  PROTECTED,
+  PRIVATE,
+}
