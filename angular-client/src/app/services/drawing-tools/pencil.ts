@@ -26,7 +26,7 @@ const TRANSLATE_REGEX = new RegExp(
   /translate\((-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)\)/
 )
 
-const DEFPRIM = '#000000ff';
+const DEFPRIM = '#000000';
 
 export class Pencil implements DrawingTool {
   attr!: ToolsAttributes;
@@ -49,6 +49,9 @@ export class Pencil implements DrawingTool {
   element!: SVGPolylineElement;
   primaryColor! :string;
   drawingId!: number;
+  mouseIsDown: boolean = false;
+  pointsArray: Point[] = []
+
   constructor(
     private interactionService: InteractionService,
     private colorPick: ColorPickingService,
@@ -67,14 +70,21 @@ export class Pencil implements DrawingTool {
   }
   onMouseDown(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
-    this.element.setAttribute("points", `${event.x} ${event.y}`),
-    this.element.setAttribute("transform", "translate(0,0)");
-    this.element.setAttribute("stroke-width", `${this.attr.pencilLineThickness}`);
-    this.element.setAttribute("stroke", `${this.primaryColor}`)
+    this.mouseIsDown = true;
+    this.pointsArray.push(new Point(event.x, event.y))
+    this.rendrer.setAttribute(this.element,"points", this.pointsToString())
+    //this.element.setAttribute("points", `${event.x} ${event.y}`),
+    //this.element.setAttribute("transform", "translate(0,0)");
+    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)")
+    this.rendrer.setAttribute(this.element, "stroke-width", `${this.attr.pencilLineThickness}`);
+    this.rendrer.setAttribute(this.element, "stroke", `${this.primaryColor}`)
+    //this.element.setAttribute("stroke-width", `${this.attr.pencilLineThickness}`);
+    //this.element.setAttribute("stroke", `${this.primaryColor}`)
     this.requestCreation();
+
   }
 
-  onMouseUp(): void {
+  onMouseUp(e: MouseEvent): void {
     //throw new Error('Method not implemented.');
     let polylinePoints = this.element.points;
     if(polylinePoints.numberOfItems > 0){
@@ -87,20 +97,37 @@ export class Pencil implements DrawingTool {
       }
     }
     this.totalTranslation = new Point(0,0);
-    this.element.setAttribute("transform", "translate(0,0)");
+    //this.element.setAttribute("transform", "translate(0,0)");
+    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)");
     this.setCriticalValues()
     this.calculateScalingPositions()
     this.select()
+    this.mouseIsDown = false;
   }
 
   onMouseMove(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
-    let existingPoints = this.element.getAttribute("points")
-    this.element.setAttribute("points", `${existingPoints},${event.x} ${event.y}`)
-    if(this.contentId !== null && this.contentId !== undefined){
-      this.sendProgressToServer(DrawingStatus.InProgress);
+    if(this.mouseIsDown){
+      //let existingPoints = this.element.getAttribute("points")
+      //this.element.setAttribute("points", `${existingPoints},${event.x} ${event.y}`)
+      this.pointsArray.push(new Point(event.x, event.y));
+      this.rendrer.setAttribute(this.element, "points", this.pointsToString());
+      if(this.contentId !== null && this.contentId !== undefined){
+        this.sendProgressToServer(DrawingStatus.InProgress);
+      }
     }
   }
+  pointsToString(): string{
+    let s= "";
+    for(let i=0; i< this.pointsArray.length; i++){
+      s+= `${this.pointsArray[i].x} ${this.pointsArray[i].y}`;
+      if(i < this.pointsArray.length -1){
+        s+=",";
+      }
+    }
+    return s;
+  }
+
   getString(): string {
     //throw new Error('Method not implemented.');
     this.str= "";
@@ -121,7 +148,7 @@ export class Pencil implements DrawingTool {
     let strokeWidth = this.element.getAttribute("stroke-width");
     result += `points="${startingPoint}" `;
     result += `transform="${translate}" `;
-    result += ` "stroke="${stroke}"`;
+    result += ` stroke="${stroke}"`;
     result += ` stroke-width="${strokeWidth}"`;
     result += ` fill="none"`;
     result += ` stroke-linecap="round"`;
@@ -305,6 +332,7 @@ export class Pencil implements DrawingTool {
   }
   parse(parceableString: string): void {
     //throw new Error('Method not implemented.');
+    console.log('parse method got called');
     let matchPoints = POINTS_REGEX.exec(parceableString)
     let matchTranslate = TRANSLATE_REGEX.exec(parceableString);
     let matchStroke = STROKE_REGEX.exec(parceableString);
@@ -315,37 +343,38 @@ export class Pencil implements DrawingTool {
     }
     else{
       let pointsGroup = matchPoints[1];
-      this.element.setAttribute('points', pointsGroup);
+      console.log(pointsGroup)
+      this.rendrer.setAttribute(this.element, "points", pointsGroup);
+      //this.element.setAttribute('points', pointsGroup);
     }
     if(matchTranslate === null){
       console.log(parceableString)
       console.log("there is a problem with translate regex");
     }
     else{
-      this.totalTranslation.x = Number(matchTranslate[1])
+      this.totalTranslation.x = parseFloat(matchTranslate[1])
       console.log(this.totalTranslation.x)
-      this.totalTranslation.y = Number(matchTranslate[2])
+      this.totalTranslation.y = parseFloat(matchTranslate[2])
       console.log(this.totalTranslation.y);
-      this.element.setAttribute("tranform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
+      //matchTranslate = null;
+      this.rendrer.setAttribute(this.element, "transform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
+      //this.element.setAttribute("tranform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
     }
     if(matchStroke === null){
       console.log("there is a problem with stroke regex")
     }
     else{
-      this.element.setAttribute("stroke",matchStroke[1])
+      console.log(matchStroke)
+      this.rendrer.setAttribute(this.element, "stroke", matchStroke[1])
+      //this.element.setAttribute("stroke",matchStroke[1])
     }
     if(matchStrokeWidth === null){
       console.log("there is a problem with stroke width regex")
     }
     else{
-      this.element.setAttribute("stroke-width", matchStrokeWidth[1])
+      console.log(matchStrokeWidth)
+      this.rendrer.setAttribute(this.element,"stroke-width", matchStrokeWidth[1])
     }
-    /*if(matchFill=== null){
-      console.log("there is a problem with fill regex");
-    }
-    else{
-      this.element.setAttribute('fill', matchFill[1]);
-    }*/
     this.setCriticalValues()
   }
   unselect(): void {
@@ -424,72 +453,4 @@ export class Pencil implements DrawingTool {
     this.socketService.sendDrawingToServer(drawingContent);                              
   }
 
-  down(event: MouseEvent, position: Point) {
-  }
-
-  up(event: MouseEvent, position: Point, insideWorkspace: boolean) {
-  }
-
-  move(event: MouseEvent, position: Point) {
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  doubleClick(Position: Point) {}
-
-  // this is the function used to write the string
-  createPath(p: Point[]) {
-    /*this.toolName = PENCIL_TOOL_NAME;
-    let s = '';
-    if (p.length < 2) {
-      return s;
-    }
-    s = `<polyline `;
-    s += `points="`;
-    for (let i = 0; i < p.length; i++) {
-      s += `${p[i].x} ${p[i].y}`;
-      if (i !== p.length - 1) {
-        s += ',';
-      }
-    }
-    // eslint-disable-next-line no-useless-escape
-    s += `\" stroke="${this.chosenColor.primColor}" fill="none"`;
-    // Replace the number by the width chosen in the component
-    s += ` stroke-width="${this.attr.pencilLineThickness}"`;
-    s += ` transform="translate(0,0)"`;
-    s += '/>\n';
-    // console.log(s)
-    console.log(this.drawingId);
-    //let data: DrawingContent = {id: this.drawingContentID, userId: this.userToken,
-    //   content: s, status: drawingStatus, drawingId: this.drawingId, toolName: this.toolName};
-    //this.socketService.sendDrawingToServer(data);
-    return s;*/
-  }
-
-  updateMinMaxPoints(position: Point) {
-    //x 
-    /*if (position.x > this.maxPoint.x) {
-        this.maxPoint.x = position.x;
-    } else if (position.x < this.minPoint.x) {
-        this.minPoint.x = position.x;
-    }
-    //y
-    if (position.y > this.maxPoint.y) {
-        this.maxPoint.y = position.y;
-    } else if (position.y < this.minPoint.y) {
-        this.minPoint.y = position.y;
-    }*/
-  }
-
-  objectPressed(position: Point): boolean {
-    /*let inXAxes = (position.x >= minPoint.x + totalTranslation.x)
-        && (eventX <= maxPoint.x + totalTranslation.x)
-    let inYaxes = (eventY >= minPoint.y + totalTranslation.y)
-        && (eventY <= maxPoint.y + totalTranslation.y)
-    return inXAxes && inYaxes*/
-
-    const xAxis: boolean = (position.x > this.minPoint.x) && (position.x < this.maxPoint.x);
-    const yAxis: boolean = (position.y > this.minPoint.y) && (position.y < this.maxPoint.y);
-    return xAxis && yAxis;
-
-  }
 }

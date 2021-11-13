@@ -178,7 +178,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @HostListener('mouseup', ['$event'])
   onMouseUp(e: MouseEvent) {
     if(this.currentTool!== undefined && this.currentTool !== null){
-      this.currentTool.onMouseUp();
+      this.currentTool.onMouseUp(e);
     }
   }
 
@@ -188,10 +188,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     if(this.currentTool!== undefined && this.currentTool !== null){
       this.currentTool.onMouseMove(e)
     }
-  }
-
-  @HostListener('wheel', ['$event'])
-  onWheel(e: WheelEvent) {
   }
 
   ngAfterViewInit(): void {
@@ -225,31 +221,33 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   draw() {
     //throw new Error('Method not implemented.');
     this.doneDrawing.nativeElement.innerHTML = "";
-    for(let i = 0; i< this.toolsList.length; i++){
-      this.doneDrawing.nativeElement.innerHTML += this.toolsList[i].getString();
-    }
+    this.toolsList.forEach((tool: DrawingTool)=>{
+      console.log('hey')
+      this.doneDrawing.nativeElement.innerHTML += tool.getString();
+    })
+      //this.doneDrawing.nativeElement.innerHTML += this.toolsList[i].getString();
   }
 
   manipulateReceivedDrawing(drawingContent: DrawingContent){
-    let i = 0;
+    //let i = 0;
     let exist = false;
-    if(this.toolsList.length > 0){
-      while(i< this.toolsList.length){
-        let tool = this.toolsList[i] as DrawingTool;
-        if(tool.contentId === drawingContent.id){
-          try{
-            tool.parse(drawingContent.content);
-          }catch(e){}
-          exist = true;
-          tool.selected = drawingContent.status === DrawingStatus.Selected;
-          tool.userId = drawingContent.userId;
-          if(drawingContent.status === DrawingStatus.Deleted){
-            this.toolsList.splice(i,1);
-            //this.renderer.removeChild(this.doneDrawing.nativeElement, tool.element);
-          }
+    this.toolsList.forEach((tool)=>{
+      if(tool.contentId === drawingContent.id){
+        try{
+          tool.parse(drawingContent.content);
+        }catch(e){}
+        exist = true;
+        tool.selected = drawingContent.status === DrawingStatus.Selected;
+        tool.userId = drawingContent.userId;
+        if(drawingContent.status === DrawingStatus.Deleted){
+          let index = this.toolsList.indexOf(tool);
+          if(index !== -1)
+            this.toolsList.splice(index,1);
+          //this.renderer.removeChild(this.doneDrawing.nativeElement, tool.element);
         }
       }
-    }
+    })
+
     if(!exist){
       try{
         let newTool!: DrawingTool;

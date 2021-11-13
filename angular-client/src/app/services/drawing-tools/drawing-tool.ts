@@ -29,10 +29,11 @@ export interface DrawingTool {
   userId: string;
   element: SVGElement;
   drawingId: number;
+  mouseIsDown: boolean;
 
   onMouseDown(event: MouseEvent): void
 
-  onMouseUp(): void
+  onMouseUp(e: MouseEvent): void
 
   onMouseMove(event: MouseEvent): void
 
