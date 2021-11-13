@@ -177,6 +177,11 @@ class UsersAndTeamsFragment() : Fragment() {
                     newUserItem.set(user)
                     usersAdapter?.add(newUserItem)
                 }
+                else{
+                    if(ClientInfo.username == null){
+                        ClientInfo.username = user.pseudo
+                    }
+                }
             }
             activity?.runOnUiThread{
                 usersRecycleView.adapter = usersAdapter

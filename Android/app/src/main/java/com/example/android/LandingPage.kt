@@ -2,27 +2,21 @@ package com.example.android
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
-import com.example.android.canvas.DrawingUtils
-import com.example.android.canvas.JoinDrawingDto
-import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
+import com.example.android.chat.*
 import com.example.android.client.*
 import com.example.android.profile.OwnProfile
-//import com.example.android.profile.clientService
 import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
 import kotlinx.android.synthetic.main.createdraw.*
-import kotlinx.android.synthetic.main.createdraw.drawingPassword
 import kotlinx.android.synthetic.main.popup_create_collaboration_team.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -44,10 +38,21 @@ class LandingPage : AppCompatActivity() {
         SocketHandler.establishChatSocketConnection()
         chatSocket = SocketHandler.getChatSocket()
         val manager = supportFragmentManager
-        val fragmentTransaction = manager.beginTransaction()
+        val usersFragmentTransaction = manager.beginTransaction()
         val usersAndTeamsFragment = UsersAndTeamsFragment()
-        fragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
+        usersFragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
         var usersList =  UsersArrayList()
+
+        //A hash map that has all the fragments
+        val chatRoomsFragmentMap = HashMap<String, Chat>()
+        ChatRooms.chatRooNames.add("General")
+        for(room in ChatRooms.chatRooNames){
+            chatRoomsFragmentMap[room] = Chat(room)
+        }
+
+        val chatFragmentTransaction = manager.beginTransaction()
+        chatFragmentTransaction.replace(R.id.chatsFrame, chatRoomsFragmentMap["General"]!!).commit()
+
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
@@ -63,37 +68,28 @@ class LandingPage : AppCompatActivity() {
                 usersAndTeamsFragment.setTeamsList()
             }
         }
-        /*====================================================================*/
-        // it needs a function to encapsulate this block
-        /*chatSocket?.on("teamDeleted"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val team = TeamGeneralInformation().fromJson(data)
-                usersAndTeamsFragment.removeTeam(team)
-            }
-        }
-        chatSocket?.on("newTeamCreated"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val team = TeamGeneralInformation().fromJson(data)
-                usersAndTeamsFragment.addTeam(team)
-            }
-        }
-        chatSocket?.on("userUpdate"){ args ->
-            if(args[0]!= null){
-                val userUpdated = User().fromJson(args[0] as String)
-                if(ClientInfo.usersList.userList != null){
-                    for(existingUser in ClientInfo.usersList.userList!!){
-                        if(existingUser.id == userUpdated.id){
-                            ClientInfo.usersList.userList!!.remove(existingUser)
-                        }
-                    }
-                    ClientInfo.usersList.userList!!.add(userUpdated)
-                }
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
-            }
 
-        }*/
+        //This code happens once here for the genral chat room
+        chatSocket?.on("RoomChatHistories"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val generalChatList = ClientMessageArray().fromJson(data)
+                ChatRooms.chats["General"] = generalChatList.chatHistoryList!!
+                chatRoomsFragmentMap["General"]!!.setMessage(ChatRooms.chats["General"]!!)
+
+            }
+        }
+
+        chatSocket?.on("msgToClient"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(data)
+                val roomName = messageFromServer.roomName
+                ChatRooms.chats[roomName]!!.add(messageFromServer)
+                chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+            }
+        }
+        /*====================================================================*/
         socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment,
             usersList.userList)
 
@@ -142,6 +138,8 @@ class LandingPage : AppCompatActivity() {
             }
 
         }
+        ChatRooms.chats.clear()
+        ChatRooms.chatRooNames.clear()
         chatSocket?.disconnect()
         drawingSocket?.disconnect()
         finish()
