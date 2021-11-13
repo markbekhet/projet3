@@ -22,7 +22,7 @@ const TRANSLATE_REGEX = new RegExp(
   /translate\((-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)\)/
 )
 
-const DEFPRIM = '#000000';
+const DEFPRIM = '#000000ff';
 
 export class Pencil implements DrawingTool {
   attr!: ToolsAttributes;
@@ -140,10 +140,11 @@ export class Pencil implements DrawingTool {
     return result;
   }
   inTranslationZone(event: MouseEvent): boolean {
-    let inXAxes = (event.x >= this.minPoint.x + this.totalTranslation.x)
-                   && (event.x <= this.maxPoint.x + this.totalTranslation.x)
-    let inYaxes = (event.y >= this.minPoint.y + this.totalTranslation.y ) &&
-                  (event.y <= this.maxPoint.y +this.totalTranslation.y)
+    let position = Point.rpositionMouse(event, this.canvas.nativeElement);
+    let inXAxes = (position.x >= this.minPoint.x + this.totalTranslation.x)
+                   && (position.x <= this.maxPoint.x + this.totalTranslation.x)
+    let inYaxes = (position.y >= this.minPoint.y + this.totalTranslation.y ) &&
+                  (position.y <= this.maxPoint.y +this.totalTranslation.y)
     return inXAxes && inYaxes;
   }
   translate(translationPoint: Point): void {
@@ -301,7 +302,7 @@ export class Pencil implements DrawingTool {
       let y = position.y- RADUIS;
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=#CBCB28 fill=#CBCB28/>\n`;
+      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=#CBCB28 fill=#CBCB28></rect>\n`;
     }
   }
   parse(parceableString: string): void {
@@ -346,6 +347,7 @@ export class Pencil implements DrawingTool {
     this.setCriticalValues()
   }
   unselect(): void {
+    this.mouseIsDown = false;
     this.selected = false;
     if(this.contentId !== null && this.contentId !== undefined){
       this.sendProgressToServer(DrawingStatus.Done);
@@ -382,6 +384,7 @@ export class Pencil implements DrawingTool {
   updateSecondaryColor(): void {
   }
   select(): void {
+    this.mouseIsDown = true;
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }
