@@ -21,7 +21,7 @@ object SocketHandler {
     }
 
     @Synchronized
-    fun getChatSocket(): Socket? {
+    fun getChatSocket(): Socket {
         return chatSocket
     }
 

@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ChatGateway } from 'src/chat.gateway';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateDrawingDto } from './create-drawing.dto';
 import { DeleteDrawingDto } from './delete-drawing.dto';
+import { ModifyDrawingDto } from './modify-drawing.dto';
 
 
 @Controller('/drawing')
@@ -12,18 +13,20 @@ export class DrawingController {
     @Post()
     async createDrawing(@Body() drawingInformation: CreateDrawingDto){
         let createdDrawing = await this.databaseService.createDrawing(drawingInformation);
-        this.chatGateway.notifyDrawingCreated(createdDrawing);
+        await this.chatGateway.notifyDrawingCreated(createdDrawing);
         return createdDrawing.id;
-    }
-
-    @Get("/:drawingId/:password")
-    async getDrawing(@Param("drawingId") drawingId: number, @Param("password") password: string){
-        return await this.databaseService.getDrawingById(drawingId, password);
     }
 
     @Delete()
     async deleteDrawing(@Body() deleteInformation: DeleteDrawingDto){
-        await this.databaseService.deleteDrawing(deleteInformation);
-        return HttpStatus.OK;
+        let drawing = await this.databaseService.deleteDrawing(deleteInformation);
+        await this.chatGateway.notifyDrawingDeleted(drawing);
+        return drawing.id;
+    }
+    @Put()
+    async modifyDrawingParameters(@Body() modificationParameters: ModifyDrawingDto){
+        let drawingMod = await this.databaseService.modifyDrawing(modificationParameters);
+        await this.chatGateway.notifyDrawingModified(drawingMod);
+        return drawingMod.id;
     }
 }

@@ -10,7 +10,17 @@
         android:id="@+id/collaborationTime"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="date"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        />
+
+    <TextView
+        android:id="@+id/drawingName"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="date"
         android:textSize="18sp"
@@ -18,11 +28,11 @@
         />
 
     <Button
-        android:id="@+id/viewDrawing"
+        android:id="@+id/join"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginStart="20dp"
-        android:text="Drawing Id"
+        android:text="Joindre"
         android:enabled="true"
         android:clickable="true" />
 </LinearLayout>

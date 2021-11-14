@@ -66,6 +66,13 @@ open class Rectangle(private var drawingId: Int?,
     }
 
     override fun touchUp() {
+        var x = this.getAttribute("x").toFloat()
+        var y = this.getAttribute("y").toFloat()
+        this.setAttribute("x", "${x+totalTranslation.x}")
+        this.setAttribute("y", "${y+totalTranslation.y}")
+        totalTranslation.x = 0f
+        totalTranslation.y = 0f
+        this.setAttribute("transform", "translate(0,0)")
         setCriticalValues()
         calculateScalingPositions()
         select()

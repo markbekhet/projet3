@@ -34,7 +34,7 @@ class Ellipse(private var drawingId:Int? ,
         this.setAttribute("ry", "0")
         this.setAttribute("cx",eventX.toString())
         this.setAttribute("cy",eventY.toString())
-        this.setAttribute("transformTranslate","translate(0,0)")
+        this.setAttribute("transform","translate(0,0)")
         this.setAttribute("stroke-width", "${DrawingUtils.thickness}")
         this.setAttribute("stroke", DrawingUtils.primaryColor)
         this.setAttribute("fill", DrawingUtils.secondaryColor)
@@ -64,6 +64,13 @@ class Ellipse(private var drawingId:Int? ,
     }
 
     override fun touchUp() {
+        var cx = this.getAttribute("cx").toFloat()
+        var cy = this.getAttribute("cy").toFloat()
+        this.setAttribute("cx", "${cx+totalTranslation.x}")
+        this.setAttribute("cy", "${cy+totalTranslation.y}")
+        totalTranslation.x = 0f
+        totalTranslation.y = 0f
+        this.setAttribute("transform", "translate(0,0)")
         setCriticalValues()
         calculateScalingPositions()
         select()
@@ -85,7 +92,7 @@ class Ellipse(private var drawingId:Int? ,
         var result = "<ellipse "
         val rx = this.getAttribute("rx")
         val ry = this.getAttribute("ry")
-        val transform = this.getAttribute("transformTranslate")
+        val transform = this.getAttribute("transform")
         val stroke = this.getAttribute("stroke")
         val strokeWidth = this.getAttribute("stroke-width")
         val fill = this.getAttribute("fill")
@@ -170,7 +177,7 @@ class Ellipse(private var drawingId:Int? ,
 
     override fun translate(view:View, translationPoint: Point){
         totalTranslation.makeEqualTo(translationPoint)
-        this.setAttribute("transformTranslate",
+        this.setAttribute("transform",
             "translate(${translationPoint.x}," +
             "${translationPoint.y})")
 
@@ -190,7 +197,7 @@ class Ellipse(private var drawingId:Int? ,
             str += "y=\"$y\" "
             str += "width=\"$width\""
             str += "height=\"$height\""
-            val transform = this.getAttribute("transformTranslate")
+            val transform = this.getAttribute("transform")
             transform?.let{
                 str += "transform=\"$it\""
             }
@@ -283,7 +290,7 @@ class Ellipse(private var drawingId:Int? ,
         val matchTranslate = translateRegex.find(parceableString, 1)
         totalTranslation.x = matchTranslate!!.groups[1]!!.value.toFloat()
         totalTranslation.y = matchTranslate.groups[2]!!.value.toFloat()
-        this.setAttribute("transformTranslate",
+        this.setAttribute("transform",
             "translate(${totalTranslation.x},${totalTranslation.y})")
         //strokeParse
         val strokeRegex = Regex("""stroke="([#a-zA-Z0-9]+)"""")
