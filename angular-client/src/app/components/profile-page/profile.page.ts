@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
-// import { ValidationService } from '@src/app/services/validation/validation.service';
+import { ValidationService } from '@src/app/services/validation/validation.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -57,9 +57,9 @@ export class ProfilePage implements OnInit {
     });
 
     this.updateForm = this.formBuilder.group({
-      pseudo: formBuilder.control(this.user.pseudo, []),
-      oldPassword: formBuilder.control('', []),
-      newPassword: formBuilder.control('', []),
+      pseudo: formBuilder.control('', [ Validators.pattern(ValidationService.USERNAME_REGEX) ]),
+      oldPassword: formBuilder.control('', [ Validators.pattern(ValidationService.PASSWORD_REGEX) ] ),
+      newPassword: formBuilder.control('', [ Validators.pattern(ValidationService.PASSWORD_REGEX) ]),
     });
   }
 
@@ -77,32 +77,56 @@ export class ProfilePage implements OnInit {
     this.auth.updateUserProfile(updates).subscribe(
       (response) => {
         //success
-        console.log(`Profil update success ${response}`);
         this.socketService.updateUserProfile(updates);
-
       },
       (error) => {
         console.log(error);
       }
-    )
+    );
+    this.resetForm();
   }
 
   private verifyPseudo(newPseudo: string) {
     const CURRENT_PSEUDO: string = this.user.pseudo;
-    if (newPseudo === '') return undefined;
-    if (newPseudo === CURRENT_PSEUDO) return undefined;
+    if (newPseudo === '') return null;
+    if (newPseudo === CURRENT_PSEUDO) return null;
     return newPseudo;
   }
 
   private verifyPassword(newPassword: string) {
     const CURRENT_PASSWORD: string = this.user.password;
-    if (newPassword === '') return undefined;
-    if (newPassword === CURRENT_PASSWORD) return undefined;
+    if (newPassword === '') return null;
+    if (newPassword === CURRENT_PASSWORD) return null;
     return newPassword;
   }
 
+  private resetForm() {
+    this.updateForm.reset();
+    this.updateForm.controls.newPassword.setValue('');
+  }
+
   goLaunchingPage() {
-    this.router.navigate(['/']);
+    this.auth.disconnect().subscribe((token) => {
+      console.log('disconnect successful');
+      this.router.navigate(['/login']);
+    }, (error) => {
+      console.log(error);
+    });
+
+  }
+
+  buttonDisabled(form: FormGroup) {
+    if (form.controls.newPseudo !== null) {
+      const NEW_PSEUDO = form.controls.newPseudo.value;
+      const NEW_PASSWORD = form.controls.newPassword.value;
+      const OLD_PASSWORD = form.controls.oldPassword.value;
+      // pseudo & passwords both empty
+      const PSEUDO_PASSWORD_BOTH_EMPTY = NEW_PSEUDO === '' && NEW_PASSWORD === '' && OLD_PASSWORD === '';
+      return PSEUDO_PASSWORD_BOTH_EMPTY;
+    }
+
+    //
+    return false;//this.updateForm.controls.newPseudo.value === ''
   }
 
   public checkError(form: FormGroup, control: string, error: string) {

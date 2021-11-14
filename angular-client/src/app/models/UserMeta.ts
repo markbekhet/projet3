@@ -52,7 +52,7 @@ export interface DisconnectionHistory {
 }
 
 export interface UpdateUserInformation {
-  newPassword?: string;
-  newPseudo?: string;
-  oldPassword?: string;
+  newPassword?: string | null;
+  newPseudo?: string | null;
+  oldPassword?: string | null;
 }

@@ -3,7 +3,7 @@
         <img src="../../../assets/avatars/thumbnail.png" alt="Avatar thumbnail" class="avatar">
         <span></span>
         <div class="information">
-            <button (click)="goLaunchingPage()">Go home</button>
+            <button mat-icon-button (click)="goLaunchingPage()">Disconnect</button>
             <span></span>
             <h1>{{ user.firstName }} {{ user.lastName }}</h1>
             <h1>{{ user.pseudo }}</h1>
@@ -18,22 +18,22 @@
                     <mat-form-field class="pseudo-field">
                         <mat-label>Nouveau pseudonyme</mat-label>
                         <input type="text" matInput formControlName="pseudo" />
-                        <mat-error *ngIf="checkError(updateForm, 'pseudo', 'invalidUsername')
+                        <mat-error *ngIf="checkError(updateForm, 'pseudo', 'pattern')
 					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
                     </mat-form-field>
                     <br>
                     <mat-form-field class="old-password-field">
                         <mat-label>Nouveau mot de passe</mat-label>
                         <input type="password" matInput formControlName="newPassword" />
-                        <mat-error *ngIf="checkError(updateForm, 'newPassword', 'invalidUsername')
-					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
+                        <mat-error *ngIf="checkError(updateForm, 'newPassword', 'pattern')
+					">Ceci n'est pas un mot de passe valide !</mat-error>
                     </mat-form-field>
                     <br>
                     <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">
-                        <mat-label>Entrez votre ancien mot de passe</mat-label>
+                        <mat-label for="oldPassword">Entrez votre ancien mot de passe</mat-label>
                         <input type="password" matInput formControlName="oldPassword" />
-                        <mat-error *ngIf="checkError(updateForm, 'oldPassword', 'invalidUsername')
-					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
+                        <mat-error *ngIf="checkError(updateForm, 'oldPassword', 'pattern')
+					">Ceci n'est pas un mot de passe valide !</mat-error>
                     </mat-form-field>
                     <br>
                     <button mat-icon-button>Soumettre</button>
