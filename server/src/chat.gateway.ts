@@ -31,8 +31,9 @@ import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.reposi
 import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
 import { stringify } from 'querystring';
+import { UserProfileRequest } from './modules/user/user-profile-request.dto';
 
-@WebSocketGateway()
+@WebSocketGateway({cors:true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
@@ -73,7 +74,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let usersRet = {userList: users}
     let usersString = JSON.stringify(usersRet);
     let teams = await this.teamRepo.find({
-      select: ["id", "name","visibility"]
+      select: ["id", "name","visibility", "ownerId"]
     })
     let teamsRet = {teamList: teams}
     let generalRoom = await this.chatRoomRepo.findOne({
@@ -81,7 +82,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       relations: ["chatHistories"]
     });
     client.join("General");
-    for(const chatContent of generalRoom.chatHistories){
+    for(let chatContent of generalRoom.chatHistories){
       chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
     }
     let chatHistories = {chatHistoryList: generalRoom.chatHistories}
@@ -172,7 +173,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         where: [{name: drawingRet.name}],
         relations: ["chatHistories"],
       })
-      for(const chatContent of chatRoom.chatHistories){
+      for(let chatContent of chatRoom.chatHistories){
         chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
       }
       let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
@@ -245,7 +246,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           where: [{name: data.teamName}],
           relations:["chatHistories"],
         })
-        for(const chatContent of chatRoom.chatHistories){
+        for(let chatContent of chatRoom.chatHistories){
           chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
         }
         let haveJoinedTeamBefore: boolean = false;
@@ -287,7 +288,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         where: [{name: 'General'}]
       })
       chatHistory.chatRoom = chatRoom;
-      const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      let savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
       savedChatHistory.date = new Date(savedChatHistory.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
       let message: ClientMessage = {from:dataMod.from, message: dataMod.message, date: savedChatHistory.date, roomName: dataMod.roomName};
       this.wss.to("General").emit("msgToClient", JSON.stringify(message));
@@ -307,7 +308,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let userString = JSON.stringify(user);
     this.wss.emit("userUpdate", userString);
   }
-  notifyTeamCreation(team:{id: string, visibility: TeamVisibility, name: string}){
+  notifyTeamCreation(team:{id: string, visibility: TeamVisibility, name: string, ownerId: string}){
     let teamString = JSON.stringify(team);
     this.wss.emit("newTeamCreated", teamString);
   }
@@ -316,19 +317,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.wss.emit("teamDeleted", teamString);
   }
   async notifyDrawingCreated(drawing: {id: number, visibility: DrawingVisibility, name: string, 
-    bgColor: string, height: number, width: number, contents: string[], ownerId: string}){
+    bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
     // TODO:
-    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents}
+    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor,
+       height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
     let drawingString = JSON.stringify(retDrawing);
     if(drawing.visibility!== DrawingVisibility.PRIVATE){
       this.wss.emit("newDrawingCreated",drawingString);
     }
     
     else{
-      let team = await this.teamRepo.findOne({
-        where:[
-          {ownerId: drawing.ownerId}]
-      });
+      let team = await this.teamRepo.findOne(drawing.ownerId);
       if(team!== undefined){
         this.wss.to(team.name).emit("newDrawingCreated", drawingString);
       }
@@ -342,14 +341,54 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.wss.emit('drawingDeleted', drawingString);
     }
     else{
-      let team = await this.teamRepo.findOne({
-        where:[{
-          ownerId: drawing.ownerId,
-        }]
-      })
+      let team = await this.teamRepo.findOne(drawing.ownerId)
       if(team !== undefined){
         this.wss.to(team.name).emit("'drawingDeleted'",drawingString);
       }
+    }
+  }
+  async notifyDrawingModified(drawing: {id: number, visibility: DrawingVisibility, name: string, 
+    bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
+    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+       bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
+    let drawingString = JSON.stringify(retDrawing);
+    if(drawing.visibility!== DrawingVisibility.PRIVATE){
+      this.wss.emit("drawingModified",drawingString);
+    }
+    
+    else{
+      let team = await this.teamRepo.findOne(drawing.ownerId);
+      if(team!== undefined){
+        this.wss.to(team.name).emit("drawingModified", drawingString);
+      }     
+    }
+  }
+  //-------------------------------------------user profile section ---------------------------------------------
+  @SubscribeMessage("getUserProfileRequest")
+  async sendUserProfile(client: Socket, data: any){
+    let dataMod: UserProfileRequest = JSON.parse(data);
+    if(dataMod.userId === dataMod.visitedId){
+      let user =  await this.userRepo.findOne(dataMod.userId, {
+        select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
+            "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
+        relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
+      })
+      for(let connection of user.connectionHistories){
+          connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      for(let disconnect of user.disconnectionHistories){
+          disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      for(let drawingEdition of user.drawingEditionHistories){
+          drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
+      }
+      client.emit("profileToClient", JSON.stringify(user));
+    }
+    else{
+      let user =  await this.userRepo.findOne(dataMod.visitedId,{
+        select:["id", "pseudo", "status"]
+      })
+      client.emit("profileToClient", JSON.stringify(user));
     }
   }
 

@@ -12,7 +12,7 @@ export class DisconnectionHistory extends BaseEntity{
     })
     date:string
 
-    @ManyToOne(()=> User, user => user.disconnectionHistories, {nullable: true,onDelete:"CASCADE"})
+    @ManyToOne(()=> User, user => user.disconnectionHistories, {onDelete:"CASCADE"})
     user: User
 
 }
