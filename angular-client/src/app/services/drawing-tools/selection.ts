@@ -1,221 +1,175 @@
-/*import { Renderer2 } from '@angular/core';
+import { ElementRef, Renderer2 } from '@angular/core';
 import { ColorPickingService } from '../color-picker/color-picking.service';
 import { DrawingTool } from './drawing-tool';
-//import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
 import { Point } from './point';
-//import { CanvasInteraction } from './canvas-interaction';
 import { InteractionService } from '../interaction/interaction.service';
 import { SocketService } from '../socket/socket.service';
-import { DrawingService } from '../drawing/drawing.service';
-import { AuthService } from '../authentication/auth.service';
+import { Pencil } from './pencil';
+import { Rectangle } from './rectangle';
+import { Ellipse } from './ellipse';
 
-const INIT_VALUE = -1;
+//const INIT_VALUE = -1;
 
-export class Selection extends DrawingTool {
+export class Selection implements DrawingTool {
 
-  render!: Renderer2;
-  selectedRef!: HTMLElement;
-
-  initPosition!: Point;
-  deltaX!: number;
-  deltaY!: number;
-
-  isPressed!: boolean;
-
-  canvas!: HTMLElement;
-  target!: SVGElement | null;
-  itemUnderMouse!: number | null;
-  canMoveSelection!: boolean;
-  foundAnItem!: boolean;
-  selectedItems: boolean[] = [];
-  invertedItems: boolean[] = [];
-  movingSelection!: boolean;
-  movedSelectionOnce!: boolean;
-  movedMouseOnce!: boolean;
-  inverted!: boolean;
-  wrapperDimensions: [Point, Point] = [new Point(INIT_VALUE, INIT_VALUE), new Point(INIT_VALUE, INIT_VALUE)];
-  
-  constructor(selected: boolean, 
-    interactionService: InteractionService, 
-    colorPick: ColorPickingService, 
-    private drawing: HTMLElement,
-    canvas: HTMLElement,
-    socketSerice: SocketService,
-    drawingService: DrawingService,
-    authService: AuthService
+  currentX: number = 0.0;
+  currentY: number=0.0;
+  str: string= "";
+  selected: boolean = false;;
+  startTransformPoint: Point = new Point(0,0);
+  totalTranslation: Point = new Point(0,0);
+  totalScaling: Point = new Point(0,0);
+  scalingPositions: Map<Point, Point> = new Map<Point, Point>();
+  contentId!: number;
+  userId: string;
+  element!: SVGElement;
+  drawingId!: number;
+  //mouseIsDown: boolean = false;
+  selectedTool: DrawingTool | undefined;
+  constructor(
+    private toolsArray: DrawingTool[],
+    private socketSerice: SocketService,
+    private colorPick: ColorPickingService,
+    private renderer: Renderer2,
+    private canvas: ElementRef,
+    private interactionService: InteractionService,
+    drawingId: number,
+    //private drawingId: number,
+    userId: string
     ) {
-    super(selected, interactionService, colorPick, socketSerice, drawingService, authService);
-    //this.selectedRef = drawing;
-    this.canvas = canvas;
-    this.getUserToken();
-    this.getDrawingId();
-
-    window.addEventListener('newDrawing', (e: Event) => {
-        for (let i = 0; i < this.drawing.childElementCount; i++) {
-            const EL: Element = this.drawing.children[i];
-            let status: string | null;
-
-            try { // in case the getAttribute method is not implemented for the selected item
-                status = EL.getAttribute('isListening');
-            } catch (err) {
-                status = null;
-            }
-
-            if (status !== 'true') {
-                this.render.listen(EL, 'mousedown', () => {
-                    this.render.setAttribute(EL, 'isListening', 'true');
-                    if (!this.foundAnItem) {
-                        let index = 0;
-                        let currentChild = EL;
-                        while ( currentChild != null ) {
-                            currentChild = currentChild.previousSibling as Element;
-                            index++;
+        this.drawingId = drawingId;
+        this.userId = userId;
+    }
+    onMouseDown(event: MouseEvent): void {
+        //throw new Error('Method not implemented.');
+        let i = this.toolsArray.length -1;
+        if(this.toolsArray.length > 0){
+            while(i>= 0){
+                let tool = this.toolsArray[i]
+                if(tool.inTranslationZone(event)){
+                    if(tool.userId === null || !(tool.selected && tool.userId !== this.userId)){
+                        if(tool instanceof Pencil){
+                            this.selectedTool = new Pencil(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
                         }
-                        this.itemUnderMouse = index - 1;
-                        this.foundAnItem = true;
+                        else if(tool instanceof Rectangle){
+                            this.selectedTool = new Rectangle(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
+                        }
+                        else{
+                            this.selectedTool = new Ellipse(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas)
+                        }
+                        this.selectedTool.drawingId = this.drawingId;
+                        this.selectedTool.parse(tool.getOriginalString())
+                        this.startTransformPoint.x = tool.startTransformPoint.x;
+                        this.startTransformPoint.y  = tool.startTransformPoint.y;
+                        this.selectedTool.contentId = tool.contentId;
+                        this.selectedTool.select();
                     }
-                });
+                    break;
+                }
+                i--;
             }
         }
-    });
-    // reset on tool change
-    window.addEventListener('toolChange', (e: Event) => {
-        console.log('tool changed');
-        for (let i = 0; i < this.drawing.childElementCount; i++) {
-            this.selectedItems = [];
-        }
-        this.selectedItems = [];
-        this.invertedItems = [];
-        this.itemUnderMouse = null;
-        this.foundAnItem = false;
-        this.cancel();
-    });
-  
-  }
-
-    updateAttributes(): void {
-    
     }
-
-    down(event: MouseEvent, position: Point) {
-        /*if (this.drawing) {
-            this.initPosition = position;
-            this.target = event.target as SVGElement;
-            this.deltaX = position.x - this.initPosition.x;
-            this.deltaY = position.y - this.initPosition.y;
-        }
-
-        if (this.target && !this.drawing.contains(this.target)) {
-            this.target = null;
-            this.initPosition = {
-                x: 0,
-                y: 0
-            };
-        }*/
-        
-/*        if (this.target) {
-            this.target.setAttribute('stroke', this.chosenColor.primColor);
-
-            this.target = null;
-            this.initPosition = {
-                x: 0,
-                y: 0
-            };
-        }
-
-        if (event.target && this.drawing.contains(event.target as SVGElement)) {
-            this.initPosition = position;
-            this.target = event.target as SVGElement;
-
-            this.deltaX = position.x - this.initPosition.x;
-            this.deltaY = position.y - this.initPosition.y;
-
-            this.isPressed = true;
-
-            //draw box around
-            //this.target.setAttribute('stroke', this.chosenColor.secColor);
-            
-
-            //how to set drawing status to "SELECTED"
-        } 
-
-    }
-
-
-    up(event: MouseEvent, position: Point) {
-        if(this.target) {
-            switch(this.target.localName) {
-                case 'polyline': this.savePolyline();
-                    break;
-                case 'rect': this.saveRect();
-                    break;
-                case 'ellipse': this.saveEllipse();
-                    break;
-            }
-        }
-        this.isPressed = false;
-    }
-
-    savePolyline() {
-        if (this.target) {
-            let points = (this.target as SVGPolylineElement).points;
-            for (let i = 0; i < points.numberOfItems; i++) {
-                points[i].x += this.deltaX;
-                points[i].y += this.deltaY;
-            }
-            this.target.setAttribute('transform', '');
+    onMouseUp(e: MouseEvent): void {
+        //throw new Error('Method not implemented.');
+        if(this.selectedTool!== undefined){
+            this.selectedTool.onMouseUp(e);
         }
     }
-
-    saveRect() {
-        if (this.target) {
-            let rect = (this.target as SVGRectElement);
-            rect.x.baseVal.value += this.deltaX;
-            rect.y.baseVal.value += this.deltaY;
-            this.target.setAttribute('transform', '');
+    getSelectedTool():DrawingTool | undefined{
+        return this.selectedTool;
+    }
+    onMouseMove(event: MouseEvent): void {
+        throw new Error('Method not implemented.');
+    }
+    getString(): string {
+        //throw new Error('Method not implemented.');
+        return this.str;
+    }
+    getOriginalString(): string {
+        //throw new Error('Method not implemented.');
+        return this.str;
+    }
+    inTranslationZone(event: MouseEvent): boolean {
+        if(this.selectedTool!== undefined){
+            return this.selectedTool.inTranslationZone(event);
         }
-    }
-
-    saveEllipse() {
-        if (this.target) {
-            let ellipse = (this.target as SVGEllipseElement);
-            ellipse.cx.baseVal.value += this.deltaX;
-            ellipse.cy.baseVal.value += this.deltaY;
-            this.target.setAttribute('transform', '');
-        }
-    }
-
-    createPath (path: Point[]) {
-        
-    }
-
-    doubleClick() {
-
-    }
-
-    move(event: MouseEvent, position: Point) {
-        /*if (this.target && this.drawing.contains(this.target)) {
-            this.deltaX = position.x - this.initPosition.x;
-            this.deltaY = position.y - this.initPosition.y;
-            this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
-        }
-    */
-/*        if (this.isPressed && this.target) {
-            this.deltaX = position.x - this.initPosition.x;
-            this.deltaY = position.y - this.initPosition.y;
-            this.target.setAttribute('transform', `translate(${this.deltaX} ${this.deltaY})`);
-        }
-    }
-
-    intersects(rect: DOMRect, position: Point):boolean {
-        return position.x >= rect.x && position.x <= rect.x + rect.width && position.y >= rect.y && position.y <= rect.y + rect.height;
-    }
-
-    objectPressed(position: Point): boolean {
         return false;
+        //throw new Error('Method not implemented.');
     }
-
-
-
+    translate(translationPoint: Point): void {
+        if(this.selectedTool!== undefined){
+            this.selectedTool.translate(translationPoint);
+        }
+        //throw new Error('Method not implemented.');
+    }
+    scale(scalePoint: Point, direction: Point): void {
+        if(this.selectedTool!== undefined){
+            this.selectedTool.scale(scalePoint, direction);
+        }
+        //throw new Error('Method not implemented.');
+    }
+    getSelectionString(): void {
+        //throw new Error('Method not implemented.');
+    }
+    calculateScalingPositions(): void {
+        if(this.selectedTool!== undefined){
+            this.selectedTool.calculateScalingPositions();
+        }
+        //throw new Error('Method not implemented.');
+    }
+    getScalingPoint(point: Point): [Point, Point] | null {
+        if(this.selectedTool!== undefined){
+            return this.selectedTool.getScalingPoint(point);
+        }
+        return null;
+        //throw new Error('Method not implemented.');
+    }
+    getScalingPositionsString(): void {
+        //throw new Error('Method not implemented.');
+    }
+    parse(parceableString: string): void {
+        //throw new Error('Method not implemented.');
+    }
+    unselect(): void {
+        //throw new Error('Method not implemented.');
+        if(this.selectedTool!== undefined){
+            this.selectedTool.unselect();
+        }
+    }
+    delete(): void {
+        if(this.selectedTool!== undefined){
+            this.selectedTool.delete();
+            this.selectedTool = undefined;
+        }
+        //throw new Error('Method not implemented.');
+    }
+    updateThickness(): void {
+        //throw new Error('Method not implemented.');
+        if(this.selectedTool !== undefined){
+            this.selectedTool.updateThickness();
+        }
+    }
+    updatePrimaryColor(): void {
+        //throw new Error('Method not implemented.');
+        if(this.selectedTool !== undefined){
+            this.selectedTool.updatePrimaryColor();
+        }
+    }
+    updateSecondaryColor(): void {
+        //throw new Error('Method not implemented.');
+        if(this.selectedTool !== undefined){
+            this.selectedTool.updateSecondaryColor();
+        }
+    }
+    select(): void {
+        //throw new Error('Method not implemented.');
+    }
+    setCriticalValues(): void {
+        if(this.selectedTool!== undefined){
+            this.selectedTool.setCriticalValues();
+        }
+        //throw new Error('Method not implemented.');
+    }
       
-}*/
+}

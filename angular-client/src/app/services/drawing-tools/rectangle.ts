@@ -16,7 +16,7 @@ import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 
 const DEFPRIM = '#000000ff'
 const DEFSEC =  '#ffffffff'
-const RADUIS = 5;
+const RADUIS = 10;
 const DEF_LINE_THICKNESS = 5;
 const X_REGEX = new RegExp(`x="([-?0-9.?]*)"`);
 const Y_REGEX = new RegExp(`y="([-?0-9.?]*)"`);
@@ -43,7 +43,7 @@ export class Rectangle implements  DrawingTool{
   userId: string;
   element: SVGRectElement;
   drawingId!: number;
-  mouseIsDown: boolean = false;
+  //mouseIsDown: boolean = false;
   primaryColor!: string;
   secondaryColor!: string;
   //pointsArray: Point[];
@@ -68,7 +68,7 @@ export class Rectangle implements  DrawingTool{
   }
   
   onMouseDown(event: MouseEvent): void {
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     let position = Point.rpositionMouse(event, this.canvas.nativeElement);
     //this.pointsArray.push(position)
     this.renderer.setAttribute(this.element, "x", position.x.toString())
@@ -95,26 +95,24 @@ export class Rectangle implements  DrawingTool{
     this.setCriticalValues();
     this.calculateScalingPositions();
     this.select();
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
     //throw new Error('Method not implemented.');
   }
   onMouseMove(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
-    if(this.mouseIsDown){
-      let position = Point.rpositionMouse(event, this.canvas.nativeElement)
-      let width = Math.abs(position.x - parseFloat(this.element.getAttribute('x')!))
-      let height = Math.abs(position.y - parseFloat(this.element.getAttribute('y')!));
-      this.renderer.setAttribute(this.element, 'width', width.toString())
-      this.renderer.setAttribute(this.element, "height", height.toString())
-      this.currentY = position.y;
-      this.currentX = position.x;
-      let x = parseFloat(this.element.getAttribute('x')!)
-      let y = parseFloat(this.element.getAttribute('y')!)
-      this.renderer.setAttribute(this.element,'y', Math.min(this.currentY,y).toString())
-      this.renderer.setAttribute(this.element, 'x', Math.min(this.currentX, x).toString())
-      if(this.contentId!== undefined && this.contentId!== null){
-        this.sendProgressToServer(DrawingStatus.InProgress);
-      }
+    let position = Point.rpositionMouse(event, this.canvas.nativeElement)
+    let width = Math.abs(position.x - parseFloat(this.element.getAttribute('x')!))
+    let height = Math.abs(position.y - parseFloat(this.element.getAttribute('y')!));
+    this.renderer.setAttribute(this.element, 'width', width.toString())
+    this.renderer.setAttribute(this.element, "height", height.toString())
+    this.currentY = position.y;
+    this.currentX = position.x;
+    let x = parseFloat(this.element.getAttribute('x')!)
+    let y = parseFloat(this.element.getAttribute('y')!)
+    this.renderer.setAttribute(this.element,'y', Math.min(this.currentY,y).toString())
+    this.renderer.setAttribute(this.element, 'x', Math.min(this.currentX, x).toString())
+    if(this.contentId!== undefined && this.contentId!== null){
+      this.sendProgressToServer(DrawingStatus.InProgress);
     }
   }
   sendProgressToServer(drawingStatus: DrawingStatus){
@@ -279,7 +277,7 @@ export class Rectangle implements  DrawingTool{
       let y = position.y - RADUIS
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      let inXAxes = point.x >= x && point.y <= x+ width
+      let inXAxes = point.x >= x && point.x <= x+ width
       let inYaxes = point.y >= y && point.y <= y+ height
       if(inXAxes && inYaxes){
         return item;
@@ -365,7 +363,7 @@ export class Rectangle implements  DrawingTool{
   }
   unselect(): void {
     //throw new Error('Method not implemented.');
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
     this.selected = false;
     if(this.contentId !== null && this.contentId !== undefined){
       this.sendProgressToServer(DrawingStatus.Done);
@@ -414,7 +412,7 @@ export class Rectangle implements  DrawingTool{
   }
   select(): void {
     //throw new Error('Method not implemented.');
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }

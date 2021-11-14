@@ -10,7 +10,7 @@ import { PENCIL_TOOL_NAME } from './tool-names';
 import { ToolsAttributes } from './tools-attributes';
 
 const DEF_LINE_THICKNESS = 5;
-const RADUIS = 5;
+const RADUIS = 10;
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`);
 const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`);
 
@@ -45,7 +45,7 @@ export class Pencil implements DrawingTool {
   element!: SVGPolylineElement;
   primaryColor! :string;
   drawingId!: number;
-  mouseIsDown: boolean = false;
+  //mouseIsDown: boolean = false;
   pointsArray: Point[] = []
 
   constructor(
@@ -64,7 +64,7 @@ export class Pencil implements DrawingTool {
     this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
   }
   onMouseDown(event: MouseEvent): void {
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
     this.rendrer.setAttribute(this.element,"points", this.pointsToString())
     this.rendrer.setAttribute(this.element, "transform", "translate(0,0)")
@@ -75,31 +75,24 @@ export class Pencil implements DrawingTool {
   }
 
   onMouseUp(e: MouseEvent): void {
-    let polylinePoints = this.element.points;
-    if(polylinePoints.numberOfItems > 0){
-      let i = 0;
-      while(i< polylinePoints.numberOfItems){
-        let item = polylinePoints.getItem(i)
-        item.x += this.totalTranslation.x
-        item.y += this.totalTranslation.y;
-        i++
-      }
-    }
+    this.pointsArray.forEach((point)=>{
+      point.x += this.totalTranslation.x;
+      point.y += this.totalTranslation.y
+    })
+    this.rendrer.setAttribute(this.element,'points', this.pointsToString())
     this.totalTranslation = new Point(0,0);
     this.rendrer.setAttribute(this.element, "transform", "translate(0,0)");
     this.setCriticalValues()
     this.calculateScalingPositions()
     this.select()
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
   }
 
   onMouseMove(event: MouseEvent): void {
-    if(this.mouseIsDown){
-      this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
-      this.rendrer.setAttribute(this.element, "points", this.pointsToString());
-      if(this.contentId !== null && this.contentId !== undefined){
-        this.sendProgressToServer(DrawingStatus.InProgress);
-      }
+    this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
+    this.rendrer.setAttribute(this.element, "points", this.pointsToString());
+    if(this.contentId !== null && this.contentId !== undefined){
+      this.sendProgressToServer(DrawingStatus.InProgress);
     }
   }
   pointsToString(): string{
@@ -158,16 +151,16 @@ export class Pencil implements DrawingTool {
   scale(scalePoint: Point, direction: Point): void {
     let oldWidth = this.maxPoint.x - this.minPoint.x
     let oldHeight = this.maxPoint.y - this.minPoint.y
-    if(direction.x == -1.0){
+    if(direction.x === -1.0){
         this.minPoint.x += scalePoint.x
     }
-    else if(direction.x == 1.0){
+    else if(direction.x === 1.0){
         this.maxPoint.x += scalePoint.x
     }
-    if(direction.y == -1.0){
+    if(direction.y === -1.0){
         this.minPoint.y += scalePoint.y
     }
-    else if(direction.y == 1.0){
+    else if(direction.y === 1.0){
         this.maxPoint.y += scalePoint.y
     }
 
@@ -186,17 +179,17 @@ export class Pencil implements DrawingTool {
 
     let differenceWidth = 0.0
     let differenceHeight = 0.0
-    if(direction.x == -1.0){
+    if(direction.x === -1.0){
         differenceWidth = (this.maxPoint.x * ratioWidth) - this.maxPoint.x
     }
-    else if(direction.x == 1.0){
+    else if(direction.x === 1.0){
         differenceWidth = (this.minPoint.x * ratioWidth) - this.minPoint.x
     }
 
-    if(direction.y == -1.0){
+    if(direction.y === -1.0){
         differenceHeight = (this.maxPoint.y* ratioHeight) - this.maxPoint.y
     }
-    else if(direction.y == 1.0){
+    else if(direction.y === 1.0){
         differenceHeight = (this.minPoint.y * ratioHeight) - this.minPoint.y
     }
 
@@ -285,7 +278,7 @@ export class Pencil implements DrawingTool {
       let y = position.y - RADUIS
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      let inXAxes = point.x >= x && point.y <= x+ width
+      let inXAxes = point.x >= x && point.x <= x+ width
       let inYaxes = point.y >= y && point.y <= y+ height
       if(inXAxes && inYaxes){
         return item;
@@ -347,7 +340,7 @@ export class Pencil implements DrawingTool {
     this.setCriticalValues()
   }
   unselect(): void {
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
     this.selected = false;
     if(this.contentId !== null && this.contentId !== undefined){
       this.sendProgressToServer(DrawingStatus.Done);
@@ -384,7 +377,7 @@ export class Pencil implements DrawingTool {
   updateSecondaryColor(): void {
   }
   select(): void {
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }

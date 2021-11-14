@@ -46,7 +46,7 @@ export class Ellipse implements DrawingTool {
   userId: string;
   element: SVGEllipseElement;
   drawingId!: number;
-  mouseIsDown: boolean = false;
+  //mouseIsDown: boolean = false;
   primaryColor!: string;
   secondaryColor!: string;
   selectionOffset: number = 0;
@@ -71,7 +71,7 @@ export class Ellipse implements DrawingTool {
   }
   onMouseDown(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     let position = Point.rpositionMouse(event, this.canvas.nativeElement);
     //this.pointsArray.push(position)
     this.startingPositionX = position.x;
@@ -101,25 +101,23 @@ export class Ellipse implements DrawingTool {
     this.setCriticalValues();
     this.calculateScalingPositions();
     this.select();
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
   }
   onMouseMove(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
-    if(this.mouseIsDown){
-      let position = Point.rpositionMouse(event, this.canvas.nativeElement)
-      let rx = Math.abs(position.x - this.startingPositionX)/2
-      let ry = Math.abs(position.y - this.startingPositionY)/2;
-      this.renderer.setAttribute(this.element, 'rx', rx.toString())
-      this.renderer.setAttribute(this.element, "ry", ry.toString())
-      this.currentY = position.y;
-      this.currentX = position.x;
-      let cx = Math.min(this.startingPositionX + rx, this.currentX + rx)
-      let cy = Math.min(this.startingPositionY + ry, this.currentY + ry)
-      this.renderer.setAttribute(this.element,'cy', cy.toString())
-      this.renderer.setAttribute(this.element, 'cx', cx.toString())
-      if(this.contentId!== undefined && this.contentId!== null){
-        this.sendProgressToServer(DrawingStatus.InProgress);
-      }
+    let position = Point.rpositionMouse(event, this.canvas.nativeElement)
+    let rx = Math.abs(position.x - this.startingPositionX)/2
+    let ry = Math.abs(position.y - this.startingPositionY)/2;
+    this.renderer.setAttribute(this.element, 'rx', rx.toString())
+    this.renderer.setAttribute(this.element, "ry", ry.toString())
+    this.currentY = position.y;
+    this.currentX = position.x;
+    let cx = Math.min(this.startingPositionX + rx, this.currentX + rx)
+    let cy = Math.min(this.startingPositionY + ry, this.currentY + ry)
+    this.renderer.setAttribute(this.element,'cy', cy.toString())
+    this.renderer.setAttribute(this.element, 'cx', cx.toString())
+    if(this.contentId!== undefined && this.contentId!== null){
+      this.sendProgressToServer(DrawingStatus.InProgress);
     }
   }
   sendProgressToServer(drawingStatus: DrawingStatus) {
@@ -290,7 +288,7 @@ export class Ellipse implements DrawingTool {
       let y = position.y - RADUIS
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      let inXAxes = point.x >= x && point.y <= x+ width
+      let inXAxes = point.x >= x && point.x <= x+ width
       let inYaxes = point.y >= y && point.y <= y+ height
       if(inXAxes && inYaxes){
         return item;
@@ -375,7 +373,7 @@ export class Ellipse implements DrawingTool {
   }
   unselect(): void {
     //throw new Error('Method not implemented.');
-    this.mouseIsDown = false;
+    //this.mouseIsDown = false;
     this.selected = false;
     if(this.contentId !== null && this.contentId !== undefined){
       this.sendProgressToServer(DrawingStatus.Done);
@@ -424,64 +422,14 @@ export class Ellipse implements DrawingTool {
   }
   select(): void {
     //throw new Error('Method not implemented.');
-    this.mouseIsDown = true;
+    //this.mouseIsDown = true;
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }
   setCriticalValues(): void {
     //throw new Error('Method not implemented.');
-    let xCert = parseFloat(this.element.getAttribute('x')!)
-    let yCert = parseFloat(this.element.getAttribute('y')!)
-    let widthCert = parseFloat(this.element.getAttribute('width')!)
-    let heightCert = parseFloat(this.element.getAttribute('height')!)
-    this.startTransformPoint.x = xCert + (widthCert/2)
-    this.startTransformPoint.y = yCert + (heightCert/2)
+    let xCert = parseFloat(this.element.getAttribute('cx')!)
+    let yCert = parseFloat(this.element.getAttribute('cy')!)
+    this.startTransformPoint = new Point(xCert, yCert)
   }
-
-  /*updateAttributes() {
-    this.interactionService.$toolsAttributes.subscribe(
-      (attr: ToolsAttributes) => {
-        if (attr) {
-          this.attr = {
-            shapeLineThickness: attr.shapeLineThickness,
-            shapeType: attr.shapeType,
-          };
-        }
-      }
-    );
-  }
-
-  setDimensions(p: Point[]): void {
-    this.startX = this.width > 0 ? p[0].x : p[p.length - 1].x;
-    this.startY = this.height > 0 ? p[0].y : p[p.length - 1].y;
-
-    super.setDimensions(p);
-    // Rectangle
-  }
-
-  // this is the function used to write the string
-  createPath(p: Point[]): string {
-    this.toolName = ELLIPSE_TOOL_NAME;
-    this.svgString = '';
-
-    this.setDimensions(p);
-    this.svgString += `<ellipse cx="${this.startX + Math.abs(this.width / 2)}"`;
-    this.svgString += ` cy="${this.startY + Math.abs(this.height / 2)}"`;
-    this.svgString += ` rx="${Math.abs(this.width / 2)}"`;
-    this.svgString += ` ry="${Math.abs(this.height / 2)}"`;
-
-    this.setAttributesToPath();
-
-    // end the divider
-    // this.svgString += '/>';
-
-    // can't have rectangle with 0 width or height
-    if (this.width === 0 || this.height === 0) {
-      // this.svgString = '';
-    }
-    //let data: DrawingContent ={id: this.drawingContentID, userId: this.userToken,
-      // content: this.svgString, status: drawingStatus, drawingId: this.drawingId, toolName: this.toolName};
-    //this.socketService.sendDrawingToServer(data);
-    return this.svgString;
-  }*/
 }
