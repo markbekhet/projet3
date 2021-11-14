@@ -7,7 +7,7 @@ import { User } from "../user/user.entity";
 @Entity("drawingEditionHistory")
 export class DrawingEditionHistory extends BaseEntity{
     @PrimaryGeneratedColumn()
-    id;
+    id: number;
 
     @Column()
     action: string;

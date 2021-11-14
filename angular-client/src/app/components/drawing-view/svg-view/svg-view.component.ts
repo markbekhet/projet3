@@ -91,11 +91,11 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.userId = user.id;
     })
     
-    this.initDrawing();
+    
   }
 
   initDrawing(){
-    //this.doneDrawing.nativeElement.innerHTML = "";
+    this.doneDrawing.nativeElement.innerHTML = "";
     this.toolsList.clear();
     this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
       this.backColor = "#"+ drawingInformations.drawing.bgColor;
@@ -220,6 +220,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     // TODO; Use interactionService to unselect all the tools and select the tool chosen by the user
     if (this.canvas !== undefined) {
+      this.initDrawing();
       this.interactionService.$selectedTool.subscribe((toolName: string)=>{
         if(toolName) this.currentToolName = toolName;
       })
@@ -273,59 +274,50 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   manipulateReceivedDrawing(drawingContent: DrawingContent){
-    //let i = 0;
-    /*let exist = false;
-    this.toolsList.forEach((tool)=>{
-      if(tool.contentId === drawingContent.id){
+    if(drawingContent.id !== undefined && drawingContent.content!== undefined){
+      if(this.toolsList.has(drawingContent.id)){
         try{
-          tool.parse(drawingContent.content);
+          this.toolsList.get(drawingContent.id)!.parse(drawingContent.content);
         }catch(e){}
-        exist = true;
-        tool.selected = drawingContent.status === DrawingStatus.Selected;
-        tool.userId = drawingContent.userId;
-        if(drawingContent.status === DrawingStatus.Deleted){
-          this.toolsList.delete(tool.contentId)
+        this.toolsList.get(drawingContent.id)!.selected = drawingContent.status === DrawingStatus.Selected;
+        this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
+        if(drawingContent.status === DrawingStatus.Deleted.valueOf()){
+          this.toolsList.delete(drawingContent.id);
+          if(this.currentTool instanceof Selection){
+            console.log('here deleting');
+            this.currentTool = new Selection(this.toolsList, this.socketService, this.colorPick, this.renderer, this.canvas, this.interactionService, this.drawingId, this.userId);
+          }
         }
-      }
-    })*/
-    if(this.toolsList.has(drawingContent.id)){
-      try{
-        this.toolsList.get(drawingContent.id)!.parse(drawingContent.content);
-      }catch(e){}
-      this.toolsList.get(drawingContent.id)!.selected = drawingContent.status === DrawingStatus.Selected;
-      this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
-      if(drawingContent.status === DrawingStatus.Deleted){
-        this.toolsList.delete(drawingContent.id);
-      }
 
-    } 
+      } 
 
-    else{
-      try{
-        let newTool!: DrawingTool;
-        switch(drawingContent.toolName){
-          case PENCIL_TOOL_NAME:
-            newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
-            break;
-          
-          case RECT_TOOL_NAME:
-            //TODO
-            newTool = new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
-            break;
-          case ELLIPSE_TOOL_NAME:
-            //TODO
-            newTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
-            break;
-          default:
-            break;
+      else{
+        try{
+          let newTool!: DrawingTool;
+          switch(drawingContent.toolName){
+            case PENCIL_TOOL_NAME:
+              newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            
+            case RECT_TOOL_NAME:
+              //TODO
+              newTool = new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            case ELLIPSE_TOOL_NAME:
+              //TODO
+              newTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            default:
+              break;
+          }
+          newTool.userId = drawingContent.userId;
+          newTool.contentId = drawingContent.id;
+          newTool.selected = drawingContent.status === DrawingStatus.Selected;
+          newTool.parse(drawingContent.content);
+          //this.toolsList.push(newTool);
+          this.toolsList.set(drawingContent!.id, newTool);
+        }catch(err){
         }
-        newTool.userId = drawingContent.userId;
-        newTool.contentId = drawingContent.id;
-        newTool.selected = drawingContent.status === DrawingStatus.Selected;
-        newTool.parse(drawingContent.content);
-        //this.toolsList.push(newTool);
-        this.toolsList.set(drawingContent.id, newTool);
-      }catch(err){
       }
     }
   }

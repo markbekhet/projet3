@@ -28,7 +28,7 @@ export class Selection implements DrawingTool {
   //mouseIsDown: boolean = false;
   selectedTool: DrawingTool | undefined;
   constructor(
-    private toolsArray: Map<number,DrawingTool>,
+    public toolsArray: Map<number,DrawingTool>,
     private socketSerice: SocketService,
     private colorPick: ColorPickingService,
     private renderer: Renderer2,
@@ -42,7 +42,7 @@ export class Selection implements DrawingTool {
         this.userId = userId;
     }
     onMouseDown(event: MouseEvent): void {
-        this.toolsArray.forEach((tool)=>{
+        this.toolsArray.forEach((tool: DrawingTool)=>{
             if(!this.toolFound && tool.inTranslationZone(event)){
                 if(tool.userId === null || !(tool.selected && tool.userId !== this.userId)){
                     if(tool instanceof Pencil){

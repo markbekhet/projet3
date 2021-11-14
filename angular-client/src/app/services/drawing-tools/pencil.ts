@@ -204,7 +204,7 @@ export class Pencil implements DrawingTool {
     }
   }
   getSelectionString(): void {
-    this.stringToPointsArray();
+    //this.stringToPointsArray();
     this.setCriticalValues();
     this.str += "<rect "
     let x = this.minPoint.x
@@ -323,7 +323,7 @@ export class Pencil implements DrawingTool {
     else{
       this.rendrer.setAttribute(this.element,"stroke-width", matchStrokeWidth[1])
     }
-    this.stringToPointsArray();
+    //this.stringToPointsArray();
     this.setCriticalValues()
   }
   unselect(): void {
@@ -381,11 +381,12 @@ export class Pencil implements DrawingTool {
   updateSecondaryColor(): void {
   }
   select(): void {
-    this.stringToPointsArray();
+    //this.stringToPointsArray();
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }
   setCriticalValues(): void {
+    this.stringToPointsArray();
     this.minPoint = new Point(Number.MAX_VALUE, Number.MAX_VALUE)
     this.maxPoint = new Point(0.0, 0.0)
     this.pointsArray.forEach((point: Point)=>{

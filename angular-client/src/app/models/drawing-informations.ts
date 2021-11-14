@@ -10,6 +10,7 @@ export interface CanvasDetails{
     name: string;
     width: number;
     height: number;
+    ownerId?: string;
     contents: DrawingContent[];
     visibility: DrawingVisibilityLevel;
 }

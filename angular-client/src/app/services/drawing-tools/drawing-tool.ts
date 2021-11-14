@@ -26,7 +26,7 @@ export interface DrawingTool {
   totalScaling: Point;
   scalingPositions: Map<Point, Point>;
   contentId: number;
-  userId: string;
+  userId: string| undefined;
   element: SVGElement;
   drawingId: number;
   //mouseIsDown: boolean;
