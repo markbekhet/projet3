@@ -173,17 +173,18 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   onMouseMove(e: MouseEvent) {
     // TODO
     if(this.currentTool!== undefined && this.currentTool !== null && this.mouseIsDown){
+      let reposition = Point.rpositionMouse(e, this.canvas.nativeElement);
       if(this.currentTool instanceof Selection && (this.currentTool as Selection).getSelectedTool()!== undefined){
         switch(this.mode){
           case "translation":
-            let translation: Point = this.currentTool.startTransformPoint.difference(Point.rpositionMouse(e, this.canvas.nativeElement));
+            let translation: Point = this.currentTool.startTransformPoint.difference(reposition);
             this.currentTool.translate(translation);
             break;
 
           case "scaling":
-            let position = Point.rpositionMouse(e, this.canvas.nativeElement);
-            let scalingFactor = new Point(position.x- this.scalingPoint![0].x - this.totalScaling.x,
-              position.y - this.scalingPoint![0].y - this.totalScaling.y)
+            //let position = Point.rpositionMouse(e, this.canvas.nativeElement);
+            let scalingFactor = new Point(reposition.x- this.scalingPoint![0].x - this.totalScaling.x,
+              reposition.y - this.scalingPoint![0].y - this.totalScaling.y)
             
               this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
               this.totalScaling.plus(scalingFactor);

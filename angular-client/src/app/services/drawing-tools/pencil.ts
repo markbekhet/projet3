@@ -194,8 +194,10 @@ export class Pencil implements DrawingTool {
     }
 
     this.pointsArray.forEach((point)=>{
-      point.x += this.totalTranslation.x;
-      point.y += this.totalTranslation.y
+      point.x *= ratioWidth;
+      point.x -= differenceWidth;
+      point.y *= ratioHeight
+      point.y -= differenceHeight;
     })
     this.rendrer.setAttribute(this.element,'points', this.pointsToString())
     this.setCriticalValues()
