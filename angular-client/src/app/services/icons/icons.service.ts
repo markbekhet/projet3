@@ -14,12 +14,6 @@ export class IconsService {
       )
     );
     iconRegistry.addSvgIcon(
-      'eraser',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        '../../../assets/tools/eraser.svg'
-      )
-    );
-    iconRegistry.addSvgIcon(
       'ellipse',
       sanitizer.bypassSecurityTrustResourceUrl(
         '../../../assets/tools/ellipse.svg'

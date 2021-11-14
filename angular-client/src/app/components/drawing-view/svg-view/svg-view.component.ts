@@ -244,6 +244,19 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.currentTool.delete();
         }
       })
+
+      this.interactionService.$updateToolSignal.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.updateThickness();
+        }
+      })
+
+      this.interactionService.$updateColorSignal.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.updatePrimaryColor();
+          this.currentTool.updateSecondaryColor();
+        }
+      })
     } 
     else {
       console.log('canvas is undefined');

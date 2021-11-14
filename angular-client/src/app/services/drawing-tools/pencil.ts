@@ -57,11 +57,11 @@ export class Pencil implements DrawingTool {
     this.startTransformPoint = new Point(0,0)
     this.pointsArray = []
     this.element = this.rendrer.createElement("polyline", "svg") as SVGPolylineElement;
-    this.updateThickness();
-    this.updatePrimaryColor();
+    this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
+    //this.updateThickness();
+    //this.updatePrimaryColor();
     this.userId = userId;
     this.primaryColor = DEFPRIM;
-    this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
   }
   onMouseDown(event: MouseEvent): void {
     this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
@@ -353,13 +353,16 @@ export class Pencil implements DrawingTool {
     this.interactionService.$toolsAttributes.subscribe(
       (attr: ToolsAttributes) => {
         if (attr) {
+          console.log(attr);
           this.attr = { pencilLineThickness: attr.pencilLineThickness };
+          this.rendrer.setAttribute(this.element, "stroke-width", this.attr.pencilLineThickness!.toString())
         }
         else{
           this.attr = {pencilLineThickness: DEF_LINE_THICKNESS};
         }
       }
     )
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {
     
@@ -368,9 +371,12 @@ export class Pencil implements DrawingTool {
         this.primaryColor = DEFPRIM;
       }
       else{
+        console.log(color);
         this.primaryColor = color.primColor;
+        this.rendrer.setAttribute(this.element, "stroke", this.primaryColor);
       }
     })
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updateSecondaryColor(): void {
   }

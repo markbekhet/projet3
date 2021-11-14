@@ -62,9 +62,9 @@ export class Ellipse implements DrawingTool {
   ) {
     this.element = this.renderer.createElement('ellipse', 'svg') as SVGEllipseElement;
     this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
-    this.updateThickness();
-    this.updatePrimaryColor();
-    this.updateSecondaryColor();
+    //this.updateThickness();
+    //this.updatePrimaryColor();
+    //this.updateSecondaryColor();
     this.userId = userId;
     this.primaryColor = DEFPRIM;
     this.secondaryColor = DEFSEC;
@@ -391,34 +391,44 @@ export class Ellipse implements DrawingTool {
       (attr: ToolsAttributes) => {
         if (attr) {
           this.attr = { shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType };
+          this.renderer.setAttribute(this.element, "stroke-width", attr.shapeLineThickness!.toString())
         }
         else{
           this.attr = {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
         }
       }
     )
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
       if(color){
         this.primaryColor = color.primColor;
+        if(this.attr.shapeType!== undefined && this.attr.shapeType!== ShapeTypes.FULL){
+          this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+        }
       }
       else{
         this.primaryColor = DEFPRIM;
       }
     })
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updateSecondaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
       if(color){
-        this.secondaryColor = color.primColor;
+        this.secondaryColor = color.secColor;
+        if(this.attr.shapeType!== undefined && this.attr.shapeType !== ShapeTypes.OUTLINE){
+          this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+        }
       }
       else{
         this.secondaryColor = DEFPRIM;
       }
     })
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   select(): void {
     //throw new Error('Method not implemented.');

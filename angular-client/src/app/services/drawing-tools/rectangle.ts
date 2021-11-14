@@ -58,13 +58,9 @@ export class Rectangle implements  DrawingTool{
   ) {
     this.element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
     this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
-    this.updateThickness();
-    this.updatePrimaryColor();
-    this.updateSecondaryColor();
     this.userId = userId;
     this.primaryColor = DEFPRIM;
     this.secondaryColor = DEFSEC;
-    //this.pointsArray = []
   }
   
   onMouseDown(event: MouseEvent): void {
@@ -381,34 +377,45 @@ export class Rectangle implements  DrawingTool{
       (attr: ToolsAttributes) => {
         if (attr) {
           this.attr = { shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType };
+          this.renderer.setAttribute(this.element, "stroke-width", attr.shapeLineThickness!.toString())
         }
         else{
           this.attr = {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
         }
       }
     )
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
-      if(color){
+      if(color!== undefined){
         this.primaryColor = color.primColor;
+        if(this.attr.shapeType!== undefined){
+          this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+        }
       }
       else{
         this.primaryColor = DEFPRIM;
       }
     })
+    // To send To server
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   updateSecondaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
       if(color){
-        this.secondaryColor = color.primColor;
+        this.secondaryColor = color.secColor;
+        if(this.attr.shapeType!== undefined){
+          this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+        }
       }
       else{
         this.secondaryColor = DEFPRIM;
       }
     })
+    this.sendProgressToServer(DrawingStatus.Selected);
   }
   select(): void {
     //throw new Error('Method not implemented.');
