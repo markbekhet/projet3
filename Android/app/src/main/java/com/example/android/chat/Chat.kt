@@ -40,7 +40,7 @@ class Chat(var name:String) : Fragment() {
 
         showMessages()
         textField.doAfterTextChanged {
-            if(textField.text.isNotEmpty()){
+            if(textField.text.isNotEmpty() && textField.text.isNotBlank()){
                 button.isEnabled = true
                 button.isClickable = true
             }
