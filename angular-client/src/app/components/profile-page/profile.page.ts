@@ -1,10 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-profile-page',
@@ -44,7 +47,8 @@ export class ProfilePage implements OnInit {
     private router: Router,
     private auth: AuthService,
     private socketService: SocketService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    public errorDialog: MatDialog
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.token$.value,
@@ -79,8 +83,15 @@ export class ProfilePage implements OnInit {
         //success
         this.socketService.updateUserProfile(updates);
       },
-      (error) => {
-        console.log(error);
+
+        (error) => {
+          const errorCode = JSON.parse(
+            (error as HttpErrorResponse).error
+          ).message;
+          console.log(error);
+          this.errorDialog.open(ErrorDialogComponent, {
+            data: errorCode,
+          });
       }
     );
     this.resetForm();
