@@ -24,10 +24,11 @@ export class Selection implements DrawingTool {
   userId: string;
   element!: SVGElement;
   drawingId!: number;
+  toolFound: boolean = false;
   //mouseIsDown: boolean = false;
   selectedTool: DrawingTool | undefined;
   constructor(
-    private toolsArray: DrawingTool[],
+    private toolsArray: Map<number,DrawingTool>,
     private socketSerice: SocketService,
     private colorPick: ColorPickingService,
     private renderer: Renderer2,
@@ -42,7 +43,7 @@ export class Selection implements DrawingTool {
     }
     onMouseDown(event: MouseEvent): void {
         //throw new Error('Method not implemented.');
-        let i = this.toolsArray.length -1;
+        /*let i = this.toolsArray.length -1;
         if(this.toolsArray.length > 0){
             while(i>= 0){
                 let tool = this.toolsArray[i]
@@ -68,7 +69,30 @@ export class Selection implements DrawingTool {
                 }
                 i--;
             }
-        }
+        }*/
+        this.toolsArray.forEach((tool)=>{
+            if(!this.toolFound && tool.inTranslationZone(event)){
+                if(tool.userId === null || !(tool.selected && tool.userId !== this.userId)){
+                    if(tool instanceof Pencil){
+                        this.selectedTool = new Pencil(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
+                    }
+                    else if(tool instanceof Rectangle){
+                        this.selectedTool = new Rectangle(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
+                    }
+                    else{
+                        this.selectedTool = new Ellipse(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas)
+                    }
+                    this.selectedTool.drawingId = this.drawingId;
+                    this.selectedTool.parse(tool.getOriginalString())
+                    this.startTransformPoint.x = tool.startTransformPoint.x;
+                    this.startTransformPoint.y  = tool.startTransformPoint.y;
+                    this.selectedTool.contentId = tool.contentId;
+                    this.selectedTool.select();
+                    this.toolFound = true;
+                }
+                
+            }
+        })
     }
     onMouseUp(e: MouseEvent): void {
         //throw new Error('Method not implemented.');

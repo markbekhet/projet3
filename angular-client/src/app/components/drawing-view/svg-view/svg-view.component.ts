@@ -54,7 +54,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   backColor: string = '#FFFFFF';
 
   currentTool!: DrawingTool;
-  toolsList: DrawingTool[];
+  toolsList: Map<number, DrawingTool>;
   currentToolName = PENCIL_COMP_TOOL_NAME;
   drawingId!: number;
   userId!: string;
@@ -70,7 +70,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     private readonly drawingService: DrawingService,
     private readonly authService: AuthService,
   ) {
-    this.toolsList = []
+    this.toolsList = new Map<number, DrawingTool>()
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
     console.log(this.currentToolName);
     this.getDrawingId();
@@ -95,7 +95,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   initDrawing(){
-    this.toolsList =[]
+    this.toolsList.clear();
     this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
       this.backColor = "#"+ drawingInformations.drawing.bgColor;
       this.width = drawingInformations.drawing.width;
@@ -270,16 +270,10 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         tool.selected = drawingContent.status === DrawingStatus.Selected;
         tool.userId = drawingContent.userId;
         if(drawingContent.status === DrawingStatus.Deleted){
-          let index = this.toolsList.indexOf(tool);
-          if(index !== -1)
-            console.log('executed')
-            console.log(this.toolsList,'before')
-            this.toolsList.splice(index,1);
-            console.log(this.toolsList,'after')
-          //this.renderer.removeChild(this.doneDrawing.nativeElement, tool.element);
+          this.toolsList.delete(tool.contentId)
         }
       }
-    })
+    }) 
 
     if(!exist){
       try{
@@ -304,7 +298,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         newTool.contentId = drawingContent.id;
         newTool.selected = drawingContent.status === DrawingStatus.Selected;
         newTool.parse(drawingContent.content);
-        this.toolsList.push(newTool);
+        //this.toolsList.push(newTool);
+        this.toolsList.set(drawingContent.id, newTool);
       }catch(err){
       }
     }
