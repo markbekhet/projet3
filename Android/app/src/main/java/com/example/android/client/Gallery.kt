@@ -18,6 +18,7 @@ import com.example.android.SocketHandler
 import com.example.android.canvas.*
 import com.example.android.chat.ServerMessage
 import com.example.android.chat.UserMessage
+import com.example.android.profile.clientService
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -36,6 +37,7 @@ class Gallery :  Fragment() {
     private var galleryDisplay : GroupAdapter<GroupieViewHolder>?= null
     private var displayDrawingGallery : RecyclerView?= null
     private var galleryArray = ArrayList<ReceiveDrawingInformation>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
@@ -101,10 +103,44 @@ class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        var response_delete: Response<ResponseBody>?=null
+        var response_modify: Response<ResponseBody>?=null
         println(information!!.name)
         if(ClientInfo.userId == information!!.ownerId){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
+            viewHolder.itemView.modify.setOnClickListener() {
+
+
+                runBlocking {
+                    async {
+                        launch {
+                            response_modify = clientService.getUserGallery()
+                        }
+                    }
+                }
+                if (response_modify!!.isSuccessful) {
+                    val data = response_modify!!.body()!!.string()
+                    gallery = GalleryDrawing().fromJson(data)
+                    buildGallery(gallery.drawingList!!)
+                }
+            }
+            viewHolder.itemView.delete.setOnClickListener() {
+
+
+                runBlocking {
+                    async {
+                        launch {
+                            response_delete = clientService.getUserGallery()
+                        }
+                    }
+                }
+                if (response_delete!!.isSuccessful) {
+                    val data = response_delete!!.body()!!.string()
+                    response_delete = GalleryDrawing().fromJson(data)
+                    buildGallery(gallery.drawingList!!)
+                }
+            }
         }
         else{
             viewHolder.itemView.modify.isVisible= false

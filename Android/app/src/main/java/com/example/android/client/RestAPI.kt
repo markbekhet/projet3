@@ -31,4 +31,7 @@ interface RestAPI {
     @GET("$user/gallery/{Id}")
     suspend fun getGalleryDrawings(@Path("Id") userId: String): Response<ResponseBody>
 
+    @POST(delete)
+    suspend fun delete(@Body requestBody: RequestBody): Response<ResponseBody>
+
 }

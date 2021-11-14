@@ -58,7 +58,18 @@ class LeaveDrawingDto(var drawingId:Int, var userId:String){
         return Gson().toJson(this)
     }
 }
+class DeleteDrawingDt(var drawingId:Int, var userId:String) {
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
+}
+    class ModifyDrawingDto(var drawingId:Int, var userId:String,var newName: String,var password: String?){
+        fun toJson(): String {
+            return Gson().toJson(this)
+        }
 
+
+}
 enum class Visibility(var int: Int){
     publicVisibility(0),
     protectedVisibility(1),
