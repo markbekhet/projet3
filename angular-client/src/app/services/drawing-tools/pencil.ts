@@ -35,7 +35,7 @@ export class Pencil implements DrawingTool {
   currentY: number = 0;
   str: string = "<polyline ";
   selected: boolean = false;
-  startTransformPoint: Point = new Point(0,0);
+  startTransformPoint: Point;
   totalTranslation: Point = new Point(0,0);
   totalScaling: Point = new Point(0,0);
   scalingPositions: Map<Point, Point> = new Map<Point, Point>();
@@ -54,6 +54,7 @@ export class Pencil implements DrawingTool {
     private rendrer: Renderer2,
     private canvas:ElementRef
   ) {
+    this.startTransformPoint = new Point(0,0)
     this.pointsArray = []
     this.element = this.rendrer.createElement("polyline", "svg") as SVGPolylineElement;
     this.updateThickness();
@@ -73,7 +74,6 @@ export class Pencil implements DrawingTool {
   }
 
   onMouseUp(e: MouseEvent): void {
-    this.stringToPointsArray();
     this.pointsArray.forEach((point)=>{
       point.x += this.totalTranslation.x;
       point.y += this.totalTranslation.y
@@ -323,6 +323,7 @@ export class Pencil implements DrawingTool {
     else{
       this.rendrer.setAttribute(this.element,"stroke-width", matchStrokeWidth[1])
     }
+    this.stringToPointsArray();
     this.setCriticalValues()
   }
   unselect(): void {
@@ -374,6 +375,7 @@ export class Pencil implements DrawingTool {
   updateSecondaryColor(): void {
   }
   select(): void {
+    this.stringToPointsArray();
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }
