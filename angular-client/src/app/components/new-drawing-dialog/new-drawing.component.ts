@@ -188,7 +188,7 @@ export class NewDrawingComponent implements OnInit {
   // }
 
   closeModalForm(): void {
-    this.windowService.closeWindow();
+    this.windowService.closeDialogs();
   }
 
   get canvHeight(): AbstractControl | null {

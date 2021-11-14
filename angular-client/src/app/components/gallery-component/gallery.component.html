@@ -4,13 +4,13 @@
     <div class="gallery-grid">
         <mat-card *ngFor="let drawing of drawings" class="drawing-card">
             <mat-card-header>
-                <img mat-card-avatar src="../../../assets/thumbnails/avatar-placeholder.png"
+                <img mat-card-avatar src="../../../assets/thumbnails/avatar_placeholder.png"
                      alt="Avatar du propriétaire" class="avatar-image" />
                 <mat-card-title>{{ drawing.name }}</mat-card-title>
                 <mat-card-subtitle>{{ displayVisibilityLevel(drawing.visibility) }}</mat-card-subtitle>
             </mat-card-header>
 
-            <img mat-card-image src="../../../assets/thumbnails/drawing-placeholder.jpg" alt="Image de dessin" />
+            <img mat-card-image src="../../../assets/thumbnails/drawing_placeholder.jpg" alt="Image de dessin" />
 
             <mat-card-actions>
                 <!--  -->
