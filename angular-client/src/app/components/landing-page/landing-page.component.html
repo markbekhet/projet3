@@ -1,0 +1,29 @@
+<div class="landing-page">
+    <div class=header>
+        <img src="../../../assets/logos/colorimage_logo1_curved.png" alt="Logo ColorImage" class="logo">
+    </div>
+
+    <div class="header-buttons">
+        <div *ngFor="let item of menuItems" class="btn">
+            <button mat-fab (click)="execute(item.shortcutName)">
+                <mat-icon>{{item.icon}}</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="gallery">
+        <app-gallery></app-gallery>
+    </div>
+
+    <div class="teams">
+        <!-- <app-teams></app-teams> -->
+    </div>
+</div>
+
+<div *ngIf="isLoggedIn">
+    <audio src="../../../assets/audio/login2.mp3" autoplay></audio>
+</div>
+
+<div class="footer">
+    <p>© Équipe-101</p>
+</div>

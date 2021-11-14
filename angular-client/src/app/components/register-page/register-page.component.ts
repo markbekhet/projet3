@@ -2,26 +2,26 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserRegistrationInfo } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
-import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
+import { ValidationService } from '@services/validation/validation.service';
 
 @Component({
   selector: 'app-register-page',
-  templateUrl: './register.page.html',
-  styleUrls: ['./register.page.scss'],
+  templateUrl: './register-page.component.html',
+  styleUrls: ['./register-page.component.scss'],
 })
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
-    // private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.registerForm = this.formBuilder.group({
       firstName: formBuilder.control('', [Validators.required]),
@@ -60,8 +60,8 @@ export class RegisterPage implements OnInit {
       this.auth.register(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
-          console.log(this.auth.authentifiedUser);
-          // this.router.navigate(['/' + user.pseudo]);
+          console.log(this.auth.$authenticatedUser);
+          this.router.navigate(['/']);
         },
         (error) => {
           const errorCode = JSON.parse(

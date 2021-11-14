@@ -27,7 +27,7 @@ export class SocketService {
     return this.socket.id;
   }
 
-  message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
+  message$ = new BehaviorSubject<Message>({
     clientName: '',
     message: '',
     date: {
