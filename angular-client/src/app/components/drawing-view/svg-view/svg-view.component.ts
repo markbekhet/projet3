@@ -95,6 +95,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   initDrawing(){
+    //this.doneDrawing.nativeElement.innerHTML = "";
     this.toolsList.clear();
     this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
       this.backColor = "#"+ drawingInformations.drawing.bgColor;
@@ -260,7 +261,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   manipulateReceivedDrawing(drawingContent: DrawingContent){
     //let i = 0;
-    let exist = false;
+    /*let exist = false;
     this.toolsList.forEach((tool)=>{
       if(tool.contentId === drawingContent.id){
         try{
@@ -273,9 +274,20 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.toolsList.delete(tool.contentId)
         }
       }
-    }) 
+    })*/
+    if(this.toolsList.has(drawingContent.id)){
+      try{
+        this.toolsList.get(drawingContent.id)!.parse(drawingContent.content);
+      }catch(e){}
+      this.toolsList.get(drawingContent.id)!.selected = drawingContent.status === DrawingStatus.Selected;
+      this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
+      if(drawingContent.status === DrawingStatus.Deleted){
+        this.toolsList.delete(drawingContent.id);
+      }
 
-    if(!exist){
+    } 
+
+    else{
       try{
         let newTool!: DrawingTool;
         switch(drawingContent.toolName){

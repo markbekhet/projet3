@@ -14,7 +14,6 @@ const RADUIS = 10;
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`);
 const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`);
 
-// Crayon
 const POINTS_REGEX = new RegExp(
   `points="([-?0-9.?]*( )*[-?0-9.?]*(,[-?0-9.?]*( )*[-?0-9.?]*)*)"`
 );
@@ -45,8 +44,7 @@ export class Pencil implements DrawingTool {
   element!: SVGPolylineElement;
   primaryColor! :string;
   drawingId!: number;
-  //mouseIsDown: boolean = false;
-  pointsArray: Point[] = []
+  pointsArray: Point[];
 
   constructor(
     private interactionService: InteractionService,
@@ -56,6 +54,7 @@ export class Pencil implements DrawingTool {
     private rendrer: Renderer2,
     private canvas:ElementRef
   ) {
+    this.pointsArray = []
     this.element = this.rendrer.createElement("polyline", "svg") as SVGPolylineElement;
     this.updateThickness();
     this.updatePrimaryColor();
@@ -64,7 +63,6 @@ export class Pencil implements DrawingTool {
     this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
   }
   onMouseDown(event: MouseEvent): void {
-    //this.mouseIsDown = true;
     this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
     this.rendrer.setAttribute(this.element,"points", this.pointsToString())
     this.rendrer.setAttribute(this.element, "transform", "translate(0,0)")
@@ -75,17 +73,17 @@ export class Pencil implements DrawingTool {
   }
 
   onMouseUp(e: MouseEvent): void {
+    this.stringToPointsArray();
     this.pointsArray.forEach((point)=>{
       point.x += this.totalTranslation.x;
       point.y += this.totalTranslation.y
     })
     this.rendrer.setAttribute(this.element,'points', this.pointsToString())
     this.totalTranslation = new Point(0,0);
-    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)");
+    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)"); 
     this.setCriticalValues()
     this.calculateScalingPositions()
     this.select()
-    //this.mouseIsDown = false;
   }
 
   onMouseMove(event: MouseEvent): void {
@@ -119,7 +117,6 @@ export class Pencil implements DrawingTool {
     let result = "<polyline ";
     let startingPoint = this.element.getAttribute("points")
     let translate = this.element.getAttribute("transform");
-    console.log(translate);
     let stroke = this.element.getAttribute("stroke");
     let strokeWidth = this.element.getAttribute("stroke-width");
     result += `points="${startingPoint}" `;
@@ -207,6 +204,8 @@ export class Pencil implements DrawingTool {
     }
   }
   getSelectionString(): void {
+    this.stringToPointsArray();
+    this.setCriticalValues();
     this.str += "<rect "
     let x = this.minPoint.x
     let y = this.minPoint.y
@@ -284,7 +283,6 @@ export class Pencil implements DrawingTool {
   getScalingPositionsString(): void {
     this.calculateScalingPositions()
     for(let item of this.scalingPositions){
-      console.log(item)
       let position = item[0];
       let x = position.x-RADUIS;
       let y = position.y- RADUIS;
@@ -294,7 +292,6 @@ export class Pencil implements DrawingTool {
     }
   }
   parse(parceableString: string): void {
-    console.log('parse method got called');
     let matchPoints = POINTS_REGEX.exec(parceableString)
     let matchTranslate = TRANSLATE_REGEX.exec(parceableString);
     let matchStroke = STROKE_REGEX.exec(parceableString);
@@ -304,42 +301,47 @@ export class Pencil implements DrawingTool {
     }
     else{
       let pointsGroup = matchPoints[1];
-      console.log(pointsGroup)
       this.rendrer.setAttribute(this.element, "points", pointsGroup);
     }
     if(matchTranslate === null){
-      console.log(parceableString)
       console.log("there is a problem with translate regex");
     }
     else{
       this.totalTranslation.x = parseFloat(matchTranslate[1])
-      console.log(this.totalTranslation.x)
       this.totalTranslation.y = parseFloat(matchTranslate[2])
-      console.log(this.totalTranslation.y);
       this.rendrer.setAttribute(this.element, "transform", `translate(${this.totalTranslation.x},${this.totalTranslation.y})`)
     }
     if(matchStroke === null){
       console.log("there is a problem with stroke regex")
     }
     else{
-      console.log(matchStroke)
       this.rendrer.setAttribute(this.element, "stroke", matchStroke[1])
     }
     if(matchStrokeWidth === null){
       console.log("there is a problem with stroke width regex")
     }
     else{
-      console.log(matchStrokeWidth)
       this.rendrer.setAttribute(this.element,"stroke-width", matchStrokeWidth[1])
     }
     this.setCriticalValues()
   }
   unselect(): void {
-    //this.mouseIsDown = false;
     this.selected = false;
     if(this.contentId !== null && this.contentId !== undefined){
       this.sendProgressToServer(DrawingStatus.Done);
     }
+  }
+
+  stringToPointsArray(){
+    let str = this.element.getAttribute("points");
+    this.pointsArray = []
+    let pointArrayString = str!.split(",")
+    pointArrayString.forEach((str)=>{
+      let point = str.split(" ");
+      let x = parseFloat(point[0]);
+      let y = parseFloat(point[1]);
+      this.pointsArray.push(new Point(x, y));
+    })
   }
   delete(): void {
     if(this.contentId !== null && this.contentId !== undefined){
@@ -372,27 +374,19 @@ export class Pencil implements DrawingTool {
   updateSecondaryColor(): void {
   }
   select(): void {
-    //this.mouseIsDown = true;
     this.selected = true;
     this.sendProgressToServer(DrawingStatus.Selected)
   }
   setCriticalValues(): void {
     this.minPoint = new Point(Number.MAX_VALUE, Number.MAX_VALUE)
     this.maxPoint = new Point(0.0, 0.0)
-    let polylinePoints = this.element.points;
-    if(polylinePoints.numberOfItems > 0){
-      let i = 0;
-      while(i< polylinePoints.numberOfItems){
-        let item = polylinePoints.getItem(i)
-        this.minPoint.x = Math.min(item.x, this.minPoint.x)
-        this.minPoint.y = Math.min(item.y, this.minPoint.y)
-        this.maxPoint.x = Math.max(item.x, this.maxPoint.x)
-        this.maxPoint.y = Math.max(item.y, this.maxPoint.y)
-        i++;
-      }
-      this.startTransformPoint = new Point(polylinePoints.getItem(polylinePoints.numberOfItems/2).x,
-                    polylinePoints.getItem(polylinePoints.numberOfItems/2).y);
-    }
+    this.pointsArray.forEach((point: Point)=>{
+      this.minPoint.x = Math.min(point.x, this.minPoint.x)
+      this.minPoint.y = Math.min(point.y, this.minPoint.y)
+      this.maxPoint.x = Math.max(point.x, this.maxPoint.x)
+      this.maxPoint.y = Math.max(point.y, this.maxPoint.y)
+    })
+    this.startTransformPoint = this.pointsArray[this.pointsArray.length/2];
   }
   requestCreation(): void{
     this.socketService.createDrawingContentRequest({drawingId: this.drawingId});
