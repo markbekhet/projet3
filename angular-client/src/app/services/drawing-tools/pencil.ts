@@ -193,18 +193,11 @@ export class Pencil implements DrawingTool {
         differenceHeight = (this.minPoint.y * ratioHeight) - this.minPoint.y
     }
 
-    let polylinePoints = this.element.points
-    if(polylinePoints.numberOfItems > 0){
-        var i = 0
-        while(i < polylinePoints.numberOfItems){
-            let item = polylinePoints.getItem(i)
-            item.x *= ratioWidth
-            item.x -= differenceWidth
-            item.y *= ratioHeight
-            item.y -= differenceHeight
-            i++
-        }
-    }
+    this.pointsArray.forEach((point)=>{
+      point.x += this.totalTranslation.x;
+      point.y += this.totalTranslation.y
+    })
+    this.rendrer.setAttribute(this.element,'points', this.pointsToString())
     this.setCriticalValues()
     this.calculateScalingPositions()
     if(this.contentId !== null && this.contentId !== undefined){

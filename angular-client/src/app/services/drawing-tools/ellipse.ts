@@ -186,20 +186,20 @@ export class Ellipse implements DrawingTool {
     let ry = parseFloat(this.element.getAttribute("ry")!)
     let minPoint = new Point(cx - rx, cy - ry)
     let maxPoint = new Point(cx + rx, cy + ry)
-    if(direction.x == -1.0){
+    if(direction.x === -1.0){
         //println(minPoint.x)
         minPoint.x += scalePoint.x
         //println(minPoint.x)
         this.currentX = minPoint.x
     }
-    else if(direction.x == 1.0){
+    else if(direction.x === 1.0){
         maxPoint.x += scalePoint.x
     }
-    if(direction.y == -1.0){
+    if(direction.y === -1.0){
         minPoint.y += scalePoint.y
         this.currentY = minPoint.y
     }
-    else if(direction.y == 1.0){
+    else if(direction.y === 1.0){
         maxPoint.y += scalePoint.y
     }
 

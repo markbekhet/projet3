@@ -180,20 +180,20 @@ export class Rectangle implements  DrawingTool{
     let height = parseFloat(this.element.getAttribute("height")!)
     let minPoint = new Point(x , y)
     let maxPoint = new Point(x + width, y + height)
-    if(direction.x == -1.0){
+    if(direction.x === -1.0){
         //println(minPoint.x)
         minPoint.x += scalePoint.x
         //println(minPoint.x)
         this.currentX = minPoint.x
     }
-    else if(direction.x == 1.0){
+    else if(direction.x === 1.0){
         maxPoint.x += scalePoint.x
     }
-    if(direction.y == -1.0){
+    if(direction.y === -1.0){
         minPoint.y += scalePoint.y
         this.currentY = minPoint.y
     }
-    else if(direction.y == 1.0){
+    else if(direction.y === 1.0){
         maxPoint.y += scalePoint.y
     }
 
