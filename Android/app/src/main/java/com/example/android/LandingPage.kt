@@ -12,6 +12,7 @@ import com.example.android.client.*
 import com.example.android.profile.OwnProfile
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_landing_page.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -33,14 +34,14 @@ class LandingPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
         val clientService = ClientService()
-//        displayDrawingGallery = findViewById(R.id.gallery_drawings)
-//        val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(Gallery().context)
-//        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-//        displayDrawingGallery?.layoutManager = linearLayoutManager
         //Initialize chat socket
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
+        val manager = supportFragmentManager
+        val usersFragmentTransaction = manager.beginTransaction()
+        val galleryDraws = Gallery()
 
+        usersFragmentTransaction.replace(R.id.gallery_frame, galleryDraws).commit()
 
 
         runBlocking {
@@ -53,7 +54,8 @@ class LandingPage : AppCompatActivity() {
         if(response!!.isSuccessful){
             val data = response!!.body()!!.string()
             gallery = GalleryDrawing().fromJson(data)
-            Gallery().buildGallery(gallery.drawingList!!)
+
+            galleryDraws.set(gallery.drawingList!!)
         }
         chatSocket = SocketHandler.getChatSocket()
 

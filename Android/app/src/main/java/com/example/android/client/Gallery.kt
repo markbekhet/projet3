@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +35,7 @@ import retrofit2.Response
 class Gallery :  Fragment() {
     private var galleryDisplay : GroupAdapter<GroupieViewHolder>?= null
     private var displayDrawingGallery : RecyclerView?= null
+    private var galleryArray = ArrayList<ReceiveDrawingInformation>()
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
@@ -41,38 +43,50 @@ class Gallery :  Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_gallery, parent, false)
 
+
+        /*  SocketHandler.setChatSocket()
+          SocketHandler.establishChatSocketConnection()
+          var gallery  = GalleryDrawing()
+          var response: Response<ResponseBody>?=null
+
+          runBlocking {
+              async{
+                  launch {
+                      response = clientService.getUserGallery()
+                  }
+              }
+          }
+          if(response!!.isSuccessful){
+              val data = response!!.body()!!.string()
+              gallery = GalleryDrawing().fromJson(data)
+              buildGallery(gallery.drawingList!!)
+          }*/
+     return view
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
+        super.onViewCreated(view, savedInstanceState)
         val clientService = ClientService()
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        displayDrawingGallery?.layoutManager = linearLayoutManager
-        SocketHandler.setChatSocket()
-        SocketHandler.establishChatSocketConnection()
-        var gallery  = GalleryDrawing()
-        var response: Response<ResponseBody>?=null
-
-        runBlocking {
-            async{
-                launch {
-                    response = clientService.getUserGallery()
-                }
-            }
-        }
-        if(response!!.isSuccessful){
-            val data = response!!.body()!!.string()
-            gallery = GalleryDrawing().fromJson(data)
-            buildGallery(gallery.drawingList!!)
-        }
-     return view
+        gallery_drawings?.layoutManager = linearLayoutManager
+        buildGallery()
     }
-    fun buildGallery(drawingList :ArrayList<ReceiveDrawingInformation>){
+    fun set(GalleryDrawcopy:ArrayList<ReceiveDrawingInformation> ){
+        galleryArray= GalleryDrawcopy
+        buildGallery()
+    }
+    fun buildGallery(){
         galleryDisplay = GroupAdapter<GroupieViewHolder>()
-        for(drawing in drawingList){
+        println(galleryArray.size)
+        for(drawing in galleryArray){
             val galleryDrawing = GalleryItem(this)
             galleryDrawing.set(drawing)
             galleryDisplay!!.add(galleryDrawing)
         }
-        displayDrawingGallery!!.adapter = galleryDisplay
+        activity?.runOnUiThread{
+            gallery_drawings!!.adapter = galleryDisplay
+        }
     }
 
     fun startDrawingActivity(){
@@ -88,6 +102,14 @@ class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         println(information!!.name)
+        if(ClientInfo.userId == information!!.ownerId){
+            viewHolder.itemView.modify.isVisible= true
+            viewHolder.itemView.delete.isVisible= true
+        }
+        else{
+            viewHolder.itemView.modify.isVisible= false
+            viewHolder.itemView.delete.isVisible= false
+        }
         viewHolder.itemView.name.text = information!!.name
         val canvas = GalleryCanvasView(information!!.id!!, context.requireContext())
         canvas.parseExistingDrawings(information!!.contents)

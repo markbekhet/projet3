@@ -95,7 +95,7 @@ class LoginScreen : AppCompatActivity() {
                 println(clientService!!.authentify)
                 ClientInfo.userId = response?.body()?.string().toString()
                 println("Client id: ${ClientInfo.userId}")
-                startActivity(Intent(this, Gallery::class.java))
+                startActivity(Intent(this, LandingPage::class.java))
                 print(username.toString())
 
             } else {

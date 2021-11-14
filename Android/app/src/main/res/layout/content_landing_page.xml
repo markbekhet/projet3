@@ -16,8 +16,9 @@
         android:background="@drawable/rectangle_background"
         android:orientation="vertical"
         android:backgroundTint="@color/white">
-        <include
-            android:id="@+id/avatarItem"
+
+        <FrameLayout
+            android:id="@+id/gallery_frame"
             layout="@layout/activity_gallery"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -18,6 +18,7 @@ class DrawingInformation (
 
 class ReceiveDrawingInformation(
     var id: Int?= null,
+    var ownerId: String? = null,
     var bgColor:String?= null,
     var height: Int?= null,
     var width: Int?= null,
