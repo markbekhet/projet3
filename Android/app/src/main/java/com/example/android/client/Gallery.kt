@@ -5,7 +5,10 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
@@ -28,21 +31,26 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 
-class Gallery : AppCompatActivity() {
+class Gallery :  Fragment() {
     private var galleryDisplay : GroupAdapter<GroupieViewHolder>?= null
     private var displayDrawingGallery : RecyclerView?= null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gallery)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.activity_gallery, parent, false)
+
         val clientService = ClientService()
-        displayDrawingGallery = findViewById(R.id.gallery_drawings)
-        val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
+        displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
+        val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         displayDrawingGallery?.layoutManager = linearLayoutManager
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         var gallery  = GalleryDrawing()
         var response: Response<ResponseBody>?=null
+
         runBlocking {
             async{
                 launch {
@@ -55,7 +63,7 @@ class Gallery : AppCompatActivity() {
             gallery = GalleryDrawing().fromJson(data)
             buildGallery(gallery.drawingList!!)
         }
-
+     return view
     }
     fun buildGallery(drawingList :ArrayList<ReceiveDrawingInformation>){
         galleryDisplay = GroupAdapter<GroupieViewHolder>()
@@ -68,7 +76,7 @@ class Gallery : AppCompatActivity() {
     }
 
     fun startDrawingActivity(){
-        startActivity(Intent(this, Drawing::class.java))
+        startActivity(Intent(this.context, Drawing::class.java))
     }
 }
 class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
@@ -81,7 +89,7 @@ class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         println(information!!.name)
         viewHolder.itemView.name.text = information!!.name
-        val canvas = GalleryCanvasView(information!!.id!!, context)
+        val canvas = GalleryCanvasView(information!!.id!!, context.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
         val params: ViewGroup.LayoutParams = viewHolder.itemView.fl_drawing_view_gallery.getLayoutParams()
         params.width= 300
