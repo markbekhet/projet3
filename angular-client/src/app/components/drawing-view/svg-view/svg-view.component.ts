@@ -238,6 +238,11 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.draw();
         }
       })
+      this.interactionService.$deleteDrawing.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.delete();
+        }
+      })
     } 
     else {
       console.log('canvas is undefined');
@@ -267,7 +272,10 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         if(drawingContent.status === DrawingStatus.Deleted){
           let index = this.toolsList.indexOf(tool);
           if(index !== -1)
+            console.log('executed')
+            console.log(this.toolsList,'before')
             this.toolsList.splice(index,1);
+            console.log(this.toolsList,'after')
           //this.renderer.removeChild(this.doneDrawing.nativeElement, tool.element);
         }
       }

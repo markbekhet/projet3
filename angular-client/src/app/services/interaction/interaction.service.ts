@@ -22,6 +22,9 @@ export class InteractionService {
   $toolsAttributes: Observable<ToolsAttributes> =
     this.toolsAttributes.asObservable();
 
+  deleteDrawing: Subject<boolean> = new Subject<boolean>();
+  $deleteDrawing: Observable<boolean> = this.deleteDrawing.asObservable();
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -36,5 +39,9 @@ export class InteractionService {
 
   emitToolsAttributes(attr: ToolsAttributes | undefined): void {
     this.toolsAttributes.next(attr);
+  }
+
+  emitDelete(){
+    this.deleteDrawing.next(true);
   }
 }
