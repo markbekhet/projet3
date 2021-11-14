@@ -9,7 +9,6 @@
         <button mat-button [matMenuTriggerFor]="belowMenu">{{ shapeType | shapetype }}</button>
         <mat-menu #belowMenu="matMenu">
             <button mat-menu-item (click)="updateShapeType('OUTLINE')">Contours seulement</button>
-            <button mat-menu-item (click)="updateShapeType('FULL')">Fond seulement</button>
             <button mat-menu-item (click)="updateShapeType('BOTH')">Contours + Fond</button>
         </mat-menu>
     </div>

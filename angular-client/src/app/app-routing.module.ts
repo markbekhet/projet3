@@ -7,7 +7,7 @@ import { RegisterPageComponent } from './components/register-page/register-page.
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'home', component: LandingPageComponent },
   { path: 'draw', component: DrawingViewComponent },
   { path: 'login', component: LoginPageComponent },

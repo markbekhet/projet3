@@ -5,6 +5,7 @@ import { /* concatMap, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { User } from '@models/UserMeta';
+import { UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';
@@ -31,7 +32,7 @@ export class AuthService {
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
   readonly NULL_USER: User = {
-    token: '',
+    id: '',
   };
   authentifiedUser: BehaviorSubject<User> = new BehaviorSubject<User>(
     this.NULL_USER
@@ -63,8 +64,10 @@ export class AuthService {
       .pipe(
         tap((token) => {
           const loggedInUser: User = {
-            token,
+            id:token,
           };
+          UserToken.userToken = token;
+          console.log(token);
           this.authenticateUser(loggedInUser);
         })
       );
@@ -76,8 +79,10 @@ export class AuthService {
       .pipe(
         tap((token) => {
           const registeredUser: User = {
-            token,
+            id: token,
           };
+          UserToken.userToken = token;
+          console.log(token);
           this.authenticateUser(registeredUser);
         })
       );
@@ -86,7 +91,7 @@ export class AuthService {
   // this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
     return this.httpClient.post(
-      PATH + DISCONNECT_PATH + this.authentifiedUser.value.token,
+      PATH + DISCONNECT_PATH + this.authentifiedUser.value.id,
       null,
       { responseType: 'text' }
     );
@@ -94,12 +99,12 @@ export class AuthService {
 
   getProfile() {
     return this.httpClient.get<User>(
-      PATH + GET_PROFILE_PATH + this.authentifiedUser.value.token
+      PATH + GET_PROFILE_PATH + this.authentifiedUser.value.id + "/" +this.authentifiedUser.value.id 
     );
   }
 
   private authenticateUser(user: User) {
-    if (user.token) this.authentifiedUser.next(user);
+    if (user.id) this.authentifiedUser.next(user);
   }
 
   // A little bit weird you dont need that
