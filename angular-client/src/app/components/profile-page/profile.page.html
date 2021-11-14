@@ -14,22 +14,33 @@
     <div class="content">
         <mat-tab-group mat-align-tabs="start" animationDuration="1000ms">
             <mat-tab label="Informations">
-                <form [formGroup]="updatePseudo" (ngSubmit)="onSubmit(updatePseudo)">
+                <form [formGroup]="updateForm" (ngSubmit)="onSubmit(updateForm)">
                     <mat-form-field class="pseudo-field">
                         <mat-label>Nouveau pseudonyme</mat-label>
                         <input type="text" matInput formControlName="pseudo" />
+                        <mat-error *ngIf="checkError(updateForm, 'pseudo', 'invalidUsername')
+					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
                     </mat-form-field>
-
+                    <br>
+                    <mat-form-field class="old-password-field">
+                        <mat-label>Nouveau mot de passe</mat-label>
+                        <input type="password" matInput formControlName="newPassword" />
+                        <mat-error *ngIf="checkError(updateForm, 'newPassword', 'invalidUsername')
+					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">
+                        <mat-label>Entrez votre ancien mot de passe</mat-label>
+                        <input type="password" matInput formControlName="oldPassword" />
+                        <mat-error *ngIf="checkError(updateForm, 'oldPassword', 'invalidUsername')
+					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
+                    </mat-form-field>
+                    <br>
                     <button mat-icon-button>Soumettre</button>
                 </form>
             </mat-tab>
 
             <mat-tab label="Statistiques">
-                <!--averageCollaborationTime: number;
-                    totalCollaborationTime: number;
-                    numberCollaborationTeams: number;
-                    numberCollaboratedDrawings: number;
-                    numberAuthoredDrawings: number;-->
                 <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}}</div>
                 <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}}</div>
                 <br>
@@ -39,6 +50,11 @@
             </mat-tab>
 
             <mat-tab label="Historiques">
+                <h1>Connexions</h1>
+
+                <h1>Deconnexions</h1>
+
+                <h1>Collaborations</h1>
 
             </mat-tab>
         </mat-tab-group>

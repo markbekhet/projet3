@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { /* concatMap, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
-import { User } from '@models/UserMeta';
+import { UpdateUserInformation } from '@src/app/models/UserMeta';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';
@@ -13,7 +13,7 @@ const PATH = 'http://localhost:3000/';
 const REGISTER_PATH = 'register/';
 const LOGIN_PATH = 'login/';
 const DISCONNECT_PATH = 'user/disconnect/';
-const GET_PROFILE_PATH = 'user/profile/';
+const PROFILE_PATH = 'user/profile/';
 
 @Injectable({
   providedIn: 'root',
@@ -85,18 +85,19 @@ export class AuthService {
       );
   }
 
-  getProfile() {
-    return this.httpClient.get<User>(
-      PATH + GET_PROFILE_PATH + this.token$.value
-    );
-  }
-
   getToken() {
     return this.token$.value;
   }
 
   private authenticateUser(token: string) {
     if (token) this.token$.next(token);
+  }
+
+  public updateUserProfile(updatedUserProfile: UpdateUserInformation) {
+    return this.httpClient
+      .put(PATH + PROFILE_PATH + this.token$.value, updatedUserProfile, {
+        responseType: 'text',
+      });
   }
 
   // A little bit weird you dont need that

@@ -50,3 +50,9 @@ export interface DisconnectionHistory {
   id: number;
   date: string;
 }
+
+export interface UpdateUserInformation {
+  newPassword?: string;
+  newPseudo?: string;
+  oldPassword?: string;
+}

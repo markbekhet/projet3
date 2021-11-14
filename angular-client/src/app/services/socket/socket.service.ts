@@ -4,7 +4,7 @@ import { BehaviorSubject /* , Observable */ } from 'rxjs';
 import { io } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
-import { Status, User, UserProfileRequest } from '@src/app/models/UserMeta';
+import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
 // import { AuthService } from '../authentication/auth.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
@@ -97,18 +97,25 @@ export class SocketService {
   };
 
   public getUserProfile(profileRequest: UserProfileRequest) {
-    console.log(`profile socket sent: ${profileRequest.userId}`);
     this.socket.emit('getUserProfileRequest', JSON.stringify(profileRequest));
   }
 
   public receiveUserProfile = () => {
-    console.log('socket service received user profile');
     this.socket.on('profileToClient', (profile: any) => {
-      console.log(`socket received ${profile}`);
       const user: User = JSON.parse(profile);
       this.profile$.next(user);
     });
 
     return this.profile$.asObservable();
   };
+
+  public updateUserProfile(updates: UpdateUserInformation) {
+    if (updates.newPseudo) {
+      this.profile$.value.pseudo = updates.newPseudo;
+    }
+    if (updates.newPassword) {
+      this.profile$.value.password = updates.newPassword;
+    }
+    this.profile$.next(this.profile$.value);
+  }
 }

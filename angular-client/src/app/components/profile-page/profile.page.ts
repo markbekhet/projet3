@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Status, User } from '@src/app/models/UserMeta';
+import { Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
+// import { ValidationService } from '@src/app/services/validation/validation.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -37,7 +38,7 @@ export class ProfilePage implements OnInit {
     drawingEditionHistories: [],
   };
 
-  updatePseudo: FormGroup;
+  updateForm: FormGroup;
 
   constructor(
     private router: Router,
@@ -55,8 +56,10 @@ export class ProfilePage implements OnInit {
       console.log(`user loaded : ${profile.pseudo}`);
     });
 
-    this.updatePseudo = this.formBuilder.group({
+    this.updateForm = this.formBuilder.group({
       pseudo: formBuilder.control(this.user.pseudo, []),
+      oldPassword: formBuilder.control('', []),
+      newPassword: formBuilder.control('', []),
     });
   }
 
@@ -65,25 +68,47 @@ export class ProfilePage implements OnInit {
 
   async onSubmit(formPseudo: FormGroup) {
     alert("we're ready to submit any changes");
-    // detect changes
+    let updates: UpdateUserInformation = {
+      newPseudo: this.verifyPseudo(this.updateForm.controls.pseudo.value),
+      newPassword: this.verifyPassword(this.updateForm.controls.newPassword.value),
+      oldPassword: this.updateForm.controls.oldPassword.value,
+    }
 
-    // what to do
-    // if empty -> use old username
-    // if new username = old username -> use old username
-    // if new username = illegal (someone already has it) -> use old username + throw error message
-    // else use new username
-    const nouveauPseudo = this.verifyPseudo(formPseudo.controls.pseudo.value);
-    console.log(nouveauPseudo);
+    this.auth.updateUserProfile(updates).subscribe(
+      (response) => {
+        //success
+        console.log(`Profil update success ${response}`);
+        this.socketService.updateUserProfile(updates);
+
+      },
+      (error) => {
+        console.log(error);
+      }
+    )
   }
 
-  private verifyPseudo(nouveauPseudo: string) {
+  private verifyPseudo(newPseudo: string) {
     const CURRENT_PSEUDO: string = this.user.pseudo;
-    if (nouveauPseudo === '') return CURRENT_PSEUDO;
-    if (nouveauPseudo === CURRENT_PSEUDO) return CURRENT_PSEUDO;
-    return nouveauPseudo;
+    if (newPseudo === '') return undefined;
+    if (newPseudo === CURRENT_PSEUDO) return undefined;
+    return newPseudo;
+  }
+
+  private verifyPassword(newPassword: string) {
+    const CURRENT_PASSWORD: string = this.user.password;
+    if (newPassword === '') return undefined;
+    if (newPassword === CURRENT_PASSWORD) return undefined;
+    return newPassword;
   }
 
   goLaunchingPage() {
     this.router.navigate(['/']);
+  }
+
+  public checkError(form: FormGroup, control: string, error: string) {
+    return (
+      form.controls[control].dirty &&
+      form.controls[control].hasError(error)
+    );
   }
 }
