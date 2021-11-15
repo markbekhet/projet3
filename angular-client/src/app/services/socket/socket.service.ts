@@ -10,6 +10,7 @@ import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/ap
 import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingContent } from '@src/app/models/DrawingMeta';
+import { Team } from '@src/app/models/teamsMeta';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -23,7 +24,8 @@ export class SocketService {
   drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
   contentId$: Subject<{contentId: number}> = new Subject<{contentId: number}>();
   drawingContent$: Subject<DrawingContent> = new Subject<DrawingContent>();
-
+  users$: BehaviorSubject<Map<string, User>> = new BehaviorSubject<Map<string, User>>(new Map());
+  teams$: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
   connect(): void {
     this.socket = io(PATH);
   }
@@ -48,7 +50,7 @@ export class SocketService {
   });
 
   profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
-    token: '',
+    id: '',
     firstName: '',
     lastName: '',
     emailAddress: '',
@@ -159,5 +161,32 @@ export class SocketService {
 
   public leaveDrawing(leaveDrawing: LeaveDrawing){
     this.socket!.emit("leaveDrawing", JSON.stringify(leaveDrawing));
+  }
+
+  public getAllUsers = ()=>{
+    this.socket!.on("usersArrayToClient", (data: any)=>{
+      let dataMod: {userList: User[]} = JSON.parse(data);
+      let usersTemp: Map<string, User> = new Map();
+      dataMod.userList.forEach((user)=>{
+        if(!usersTemp.has(user.id!)){
+          usersTemp.set(user.id!, user);
+        }
+      })
+      this.users$.next(usersTemp);
+    });
+  }
+
+  getAllTeams = ()=>{
+    this.socket!.on("teamsArrayToClient", (data)=>{
+      let dataMod: {teamList: Team[]} = JSON.parse(data);
+      let teamsTemp: Map<string, Team> = new Map();
+      dataMod.teamList.forEach((team)=>{
+        if(!teamsTemp.has(team.id!)){
+          teamsTemp.set(team.id!, team);
+        }
+      })
+      this.teams$.next(teamsTemp);
+
+    })
   }
 }

@@ -1,23 +1,23 @@
 import { DrawingVisibility, DrawingState } from './DrawingMeta';
 
 export interface User {
-  token: string;
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
-  password: string;
-  status: Status;
-  pseudo: string;
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  password?: string;
+  status?: Status;
+  pseudo?: string;
 
-  averageCollaborationTime: number;
-  totalCollaborationTime: number;
-  numberCollaborationTeams: number;
-  numberCollaboratedDrawings: number;
-  numberAuthoredDrawings: number;
+  averageCollaborationTime?: number;
+  totalCollaborationTime?: number;
+  numberCollaborationTeams?: number;
+  numberCollaboratedDrawings?: number;
+  numberAuthoredDrawings?: number;
 
-  connectionHistory: ConnectionHistory;
-  disconnectionHistory: DisconnectionHistory;
-  drawingEditionHistories: DrawingEditionHistory[];
+  connectionHistory?: ConnectionHistory;
+  disconnectionHistory?: DisconnectionHistory;
+  drawingEditionHistories?: DrawingEditionHistory[];
 }
 
 export interface UserProfileRequest {
