@@ -159,4 +159,15 @@ this.router.navigate(['/home']);
     this.socketService.sendJoinDrawingRequest(joinDrawing);
     this.router.navigate(['/draw']);
   }
+
+  public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {
+    for (let i = this.user.drawingEditionHistories.length - 1; i >= 0; i--) {
+      let drawing = this.user.drawingEditionHistories[i];
+      if (drawing.drawingId === collaboration.drawingId) {
+        console.log(drawing.date + ' ' + collaboration.date);
+        return drawing.date === collaboration.date;
+      }
+    }
+    return false;
+  }
 }
