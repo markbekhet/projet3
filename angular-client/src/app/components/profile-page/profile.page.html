@@ -51,10 +51,18 @@
 
             <mat-tab label="Historiques">
                 <h1>Connexions</h1>
-
+                <div *ngFor="let connection of user.connectionHistories as ConnectionHistory">
+                    {{ connection.date }}
+                </div>
                 <h1>Deconnexions</h1>
-
+                <div *ngFor="let disconnection of user.disconnectionHistories">
+                    {{ disconnection.date }}
+                </div>
                 <h1>Collaborations</h1>
+                <div *ngFor="let collaboration of user.drawingEditionHistories">
+                    {{ collaboration.date }}
+                    <button (click)="joinDrawing(collaboration)" [disabled]="drawingEnabled(collaboration)">Joindre</button>
+                </div>
 
             </mat-tab>
         </mat-tab-group>
