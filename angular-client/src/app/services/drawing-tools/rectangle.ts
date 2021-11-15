@@ -71,7 +71,7 @@ export class Rectangle implements  DrawingTool{
     this.renderer.setAttribute(this.element, "y", position.y.toString())
     this.renderer.setAttribute(this.element, "width", "0");
     this.renderer.setAttribute(this.element, "height", "0")
-    this.renderer.setAttribute(this.element, "transform", "translate(0,0");
+    this.renderer.setAttribute(this.element, "transform", "translate(0,0)");
     this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
     this.renderer.setAttribute(this.element, "stroke-width", this.attr.shapeLineThickness!.toString())
     this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
