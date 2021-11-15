@@ -183,9 +183,11 @@ class UsersAndTeamsFragment() : Fragment() {
                     }
                 }
             }
-            activity?.runOnUiThread{
-                usersRecycleView.adapter = usersAdapter
-            }
+            try{
+                activity?.runOnUiThread{
+                    usersRecycleView.adapter = usersAdapter
+                }
+            } catch(e: Exception){}
         }
     }
 

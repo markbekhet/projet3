@@ -95,7 +95,7 @@ class Chat(var name:String) : Fragment() {
                 messageListView?.adapter = messageDisplay
             }
         }catch(e: Exception){
-            println("cannot")
+            println("cannot show the information right now")
         }
     }
 

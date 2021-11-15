@@ -67,6 +67,12 @@ data class DrawingEditionHistories(
     var date: String? = null
 )
 
+data class ActiveUser(var userId:String?= null){
+    fun fromJson(json:String): ActiveUser{
+        return Gson().fromJson(json, ActiveUser::class.java)
+    }
+}
+
 data class UserRegistrationInfo(
     var firstName: String? = null,
     var lastName: String? = null,

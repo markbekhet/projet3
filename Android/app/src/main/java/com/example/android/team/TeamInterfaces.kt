@@ -1,5 +1,7 @@
 package com.example.android.team
 
+import com.example.android.chat.ClientMessage
+import com.example.android.client.ActiveUser
 import com.google.gson.Gson
 
 class CreateTeamDto(var name: String?= null,
@@ -28,6 +30,16 @@ class TeamGeneralInformation(
         return Gson().toJson(this)
     }
 }
+
+class TeamChatAndActiveUsers(
+    var activeUsers: ArrayList<ActiveUser> = ArrayList(),
+    var chatHistoryList: ArrayList<ClientMessage> = ArrayList()
+){
+    fun fromJson(json:String): TeamChatAndActiveUsers{
+        return Gson().fromJson(json, TeamChatAndActiveUsers::class.java)
+    }
+}
+
 
 class DeleteTeamDto(var teamId: String?= null, var userId: String?= null){
     fun toJson():String{

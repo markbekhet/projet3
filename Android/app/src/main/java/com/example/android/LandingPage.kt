@@ -26,8 +26,6 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 
 class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
-    private var texte: TextView? = null
-    private var button: Button? = null
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
     private var drawingSocket: Socket?= null
@@ -45,7 +43,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         val usersAndTeamsFragment = UsersAndTeamsFragment()
 
         usersFragmentTransaction.replace(R.id.usersAndTeamsFrameLandingPage, usersAndTeamsFragment).commit()
-        var usersList =  UsersArrayList()
 
         //A hash map that has all the fragments
 
@@ -69,8 +66,8 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                usersList = Gson().fromJson(data, UsersArrayList::class.java)
-                usersAndTeamsFragment.setUsersList(usersList.userList!!)
+                ClientInfo.usersList = Gson().fromJson(data, UsersArrayList::class.java)
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
             }
         }
 
@@ -98,12 +95,41 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
                 val data = args[0] as String
                 val messageFromServer = ClientMessage().fromJson(data)
                 val roomName = messageFromServer.roomName
-                ChatRooms.chats[roomName]!!.add(messageFromServer)
-                chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                if(roomName == "General"){
+                    ChatRooms.chats[roomName]!!.add(messageFromServer)
+                }
+                try{
+                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+
             }
         }
-        socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment,
-            usersList.userList)
+
+        chatSocket?.on("userUpdate"){ args ->
+            if(args[0]!= null){
+                val userUpdated = User().fromJson(args[0] as String)
+                if(ClientInfo.usersList.userList != null){
+                    var exist = false
+                    var i = 0
+                    for(existingUser in ClientInfo.usersList.userList!!){
+                        if(existingUser.id == userUpdated.id){
+                            exist = true
+                            break
+                        }
+                        i++
+                    }
+                    if(exist){
+                        ClientInfo.usersList.userList!!.removeAt(i)
+                    }
+                    ClientInfo.usersList.userList!!.add(userUpdated)
+                }
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+            }
+
+        }
+
+        socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment)
         /*========================================================================================*/
 
         /*==================Buttons actions=====================================================*/
@@ -163,6 +189,10 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
     override fun onDestroy() {
         disconnect()
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        disconnect()
     }
 
     override fun switchChatRoom(name: String) {
@@ -295,8 +325,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
 
 //To add a similar method for the gallery
 fun socketUpdatesForUsersAndTeam(socket:Socket?,
-                                 fragment: UsersAndTeamsFragment,
-                                 usersList: ArrayList<User>?){
+                                 fragment: UsersAndTeamsFragment){
 
     socket?.on("teamDeleted"){ args ->
         if(args[0] != null){
@@ -311,12 +340,5 @@ fun socketUpdatesForUsersAndTeam(socket:Socket?,
             val team = TeamGeneralInformation().fromJson(data)
             fragment.addTeam(team)
         }
-    }
-    socket?.on("userUpdate"){ args ->
-        if(args[0]!= null){
-            val userUpdated = User().fromJson(args[0] as String)
-            fragment.updateUserListInformation(userUpdated)
-        }
-
     }
 }
