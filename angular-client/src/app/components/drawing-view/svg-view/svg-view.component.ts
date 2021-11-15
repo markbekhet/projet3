@@ -6,434 +6,327 @@ import {
   ElementRef,
   HostListener,
   OnInit,
-  Renderer2,
+  //Renderer2,
   ViewChild,
 } from '@angular/core';
 
-import { Canvas } from '@models/CanvasInfo';
 import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
-import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingTool } from '@services/drawing-tools/drawing-tool';
-import { Ellipse } from '@services/drawing-tools/ellipse';
-import { InputObserver } from '@services/drawing-tools/input-observer';
+//import { Ellipse } from '@services/drawing-tools/ellipse';
+//import { InputObserver } from '@services/drawing-tools/input-observer';
 import { InteractionService } from '@services/interaction/interaction.service';
-import { MouseHandler } from '@services/mouse-handler/mouse-handler';
+//import { MouseHandler } from '@services/mouse-handler/mouse-handler';
 import { Pencil } from '@services/drawing-tools/pencil';
-import { Rectangle } from '@services/drawing-tools/rectangle';
+//import { Rectangle } from '@services/drawing-tools/rectangle';
+import { SocketService } from '@src/app/services/socket/socket.service';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ActiveDrawing } from '@src/app/services/static-services/user_token';
+//import { Selection } from 'src/app/services/drawing-tools/selection';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { AuthService } from '@src/app/services/authentication/auth.service';
+import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
+import { User } from '@src/app/models/UserMeta';
+import { Point } from '@src/app/services/drawing-tools/point';
+//import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
+import { Renderer2 } from '@angular/core';
+import { Rectangle } from '@src/app/services/drawing-tools/rectangle';
+import { Ellipse } from '@src/app/services/drawing-tools/ellipse';
+import { Selection } from '@src/app/services/drawing-tools/selection';
 
-// Multi-purpose
-const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9.?]*)"`);
-const STROKE_REGEX = new RegExp(`stroke="(#([0-9a-fA-F]{8})|none)"`);
-const FILL_REGEX = new RegExp(`fill="(#([0-9a-fA-F]{8})|none)"`);
-
-// Crayon
-const POINTS_REGEX = new RegExp(
-  `points="([0-9.?]+ [0-9.?]+(,[0-9.?]+ [0-9.?]+)*)`
-);
-
-// Rectangle
-const X_REGEX = new RegExp(`x="([-?0-9.?]*)"`);
-const Y_REGEX = new RegExp(`y="([-?0-9.?]*)"`);
-const WIDTH_REGEX = new RegExp(`width="([-?0-9.?]*)"`);
-const HEIGHT_REGEX = new RegExp(`height="([-?0-9.?]*)"`);
-
-// Ellipse
-const CX_REGEX = new RegExp(`cx="([-?0-9.?]*)"`);
-const CY_REGEX = new RegExp(`cy="([-?0-9.?]*)"`);
-const RX_REGEX = new RegExp(`rx="([-?0-9.?]*)"`);
-const RY_REGEX = new RegExp(`ry="([-?0-9.?]*)"`);
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// const TRANSLATE_REGX = new RegExp(
-//   // eslint-disable-next-line no-useless-escape
-//   `transform="translate\(([-?0-9.?])+,([-?0-9.?])+\)"`
-// );
-
+const PENCIL_COMP_TOOL_NAME = 'Crayon';
+const RECT_COMP_TOOL_NAME = 'Rectangle';
+const ELLIPSE_COMP_TOOL_NAME = 'Ellipse';
+const SELECT_COMP_TOOL_NAME = 'Sélectionner';
 @Component({
   selector: 'app-svg-view',
   templateUrl: './svg-view.component.html',
   styleUrls: ['./svg-view.component.scss'],
 })
 export class SvgViewComponent implements OnInit, AfterViewInit {
-  @ViewChild('canvas', { static: false }) canvas: ElementRef | undefined;
-  @ViewChild('drawingSpace', { static: false })
-  drawingSpace: ElementRef | undefined;
-  @ViewChild('actualDrawing', { static: false }) doneDrawing!: ElementRef;
-  @ViewChild('inProgress', { static: false }) inProgress!: ElementRef;
+  @ViewChild("canvas", {static:false}) canvas!: ElementRef;
+  @ViewChild("drawingSpace", {static: false}) drawingSpace!: ElementRef;
+  @ViewChild("actualDrawing", {static: false}) doneDrawing!: ElementRef;
+  
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
-  toolsContainer = new Map();
-  mouseHandler!: MouseHandler;
-  contents: Map<number, SVGElement> = new Map();
-  // temporary
-  itemCounter: number = 0;
 
+  currentTool!: DrawingTool;
+  toolsList: Map<number, DrawingTool>;
+  currentToolName = PENCIL_COMP_TOOL_NAME;
+  drawingId!: number;
+  userId!: string;
+  scalingPoint: [Point, Point] | null | undefined
+  mode: string = "";
+  totalScaling: Point = new Point(0.0, 0.0);
+  mouseIsDown: boolean = false;
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
-    private canvBuilder: CanvasBuilderService,
-    private colorPick: ColorPickingService
-  ) {}
+    private colorPick: ColorPickingService,
+    private readonly socketService: SocketService,
+    private readonly drawingService: DrawingService,
+    private readonly authService: AuthService,
+  ) {
+    this.toolsList = new Map<number, DrawingTool>()
+    this.currentToolName = PENCIL_COMP_TOOL_NAME;
+    console.log(this.currentToolName);
+    this.getDrawingId();
+  }
 
+  getUserId(){
+    this.authService.authentifiedUser.subscribe((user: User)=>{
+      this.userId = user.id;
+    })
+  }
+  getDrawingId(){
+    this.drawingService.drawingId.subscribe((id: number)=>{
+      this.drawingId = id
+    })
+  }
   ngOnInit(): void {
-    this.initCanvas();
+    this.authService.authentifiedUser.subscribe((user: User)=>{
+      this.userId = user.id;
+    })
+    
+    
   }
 
-  bgroundChangedSubscription() {}
-
-  initCanvas() {
-    this.canvBuilder.canvSubject.subscribe((canvas: Canvas) => {
-      if (canvas === undefined || canvas === null) {
-        canvas = this.canvBuilder.getDefCanvas();
-      }
-
-      this.width = canvas.canvasWidth;
-      this.height = canvas.canvasHeight;
-      this.backColor = canvas.canvasColor;
-      if (canvas.wipeAll === true || canvas.wipeAll === undefined) {
-        // if no attribute is specified, the doodle will be w
-        this.canvBuilder.wipeDraw(this.doneDrawing);
-        // this.canvBuilder.wipeDraw(this.filterRef);
-        // this.canvBuilder.wipeDraw(this.selectedItems);
-      }
-    });
-    this.canvBuilder.emitCanvas();
-
-    this.interactionService.$selectedTool.subscribe((tool: string) => {
-      this.updateSelectedTool(tool);
+  initDrawing(){
+    this.doneDrawing.nativeElement.innerHTML = "";
+    this.toolsList.clear();
+    this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
+      this.backColor = "#"+ drawingInformations.drawing.bgColor;
+      this.width = drawingInformations.drawing.width;
+      this.height = drawingInformations.drawing.height;
+      this.drawingService.drawingName.next(drawingInformations.drawing.name);
+      ActiveDrawing.drawingName = drawingInformations.drawing.name;
+      drawingInformations.drawing.contents.forEach((content) => {
+        if(content.content!== null && content.content!== undefined){
+          this.manipulateReceivedDrawing(content);
+        }        
+      });
+      this.draw();
     });
   }
-
+  
   @HostListener('window:resize')
   onResize() {
-    this.mouseHandler.updateWindowSize();
   }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(e: MouseEvent) {
-    this.mouseHandler.down(e);
+    this.mouseIsDown = true
+    console.log(this.currentToolName);
+    if(this.currentTool !== undefined){
+      //repositionmouse
+      let respositionedEvent = Point.rpositionMouse(e,this.canvas.nativeElement)
+      this.scalingPoint = this.currentTool.getScalingPoint(new Point(respositionedEvent.x, respositionedEvent.y));
+      this.totalScaling.makeEqualTo(new Point(0,0))
+    }
+    if(this.scalingPoint !== null && this.scalingPoint!==undefined){
+      this.mode = "scaling";
+      console.log(this.mode)
+    }
+    else if(this.isInsideTheSelection(e)){
+      this.mode = "translation";
+      console.log(this.mode)
+    }
+    else{
+      console.log("else statement")
+      if(this.currentTool!== undefined && this.currentTool!== null){
+        this.currentTool.unselect()
+      }
+      if(this.currentToolName === PENCIL_COMP_TOOL_NAME.valueOf()){
+        console.log("here");
+        this.currentTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+        this.currentTool.drawingId = this.drawingId;
+      }
+      else if(this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()){
+        this.currentTool =  new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas)
+        this.currentTool.drawingId = this.drawingId;
+      }
+      else if(this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()){
+        this.currentTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+        this.currentTool.drawingId = this.drawingId
+      }
+      else if(this.currentToolName === SELECT_COMP_TOOL_NAME){
+        // TODO
+        this.currentTool = new Selection(this.toolsList, this.socketService, this.colorPick, this.renderer, this.canvas, this.interactionService, this.drawingId, this.userId);
+      }
+      this.currentTool.onMouseDown(e)
+      this.mode = ""
+    }
+    //this.currentTool.mouseIsDown = true;
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(e: MouseEvent) {
-    this.mouseHandler.up(e);
+    if(this.currentTool!== undefined && this.currentTool !== null){
+      this.currentTool.onMouseUp(e);
+      this.mouseIsDown = false;
+    }
   }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(e: MouseEvent) {
-    this.mouseHandler.move(e);
-  }
+    // TODO
+    if(this.currentTool!== undefined && this.currentTool !== null && this.mouseIsDown){
+      let reposition = Point.rpositionMouse(e, this.canvas.nativeElement);
+      if(this.currentTool instanceof Selection && (this.currentTool as Selection).getSelectedTool()!== undefined){
+        switch(this.mode){
+          case "translation":
+            let translation: Point = this.currentTool.startTransformPoint.difference(reposition);
+            this.currentTool.translate(translation);
+            break;
 
-  @HostListener('wheel', ['$event'])
-  onWheel(e: WheelEvent) {
-    this.mouseHandler.wheel(e);
+          case "scaling":
+            //let position = Point.rpositionMouse(e, this.canvas.nativeElement);
+            let scalingFactor = new Point(reposition.x- this.scalingPoint![0].x - this.totalScaling.x,
+              reposition.y - this.scalingPoint![0].y - this.totalScaling.y)
+            
+              this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
+              this.totalScaling.plus(scalingFactor);
+              break;
+          default:
+            break;
+        }
+
+      }
+      else{
+        switch(this.mode){
+          case "translation":
+            let translation: Point = this.currentTool.startTransformPoint.difference(Point.rpositionMouse(e, this.canvas.nativeElement));
+            this.currentTool.translate(translation);
+            break;
+
+          case "scaling":
+            let position = Point.rpositionMouse(e, this.canvas.nativeElement);
+            let scalingFactor = new Point(position.x- this.scalingPoint![0].x - this.totalScaling.x,
+              position.y - this.scalingPoint![0].y - this.totalScaling.y)
+            this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
+            break;
+          default:
+            this.currentTool.onMouseMove(e);
+            break;
+        }  
+        //this.currentTool.onMouseMove(e)
+      }
+    }
   }
 
   ngAfterViewInit(): void {
     // TODO; Use interactionService to unselect all the tools and select the tool chosen by the user
     if (this.canvas !== undefined) {
-      this.mouseHandler = new MouseHandler(this.canvas.nativeElement);
-      this.createTools();
-
-      // subscribe each tool to the mouse handler
-      this.toolsContainer.forEach((element: InputObserver) => {
-        this.mouseHandler.addObserver(element);
-      });
-      this.bgroundChangedSubscription();
-      this.interactionService.$drawing.subscribe((data: DrawingContent) => {
-        // console.log(data.drawing);
-        if (this.drawingSpace !== undefined) {
-          // console.log(data)
-          this.drawContent(data);
-        } else {
-          console.log('drawing space undefined');
+      this.initDrawing();
+      this.interactionService.$selectedTool.subscribe((toolName: string)=>{
+        if(toolName) this.currentToolName = toolName;
+      })
+      this.drawingService.drawingId.subscribe((id: number)=>{
+        this.drawingId = id
+      })
+      console.log(this.drawingId);
+      
+      
+      this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
+        this.currentTool.contentId = data.contentId;
+      })
+      this.socketService.getDrawingContent().subscribe((data: DrawingContent)=>{
+        console.log('here receiving')
+        if(this.drawingSpace !== undefined){
+          this.manipulateReceivedDrawing(data);
+          this.draw();
         }
-      });
-    } else {
+      })
+      this.interactionService.$deleteDrawing.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.delete();
+        }
+      })
+
+      this.interactionService.$updateToolSignal.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.updateThickness();
+        }
+      })
+
+      this.interactionService.$updateColorSignal.subscribe((sig)=>{
+        if(sig && this.currentTool!== undefined){
+          this.currentTool.updatePrimaryColor();
+          this.currentTool.updateSecondaryColor();
+        }
+      })
+    } 
+    else {
       console.log('canvas is undefined');
     }
   }
-
-  // To create tools and add them to the map
-  // A map is used instead of if/else
-  createTools() {
-    const pencil = new Pencil(true, this.interactionService, this.colorPick);
-    const rectangle = new Rectangle(
-      false,
-      this.interactionService,
-      this.colorPick
-    );
-    const ellipse = new Ellipse(false, this.interactionService, this.colorPick);
-
-    this.toolsContainer.set('Crayon', pencil);
-    this.toolsContainer.set('Rectangle', rectangle);
-    this.toolsContainer.set('Ellipse', ellipse);
+  draw() {
+    //throw new Error('Method not implemented.');
+    this.doneDrawing.nativeElement.innerHTML = "";
+    this.toolsList.forEach((tool: DrawingTool)=>{
+      console.log('hey')
+      this.doneDrawing.nativeElement.innerHTML += tool.getString();
+    })
+      //this.doneDrawing.nativeElement.innerHTML += this.toolsList[i].getString();
   }
 
-  updateSelectedTool(tool: string) {
-    if (tool) {
-      // Unselect every tool which isn't tool
-      this.toolsContainer.forEach((element) => {
-        (element as DrawingTool).selected = false;
-      });
-
-      // Select tool
-      this.toolsContainer.get(tool).selected = true;
-
-      this.toolsContainer.forEach((element) => {
-        if (element.selected) console.log(element);
-      });
-    }
-  }
-
-  // This method will be modified especially with the introduction of selected status and deleted status
-  drawContent(data: DrawingContent) {
-    if (data.status === DrawingStatus.InProgress.valueOf()) {
-      if (!this.contents.has(data.contentID)) {
-        // new elements
-        let newObj!: SVGElement;
-        if (data.drawing.includes('polyline')) {
-          console.log(`pencil: ${data.drawing}`);
-          newObj = this.createSVGPolyline(data.drawing);
-        } else if (data.drawing.includes('rect')) {
-          console.log(`rect: ${data.drawing}`);
-          newObj = this.createSVGRect(data.drawing);
-        } else if (data.drawing.includes('ellipse')) {
-          console.log(`ell: ${data.contentID}`);
-          newObj = this.createSVGEllipse(data.drawing);
-        }
-
-        if (newObj !== null) {
-          this.renderer.appendChild(this.inProgress.nativeElement, newObj);
-          this.contents.set(data.contentID, newObj);
-        }
-      } else {
-        const element = this.contents.get(data.contentID);
-        if (element !== undefined) {
-          // this.renderer.removeChild(this.inProgress.nativeElement,element);
-          if (data.drawing.includes('polyline')) {
-            this.modifyPolyline(data.drawing, element);
-          } else if (data.drawing.includes('rect')) {
-            this.modifyRect(data.drawing, element);
-          } else if (data.drawing.includes('ellipse')) {
-            this.modifyEllipse(data.drawing, element);
-            // console.log(data.drawing);
+  manipulateReceivedDrawing(drawingContent: DrawingContent){
+    if(drawingContent.id !== undefined && drawingContent.content!== undefined){
+      if(this.toolsList.has(drawingContent.id)){
+        try{
+          this.toolsList.get(drawingContent.id)!.parse(drawingContent.content);
+        }catch(e){}
+        this.toolsList.get(drawingContent.id)!.selected = drawingContent.status === DrawingStatus.Selected;
+        this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
+        if(drawingContent.status === DrawingStatus.Deleted.valueOf()){
+          this.toolsList.delete(drawingContent.id);
+          if(this.currentTool instanceof Selection){
+            console.log('here deleting');
+            this.currentTool = new Selection(this.toolsList, this.socketService, this.colorPick, this.renderer, this.canvas, this.interactionService, this.drawingId, this.userId);
           }
-          this.renderer.appendChild(this.inProgress.nativeElement, element);
+        }
+
+      } 
+
+      else{
+        try{
+          let newTool!: DrawingTool;
+          switch(drawingContent.toolName){
+            case PENCIL_TOOL_NAME:
+              newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            
+            case RECT_TOOL_NAME:
+              //TODO
+              newTool = new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            case ELLIPSE_TOOL_NAME:
+              //TODO
+              newTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              break;
+            default:
+              break;
+          }
+          newTool.userId = drawingContent.userId;
+          newTool.contentId = drawingContent.id;
+          newTool.selected = drawingContent.status === DrawingStatus.Selected;
+          newTool.parse(drawingContent.content);
+          //this.toolsList.push(newTool);
+          this.toolsList.set(drawingContent!.id, newTool);
+        }catch(err){
         }
       }
-    } else if (data.status === DrawingStatus.Done.valueOf()) {
-      const element = this.contents.get(data.contentID);
-      if (element !== undefined) {
-        this.renderer.removeChild(this.inProgress.nativeElement, element);
-        if (data.drawing.includes('polyline')) {
-          this.modifyPolyline(data.drawing, element);
-        } else if (data.drawing.includes('rect')) {
-          this.modifyRect(data.drawing, element);
-        } else if (data.drawing.includes('ellipse')) {
-          this.modifyEllipse(data.drawing, element);
-        }
-        this.renderer.appendChild(this.doneDrawing.nativeElement, element);
-      }
     }
   }
-
-  createSVGPolyline(drawing: string) {
-    // console.log(drawing);
-    const element = this.renderer.createElement(
-      'polyline',
-      'svg'
-    ) as SVGPolylineElement;
-
-    const pointsArray = POINTS_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-
-    if (
-      pointsArray !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'points', pointsArray[1].toString());
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'stroke-linecap', 'round');
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
+  
+  isInsideTheSelection(e: MouseEvent): boolean {
+    if(this.currentTool !== undefined && this.currentTool.inTranslationZone(e)){
+      return true;
     }
-    return element;
-  }
-
-  modifyPolyline(drawing: string, element: SVGElement) {
-    this.renderer.removeAttribute(element, 'points');
-
-    const pointsArray = POINTS_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-
-    if (
-      pointsArray !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'points', pointsArray[1].toString());
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
-    }
-  }
-
-  createSVGRect(drawing: string) {
-    const element = this.renderer.createElement(
-      'rect',
-      'svg'
-    ) as SVGRectElement;
-
-    const x = X_REGEX.exec(drawing);
-    const y = Y_REGEX.exec(drawing);
-    const width = WIDTH_REGEX.exec(drawing);
-    const height = HEIGHT_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-
-    if (
-      x !== null &&
-      y !== null &&
-      width !== null &&
-      height !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'x', x[1].toString());
-      this.renderer.setAttribute(element, 'y', y[1].toString());
-      this.renderer.setAttribute(element, 'width', width[1].toString());
-      this.renderer.setAttribute(element, 'height', height[1].toString());
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
-    }
-    return element;
-  }
-
-  modifyRect(drawing: string, element: SVGElement) {
-    const x = X_REGEX.exec(drawing);
-    const y = Y_REGEX.exec(drawing);
-    const width = WIDTH_REGEX.exec(drawing);
-    const height = HEIGHT_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-
-    if (
-      x !== null &&
-      y !== null &&
-      width !== null &&
-      height !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'x', x[1].toString());
-      this.renderer.setAttribute(element, 'y', y[1].toString());
-      this.renderer.setAttribute(element, 'width', width[1].toString());
-      this.renderer.setAttribute(element, 'height', height[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
-    }
-  }
-
-  createSVGEllipse(drawing: string) {
-    // console.log(drawing);
-    const element = this.renderer.createElement('ellipse', 'svg');
-
-    const cx = CX_REGEX.exec(drawing);
-    const cy = CY_REGEX.exec(drawing);
-    const rx = RX_REGEX.exec(drawing);
-    const ry = RY_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-    if (stroke)
-      console.log(`element: ${drawing}\nstroke: ${stroke[1].substring(0, 7)}`);
-
-    if (
-      cx !== null &&
-      cy !== null &&
-      rx !== null &&
-      ry !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'cx', cx[1].toString());
-      this.renderer.setAttribute(element, 'cy', cy[1].toString());
-      this.renderer.setAttribute(element, 'rx', rx[1].toString());
-      this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
-    }
-    return element;
-  }
-
-  modifyEllipse(drawing: string, element: SVGElement) {
-    const cx = CX_REGEX.exec(drawing);
-    const cy = CY_REGEX.exec(drawing);
-    const rx = RX_REGEX.exec(drawing);
-    const ry = RY_REGEX.exec(drawing);
-    const strokeWidth = STROKE_WIDTH_REGEX.exec(drawing);
-    const stroke = STROKE_REGEX.exec(drawing);
-    const fill = FILL_REGEX.exec(drawing);
-
-    if (
-      cx !== null &&
-      cy !== null &&
-      rx !== null &&
-      ry !== null &&
-      strokeWidth !== null &&
-      stroke !== null &&
-      fill !== null
-    ) {
-      this.renderer.setAttribute(element, 'cx', cx[1].toString());
-      this.renderer.setAttribute(element, 'cy', cy[1].toString());
-      this.renderer.setAttribute(element, 'rx', rx[1].toString());
-      this.renderer.setAttribute(element, 'ry', ry[1].toString());
-      this.renderer.setAttribute(element, 'stroke', stroke[1].toString());
-      this.renderer.setAttribute(
-        element,
-        'stroke-width',
-        strokeWidth[1].toString()
-      );
-      this.renderer.setAttribute(element, 'fill', fill[1].toString());
-    }
+    return false
   }
 }
+

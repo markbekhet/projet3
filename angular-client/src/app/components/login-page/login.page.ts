@@ -22,7 +22,7 @@ export class LoginPage implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -44,9 +44,10 @@ export class LoginPage implements OnInit {
 
     try {
       this.auth.login(user).subscribe(
-        () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (accepted) => {
+          this.router.navigate(['/home']);
           form.reset();
-          this.router.navigate(['/']);
         },
         (error) => {
           const errorCode = JSON.parse(

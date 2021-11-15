@@ -1,11 +1,16 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject /* , Observable */ } from 'rxjs';
-import { io } from 'socket.io-client';
+import { BehaviorSubject, /* , Observable */
+Subject} from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
 import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
 // import { AuthService } from '../authentication/auth.service';
+import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { DrawingContent } from '@src/app/models/DrawingMeta';
+import { ActiveDrawing, UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -14,9 +19,11 @@ const PATH = 'http://localhost:3000';
   providedIn: 'root',
 })
 export class SocketService {
-  socket = io(PATH);
+  socket!: Socket;
   drawingID: string = '';
-
+  drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
+  contentId$: Subject<{contentId: number}> = new Subject<{contentId: number}>();
+  drawingContent$: Subject<DrawingContent> = new Subject<DrawingContent>();
   connect(): void {
     this.socket = io(PATH);
   }
@@ -69,19 +76,6 @@ export class SocketService {
     this.drawingID = value;
   };
 
-  // drawingElement: Subject<DrawingContent> = new Subject<DrawingContent>();
-  // $drawingElements: Observable<DrawingContent> =
-  // this.drawingElement.asObservable();
-
-  // selectedTool: Subject<string> = new Subject<string>();
-  // $selectedTool: Observable<string> = this.selectedTool.asObservable();
-
-  // drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
-  // $drawing: Observable<DrawingContent> = this.drawing.asObservable();
-
-  // ref: Subject<ElementRef> = new Subject<ElementRef>();
-  // $refObs: Observable<ElementRef> = this.ref.asObservable();
-
   public sendMessage(message: Message) {
     console.log(`chat service sent: ${message.message}`);
     this.socket.emit('msgToServer', JSON.stringify(message));
@@ -117,5 +111,53 @@ export class SocketService {
       this.profile$.value.password = updates.newPassword;
     }
     this.profile$.next(this.profile$.value);
+  }
+
+  public sendJoinDrawingRequest(joinInformation: JoinDrawing){
+    let joinInformationString = JSON.stringify(joinInformation);
+    console.log(joinInformationString);
+    this.socket.emit("joinDrawing", JSON.stringify(joinInformation));
+  }
+
+  public getDrawingInformations= ()=>{
+    this.socket.on('drawingInformations', (data: string) =>{
+      let dataMod: DrawingInformations = JSON.parse(data);
+      this.drawingInformations$.next(dataMod);
+    });
+    return this.drawingInformations$.asObservable();
+  }
+
+  public createDrawingContentRequest(data:{drawingId: number}){
+    this.socket.emit("createDrawingContent", JSON.stringify(data));
+  }
+
+  public getDrawingContentId = ()=>{
+    this.socket.on("drawingContentCreated", (data:any)=>{
+        let dataMod: {contentId: number} = JSON.parse(data);
+        if(dataMod !== undefined){
+          this.contentId$.next(dataMod);
+      }
+    })
+    return this.contentId$.asObservable();
+  }
+
+  public sendDrawingToServer(data: DrawingContent){
+    console.log(data);
+    this.socket.emit("drawingToServer", JSON.stringify(data));
+  }
+
+  public getDrawingContent= ()=>{
+    this.socket.on("drawingToClient", (data:any)=>{
+      let dataMod: DrawingContent = JSON.parse(data);
+      if(dataMod !== undefined){
+        this.drawingContent$.next(dataMod);
+      }
+    })
+    return this.drawingContent$.asObservable();
+  }
+
+  public leaveDrawing(){
+    let leaveDrawing: LeaveDrawing = {drawingId: ActiveDrawing.drawingId, userId: UserToken.userToken};
+    this.socket.emit("leaveDrawing", JSON.stringify(leaveDrawing));
   }
 }

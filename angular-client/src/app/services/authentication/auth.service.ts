@@ -5,6 +5,8 @@ import { /* concatMap, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { UpdateUserInformation } from '@src/app/models/UserMeta';
+//import { User } from '@models/UserMeta';
+//import { UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';

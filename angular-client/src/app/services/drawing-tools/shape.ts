@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DrawingStatus } from '@models/DrawingMeta';
+/*import { DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
+import { AuthService } from '../authentication/auth.service';
+import { DrawingService } from '../drawing/drawing.service';
+import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
 import { ShapeTypes, ToolsAttributes } from './tools-attributes';
@@ -35,14 +38,19 @@ export class Shape extends DrawingTool {
   constructor(
     selected: boolean,
     interactionService: InteractionService,
-    colorPick: ColorPickingService
+    colorPick: ColorPickingService,
+    socketService: SocketService,
+    drawingService: DrawingService,
+    authService: AuthService
   ) {
-    super(selected, interactionService, colorPick);
+    super(selected, interactionService, colorPick, socketService, drawingService, authService);
     this.attr = {
       shapeLineThickness: DEF_LINE_THICKNESS,
       shapeType: DEF_SHAPE_TYPE,
     };
     this.updateColors();
+    this.getUserToken();
+    this.getDrawingId();
     this.updateAttributes();
     this.width = 0;
     this.height = 0;
@@ -75,8 +83,8 @@ export class Shape extends DrawingTool {
   }
 
   // mouse down with shape in hand
-  down(position: Point): void {
-    super.down(position);
+  down(event: MouseEvent, position: Point): void {
+    super.down(event, position);
     // in case we changed tool while the mouse was down
     this.ignoreNextUp = false;
 
@@ -87,24 +95,27 @@ export class Shape extends DrawingTool {
     this.currentPath.push(position);
     this.currentPath.push(position);
 
-    this.updateProgress(DrawingStatus.InProgress);
+    this.socketService.getDrawingContentId().subscribe((data: {contentId: number})=>{
+      DrawingTool.drawingContentID = data.contentId;
+      this.updateProgress(DrawingStatus.InProgress);
+    })
   }
 
   // mouse up with shape in hand
-  up(position: Point): void {
+  up(event: MouseEvent, position: Point): void {
     // in case we changed tool while the mouse was down
     if (!this.ignoreNextUp) {
       // the shape should not affect the canvas
       this.isDown = false;
 
       // add everything to the canvas
-      this.updateDrawing(true);
+      this.updateProgress(DrawingStatus.Done);
       this.currentPath = [];
     }
   }
 
   // mouse move with shape in hand
-  move(position: Point): void {
+  move(event: MouseEvent, position: Point): void {
     // only if the shapeTool is currently affecting the canvas
     if (this.isDown) {
       // save mouse position
@@ -142,7 +153,7 @@ export class Shape extends DrawingTool {
   }
 
   // Creates an svg shape
-  createPath(p: Point[], removePerimeter?: boolean): void {
+  createPath(p: Point[],removePerimeter?: boolean): void {
     // Shape is only virtual, so we do not create a path
   }
 
@@ -166,6 +177,8 @@ export class Shape extends DrawingTool {
 
     this.svgString += ` fill="${this.fill}"`;
     this.svgString += ` stroke-width="${this.attr.shapeLineThickness}" stroke="${this.stroke}"`;
-    this.svgString += ` style="transform: translate(0px, 0px)"/>\n`;
+    this.svgString += ` transform="translate(0,0)"/>\n`;
   }
-}
+
+  
+}*/

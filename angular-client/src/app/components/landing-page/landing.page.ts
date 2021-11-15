@@ -7,6 +7,8 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { Router } from '@angular/router';
+import { SocketService } from '@src/app/services/socket/socket.service';
+import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
   selector: 'app-landing-page',
@@ -21,14 +23,17 @@ export class LandingPage implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private readonly socketService: SocketService
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
   }
 
   ngOnInit(): void {
+    console.log(UserToken.userToken);
     this.showWelcomeMsg();
+    this.socketService.connect();
   }
 
   showWelcomeMsg(): void {
@@ -72,9 +77,5 @@ export class LandingPage implements OnInit {
   }
   profile() {
     this.router.navigate(['/profile']);
-  }
-
-  getCurrentUser() {
-    return this.auth.token$.value;
   }
 }

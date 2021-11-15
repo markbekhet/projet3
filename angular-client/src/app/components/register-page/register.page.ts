@@ -60,8 +60,7 @@ export class RegisterPage implements OnInit {
       this.auth.register(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
-          console.log(this.auth.token$);
-          this.router.navigate(['/']);
+          this.router.navigate(['/home']);
         },
         (error) => {
           const errorCode = JSON.parse(

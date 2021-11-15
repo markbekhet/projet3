@@ -5,17 +5,17 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
    type: 'postgres',
    host: 'localhost',
    port: 5432,
-   username: 'test_user',
-   password: 'GetThisHands98',
-   database: 'test_db',
+   username: 'postgres',
+   password: '1234',
+   database: 'postgres',
    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
    synchronize: true,
    uuidExtension: 'pgcrypto',
- };
+  };
 
 // Paul DB
 //export const typeormConfigDevDB: TypeOrmModuleOptions = {
-// type: 'postgres',
+//  type: 'postgres',
 //  host: 'localhost',
 //  port: 5432,
 //  username: 'admin',

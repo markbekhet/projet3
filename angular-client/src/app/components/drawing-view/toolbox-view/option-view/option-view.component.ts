@@ -58,6 +58,7 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
       shapeLineThickness: this.shapeLineThickness,
       shapeType: this.shapeType,
     });
+    this.interaction.emitUpdateToolSignal();
   }
 
   updateShapeType(shapeType: string) {

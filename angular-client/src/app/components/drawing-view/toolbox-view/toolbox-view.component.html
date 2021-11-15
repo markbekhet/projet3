@@ -1,11 +1,14 @@
 <div>
     <app-color-picker></app-color-picker>
 </div>
-<div class="drawingTools" *ngFor="let func of toolItems">
-    <button class=" toolBtn" mat-icon-button color="primary" matTooltip={{func.name}} matTooltipPosition="after"
-            (click)="buttonAction(func.name)" [disabled]="func.name === 'Efface'">
-        <!--j'ai disable le bouton de l'efface pour le moment car ca brise un peu le reste des tools-->
-        <mat-icon [ngClass]="(activeButton === func.name)? 'selected':'notSelected'" svgIcon={{func.icon}}>
-        </mat-icon>
-    </button>
+<div>
+    <div class="drawingTools" *ngFor="let func of toolItems">
+        <button class=" toolBtn" mat-icon-button color="primary" matTooltip={{func.name}} matTooltipPosition="after"
+                (click)="buttonAction(func.name)">
+            <!--j'ai disable le bouton de l'efface pour le moment car ca brise un peu le reste des tools-->
+            <mat-icon [ngClass]="(activeButton === func.name)? 'selected':'notSelected'" svgIcon={{func.icon}}>
+            </mat-icon>
+        </button>
+    </div>
+    <button (click)= "executeDeleteCommand()">Supprimer</button>
 </div>

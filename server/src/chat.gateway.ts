@@ -33,7 +33,7 @@ import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity'
 import { stringify } from 'querystring';
 import { UserProfileRequest } from './modules/user/user-profile-request.dto';
 
-@WebSocketGateway({cors:true})
+@WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   
   private logger: Logger = new Logger("ChatGateway");
@@ -74,7 +74,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let usersRet = {userList: users}
     let usersString = JSON.stringify(usersRet);
     let teams = await this.teamRepo.find({
-      select: ["id", "name","visibility"]
+      select: ["id", "name","visibility", "ownerId"]
     })
     let teamsRet = {teamList: teams}
     let generalRoom = await this.chatRoomRepo.findOne({

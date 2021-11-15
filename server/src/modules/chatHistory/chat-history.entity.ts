@@ -11,7 +11,8 @@ export class ChatHistory extends BaseEntity{
     from: string;
 
     @Column({
-        type:"timestamp"
+        type:"timestamp",
+        default: ()=> "CURRENT_TIMESTAMP"
     })
     date: string;
 
