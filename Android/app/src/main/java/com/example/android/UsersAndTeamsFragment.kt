@@ -54,7 +54,6 @@ class UsersAndTeamsFragment() : Fragment() {
 
     fun startTeamActivity(createTeamDto: TeamGeneralInformation){
         // support negative case where the user cannot join a team just a Toast
-        TeamUtils.currentTeam = createTeamDto
         val joinTeam = JoinTeamDto(
             teamName = createTeamDto.name,
             userId = createTeamDto.ownerId,
@@ -68,6 +67,7 @@ class UsersAndTeamsFragment() : Fragment() {
                 bundle.putString("teamInformation", data)
                 //ToComplete: Collect the rest of information concerning
                 // the team like the gallery and the list of users
+                bundle.putString("teamGeneralInformation", createTeamDto.toJson())
                 startActivity(Intent(context, TeamActivity::class.java).putExtras(bundle))
                 i++
             }

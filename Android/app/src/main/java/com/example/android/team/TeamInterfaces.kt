@@ -23,6 +23,10 @@ class TeamGeneralInformation(
     fun fromJson(json: String): TeamGeneralInformation{
         return Gson().fromJson(json, TeamGeneralInformation::class.java)
     }
+
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
 }
 
 class DeleteTeamDto(var teamId: String?= null, var userId: String?= null){

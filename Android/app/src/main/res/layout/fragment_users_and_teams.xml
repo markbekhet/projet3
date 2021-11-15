@@ -19,7 +19,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/usersRecycleView"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="200dp" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/teamsRecycleView"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="200dp" />
     </LinearLayout>
 
 </FrameLayout>

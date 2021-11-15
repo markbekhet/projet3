@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.client.*
@@ -24,12 +25,14 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class LandingPage : AppCompatActivity() {
+class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
     private var texte: TextView? = null
     private var button: Button? = null
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
     private var drawingSocket: Socket?= null
+    private val chatRoomsFragmentMap = HashMap<String, Chat>()
+    private var chatFragmentTransaction: FragmentTransaction? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
@@ -41,15 +44,15 @@ class LandingPage : AppCompatActivity() {
         val usersFragmentTransaction = manager.beginTransaction()
         val usersAndTeamsFragment = UsersAndTeamsFragment()
 
-        usersFragmentTransaction.replace(R.id.usersAndTeamsFrame, usersAndTeamsFragment).commit()
+        usersFragmentTransaction.replace(R.id.usersAndTeamsFrameLandingPage, usersAndTeamsFragment).commit()
         var usersList =  UsersArrayList()
 
         //A hash map that has all the fragments
-        val chatRoomsFragmentMap = HashMap<String, Chat>()
+
         ChatRooms.chatRooNames.add("General")
 
         val chatSwitchFragmentTransaction = manager.beginTransaction()
-        val chatSwitchFragment = ChatSwitchFragment()
+        val chatSwitchFragment = ChatSwitchFragment(this)
         chatSwitchFragment.showChatSwitch()
         chatSwitchFragmentTransaction.replace(R.id.landingPageChatSwitch,
             chatSwitchFragment).commit()
@@ -58,8 +61,8 @@ class LandingPage : AppCompatActivity() {
             chatRoomsFragmentMap[room] = Chat(room)
         }
 
-        val chatFragmentTransaction = manager.beginTransaction()
-        chatFragmentTransaction.replace(R.id.landingPageChatsFrame,
+        chatFragmentTransaction = manager.beginTransaction()
+        chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
             chatRoomsFragmentMap["General"]!!).commit()
 
 /*======================Socket interactions to br added for the gallery==================================*/
@@ -150,15 +153,23 @@ class LandingPage : AppCompatActivity() {
         finish()
     }
 
-    fun startTeamActivity(data:String){
+    fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
         val bundle = Bundle()
         bundle.putString("teamInformation", data)
+        bundle.putString("teamGeneralInformation", teamsGeneralInformation.toJson())
         startActivity(Intent(this, TeamActivity::class.java).putExtras(bundle))
     }
 
     override fun onDestroy() {
         disconnect()
         super.onDestroy()
+    }
+
+    override fun switchChatRoom(name: String) {
+        if(chatFragmentTransaction != null){
+            chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
+                chatRoomsFragmentMap[name]!!)
+        }
     }
 }
 
@@ -247,7 +258,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                 }
                 if (response!!.isSuccessful) {
                     val data = response!!.body()!!.string()
-                    TeamUtils.currentTeam = TeamGeneralInformation().fromJson(data)
+                    val teamGeneralInformation = TeamGeneralInformation().fromJson(data)
                     val joinTeam = JoinTeamDto(
                         teamName = createTeamDto.name,
                         userId = createTeamDto.ownerId,
@@ -259,7 +270,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                             //ToComplete: Collect the rest of information concerning
                                 // the team like the gallery and the list of users
                             val extraData = args[0] as String
-                            context.startTeamActivity(extraData)
+                            context.startTeamActivity(teamGeneralInformation,extraData)
                             i++
                             dismiss()
                         }

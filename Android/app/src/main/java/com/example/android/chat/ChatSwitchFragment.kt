@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.message.view.message
 /**
  * This fragment will be responsible to change to send the signal for the activity to
  * replace the chat fragment with the correct one*/
-class ChatSwitchFragment : Fragment() {
+class ChatSwitchFragment(var chatRoomSwitcher: ChatRoomSwitcher) : Fragment() {
     private var chatRoomsDisplay: GroupAdapter<GroupieViewHolder>? = null
 
     override fun onCreateView(
@@ -47,7 +47,7 @@ class ChatSwitchFragment : Fragment() {
     fun showChatSwitch(){
         chatRoomsDisplay = GroupAdapter<GroupieViewHolder>()
         for(room in ChatRooms.chatRooNames){
-            val chatRoomName = ChatRoomName()
+            val chatRoomName = ChatRoomName(chatRoomSwitcher)
             chatRoomName.set(room)
             chatRoomsDisplay?.add(chatRoomName)
         }
@@ -58,7 +58,7 @@ class ChatSwitchFragment : Fragment() {
         } catch(e: Exception){}
     }
 
-    companion object {
+    /*companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -74,10 +74,10 @@ class ChatSwitchFragment : Fragment() {
                 arguments = Bundle().apply {
                 }
             }
-    }
+    }*/
 }
 
-class ChatRoomName: Item<GroupieViewHolder>(){
+class ChatRoomName(var chatRoomSwitcher: ChatRoomSwitcher): Item<GroupieViewHolder>(){
     private var roomName = ""
     override fun getLayout(): Int {
         return R.layout.chat_room_name
@@ -85,6 +85,9 @@ class ChatRoomName: Item<GroupieViewHolder>(){
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.chatRoomNameSwitch.text = roomName
+        viewHolder.itemView.chatRoomNameSwitch.setOnClickListener {
+            chatRoomSwitcher.switchChatRoom(roomName)
+        }
     }
 
     fun set(roomName: String){

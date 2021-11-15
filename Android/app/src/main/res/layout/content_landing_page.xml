@@ -18,7 +18,7 @@
         android:backgroundTint="@color/white">
 
         <FrameLayout
-            android:id="@+id/usersAndTeamsFrame"
+            android:id="@+id/usersAndTeamsFrameLandingPage"
             android:layout_width="match_parent"
             android:layout_height="500dp">
 
