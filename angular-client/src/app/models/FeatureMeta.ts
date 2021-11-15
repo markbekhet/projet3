@@ -23,14 +23,6 @@ export const homeHeaderItems: FeatureItem[] = [
       "Ce bouton vous permet de vous déconnecter de l'application et renvoie à la page de connexion.",
     icon: 'exit_to_app',
   },
-  {
-    name: 'Ouvrir la galerie de dessins',
-    shortcutName: 'Ouvrir',
-    shortDescription: `Cette option vous permet de visualiser tous les dessins que vous avez sauvegardés sur le serveur de PolyDessin, comme elle vous donne la possibilité de continuer un dessin sauvegardé en appuyant sur la flèche qui se trouve sous chaque dessin. Aussi, vous pouvez supprimer un dessin sauvegardé sur la base de données ou encore rechercher l'un d'entres eux à l'aide d'étiquettes.`,
-    description: `Pour ouvrir la fenêtre d'exportation, vous pouvez appuyer sur l'icône approprié de la barre d'options,
-        comme vous pouvez l'ouvrir en faisant la touche 'ctrl+G' de votre clavier. Si des dessins précédemment sauvegardés sont présents sur le serveur, ils seront automatiquement affichés sous forme de fenêtre de prévisualisation en vous laissant le choix de supprimer ou de continuer celui-ci. Cette dernière option écrasera le dessin courant dans le cas où il n'a pas été sauvegardé au préalable. Enfin, il est possible de rechercher un dessin à l'aide d'étiquettes via la barre de filtrage située au haut de la galerie.`,
-    icon: 'camera',
-  },
 ];
 
 export const drawingHeaderItems: FeatureItem[] = [

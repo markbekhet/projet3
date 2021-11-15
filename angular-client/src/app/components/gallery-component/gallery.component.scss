@@ -1,21 +1,28 @@
 .gallery-component {
   width: 100%;
-  padding: 20px 10px;
+  padding: 20px 0;
+  //margin: 0 20px;
+  //margin-right: 30px;
 
   h1 {
     text-align: center;
+    margin-bottom: 1em;
   }
 
   .gallery-grid {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) ; //
+    // grid-template-rows: ;
+    grid-gap: 3em;
+    // flex-flow: row wrap;
+    // justify-content: flex-start;
 
     .drawing-card {
-      width: 12vw;
-      height: 375px;
-      margin: 10px;
-      padding: 0px;
+      // display: inline-block;
+      // width: 12vw;
+      // height: 375px;
+      // margin: 10px;
+      // padding: 0px;
 
       mat-card-header {
         margin: 10px;
