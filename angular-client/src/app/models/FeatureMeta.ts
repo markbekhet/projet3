@@ -54,6 +54,20 @@ export const drawingHeaderItems: FeatureItem[] = [
 
 export const toolItems: FeatureItem[] = [
   {
+    name: 'Sélectionner',
+    shortcutName: 'Sélectionner',
+    shortDescription:
+        "Grâce à cet outil, il vous est possible de sélectionner un objet sur l'espace de dessin et de le modifier. En effet, il vous est possible de le déplacer et de le pivoter.",
+    description: `Pour choisir cette option, vous pouvez sélectionner l'outil via la barre des outils en appuyant sur l'icône approprié,
+    comme vous pouvez l'utiliser en appuyant sur la touche 'S' de votre clavier. Avec l'outil en main, vous pouvez cliquer sur un seul objet sur la planche à dessin
+    ou encore en sélectionner plusieurs en effectuant un clic gauche et en faisant glisser la souris pour utiliser le rectangle de sélection, puis en relâchant le bouton de la souris pour sélectionner les items. À l'inverse,
+    un clic droit avec cette option crée un rectangle de sélection qui applique un traitement inverse. Il vous sera alors possible de déselectionner les objets déjà sélectionnés ou de sélectionner ceux ne l'étant pas.
+    Une fois la sélection complétée, une boîte englobant tous les objets pris en compte apparaîtra. Il sera ensuite possible de déplacer cette sélection avec les flèches du clavier ou avec la souris et de faire tourner cette sélection.
+    Pour faire tourner la sélection active, utilisez la roue de la souris pour appliquer une rotation de 15 degrés par cran ou de 1 degré, si la touche 'alt' est pressée. Appuyer sur 'shift' lors de la rotation fera tourner tous les objets sélectionnés autour de leur propre centre.
+    Enfin, appuyer sur 'ctrl+A' sélectionnera tous les objets et la touche 'Delete' supprimera la sélection active.`,
+    icon: 'cursor',
+  },
+  {
     name: 'Crayon',
     shortcutName: 'Crayon',
     shortDescription:
@@ -61,14 +75,6 @@ export const toolItems: FeatureItem[] = [
     description: `Après sa sélection, Il vous suffit de maintenir le clic gauche en vous déplaçant dans n’importe quelle
             direction dans l’aire de dessin. Un trait simple de la couleur et grandeur choisies apparaîtra. Vous pouvez sélectionner le crayon via l'icône appropriée dans la boîte à outils ou encore en pressant sur la touche 'C'.`,
     icon: 'pencil',
-  },
-  {
-    name: 'Efface',
-    shortcutName: 'Efface',
-    shortDescription:
-      'L’efface supprimera tout objet auquel il sera en contact lors du clic de souris.',
-    description: `Pour choisir cette option, vous pouvez sélectionner l'outil via la barre des outils en appuyant sur l'icône approprié, comme vous pouvez l'utiliser en appuyant sur la touche 'E' de votre clavier. Les objets entrant en contact avec l'efface se verront dotés d'un contour rouge.`,
-    icon: 'eraser',
   },
   {
     name: 'Rectangle',

@@ -46,7 +46,7 @@ export class LoginPage implements OnInit {
       this.auth.login(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/home']);
           console.log(`${user.username} is logged in`);
           form.reset();
         },

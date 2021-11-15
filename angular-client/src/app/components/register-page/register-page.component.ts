@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 
 import { UserRegistrationInfo } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
-import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { ValidationService } from '@services/validation/validation.service';
+import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-register-page',
@@ -61,7 +61,7 @@ export class RegisterPage implements OnInit {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
           console.log(this.auth.$authenticatedUser);
-          this.router.navigate(['/']);
+          this.router.navigate(['/home']);
         },
         (error) => {
           const errorCode = JSON.parse(

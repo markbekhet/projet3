@@ -6,6 +6,7 @@ import { /* catchError, */ tap } from 'rxjs/operators';
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { User } from '@models/UserMeta';
 import { Drawing } from '@models/DrawingMeta';
+import { UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';
@@ -34,7 +35,7 @@ export class AuthService {
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
   readonly NULL_USER: User = {
-    token: '',
+    id: '',
   };
   readonly NULL_DRAWINGS: Drawing[] = [];
 
@@ -45,11 +46,11 @@ export class AuthService {
   constructor(private httpClient: HttpClient) {}
 
   getAuthenticatedUserID() {
-    return this.$authenticatedUser.value.token;
+    return this.$authenticatedUser.value.id;
   }
 
   private authenticateUser(user: User) {
-    if (user.token) this.$authenticatedUser.next(user);
+    if (user.id) this.$authenticatedUser.next(user);
   }
 
   login(userCreds: UserCredentials) {
@@ -76,8 +77,10 @@ export class AuthService {
       .pipe(
         tap((token) => {
           const loggedInUser: User = {
-            token,
+            id: token,
           };
+          UserToken.userToken = token;
+          console.log(token);
           this.authenticateUser(loggedInUser);
         })
       );
@@ -89,8 +92,10 @@ export class AuthService {
       .pipe(
         tap((token) => {
           const registeredUser: User = {
-            token,
+            id: token,
           };
+          UserToken.userToken = token;
+          console.log(token);
           this.authenticateUser(registeredUser);
         })
       );
@@ -99,15 +104,17 @@ export class AuthService {
   // this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
     return this.httpClient.post(
-      PATH + DISCONNECT + this.$authenticatedUser.value.token,
-      this.$authenticatedUser.value.token,
+      PATH + DISCONNECT + this.$authenticatedUser.value.id,
+      this.$authenticatedUser.value.id,
       { responseType: 'text' }
     );
   }
 
   getProfile() {
     return this.httpClient.get<User>(
-      PATH + PROFILE + this.$authenticatedUser.value.token
+      `${PATH + PROFILE + this.$authenticatedUser.value.id}/${
+        this.$authenticatedUser.value.id
+      }`
     );
   }
 

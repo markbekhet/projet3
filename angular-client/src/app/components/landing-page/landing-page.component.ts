@@ -5,6 +5,8 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { homeHeaderItems, FeatureItem } from '@models/FeatureMeta';
 import { AuthService } from '@services/authentication/auth.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { SocketService } from '@services/socket/socket.service';
+import { UserToken } from '@services/static-services/user_token';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
 
@@ -20,8 +22,9 @@ export class LandingPage implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private readonly socketService: SocketService
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
@@ -29,7 +32,9 @@ export class LandingPage implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(UserToken.userToken);
     this.showWelcomeMsg();
+    this.socketService.connect();
   }
 
   showWelcomeMsg(): void {

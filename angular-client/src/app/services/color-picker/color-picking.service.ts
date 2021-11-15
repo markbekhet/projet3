@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { ChosenColors } from '@models/ChosenColors';
 import { colorData } from '@components/color-picker-component/color-data';
 import { ColorConvertingService } from './color-converting.service';
+import { InteractionService } from '../interaction/interaction.service';
 
 /* -----------------------------Color valur table-----------------------------------------*
  * RGBA min/max value : R [0,255] , G [0,255] , B [0,255] , A [0,1]                       *
@@ -28,10 +29,11 @@ export class ColorPickingService {
   colors!: ChosenColors;
   colorSubject: Subject<ChosenColors> = new Subject<ChosenColors>(); // le constuire à qqpart
 
-  constructor(public colorConvert: ColorConvertingService) {}
+  constructor(public colorConvert: ColorConvertingService, private interactionService: InteractionService) {}
 
   emitColors(): void {
     this.colorSubject.next(this.colors);
+    this.interactionService.emitUpdateColorSignal();
   }
 
   /** ********************** SETTERS SECTION ************************** */

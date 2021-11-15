@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -19,6 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
+    MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
     MatDialogModule,
@@ -37,6 +39,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
   ],
   exports: [
+    MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
     MatDialogModule,
