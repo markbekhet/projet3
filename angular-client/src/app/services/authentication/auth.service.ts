@@ -5,6 +5,7 @@ import { /* concatMap, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { UpdateUserInformation } from '@src/app/models/UserMeta';
+import { SocketService } from '../socket/socket.service';
 //import { User } from '@models/UserMeta';
 //import { UserToken } from '../static-services/user_token';
 
@@ -34,7 +35,7 @@ export class AuthService {
 
   token$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private socketService: SocketService) {}
 
   login(user: UserCredentials) {
     /*
@@ -83,6 +84,7 @@ export class AuthService {
       .pipe(
         tap(() => {
           this.token$.next('');
+          this.socketService.disconnect();
         })
       );
   }

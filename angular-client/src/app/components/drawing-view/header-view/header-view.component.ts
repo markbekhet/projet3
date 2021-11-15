@@ -8,6 +8,8 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { Router } from '@angular/router';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { SocketService } from '@src/app/services/socket/socket.service';
 
 @Component({
   selector: 'app-header-view',
@@ -22,7 +24,9 @@ export class HeaderViewComponent implements OnInit {
   constructor(
     private winService: ModalWindowService, // private interaction: InteractionService
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private drawingService: DrawingService,
+    private socketService: SocketService
   ) {
     this.menuItems = menuItems;
   }
@@ -38,10 +42,12 @@ export class HeaderViewComponent implements OnInit {
     // TODO
   }
 
-  disconnect() {
-    this.authService.disconnect().subscribe(() => {
+  leaveDrawing() {
+    /*this.authService.disconnect().subscribe(() => {
       this.router.navigate(['/login']);
-    });
+    });*/
+    this.socketService.leaveDrawing({drawingId: this.drawingService.drawingId.value, userId: this.authService.token$.value})
+    this.router.navigate(['/home'])
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
