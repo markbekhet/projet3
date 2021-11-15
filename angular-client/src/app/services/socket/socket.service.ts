@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, /* , Observable */ 
+import { BehaviorSubject, /* , Observable */
 Subject} from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
+import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
+// import { AuthService } from '../authentication/auth.service';
 import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingContent } from '@src/app/models/DrawingMeta';
@@ -44,6 +46,26 @@ export class SocketService {
     },
   });
 
+  profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
+    token: '',
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
+    password: '',
+    status: Status.OFFLINE,
+    pseudo: '',
+
+    averageCollaborationTime: 0,
+    totalCollaborationTime: 0,
+    numberCollaborationTeams: 0,
+    numberCollaboratedDrawings: 0,
+    numberAuthoredDrawings: 0,
+
+    connectionHistories: [],
+    disconnectionHistories: [],
+    drawingEditionHistories: [],
+  });
+
   setDrawingID = (value: string) => {
     this.drawingID = value;
   };
@@ -61,6 +83,30 @@ export class SocketService {
 
     return this.message$.asObservable();
   };
+
+  public getUserProfile(profileRequest: UserProfileRequest) {
+    this.socket.emit('getUserProfileRequest', JSON.stringify(profileRequest));
+  }
+
+  public receiveUserProfile = () => {
+    this.socket.on('profileToClient', (profile: any) => {
+      const user: User = JSON.parse(profile);
+      console.log(user);
+      this.profile$.next(user);
+    });
+
+    return this.profile$.asObservable();
+  };
+
+  public updateUserProfile(updates: UpdateUserInformation) {
+    if (updates.newPseudo) {
+      this.profile$.value.pseudo = updates.newPseudo;
+    }
+    if (updates.newPassword) {
+      this.profile$.value.password = updates.newPassword;
+    }
+    this.profile$.next(this.profile$.value);
+  }
 
   public sendJoinDrawingRequest(joinInformation: JoinDrawing){
     let joinInformationString = JSON.stringify(joinInformation);

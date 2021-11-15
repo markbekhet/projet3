@@ -1,0 +1,39 @@
+.login-page {
+  height: 100vh;
+  overflow: hidden;
+
+  .logo-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 15px 0 25px;
+    .logo {
+      width: 28%;
+      min-width: 300px;
+      max-width: 400px;
+    }
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 15px;
+
+    mat-form-field {
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 15%;
+      margin-bottom: 15px;
+    }
+  }
+
+  .footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-right: 20px;
+  }
+}

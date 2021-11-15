@@ -12,6 +12,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -29,6 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
   ],
@@ -45,6 +47,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
   ],
@@ -55,7 +58,6 @@ export class AngularMaterialModule {}
 // Note (Paul) : Modules Material utilisés en Projet 2 et pouvant être utiles
 // CommonModule
 // MatButtonToggleModule
-// MatTabsModule
 // MatChipsModule
 // MatCheckboxModule
 // MatProgressSpinnerModule

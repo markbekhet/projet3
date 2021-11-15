@@ -19,9 +19,10 @@ import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.se
 //import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { AuthService } from '@src/app/services/authentication/auth.service';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
-import { UserToken } from '@src/app/services/static-services/user_token';
+//import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
   selector: 'app-new-drawing',
@@ -42,6 +43,7 @@ export class NewDrawingComponent implements OnInit {
   width: number;
   height: number;
   bgColor: string;
+  userId: string;
 
   newDrawing: Drawing = {
     drawingID: undefined,
@@ -61,11 +63,13 @@ export class NewDrawingComponent implements OnInit {
     private router: Router,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
+    private authService: AuthService
   ) {
     this.width = this.canvasBuilder.getDefWidth();
     this.height = this.canvasBuilder.getDefHeight();
     this.bgColor = this.canvasBuilder.getDefColor();
     this.drawingVisibilityItems = drawingVisibilityItems;
+    this.userId = '';
   }
 
   ngOnInit(): void {
@@ -75,6 +79,9 @@ export class NewDrawingComponent implements OnInit {
       if (this.inputEntered) {
         this.resizeCanvas();
       }
+    });
+    this.authService.token$.subscribe((token) => {
+      this.userId = token;
     });
   }
 
@@ -145,7 +152,7 @@ export class NewDrawingComponent implements OnInit {
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
       color: VALUES.canvColor,
-      ownerId: UserToken.userToken,
+      ownerId: this.userId,
     };
 
     try {
@@ -157,23 +164,23 @@ export class NewDrawingComponent implements OnInit {
       }
       this.drawingService.createDrawing(this.newDrawing).subscribe((drawingIdServer: number)=>{
         console.log(drawingIdServer);
-        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: UserToken.userToken, password: this.password}
+        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: this.userId, password: this.password}
         this.socketService.sendJoinDrawingRequest(joinDrawing);
         this.closeModalForm();
         this.router.navigate(['/draw']);
-    
-    
+
+
         const LOAD_TIME = 15;
         setTimeout(() => {
           window.dispatchEvent(new Event('resize'));
-        }, LOAD_TIME);    
+        }, LOAD_TIME);
       });
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
     }
 
-    
+
   }
 
   closeModalForm(): void {
