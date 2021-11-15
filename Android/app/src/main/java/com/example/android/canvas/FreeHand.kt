@@ -49,6 +49,19 @@ class FreeHand(private var drawingId: Int?,
     }
 
     override fun touchUp() {
+        val polylinePoints = this.points.points
+        if(polylinePoints.numberOfItems > 0){
+            var i = 0
+            while(i < polylinePoints.numberOfItems){
+                val item = polylinePoints.getItem(i)
+                item.x += totalTranslation.x
+                item.y += totalTranslation.y
+                i++
+            }
+        }
+        totalTranslation.x = 0f
+        totalTranslation.y = 0f
+        this.setAttribute("transform", "translate(0,0)")
         setCriticalValues()
         calculateScalingPositions()
         select()

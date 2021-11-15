@@ -33,4 +33,11 @@ interface RestAPI {
 
     @HTTP(method = "DELETE",path = "$collaborationTeam", hasBody = true)
     suspend fun deleteTeam(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @GET("$user/gallery/{Id}")
+    suspend fun getGalleryDrawings(@Path("Id") userId: String): Response<ResponseBody>
+
+    @POST(delete)
+    suspend fun delete(@Body requestBody: RequestBody): Response<ResponseBody>
+
 }

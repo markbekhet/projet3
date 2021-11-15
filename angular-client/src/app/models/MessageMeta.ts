@@ -1,11 +1,11 @@
 export interface Message {
-  clientName:string;
+  clientName: string;
   message: string;
   date: CustomDate;
 }
 
 export interface CustomDate {
-  hour: string,
-  minutes: string,
-  seconds: string,
+  hour: string;
+  minutes: string;
+  seconds: string;
 }

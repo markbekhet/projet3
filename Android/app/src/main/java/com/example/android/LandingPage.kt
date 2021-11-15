@@ -11,17 +11,23 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.android.canvas.GalleryDrawing
 import com.example.android.client.*
+import com.example.android.client.Gallery
 import com.example.android.profile.OwnProfile
 import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_landing_page.*
 import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.android.synthetic.main.popup_create_collaboration_team.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JSON.Companion.context
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -31,14 +37,37 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
     private var drawingSocket: Socket?= null
     private val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null
+    var gallery  = GalleryDrawing()
+    var response: Response<ResponseBody>?=null
+    private var displayDrawingGallery : RecyclerView?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
+        val clientService = ClientService()
         //Initialize chat socket
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
-        chatSocket = SocketHandler.getChatSocket()
         val manager = supportFragmentManager
+        val galleryFragmentTransaction = manager.beginTransaction()
+        val galleryDraws = Gallery()
+
+        galleryFragmentTransaction.replace(R.id.gallery_frame, galleryDraws).commit()
+
+
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(gallery.drawingList!!)
+        }
+        chatSocket = SocketHandler.getChatSocket()
         val usersFragmentTransaction = manager.beginTransaction()
         val usersAndTeamsFragment = UsersAndTeamsFragment()
 

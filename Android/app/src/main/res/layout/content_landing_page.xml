@@ -4,48 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
-
     <LinearLayout
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rectangle_background"
-        android:orientation="vertical"
-        android:backgroundTint="@color/white">
-
-        <FrameLayout
-            android:id="@+id/usersAndTeamsFrameLandingPage"
-            android:layout_width="match_parent"
-            android:layout_height="500dp">
-
-        </FrameLayout>
-        <FrameLayout
-            android:id="@+id/landingPageChatSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="275dp"/>
-    </LinearLayout>
-
+        android:orientation="vertical">
     <LinearLayout
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="top|center_horizontal"
-        android:orientation="vertical"
+        android:gravity="fill"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="16dp">
-
-        <include
-            android:layout_marginTop="50dp"
-            android:id="@+id/homeAvatar"
-            layout="@layout/fragment_avatar"
-
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
 
         <Button
             android:id="@+id/createTeamHomeButton"
@@ -67,34 +38,67 @@
         <Button
             android:id="@+id/profileButton"
             android:layout_width="150sp"
-            android:layout_height="50sp"
+            android:layout_height="match_parent"
             android:text="profil"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
-
-
-        <Button
-            android:id="@+id/recompense"
-            android:layout_width="150sp"
-            android:layout_height="50sp"
-            android:text="recompenses"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white" />
 
         <Button
             android:id="@+id/disconnect"
             android:layout_width="150sp"
-            android:layout_height="50sp"
+            android:layout_height="match_parent"
             android:text="Deconnexion"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white" />
 
 
     </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="720dp"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/rectangle_background"
+        android:orientation="vertical"
+        android:backgroundTint="@color/white">
+
+        <FrameLayout
+            android:id="@+id/usersAndTeamsFrameLandingPage"
+            android:layout_width="match_parent"
+            android:layout_height="500dp">
+
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/landingPageChatSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/rectangle_background"
+        android:orientation="vertical"
+        android:backgroundTint="@color/white">
+
+        <FrameLayout
+            android:id="@+id/gallery_frame"
+            layout="@layout/activity_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="400dp"
-        android:layout_marginTop="50dp"
         android:layout_height="match_parent"
         android:background="@drawable/rectangle_background"
         android:orientation="vertical"
@@ -110,5 +114,6 @@
 
     </LinearLayout>
 </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

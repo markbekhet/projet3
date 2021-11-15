@@ -3,6 +3,7 @@ package com.example.android.client
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.example.android.canvas.DeleteDrawingDt
 import com.example.android.canvas.DrawingInformation
 import com.example.android.team.CreateTeamDto
 import com.example.android.team.DeleteTeamDto
@@ -157,6 +158,56 @@ class ClientService : Service() {
         withContext(Dispatchers.IO){
             response =
                 service.deleteTeam(requestBody)
+            if(response != null){
+                println(response!!.code())
+            }
+            return@withContext response
+        }
+        return response
+
+    }
+    suspend fun getUserGallery(): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response = service.getGalleryDrawings(ClientInfo.userId)
+            println( (response!!.code()))
+            return@withContext response
+        }
+        return response
+    }
+    suspend fun modifyDrawings(): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        var response: Response<ResponseBody>? = null
+        withContext(Dispatchers.IO){
+            response = service.getGalleryDrawings(ClientInfo.userId)
+            println( (response!!.code()))
+            return@withContext response
+        }
+        return response
+    }
+    suspend fun deleteDrawings(deleteDrawing : DeleteDrawingDt): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        val jsonString = deleteDrawing.toJson()
+        println(jsonString)
+        val requestBody = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        println(ClientInfo.userId)
+        withContext(Dispatchers.IO){
+            response =
+                service.modifyProfileParams(ClientInfo.userId, requestBody)
             if(response != null){
                 println(response!!.code())
             }

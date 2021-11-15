@@ -1,0 +1,69 @@
+<div class="form-container">
+    <h1>Nouveau dessin</h1>
+    <div class="new-drawing-form">
+        <form [formGroup]="newDrawingForm" (ngSubmit)="onSubmit()">
+
+            <mat-form-field class="new-drawing-form-input">
+                <mat-label for="drawingName">Nom</mat-label>
+                <input matInput type="text" required formControlName="drawingName" [value]="name"
+                       (keydown)="blockEvent($event)" />
+            </mat-form-field>
+
+            <mat-form-field class="new-drawing-form-input-visibility">
+                <mat-label for="drawingVisibility">Niveau de visibilité</mat-label>
+                <mat-select formControlName="drawingVisibility" [(value)]="visibility" required>
+                    <mat-option>--</mat-option>
+                    <mat-option *ngFor="let drawingVisibilityItem of drawingVisibilityItems"
+                                [value]="drawingVisibilityItem.value"> {{ drawingVisibilityItem.name }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="drawingVisibility.hasError('required')">Veuillez sélectionner un niveau de visibilité
+                    pour votre dessin</mat-error>
+                <mat-hint class="new-drawing-form-hint">{{ showVisibilityHint() }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="showPasswordInput()">
+                <mat-label for="drawingPassword">Mot de passe</mat-label>
+                <input matInput type="password" placeholder="Saisir votre mot de passe" autocomplete="off"
+                       formControlName="drawingPassword" [value]="password" (keydown)="blockEvent($event)" />
+                <mat-error *ngIf="showPasswordRequired">Un mot de passe est requis</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="new-drawing-form-input">
+                <mat-label for="canvWidth">Largeur (px)</mat-label>
+                <input matInput type="text" required formControlName="canvWidth" [value]="width"
+                       (keydown)="blockEvent($event)" />
+            </mat-form-field>
+
+            <mat-form-field class="new-drawing-form-input">
+                <mat-label for="canvHeight">Hauteur (px)</mat-label>
+                <input matInput type="text" required formControlName="canvHeight" [value]="height"
+                       (keydown)="blockEvent($event)" />
+            </mat-form-field>
+
+            <mat-form-field class="new-drawing-form-input">
+                <mat-label for="canvColor">Couleur (hex)</mat-label>
+                <input matInput type="text" formControlName="canvColor" [value]="bgColor" (input)="onInput()"
+                       (keydown)="blockEvent($event)" />
+            </mat-form-field>
+
+            <p *ngIf="(canvWidth && canvWidth.invalid) || (canvHeight && canvHeight.invalid)" class="warnMessage">
+                <!--Cas géré si canv* est null-->
+                Veuillez entrer un entier positif
+            </p>
+
+            <p *ngIf="canvColor && canvColor.invalid" class="warnMessage">
+                Valeur hexadécimale invalide !
+            </p>
+
+            <app-mini-color-picker [color]="bgColor" (colorToEmit)="updateColor($event)"></app-mini-color-picker>
+
+            <button mat-raised-button color="primary" id="submitButton" type="submit"
+                    [disabled]="newDrawingForm.invalid">C'est parti !</button>
+        </form>
+
+        <div>
+            <button mat-stroked-button id="quitButton" (click)="closeModalForm()">Annuler</button>
+        </div>
+    </div>
+</div>

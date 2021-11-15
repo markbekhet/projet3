@@ -1,6 +1,0 @@
-{
-  "files.exclude":{
-    "**/Colorimage-*": true,
-    "**/node_modules": true
-  },
-}
