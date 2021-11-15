@@ -15,8 +15,8 @@ export interface User {
   numberCollaboratedDrawings: number;
   numberAuthoredDrawings: number;
 
-  connectionHistory: ConnectionHistory;
-  disconnectionHistory: DisconnectionHistory;
+  connectionHistories: ConnectionHistory[];
+  disconnectionHistories: DisconnectionHistory[];
   drawingEditionHistories: DrawingEditionHistory[];
 }
 

@@ -3,7 +3,8 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
+import { DrawingState } from '@src/app/models/DrawingMeta';
+import { ConnectionHistory, DrawingEditionHistory, Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
@@ -30,14 +31,8 @@ export class ProfilePage implements OnInit {
     numberCollaboratedDrawings: 0,
     numberAuthoredDrawings: 0,
 
-    connectionHistory: {
-      id: 0,
-      date: '',
-    },
-    disconnectionHistory: {
-      id: 0,
-      date: '',
-    },
+    connectionHistories: [],
+    disconnectionHistories: [],
     drawingEditionHistories: [],
   };
 
@@ -55,11 +50,6 @@ export class ProfilePage implements OnInit {
       visitedId: this.auth.token$.value,
     });
 
-    this.socketService.receiveUserProfile().subscribe((profile: User) => {
-      this.user = profile;
-      console.log(`user loaded : ${profile.pseudo}`);
-    });
-
     this.updateForm = this.formBuilder.group({
       pseudo: formBuilder.control('', [ Validators.pattern(ValidationService.USERNAME_REGEX) ]),
       oldPassword: formBuilder.control('', [ Validators.pattern(ValidationService.PASSWORD_REGEX) ] ),
@@ -74,7 +64,16 @@ export class ProfilePage implements OnInit {
     }
   }
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.socketService.receiveUserProfile().subscribe((profile: User) => {
+      this.user = profile;
+      console.log(`user loaded : ${profile.pseudo}`);
+    });
+
+    console.log((this.user.connectionHistories as ConnectionHistory[]).length);
+
+
+  }
 
   onSubmit(formPseudo: FormGroup) {
     let updates: UpdateUserInformation = {
@@ -122,13 +121,14 @@ export class ProfilePage implements OnInit {
   }
 
   goLaunchingPage() {
-    this.auth.disconnect().subscribe((token) => {
+    /*this.auth.disconnect().subscribe((token) => {
       console.log('disconnect successful');
       this.router.navigate(['/login']);
     }, (error) => {
       console.log(error);
     });
-
+*/
+this.router.navigate(['/home']);
   }
 
   buttonDisabled(form: FormGroup) {
@@ -150,5 +150,30 @@ export class ProfilePage implements OnInit {
       form.controls[control].dirty &&
       form.controls[control].hasError(error)
     );
+  }
+
+  public drawingEnabled(drawing: DrawingEditionHistory) {
+    return drawing.drawingState === DrawingState.AVAILABLE;
+  }
+
+  public joinDrawing(collaboration: DrawingEditionHistory) {
+    let joinDrawing = {
+      drawingId: collaboration.drawingId,
+      userId: this.auth.token$.value,
+      password: undefined
+    }
+    this.socketService.sendJoinDrawingRequest(joinDrawing);
+    this.router.navigate(['/draw']);
+  }
+
+  public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {
+    for (let i = this.user.drawingEditionHistories.length - 1; i >= 0; i--) {
+      let drawing = this.user.drawingEditionHistories[i];
+      if (drawing.drawingId === collaboration.drawingId) {
+        console.log(drawing.date + ' ' + collaboration.date);
+        return drawing.date === collaboration.date;
+      }
+    }
+    return false;
   }
 }

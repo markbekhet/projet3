@@ -14,6 +14,7 @@
     <div class="content">
         <mat-tab-group mat-align-tabs="start" animationDuration="1000ms">
             <mat-tab label="Informations">
+                <br>
                 <form [formGroup]="updateForm" (ngSubmit)="onSubmit(updateForm)">
                     <mat-form-field class="pseudo-field">
                         <mat-label>Nouveau pseudonyme</mat-label>
@@ -41,8 +42,9 @@
             </mat-tab>
 
             <mat-tab label="Statistiques">
-                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}}</div>
-                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}}</div>
+                <br>
+                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}} mins.</div>
+                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}} mins.</div>
                 <br>
                 <div class="info-field">Nombre d'équipes de collaboration: {{user.numberCollaborationTeams}}</div>
                 <div class="info-field">Nombre de dessins: {{user.numberAuthoredDrawings}}</div>
@@ -50,12 +52,33 @@
             </mat-tab>
 
             <mat-tab label="Historiques">
+                <br>
                 <h1>Connexions</h1>
-
+                <div class="connection">
+                    <div *ngFor="let connection of user.connectionHistories as ConnectionHistory">
+                        {{ connection.date }}
+                    </div>
+                </div>
+                <br>
                 <h1>Deconnexions</h1>
-
+                <div class="connection">
+                    <div *ngFor="let disconnection of user.disconnectionHistories">
+                        {{ disconnection.date }}
+                    </div>
+                </div>
+                <br>
                 <h1>Collaborations</h1>
-
+                <br>
+                <div class="connection">
+                    <div *ngFor="let collaboration of user.drawingEditionHistories; let i = index">
+                        <div *ngIf="mostRecentVersionDrawing(collaboration)">
+                            {{ collaboration.drawingName }} - {{ collaboration.date }}
+                        <button (click)="joinDrawing(collaboration)" [disabled]="drawingEnabled(collaboration)">Joindre</button>
+                        <br>
+                        <br>
+                        </div>
+                    </div>
+                </div>
             </mat-tab>
         </mat-tab-group>
 
