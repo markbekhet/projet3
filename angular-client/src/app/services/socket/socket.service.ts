@@ -64,14 +64,8 @@ export class SocketService {
     numberCollaboratedDrawings: 0,
     numberAuthoredDrawings: 0,
 
-    connectionHistory: {
-      id: 0,
-      date: '',
-    },
-    disconnectionHistory: {
-      id: 0,
-      date: '',
-    },
+    connectionHistories: [],
+    disconnectionHistories: [],
     drawingEditionHistories: [],
   });
 
@@ -100,6 +94,7 @@ export class SocketService {
   public receiveUserProfile = () => {
     this.socket!.on('profileToClient', (profile: any) => {
       const user: User = JSON.parse(profile);
+      console.log(user);
       this.profile$.next(user);
     });
 

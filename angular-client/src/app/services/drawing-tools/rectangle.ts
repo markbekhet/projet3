@@ -62,7 +62,7 @@ export class Rectangle implements  DrawingTool{
     this.primaryColor = DEFPRIM;
     this.secondaryColor = DEFSEC;
   }
-  
+
   onMouseDown(event: MouseEvent): void {
     //this.mouseIsDown = true;
     let position = Point.rpositionMouse(event, this.canvas.nativeElement);
@@ -114,7 +114,7 @@ export class Rectangle implements  DrawingTool{
   sendProgressToServer(drawingStatus: DrawingStatus){
     let drawingContent: DrawingContent = {drawingId: this.drawingId, userId: this.userId,
                                   id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
-    this.socketService.sendDrawingToServer(drawingContent);                              
+    this.socketService.sendDrawingToServer(drawingContent);
   }
   getString(): string {
     //throw new Error('Method not implemented.');
