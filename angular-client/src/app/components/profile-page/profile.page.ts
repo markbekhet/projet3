@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -48,7 +48,7 @@ export class ProfilePage implements OnInit {
     private auth: AuthService,
     private socketService: SocketService,
     private formBuilder: FormBuilder,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.token$.value,
@@ -67,6 +67,12 @@ export class ProfilePage implements OnInit {
     });
   }
 
+  @HostListener("window:beforeunload")
+  disconnect(){
+    if(this.auth.token$.value !== ""){
+      this.auth.disconnect()
+    }
+  }
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
 

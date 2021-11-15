@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
@@ -36,6 +36,12 @@ export class LandingPage implements OnInit {
     }
   }
 
+  @HostListener("window:beforeunload")
+  disconnectX(){
+    if(this.auth.token$.value !== ""){
+      this.auth.disconnect()
+    }
+  }
   showWelcomeMsg(): void {
     const CONFIG = new MatSnackBarConfig();
     const DURATION = 2000;
