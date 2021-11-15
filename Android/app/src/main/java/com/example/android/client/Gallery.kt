@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.example.android.SocketHandler
 import com.example.android.canvas.*
 import com.example.android.chat.ServerMessage
 import com.example.android.chat.UserMessage
+import com.example.android.delete
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -73,10 +75,12 @@ class Gallery :  Fragment() {
         gallery_drawings?.layoutManager = linearLayoutManager
         buildGallery()
     }
+
     fun set(GalleryDrawcopy:ArrayList<ReceiveDrawingInformation> ){
         galleryArray= GalleryDrawcopy
         buildGallery()
     }
+
     fun buildGallery(){
         galleryDisplay = GroupAdapter<GroupieViewHolder>()
         println(galleryArray.size)
@@ -94,59 +98,43 @@ class Gallery :  Fragment() {
         startActivity(Intent(this.context, Drawing::class.java))
     }
 }
-class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
+class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     private var information: ReceiveDrawingInformation?= null
-
+    private var clientService = ClientService()
     override fun getLayout(): Int {
         return R.layout.draw
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        var response_delete: Response<ResponseBody>?=null
-        var response_modify: Response<ResponseBody>?=null
         println(information!!.name)
         if(ClientInfo.userId == information!!.ownerId){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
-            /*viewHolder.itemView.modify.setOnClickListener() {
-
-
+            viewHolder.itemView.delete.setOnClickListener{
+                var response: Response<ResponseBody>?= null
+                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)
                 runBlocking {
                     async {
                         launch {
-                            response_modify = clientService.getUserGallery()
+                            response = clientService.deleteDrawing(deleteDrawingDto)
                         }
                     }
                 }
-                if (response_modify!!.isSuccessful) {
-                    val data = response_modify!!.body()!!.string()
-                    gallery = GalleryDrawing().fromJson(data)
-                    buildGallery(gallery.drawingList!!)
-                }
-            }*/
-            /*viewHolder.itemView.delete.setOnClickListener() {
-
-
-                runBlocking {
-                    async {
-                        launch {
-                            response_delete = clientService.getUserGallery()
-                        }
+                if (response!!.isSuccessful) {
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, "Dessin supprimée avec succès",
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
-                if (response_delete!!.isSuccessful) {
-                    val data = response_delete!!.body()!!.string()
-                    response_delete = GalleryDrawing().fromJson(data)
-                    buildGallery(gallery.drawingList!!)
-                }
-            }*/
+            }
+
         }
         else{
             viewHolder.itemView.modify.isVisible= false
             viewHolder.itemView.delete.isVisible= false
         }
         viewHolder.itemView.name.text = information!!.name
-        val canvas = GalleryCanvasView(information!!.id!!, context.requireContext())
+        val canvas = GalleryCanvasView(information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
         val params: ViewGroup.LayoutParams = viewHolder.itemView.fl_drawing_view_gallery.getLayoutParams()
         params.width= 300
@@ -166,7 +154,7 @@ class GalleryItem(var context: Gallery) : Item<GroupieViewHolder>() {
                 if(args[0]!=null && i==0){
                     val data = args[0] as String
                     DrawingUtils.drawingInformation = AllDrawingInformation().fromJson(data)
-                    context.startDrawingActivity()
+                    fragment.startDrawingActivity()
                     i++
                 }
             }

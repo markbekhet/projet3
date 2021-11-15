@@ -14,6 +14,7 @@ import com.example.android.chat.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.canvas.GalleryDrawing
+import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.*
 import com.example.android.client.Gallery
 import com.example.android.profile.OwnProfile
@@ -91,7 +92,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
             chatRoomsFragmentMap["General"]!!).commit()
 
-/*======================Socket interactions to br added for the gallery==================================*/
+/*======================Socket interactions==================================*/
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
@@ -108,6 +109,24 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
             }
         }
 
+        chatSocket?.on("drawingDeleted"){ args->
+            if(args[0] != null){
+                val data = args[0] as String
+                val deletedDrawing = ReceiveDrawingInformation().fromJson(data)
+                var i = 0
+                if(gallery.drawingList != null){
+                    for(drawing in gallery.drawingList!!){
+                        if(deletedDrawing.id == drawing.id){
+                            break
+                        }
+                        i++
+                    }
+                    gallery.drawingList!!.removeAt(i)
+                    galleryDraws.set(gallery.drawingList!!)
+                }
+
+            }
+        }
         //This code happens once here for the genral chat room
         chatSocket?.on("RoomChatHistories"){ args ->
             if(args[0] != null){

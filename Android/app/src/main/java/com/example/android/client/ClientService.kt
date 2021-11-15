@@ -194,7 +194,7 @@ class ClientService : Service() {
         }
         return response
     }
-    suspend fun deleteDrawings(deleteDrawing : DeleteDrawingDt): Response<ResponseBody>?{
+    suspend fun deleteDrawing(deleteDrawing : DeleteDrawingDt): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(url)
             .build()
