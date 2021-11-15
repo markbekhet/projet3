@@ -2,9 +2,6 @@
     <div class="logo-wrapper">
         <img src="../../../assets/logos/colorimage_logo1_curved.png" alt="Logo ColorImage" class="logo">
     </div>
-    <div>
-        {{ getCurrentUser() }}
-    </div>
     <div class="buttons-container">
         <div *ngFor="let item of menuItems" class="btn">
             <button (click)="execute(item.shortcutName)">

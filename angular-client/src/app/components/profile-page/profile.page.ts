@@ -70,8 +70,7 @@ export class ProfilePage implements OnInit {
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
 
-  async onSubmit(formPseudo: FormGroup) {
-    alert("we're ready to submit any changes");
+  onSubmit(formPseudo: FormGroup) {
     let updates: UpdateUserInformation = {
       newPseudo: this.verifyPseudo(this.updateForm.controls.pseudo.value),
       newPassword: this.verifyPassword(this.updateForm.controls.newPassword.value),
