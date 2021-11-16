@@ -6,8 +6,8 @@
     android:background="@drawable/rectangle_background">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="580dp"
+        android:layout_height="626dp"
         android:orientation="vertical">
 
         <TextView
@@ -22,10 +22,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/displayviewgallery"
-            android:layout_width="800dp"
-            android:layout_marginTop="50dp"
-            android:layout_height="600dp"
+            android:layout_width="match_parent"
+            android:layout_height="480dp"
             android:layout_gravity="center"
+            android:layout_marginTop="50dp"
             tools:layout_editor_absoluteX="1dp"
             tools:layout_editor_absoluteY="1dp" />
 
@@ -34,16 +34,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif"
-            android:text="fermer"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif"
+            android:text="fermer"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:textSize="14sp"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="175dp" />
-
 
 
     </LinearLayout>

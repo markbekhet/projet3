@@ -12,16 +12,14 @@ import com.example.android.R
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
-import kotlinx.android.synthetic.main.activity_register_screen.*
 import kotlinx.android.synthetic.main.avatar.view.*
-import kotlinx.android.synthetic.main.message.view.*
 
 
 class GalleryFrame : Fragment() {
     private var galleryDisplay : GroupAdapter<GroupieViewHolder>?= null
-    val displayGallery : RecyclerView? = view?.findViewById<RecyclerView>(R.id.displayviewgallery)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -32,6 +30,7 @@ class GalleryFrame : Fragment() {
         val view = inflater.inflate(R.layout.galleryavatar, parent, false)
         val linearLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         linearLayoutManager.stackFromEnd = true
+        val displayGallery : RecyclerView? = view?.findViewById<RecyclerView>(R.id.displayviewgallery)
         displayGallery?.layoutManager = linearLayoutManager
 
         val gallery_image = arrayOf(R.drawable.avataaars,R.drawable.avataaars1,R.drawable.avataaars3,R.drawable.avataaars4,R.drawable.avataaars4,R.drawable.avataaars5,
@@ -40,11 +39,13 @@ class GalleryFrame : Fragment() {
         fun setmessage(){
             galleryDisplay = GroupAdapter<GroupieViewHolder>()
             for(image in gallery_image){
+                print(image)
                 val avatar = GalleryAvatar(image)
                 galleryDisplay?.add(avatar)
                  }
 
-            displayGallery?.adapter = galleryDisplay
+                displayGallery?.adapter = galleryDisplay
+
             }
         setmessage()
 
@@ -59,7 +60,7 @@ class GalleryAvatar(val image: Int) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.apply {
+        viewHolder.itemView.img_save.apply {
             Glide.with(viewHolder.root.context)
                 .load(image)
                 .into(img_save)

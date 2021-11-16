@@ -23,6 +23,8 @@ import retrofit2.Response
 import android.text.TextUtils
 import android.util.Patterns
 import android.widget.ImageView
+import com.example.android.canvas.Gallery
+import com.example.android.canvas.GalleryAvatar
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.avatar.view.*
 import kotlinx.android.synthetic.main.fragment_avatar.*
@@ -53,17 +55,18 @@ class RegisterScreen : AppCompatActivity() {
 
         //handle result of picked image
         fun pickImageFromGallery(){
-            if (galerie == null) {
-                galerie = Dialog(this)
-                galerie!!.setContentView(R.layout.galleryavatar)
-                galerie!!.show()
-                texte = gallery!!.findViewById(R.id.fermer) as Button?
-                texte?.isEnabled = true
-                texte?.setOnClickListener {
-                    galerie!!.hide()
-                    galerie = null
-                }
-            }
+            startActivity(Intent(this, Gallery::class.java))
+//            if (galerie == null) {
+//                galerie = Dialog(this)
+//                galerie!!.setContentView(R.layout.galleryavatar)
+//                galerie!!.show()
+//                texte = gallery!!.findViewById(R.id.fermer) as Button?
+//                texte?.isEnabled = true
+//                texte?.setOnClickListener {
+//                    galerie!!.hide()
+//                    galerie = null
+//                }
+//            }
         }
         gallery.setOnClickListener() {
 
