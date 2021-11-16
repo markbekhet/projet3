@@ -169,6 +169,7 @@ export class SocketService {
       })
       this.users$.next(usersTemp);
     });
+    return this.users$;
   }
 
   getAllTeams = ()=>{
@@ -183,5 +184,6 @@ export class SocketService {
       this.teams$.next(teamsTemp);
 
     })
+    return this.teams$;
   }
 }

@@ -37,6 +37,7 @@ import { ProfilePage } from './components/profile-page/profile.page';
 import { RegisterPage } from './components/register-page/register.page';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
+import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ShapeTypePipe,
     SvgViewComponent,
     ToolboxViewComponent,
+    UserTeamListComponent,
   ],
   imports: [
     BrowserModule,
