@@ -1,0 +1,54 @@
+.landing-page {
+  height: 100vh;
+  overflow: hidden;
+
+  .logo-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 15px 0 5px;
+    .logo {
+      width: 25%;
+      min-width: 300px;
+    }
+  }
+
+  .buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    .btn {
+      margin: 0 50px;
+    }
+
+    button {
+      width: 178px;
+      height: 100%;
+    }
+  }
+
+  .footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 750px) {
+  #title {
+    font-size: 10vw;
+  }
+
+  div.buttons-container > div {
+    margin: 25px;
+  }
+
+  br {
+    display: none;
+  }
+
+  .footer {
+    font-size: 3vw;
+  }
+}

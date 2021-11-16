@@ -1,0 +1,44 @@
+.register-page {
+  height: 100vh;
+  overflow: hidden;
+
+  .logo-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 15px 0 10px;
+    .logo {
+      width: 35%;
+      min-width: 300px;
+      max-width: 400px;
+    }
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 15px;
+
+    mat-form-field {
+      width: 220px;
+    }
+
+    .firstname-field, .email-field {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    button {
+      width: 15%;
+      margin: 15px 0 20px;
+    }
+  }
+
+  .footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-right: 20px;
+  }
+}

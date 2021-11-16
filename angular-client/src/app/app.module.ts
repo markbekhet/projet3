@@ -25,15 +25,16 @@ import { CommunicationPageComponent } from './components/communication-page/comm
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { HeaderViewComponent } from './components/drawing-view/header-view/header-view.component';
-import { LandingPageComponent } from './components/landing-page/landing-page.component';
-import { LoginPageComponent } from './components/login-page/login-page.component';
+import { LandingPage } from './components/landing-page/landing.page';
+import { LoginPage } from './components/login-page/login.page';
 import { MiniColorPickerComponent } from './components/color-picker/mini-color-picker/mini-color-picker.component';
 import { NewDrawingComponent } from './components/new-drawing-dialog/new-drawing.component';
 import {
   OptionViewComponent,
   ShapeTypePipe,
 } from './components/drawing-view/toolbox-view/option-view/option-view.component';
-import { RegisterPageComponent } from './components/register-page/register-page.component';
+import { ProfilePage } from './components/profile-page/profile.page';
+import { RegisterPage } from './components/register-page/register.page';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 
@@ -45,12 +46,13 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     DrawingViewComponent,
     ErrorDialogComponent,
     HeaderViewComponent,
-    LandingPageComponent,
-    LoginPageComponent,
+    LandingPage,
+    LoginPage,
     MiniColorPickerComponent,
     NewDrawingComponent,
     OptionViewComponent,
-    RegisterPageComponent,
+    ProfilePage,
+    RegisterPage,
     ShapeTypePipe,
     SvgViewComponent,
     ToolboxViewComponent,

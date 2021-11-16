@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserCredentials } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
@@ -11,18 +11,18 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 
 @Component({
   selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss'],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPage implements OnInit {
   inputForm: FormGroup;
   usernameExists: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    // private router: Router,
+    private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -46,8 +46,7 @@ export class LoginPageComponent implements OnInit {
       this.auth.login(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
-          // this.router.navigate(['/' + this.username]);
-          console.log(`${user.username} is logged in`);
+          this.router.navigate(['/home']);
           form.reset();
         },
         (error) => {

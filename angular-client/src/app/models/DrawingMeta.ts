@@ -13,11 +13,12 @@ export interface Drawing {
 }
 
 export interface DrawingContent {
-  contentID: number; // ID of the svg element drawn onto the surface
-  drawing: string; // Actual content of the svg element
-  status: DrawingStatus; // To know how to render the drawing and the server uses this value to save when the drawing is done.
-
-  // drawingID: number; // To use when connecting to socket
+  userId?: string| undefined;
+  drawingId?: number;
+  id?: number; // ID of the svg element drawn onto the surface
+  content?: string; // Actual content of the svg element
+  status?: DrawingStatus; // To know how to render the drawing and the server uses this value to save when the drawing is done.
+  toolName?: string;
 }
 
 export enum DrawingStatus {
@@ -25,4 +26,15 @@ export enum DrawingStatus {
   Done = 'Done',
   Selected = 'Selected',
   Deleted = 'Deleted',
+}
+
+export enum DrawingState {
+  AVAILABLE,
+  DELETED,
+}
+
+export enum DrawingVisibility {
+  PUBLIC,
+  PROTECTED,
+  PRIVATE,
 }

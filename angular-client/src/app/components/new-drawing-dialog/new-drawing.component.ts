@@ -16,12 +16,13 @@ import {
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-import { DrawingService } from '@services/drawing/drawing.service';
+//import { DrawingService } from '@services/drawing/drawing.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
-// import { SocketService } from '@services/socket/socket.service';
-
-// TODO: à changer, juste pour tester
-const PAUL_USER_ID = 'a7e2dd1a-4746-40e1-b3a0-b7b6f611600a';
+import { JoinDrawing } from '@src/app/models/joinDrrawing';
+import { AuthService } from '@src/app/services/authentication/auth.service';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { SocketService } from '@src/app/services/socket/socket.service';
+//import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
   selector: 'app-new-drawing',
@@ -35,14 +36,14 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
-  drawingID?: number;
+  //drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';
   width: number;
   height: number;
   bgColor: string;
-  ownerID: string = PAUL_USER_ID; // TODO: à changer, juste pour tester
+  userId: string;
 
   newDrawing: Drawing = {
     drawingID: undefined,
@@ -60,13 +61,15 @@ export class NewDrawingComponent implements OnInit {
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
-    // private socketService: SocketService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private readonly socketService: SocketService,
+    private authService: AuthService
   ) {
     this.width = this.canvasBuilder.getDefWidth();
     this.height = this.canvasBuilder.getDefHeight();
     this.bgColor = this.canvasBuilder.getDefColor();
     this.drawingVisibilityItems = drawingVisibilityItems;
+    this.userId = '';
   }
 
   ngOnInit(): void {
@@ -76,6 +79,9 @@ export class NewDrawingComponent implements OnInit {
       if (this.inputEntered) {
         this.resizeCanvas();
       }
+    });
+    this.authService.token$.subscribe((token) => {
+      this.userId = token;
     });
   }
 
@@ -136,7 +142,7 @@ export class NewDrawingComponent implements OnInit {
     const VALUES = this.newDrawingForm.value;
 
     if (VALUES.drawingPassword === '') {
-      VALUES.drawingPassword = undefined;
+      VALUES.drawingPassword = null;
     }
 
     this.newDrawing = {
@@ -146,46 +152,36 @@ export class NewDrawingComponent implements OnInit {
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
       color: VALUES.canvColor,
-      ownerId: this.ownerID,
+      ownerId: this.userId,
     };
 
     try {
       if (
         this.visibility === DrawingVisibilityLevel.PROTECTED &&
-        VALUES.drawingPassword === undefined
+        VALUES.drawingPassword === null
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingID = await this.drawingService.createDrawing(this.newDrawing);
+      this.drawingService.createDrawing(this.newDrawing).subscribe((drawingIdServer: number)=>{
+        console.log(drawingIdServer);
+        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: this.userId, password: this.password}
+        this.socketService.sendJoinDrawingRequest(joinDrawing);
+        this.closeModalForm();
+        this.router.navigate(['/draw']);
+
+
+        const LOAD_TIME = 15;
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, LOAD_TIME);
+      });
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
     }
 
-    this.canvasBuilder.setCanvasFromForm(
-      +VALUES.canvWidth,
-      +VALUES.canvHeight,
-      VALUES.canvColor
-    );
-    this.canvasBuilder.emitCanvas();
 
-    this.closeModalForm();
-    this.router.navigate(['/draw']);
-
-    // this.sendDrawingIDIntoService(this.drawingID);
-
-    const LOAD_TIME = 15;
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, LOAD_TIME);
   }
-
-  // sendDrawingIDIntoService(value: string | undefined) {
-  //   if (value === undefined) {
-  //     return;
-  //   }
-  //   this.socketService.setDrawingID(value);
-  // }
 
   closeModalForm(): void {
     this.windowService.closeWindow();

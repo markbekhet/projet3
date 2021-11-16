@@ -25,6 +25,8 @@ import { FindManyOptions } from 'typeorm';
 import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
+import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
+import { DrawingContent } from 'src/modules/drawing-content/drawing-content.entity';
 
 @Injectable()
 export class DatabaseService {
@@ -61,20 +63,20 @@ export class DatabaseService {
 
     }
 
-    async getUser(userId: string, visitedId) {
+    async getUser(userId: string, visitedId: string) {
         if(userId === visitedId){
             let user =  await this.userRepo.findOne(userId, {
                 select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
                     "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
                 relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
             })
-            for(const connection of user.connectionHistories){
+            for(let connection of user.connectionHistories){
                 connection.date = new Date(connection.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
-            for(const disconnect of user.disconnectionHistories){
+            for(let disconnect of user.disconnectionHistories){
                 disconnect.date = new Date(disconnect.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
-            for(const drawingEdition of user.drawingEditionHistories){
+            for(let drawingEdition of user.drawingEditionHistories){
                 drawingEdition.date = new Date(drawingEdition.date.toString()).toLocaleString('en-US', {timeZone:'America/New_York'});
             }
             return user;
@@ -157,12 +159,14 @@ export class DatabaseService {
             throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
         else{
-            if((newParameters.newPassword === undefined|| newParameters.newPassword === null )&& newParameters.newPseudo !== undefined && newParameters.newPseudo!== null){
+            let updatePassword: Boolean = newParameters.newPassword !== undefined&& newParameters.newPassword !== null
+            let updatePseudo: boolean = newParameters.newPseudo !== undefined && newParameters.newPseudo!== null
+            if(!updatePassword&& updatePseudo){
                 await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
                 user.pseudo = newParameters.newPseudo;
             }
-            else if(newParameters.newPassword !== undefined  && newParameters.newPassword !== null && (newParameters.newPseudo === undefined || newParameters.newPseudo === null)){
-                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+            else if(updatePassword && !updatePseudo){
+                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
                     throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
@@ -178,8 +182,8 @@ export class DatabaseService {
                     await this.userRepo.update(userId,{password: hashedPassword})
                 }
             }
-            else{
-                if(newParameters.oldPassword == undefined || newParameters.oldPassword == null){
+            else if(updatePseudo && updatePassword){
+                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
                     throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
@@ -220,7 +224,7 @@ export class DatabaseService {
                 {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
                 {visibility: DrawingVisibility.PROTECTED},
             ],
-            select: ["id", "visibility", "name", "bgColor", "height", "width"],
+            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId"],
             relations:["contents"],
         })
         return {drawingList:drawings};
@@ -274,22 +278,59 @@ export class DatabaseService {
             relations:["activeUsers", "chatRoom"],
         });
         if(drawing.ownerId !== deleteInformation.userId){
-            throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
-        }
-        if(drawing.activeUsers.length === 0){
-            await this.drawingRepo.delete(drawing.id)
-            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
-            for(const editionHistory of editionHistories){
-                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
+                throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
             }
-            await this.chatRoomRepo.delete(drawing.chatRoom.id);
-            let retDrawing = {id: deleteInformation.drawingId, ownerId: drawing.ownerId, visibility: drawing.visibility};
-            return retDrawing;
         }
-        else{
+        
+        if(drawing.activeUsers.length > 0){
             throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
         }
+        await this.drawingRepo.delete(drawing.id)
+        let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
+        for(const editionHistory of editionHistories){
+            await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+        }
+        await this.chatRoomRepo.delete(drawing.chatRoom.id);
+        let retDrawing = {id: deleteInformation.drawingId, ownerId: drawing.ownerId, visibility: drawing.visibility};
+        return retDrawing;
+
     }
+
+    async modifyDrawing(dto: ModifyDrawingDto){
+        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
+        // validating that the user is allowed to modify the drawing
+        if(drawing.ownerId !== dto.userId){
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
+                throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
+            }
+        }
+        // validating that the password exist if the new visibility is protected
+        if(dto.newVisibility === DrawingVisibility.PROTECTED && (dto.password === undefined || dto.password === null)){
+            throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
+        }
+        let updateName: boolean = dto.newName!== undefined && dto.newName !== null
+        let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
+        if(updateName && !updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
+        }
+        else if(!updateName && updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
+        }
+        else if(updateName && updateVisibility){
+            await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
+        }
+        if(updateVisibility){
+            drawing.visibility = dto.newVisibility;
+        }
+        let drawingMod = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
+             bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
+            ownerId: drawing.ownerId};
+        return drawingMod;
+    }
+
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
         if(dto.visibility === TeamVisibility.PROTECTED){
@@ -302,7 +343,7 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name};
+        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name, ownerId: dto.ownerId};
         return returnedTeam;
     }
 
@@ -321,16 +362,22 @@ export class DatabaseService {
         if(team.activeUsers.length > 0){
             throw new HttpException("can not delete the collaboration team because some users are in the collaboration team", HttpStatus.BAD_REQUEST);
         }
+        let drawingOccupied: boolean = false
         for(const drawing of drawings){
             if(drawing.activeUsers.length > 0){
-                throw new HttpException("can not delete the collaboration team because there is a user editing a drawing associated to this team", HttpStatus.BAD_REQUEST);
+                drawingOccupied = true;
             }
-            await this.drawingRepo.delete(drawing.id);
-            await this.chatRoomRepo.delete(drawing.chatRoom.id);
-            let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
-            for(const editionHistory of editionHistories){
-                await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+            else{
+                await this.drawingRepo.delete(drawing.id);
+                await this.chatRoomRepo.delete(drawing.chatRoom.id);
+                let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
+                for(const editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingStae: DrawingState.DELETED});
+                }
             }
+        }
+        if(drawingOccupied){
+            throw new HttpException("Can not delete team because there is at least one drawing in edition", HttpStatus.BAD_REQUEST);
         }
         await this.teamRepo.delete(dto.teamId);
         await this.chatRoomRepo.delete(team.chatRoom.id);

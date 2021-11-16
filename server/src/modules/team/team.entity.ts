@@ -44,6 +44,7 @@ export class Team extends BaseEntity{
         newTeam.ownerId = dto.ownerId;
         newTeam.visibility = dto.visibility;
         newTeam.password = dto.password;
+        newTeam.nbCollaborators = dto.nbCollaborators;
         newTeam.name = dto.name;
         let newChatRoom = new ChatRoom()
         newChatRoom.name = dto.name;
