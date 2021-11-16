@@ -223,7 +223,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         chatSocket?.disconnect()
-        drawingSocket?.disconnect()
         finish()
     }
 
