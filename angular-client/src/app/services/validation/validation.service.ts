@@ -35,4 +35,11 @@ export class ValidationService {
     }
     return { invalidPassword: true };
   }
+
+  static testValidator(control: FormControl) {
+    if (control.value !== null) {
+      return null;
+    }
+    return { testValidator: true };
+  }
 }

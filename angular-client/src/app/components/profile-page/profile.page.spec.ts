@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LandingPageComponent } from './landing-page.component';
+import { ProfilePage } from './profile.page';
 
-describe('LandingPageComponent', () => {
-  let component: LandingPageComponent;
-  let fixture: ComponentFixture<LandingPageComponent>;
+describe('ProfilePagePage', () => {
+  let component: ProfilePage;
+  let fixture: ComponentFixture<ProfilePage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LandingPageComponent],
+      declarations: [ProfilePage],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LandingPageComponent);
+    fixture = TestBed.createComponent(ProfilePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,43 @@
+<!-- Reactive form (with validators) -->
+
+<div class="login-page">
+    <div class="logo-wrapper">
+        <img src="../../../assets/logos/login-page_logo.png" alt="Logo ColorImage" class="logo">
+    </div>
+
+    <div class="form-container">
+        <form [formGroup]="inputForm" (ngSubmit)="onSubmit(inputForm)">
+            <mat-form-field>
+                <mat-label>Nom d'utilisateur</mat-label>
+                <input type="text" matInput formControlName="username" required />
+                <mat-error *ngIf="checkError('username', 'required')">Le nom d'utilisateur est requis !</mat-error>
+                <mat-error *ngIf="
+                        checkError('username', 'invalidUsername') &&
+                        !checkError('username', 'required')
+                    ">Le nom d'utilisateur n'est pas valide !</mat-error>
+            </mat-form-field>
+            <br />
+
+            <mat-form-field>
+                <mat-label>Mot de passe</mat-label>
+                <input type="password" matInput formControlName="password" required />
+                <mat-error *ngIf="checkError('password', 'required')">Le mot de passe est requis !</mat-error>
+            </mat-form-field>
+            <br />
+
+            <button mat-icon-button [disabled]="inputForm.invalid">
+                Connexion <mat-icon>login</mat-icon>
+            </button>
+
+            <div>
+                Si vous n'avez pas déjà un compte,
+                <a matLine routerLink="/register">cliquez ici</a>
+                pour en créer un ! 😊
+            </div>
+        </form>
+    </div>
+
+    <div class="footer">
+        <p>© Équipe-101</p>
+    </div>
+</div>

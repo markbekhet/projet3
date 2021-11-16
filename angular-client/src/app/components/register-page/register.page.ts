@@ -11,10 +11,10 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 
 @Component({
   selector: 'app-register-page',
-  templateUrl: './register-page.component.html',
-  styleUrls: ['./register-page.component.scss'],
+  templateUrl: './register.page.html',
+  styleUrls: ['./register.page.scss'],
 })
-export class RegisterPageComponent implements OnInit {
+export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
@@ -60,16 +60,15 @@ export class RegisterPageComponent implements OnInit {
       this.auth.register(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
-          console.log(this.auth.authentifiedUser);
           this.router.navigate(['/home']);
         },
         (error) => {
           const errorCode = JSON.parse(
             (error as HttpErrorResponse).error
           ).message;
-          console.log(errorCode);
-          let interfaceErrorCode;
-          switch (errorCode) {
+          console.log(error);
+          // let interfaceErrorCode;
+          /* switch (errorCode) {
             case this.auth.DUPLICATE_EMAIL:
               interfaceErrorCode = 'Un compte avec ce courriel existe déjà !';
               break;
@@ -79,9 +78,9 @@ export class RegisterPageComponent implements OnInit {
               break;
             default:
               break;
-          }
+          } */
           this.errorDialog.open(ErrorDialogComponent, {
-            data: interfaceErrorCode,
+            data: errorCode,
           });
 
           this.resetForm();
