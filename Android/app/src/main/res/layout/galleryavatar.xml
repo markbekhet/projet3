@@ -19,7 +19,9 @@
             android:text="Galerie"
             android:textAlignment="center"
             android:textSize="20sp" />
+
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/displayviewgallery"
             android:layout_width="800dp"
             android:layout_marginTop="50dp"
             android:layout_height="600dp"
