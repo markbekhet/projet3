@@ -2,12 +2,15 @@ package com.example.android
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.media.Image
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
@@ -30,6 +33,10 @@ import kotlinx.android.synthetic.main.avatar.view.*
 import kotlinx.android.synthetic.main.fragment_avatar.*
 import kotlinx.android.synthetic.main.fragment_avatar.view.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
+import androidx.activity.result.ActivityResultLauncher
+
+import android.R.attr.data
+import androidx.activity.result.contract.ActivityResultContracts
 
 
 class RegisterScreen : AppCompatActivity() {
@@ -47,12 +54,24 @@ class RegisterScreen : AppCompatActivity() {
         val confirmPassword: EditText = findViewById(R.id.confirm_password)
         val email: EditText = findViewById(R.id.editTextTextEmailAddress)
         val button: Button = findViewById<Button>(R.id.button)
-        val  IMAGE_PICK_CODE: Int =1000;
-        val pickImage = 100
         var galerie: Dialog? = null
-        //val camera: Button = findViewById<Button>(fragmentAvatar.camera.id)
         var clientService = ClientService()
+        val REQUEST_IMAGE_CAPTURE = 1
 
+//        var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == Activity.RESULT_OK ) {
+//                // There are no request codes
+//                val data: Intent? = result.data
+//                val imageBitmap = data!!.extras!!.get("data") as Bitmap
+//                img_save.setImageBitmap(imageBitmap)
+//            }
+//        }
+        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+                val imageBitmap = data!!.extras!!.get("data") as Bitmap
+                img_save.setImageBitmap(imageBitmap)
+            }
+        }
         //handle result of picked image
         fun pickImageFromGallery(){
             startActivity(Intent(this, Gallery::class.java))
@@ -71,6 +90,16 @@ class RegisterScreen : AppCompatActivity() {
         gallery.setOnClickListener() {
 
                 pickImageFromGallery();
+
+        }
+        camera.setOnClickListener() {
+
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            try {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            } catch (e: ActivityNotFoundException) {
+                // display error state to the user
+            }
 
         }
 
