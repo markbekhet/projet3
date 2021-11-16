@@ -42,7 +42,7 @@ private const val ARG_PARAM2 = "param2"
 class UsersAndTeamsFragment() : Fragment() {
     private var usersAdapter : GroupAdapter<GroupieViewHolder>? = null
     private var teamsAdapter: GroupAdapter<GroupieViewHolder>?= null
-    private var usersList: ArrayList<User>?= null
+    private var usersList= ArrayList<User>()
     private var clientService = ClientService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +56,7 @@ class UsersAndTeamsFragment() : Fragment() {
         // support negative case where the user cannot join a team just a Toast
         val joinTeam = JoinTeamDto(
             teamName = createTeamDto.name,
-            userId = createTeamDto.ownerId,
+            userId = ClientInfo.userId,
             password = createTeamDto.password)
         var i = 0
         SocketHandler.getChatSocket().emit("joinTeam", joinTeam.toJson())
@@ -93,8 +93,10 @@ class UsersAndTeamsFragment() : Fragment() {
     fun setTeamsList(){
         updateTeamsRecycleView()
     }
-    fun setUsersList(usersList: ArrayList<User>){
-        this.usersList = usersList
+    fun setUsersList(usersList: ArrayList<User>) {
+        if(usersList!= null){
+            this.usersList = usersList
+        }
         updateUsersRecycleView()
     }
 
@@ -169,39 +171,35 @@ class UsersAndTeamsFragment() : Fragment() {
     }
 
     fun updateUsersRecycleView(){
-        if(usersList != null){
-            usersAdapter = GroupAdapter<GroupieViewHolder>()
-            for(user in usersList!!){
-                if(user.id != ClientInfo.userId){
-                    val newUserItem = UserItem(this)
-                    newUserItem.set(user)
-                    usersAdapter?.add(newUserItem)
-                }
-                else{
-                    if(ClientInfo.username == null){
-                        ClientInfo.username = user.pseudo
-                    }
+        usersAdapter = GroupAdapter<GroupieViewHolder>()
+        for(user in usersList){
+            if(user.id != ClientInfo.userId){
+                val newUserItem = UserItem(this)
+                newUserItem.set(user)
+                usersAdapter?.add(newUserItem)
+            }
+            else{
+                if(ClientInfo.username == null){
+                    ClientInfo.username = user.pseudo
                 }
             }
-            try{
-                activity?.runOnUiThread{
-                    usersRecycleView.adapter = usersAdapter
-                }
-            } catch(e: Exception){}
         }
+        try{
+            activity?.runOnUiThread{
+                usersRecycleView.adapter = usersAdapter
+            }
+        } catch(e: Exception){}
     }
 
     fun updateTeamsRecycleView(){
-        if(ClientInfo.teamsList.teamList != null){
-            teamsAdapter = GroupAdapter<GroupieViewHolder>()
-            for(team in ClientInfo.teamsList.teamList!!){
-                val newTeamItem = TeamItem(clientService,this)
-                newTeamItem.set(team)
-                teamsAdapter?.add(newTeamItem)
-            }
-            activity?.runOnUiThread{
-                teamsRecycleView.adapter = teamsAdapter
-            }
+        teamsAdapter = GroupAdapter<GroupieViewHolder>()
+        for(team in ClientInfo.teamsList.teamList!!){
+            val newTeamItem = TeamItem(clientService,this)
+            newTeamItem.set(team)
+            teamsAdapter?.add(newTeamItem)
+        }
+        activity?.runOnUiThread{
+            teamsRecycleView.adapter = teamsAdapter
         }
     }
 

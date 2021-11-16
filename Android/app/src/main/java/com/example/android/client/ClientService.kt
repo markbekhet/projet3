@@ -207,7 +207,7 @@ class ClientService : Service() {
         println(ClientInfo.userId)
         withContext(Dispatchers.IO){
             response =
-                service.modifyProfileParams(ClientInfo.userId, requestBody)
+                service.deleteDrawing(requestBody)
             if(response != null){
                 println(response!!.code())
             }

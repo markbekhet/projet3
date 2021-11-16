@@ -2,7 +2,7 @@ package com.example.android.client
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -46,29 +46,10 @@ class Gallery :  Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_gallery, parent, false)
 
-
-        /*  SocketHandler.setChatSocket()
-          SocketHandler.establishChatSocketConnection()
-          var gallery  = GalleryDrawing()
-          var response: Response<ResponseBody>?=null
-
-          runBlocking {
-              async{
-                  launch {
-                      response = clientService.getUserGallery()
-                  }
-              }
-          }
-          if(response!!.isSuccessful){
-              val data = response!!.body()!!.string()
-              gallery = GalleryDrawing().fromJson(data)
-              buildGallery(gallery.drawingList!!)
-          }*/
      return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
-        val clientService = ClientService()
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
         val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -136,12 +117,13 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.name.text = information!!.name
         val canvas = GalleryCanvasView(information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
-        val params: ViewGroup.LayoutParams = viewHolder.itemView.fl_drawing_view_gallery.getLayoutParams()
+        canvas.setBackgroundColor(
+            Color.parseColor("#ff${information!!.bgColor}"))
+        val params: ViewGroup.LayoutParams =
+            viewHolder.itemView.fl_drawing_view_gallery.getLayoutParams()
         params.width= 300
         params.height= 300
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
-        canvas.setBackgroundColor(
-            Color.parseColor("#ff${information!!.bgColor}"))
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
             DrawingUtils.currentDrawingId = information!!.id!!
@@ -161,7 +143,6 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         }
 
     }
-
     fun set(information_:ReceiveDrawingInformation) {
         this.information = information_
     }

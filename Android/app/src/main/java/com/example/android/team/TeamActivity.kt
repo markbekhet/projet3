@@ -27,7 +27,7 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
         socket = SocketHandler.getChatSocket()
-        var usersList =  ArrayList<User>()
+        val usersList =  ArrayList<User>()
         //The extra data will be needed for the gallery and for the chat
 
         /*===============Get the team information from the bundle==================*/
@@ -38,6 +38,7 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
             for(userInformation in ClientInfo.usersList.userList!!){
                 if(userId.userId == userInformation.id){
                     usersList.add(userInformation)
+                    break
                 }
             }
         }
@@ -73,7 +74,9 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
 
         for(room in ChatRooms.chatRooNames){
             val chatRoom = Chat(room)
-            chatRoom.setMessage(ChatRooms.chats[room]!!)
+            try{
+                chatRoom.setMessage(ChatRooms.chats[room]!!)
+            } catch(e: Exception){}
             chatRoomsFragmentMap[room] = chatRoom
 
         }
@@ -105,7 +108,9 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
                 var newActiveUserInformation = User()
                 for(existingUser in ClientInfo.usersList.userList!!){
                     if(existingUser.id == newActiveUser.userId){
+                        println("${existingUser.pseudo} has joined ${teamGeneralInformation!!.name}")
                         newActiveUserInformation = existingUser
+                        break
                     }
                 }
                 usersList.add(newActiveUserInformation)

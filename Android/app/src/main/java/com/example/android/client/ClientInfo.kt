@@ -20,4 +20,4 @@ class User(val id: String? = null,
 
 class UsersArrayList(val userList: ArrayList<User>? = null){}
 
-class TeamsArrayList(val teamList: ArrayList<TeamGeneralInformation>?= null){}
+class TeamsArrayList(val teamList: ArrayList<TeamGeneralInformation> = ArrayList()){}

@@ -5,57 +5,42 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/rectangle_background">
-
     <LinearLayout
-        android:layout_width="410dp"
-        android:layout_height="310dp"
-        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
-        <FrameLayout
-            android:id="@+id/fl_drawing_view_gallery"
+        <TextView
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="@drawable/background"
-            android:padding="1dp">
-
-            <!-- In FrameLayout the component which are
-           added below are in foreground and added above are in Background.-->
-            <ImageView
-                android:id="@+id/background"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:background="@drawable/rectangle_background"
-                android:contentDescription="image"
-                android:scaleType="centerCrop" />
-
-
-        </FrameLayout>
+            android:layout_marginBottom="5dp"
+            android:text="name"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <LinearLayout
-            android:layout_width="100dp"
-            android:layout_height="300dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <FrameLayout
+                android:id="@+id/fl_drawing_view_gallery"
+                android:background="@drawable/rectangle_background"
+                android:layout_width="300px"
+                android:layout_height="300px">
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="20sp"
-                android:text="name"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+                <!-- In FrameLayout the component which are
+               added below are in foreground and added above are in Background.-->
+
+            </FrameLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="180dp"
-                android:orientation="horizontal">
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/delete"
