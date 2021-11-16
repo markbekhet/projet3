@@ -193,6 +193,11 @@
             android:clickable="false"
             android:enabled="false"
             android:text="Connexion" />
+        <Button
+            android:id="@+id/avatar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connexion" />
 
         <TextView
             android:id="@+id/login"
