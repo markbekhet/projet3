@@ -1,6 +1,7 @@
 package com.example.android
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.Image
@@ -31,9 +32,7 @@ import kotlinx.android.synthetic.main.popup_modify_parameters.*
 
 class RegisterScreen : AppCompatActivity() {
 
-    private var imagePicker: ImageView? = null
 
-    private val PERMISSION_CODE:Int =1001;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
@@ -42,51 +41,33 @@ class RegisterScreen : AppCompatActivity() {
         val lastName: EditText = findViewById(R.id.largeur)
         val pseudo: EditText = findViewById(R.id.pseudonyme)
         val password: EditText = findViewById(R.id.password)
+        var texte: Button? = null
         val confirmPassword: EditText = findViewById(R.id.confirm_password)
         val email: EditText = findViewById(R.id.editTextTextEmailAddress)
         val button: Button = findViewById<Button>(R.id.button)
         val  IMAGE_PICK_CODE: Int =1000;
         val pickImage = 100
+        var galerie: Dialog? = null
         //val camera: Button = findViewById<Button>(fragmentAvatar.camera.id)
-        val gallery: Button = findViewById<Button>(R.id.avatar2)
-        val image : ImageView? = findViewById<ImageView>(img_save.id)
         var clientService = ClientService()
 
         //handle result of picked image
-
-        fun onActivityResult(requestCode: Intent, resultCode: Int) {
-            if (resultCode == Activity.RESULT_OK && resultCode == IMAGE_PICK_CODE){
-                image!!.setImageURI(requestCode?.data)
+        fun pickImageFromGallery(){
+            if (galerie == null) {
+                galerie = Dialog(this)
+                galerie!!.setContentView(R.layout.galleryavatar)
+                galerie!!.show()
+                texte = gallery!!.findViewById(R.id.fermer) as Button?
+                texte?.isEnabled = true
+                texte?.setOnClickListener {
+                    galerie!!.hide()
+                    galerie = null
+                }
             }
-
-        }
-
-        fun pickImageFromGallery() {
-            //Intent to pick image
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            onActivityResult(intent, IMAGE_PICK_CODE)
-
         }
         gallery.setOnClickListener() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
-                    //permission denied
-                    val permissions = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-                    //show popup to request runtime permission
-                    requestPermissions(permissions, PERMISSION_CODE);
-                }
-                else{
-                    //permission already granted
-                    pickImageFromGallery();
-                }
-            }
-            else{
-                //system OS is < Marshmallow
-                pickImageFromGallery();
-            }
 
+                pickImageFromGallery();
 
         }
 

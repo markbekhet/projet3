@@ -20,39 +20,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <LinearLayout
+    <Button
+        android:id="@+id/gallery"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="176dp">
-
-        <Button
-            android:id="@+id/gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif"
-            android:text="galerie"
-            android:textAllCaps="true"
-            android:textColor="@color/main_color"
-            android:textSize="14sp"
-            app:backgroundTint="#F4F4F4"
-            android:layout_marginRight="2dp"
-            tools:ignore="MissingConstraints" />
-
-        <Button
-            android:id="@+id/camera"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="sans-serif"
-            android:text="camera"
-            android:textAllCaps="true"
-            android:textColor="@color/main_color"
-            android:textSize="14sp"
-            app:backgroundTint="#F4F4F4"
-            tools:ignore="MissingConstraints" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif"
+        android:text="changer d'avatar"
+        android:textAllCaps="true"
+        android:textColor="@color/main_color"
+        android:textSize="14sp"
+        app:backgroundTint="#F4F4F4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="175dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

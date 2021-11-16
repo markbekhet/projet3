@@ -4,9 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <permission android:protectionLevel="signature"
-        android:name="com.example.permission.C2D_MESSAGE" />
-    <uses-permission android:name="com.example.permission.C2D_MESSAGE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
