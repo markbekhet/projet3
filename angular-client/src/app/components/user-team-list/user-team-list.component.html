@@ -10,7 +10,7 @@
     <mat-list class= "teamsList">
         <mat-list-item *ngFor="let team of teamList">
             <h3> {{team.name}}</h3>
-            <button> joindre</button>
+            <button (click)="joinTeam(team)"> joindre</button>
             <button *ngIf= "userId === team.ownerId"> Supprimer</button>
         </mat-list-item>
     </mat-list>

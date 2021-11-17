@@ -1,16 +1,15 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, /* , Observable */
-Subject} from 'rxjs';
+import { BehaviorSubject, Subject} from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { Message } from '@models/MessageMeta';
 import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
-// import { AuthService } from '../authentication/auth.service';
 import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingContent } from '@src/app/models/DrawingMeta';
 import { Team } from '@src/app/models/teamsMeta';
+import { JoinTeam } from '@src/app/models/joinTeam';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -185,5 +184,10 @@ export class SocketService {
 
     })
     return this.teams$;
+  }
+
+  sendRequestJoinTeam(joinTeam: JoinTeam){
+    let joinTeamString = JSON.stringify(joinTeam);
+    this.socket!.emit("joinTeam", joinTeamString)
   }
 }

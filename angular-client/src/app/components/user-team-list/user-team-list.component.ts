@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { JoinTeam } from '@src/app/models/joinTeam';
 import { Team } from '@src/app/models/teamsMeta';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
@@ -59,6 +60,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       let newTeam: Team = JSON.parse(data);
       this.teamList.push(newTeam);
     })
+  }
+
+  joinTeam(team: Team){
+    const joinTeamBody: JoinTeam = {teamName: team.name!, userId: this.userId};
+    this.socketService.sendRequestJoinTeam(joinTeamBody);
   }
 
 }
