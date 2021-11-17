@@ -1,14 +1,17 @@
 <div>
-    <div id= "userList">
-        <p> users </p>
-        <div *ngFor = "let user of userList">
-            <button>{{user.pseudo}}</button>
-        </div>
-    </div>
-    <div>
-        <p> teams</p>
-        <div *ngFor = "let team of teamList">
-            <button> team </button>
-        </div>
-    </div>
+    <mat-list class= "usersList">
+        <mat-list-item *ngFor="let user of userList">
+            <div *ngIf= "user.id !== userId && user.status !== 2">
+                <h3> {{user.pseudo}}</h3>
+                <button> Consulter son profile</button>
+            </div>
+        </mat-list-item>
+    </mat-list>
+    <mat-list class= "teamsList">
+        <mat-list-item *ngFor="let team of teamList">
+            <h3> {{team.name}}</h3>
+            <button> joindre</button>
+            <button *ngIf= "userId === team.ownerId"> Supprimer</button>
+        </mat-list-item>
+    </mat-list>
 </div>

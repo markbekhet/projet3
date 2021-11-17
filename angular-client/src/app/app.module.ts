@@ -40,6 +40,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
 import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
 import { TeamService } from './services/team/team.service';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { TeamService } from './services/team/team.service';
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialModule,
+    MatListModule,
   ],
   providers: [
     AuthService,
