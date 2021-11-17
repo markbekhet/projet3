@@ -23,6 +23,20 @@ export const menuItems: FeatureItem[] = [
         comme vous pouvez l'ouvrir en faisant la touche 'ctrl+G' de votre clavier. Si des dessins précédemment sauvegardés sont présents sur le serveur, ils seront automatiquement affichés sous forme de fenêtre de prévisualisation en vous laissant le choix de supprimer ou de continuer celui-ci. Cette dernière option écrasera le dessin courant dans le cas où il n'a pas été sauvegardé au préalable. Enfin, il est possible de rechercher un dessin à l'aide d'étiquettes via la barre de filtrage située au haut de la galerie.`,
     icon: 'camera',
   },
+  {
+    name: 'Deconnexion',
+    shortcutName: 'Disconnect',
+    shortDescription: `deconnexion`,
+    description: `deconnexion`,
+    icon: 'camera',
+  },
+  {
+    name: 'Profile',
+    shortcutName: 'Profile',
+    shortDescription: `profile`,
+    description: `profile`,
+    icon: 'camera',
+  },
 ];
 
 export const toolItems: FeatureItem[] = [

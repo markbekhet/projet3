@@ -80,7 +80,7 @@ export class Ellipse implements DrawingTool {
     this.renderer.setAttribute(this.element, "ry", "0")
     this.renderer.setAttribute(this.element, "cx", `${position.x}`);
     this.renderer.setAttribute(this.element, "cy", `${position.y}`)
-    this.renderer.setAttribute(this.element, "transform", "translate(0,0");
+    this.renderer.setAttribute(this.element, "transform", "translate(0,0)");
     this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
     this.renderer.setAttribute(this.element, "stroke-width", this.attr.shapeLineThickness!.toString())
     this.renderer.setAttribute(this.element, "fill", this.secondaryColor);

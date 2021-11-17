@@ -27,7 +27,7 @@ import { ActiveDrawing } from '@src/app/services/static-services/user_token';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
-import { User } from '@src/app/models/UserMeta';
+//import { User } from '@src/app/models/UserMeta';
 import { Point } from '@src/app/services/drawing-tools/point';
 //import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
 import { Renderer2 } from '@angular/core';
@@ -48,7 +48,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @ViewChild("canvas", {static:false}) canvas!: ElementRef;
   @ViewChild("drawingSpace", {static: false}) drawingSpace!: ElementRef;
   @ViewChild("actualDrawing", {static: false}) doneDrawing!: ElementRef;
-  
+
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
@@ -77,8 +77,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   getUserId(){
-    this.authService.authentifiedUser.subscribe((user: User)=>{
-      this.userId = user.id;
+    this.authService.token$.subscribe((token: string)=>{
+      this.userId = token;
     })
   }
   getDrawingId(){
@@ -87,11 +87,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     })
   }
   ngOnInit(): void {
-    this.authService.authentifiedUser.subscribe((user: User)=>{
-      this.userId = user.id;
+    this.authService.token$.subscribe((token: string)=>{
+      this.userId = token;
     })
-    
-    
   }
 
   initDrawing(){
@@ -106,12 +104,12 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       drawingInformations.drawing.contents.forEach((content) => {
         if(content.content!== null && content.content!== undefined){
           this.manipulateReceivedDrawing(content);
-        }        
+        }
       });
       this.draw();
     });
   }
-  
+
   @HostListener('window:resize')
   onResize() {
   }
@@ -186,7 +184,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             //let position = Point.rpositionMouse(e, this.canvas.nativeElement);
             let scalingFactor = new Point(reposition.x- this.scalingPoint![0].x - this.totalScaling.x,
               reposition.y - this.scalingPoint![0].y - this.totalScaling.y)
-            
+
               this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
               this.totalScaling.plus(scalingFactor);
               break;
@@ -211,7 +209,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           default:
             this.currentTool.onMouseMove(e);
             break;
-        }  
+        }
         //this.currentTool.onMouseMove(e)
       }
     }
@@ -228,8 +226,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         this.drawingId = id
       })
       console.log(this.drawingId);
-      
-      
+
+
       this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
         this.currentTool.contentId = data.contentId;
       })
@@ -258,7 +256,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.currentTool.updateSecondaryColor();
         }
       })
-    } 
+    }
     else {
       console.log('canvas is undefined');
     }
@@ -289,7 +287,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           }
         }
 
-      } 
+      }
 
       else{
         try{
@@ -298,7 +296,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
             case PENCIL_TOOL_NAME:
               newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
               break;
-            
+
             case RECT_TOOL_NAME:
               //TODO
               newTool = new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
@@ -321,7 +319,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
+
   isInsideTheSelection(e: MouseEvent): boolean {
     if(this.currentTool !== undefined && this.currentTool.inTranslationZone(e)){
       return true;
@@ -329,4 +327,3 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     return false
   }
 }
-

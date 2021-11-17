@@ -2,29 +2,27 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserCredentials } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
 // import { ValidationService } from '@services/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss'],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPage implements OnInit {
   inputForm: FormGroup;
   usernameExists: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    // private router: Router,
+    private router: Router,
     private auth: AuthService,
     public errorDialog: MatDialog,
-    public router: Router
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -49,7 +47,6 @@ export class LoginPageComponent implements OnInit {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
           this.router.navigate(['/home']);
-          console.log(`${user.username} is logged in`);
           form.reset();
         },
         (error) => {
