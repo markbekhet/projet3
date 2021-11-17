@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.*
-import com.example.android.client.Gallery
+import com.example.android.Gallery
 import com.example.android.profile.OwnProfile
 import com.example.android.team.*
 import com.google.gson.Gson
@@ -209,6 +209,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
         disconnect.setOnClickListener {
             disconnect()
+            finish()
         }
         /*=======================================================================================*/
     }
@@ -223,7 +224,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         chatSocket?.disconnect()
-        finish()
     }
 
     fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
@@ -240,6 +240,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
     override fun onBackPressed() {
         disconnect()
+        super.onBackPressed()
     }
 
     override fun switchChatRoom(name: String) {

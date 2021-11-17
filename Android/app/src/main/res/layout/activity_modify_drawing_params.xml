@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ModifyDrawingParams">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <FrameLayout
+            android:id="@+id/modifyDrawingPageChatSwitch"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:visibility="invisible"/>
+        <LinearLayout
+            android:layout_width="400dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <Button
+                android:id="@+id/modifyDrawingPageToggleChat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Afficher le clavardage"
+                android:gravity="top"/>
+
+            <EditText
+                android:id="@+id/modifyDrawingName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="15"
+                android:inputType="textPersonName"
+                android:hint="Nouveau nom au dessin" />
+
+            <Spinner
+                android:id="@+id/spOptionModifyDrawing"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/resultModifyDrawingVisibility"
+                android:layout_marginTop="5dp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/modifyDrawingPassword"
+                android:layout_width="229dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:width="40sp"
+                android:ems="15"
+                android:hint="mot de passe"
+                android:visibility="invisible"
+                android:inputType="textPassword"
+                android:layout_marginTop="10dp"
+                />
+            <Button
+                android:id="@+id/modifyDrawingParams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Modifier"
+                android:clickable="false"
+                android:enabled="false"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/modifyDrawingPageChatsFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+        </FrameLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.example.android.client
+package com.example.android
 
 import android.content.Context
 import android.content.Intent
@@ -19,6 +19,8 @@ import com.example.android.SocketHandler
 import com.example.android.canvas.*
 import com.example.android.chat.ServerMessage
 import com.example.android.chat.UserMessage
+import com.example.android.client.ClientInfo
+import com.example.android.client.ClientService
 import com.example.android.delete
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -78,7 +80,16 @@ class Gallery :  Fragment() {
     fun startDrawingActivity(){
         startActivity(Intent(this.context, Drawing::class.java))
     }
+
+    fun startModifyingActivity(information: ReceiveDrawingInformation){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", information.toJson())
+
+        startActivity(Intent(this.context, ModifyDrawingParams::class.java).putExtras(bundle))
+    }
 }
+
+
 class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     private var information: ReceiveDrawingInformation?= null
     private var clientService = ClientService()
@@ -91,6 +102,10 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         if(ClientInfo.userId == information!!.ownerId){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
+            viewHolder.itemView.modify.setOnClickListener {
+                fragment.startModifyingActivity(information!!)
+            }
+
             viewHolder.itemView.delete.setOnClickListener{
                 var response: Response<ResponseBody>?= null
                 val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)

@@ -29,6 +29,10 @@ class ReceiveDrawingInformation(
     fun fromJson(json: String): ReceiveDrawingInformation{
         return Gson().fromJson(json, ReceiveDrawingInformation::class.java)
     }
+
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
 }
 
 class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= null){
@@ -63,12 +67,16 @@ class DeleteDrawingDt(var drawingId:Int, var userId:String) {
         return Gson().toJson(this)
     }
 }
-    class ModifyDrawingDto(var drawingId:Int, var userId:String,var newName: String,var password: String?){
-        fun toJson(): String {
-            return Gson().toJson(this)
-        }
-
-
+class ModifyDrawingDto(
+    var drawingId:Int?= null,
+    var userId:String?= null,
+    var newName: String?= null,
+    var newVisibility: Int?= null,
+    var password: String?= null)
+{
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
 }
 enum class Visibility(var int: Int){
     publicVisibility(0),

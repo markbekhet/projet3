@@ -42,7 +42,7 @@ class CreateDraw : AppCompatActivity() {
         option = findViewById(R.id.sp_option) as Spinner
         result = findViewById(R.id.result) as TextView
 
-        val options = arrayOf("public", "proteger", "privee")
+        val options = arrayOf("public", "protegé", "privé")
         option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -161,12 +161,12 @@ class CreateDraw : AppCompatActivity() {
                             DrawingUtils.drawingInformation =
                                 AllDrawingInformation().fromJson(data)
                             startActivity(Intent(this, Drawing::class.java))
+                            finish()
                             i++
                         }
                     }
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du dessin." +
-                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
+                    error.text = response!!.errorBody()!!.string()
                 }
 
             }
