@@ -39,6 +39,7 @@ import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.co
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
+import { TeamService } from './services/team/team.service';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-di
     ModalWindowService,
     SocketService,
     ValidationService,
+    TeamService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Team } from '@src/app/models/teamsMeta';
 import { TeamVisibilityItem, teamVisibilityItems, TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { TeamService } from '@src/app/services/team/team.service';
 //import { SocketService } from '@src/app/services/socket/socket.service';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
@@ -34,6 +35,7 @@ export class NewTeamDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private windowService: ModalWindowService,
     //private readonly socketSeervice: SocketService,
+    private teamService: TeamService,
     private authService: AuthService
   ) {
     this.userId = '';
@@ -83,6 +85,7 @@ export class NewTeamDialogComponent implements OnInit {
       ownerId: this.userId,
       nbCollaborators: values.maxCollaborators,
     }
+    this.teamService.createTeam(this.newTeam);
     console.log(this.newTeam);
     this.closeModal();
 
