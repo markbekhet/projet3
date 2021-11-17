@@ -172,7 +172,9 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
                     }
                     ClientInfo.usersList.userList!!.add(userUpdated)
                 }
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                try{
+                    usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                }catch(e: Exception){}
             }
 
         }

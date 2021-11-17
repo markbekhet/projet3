@@ -130,7 +130,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.delete.isVisible= false
         }
         viewHolder.itemView.name.text = information!!.name
-        val canvas = GalleryCanvasView(information!!.id!!, fragment.requireContext())
+        val canvas = GalleryCanvasView(information!!.width!!, information!!.height!!,information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
         canvas.setBackgroundColor(
             Color.parseColor("#ff${information!!.bgColor}"))
