@@ -5,6 +5,7 @@ import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 //import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
+import { TeamService } from '@src/app/services/team/team.service';
 
 @Component({
   selector: 'app-user-team-list',
@@ -16,7 +17,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   userList: User[];
   teamList: Team[];
   userId: string;
-  constructor(private socketService: SocketService, private authService: AuthService) { 
+  constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService) { 
     this.userList = []
     this.teamList = []
     this.userId = this.authService.token$.value
@@ -46,7 +47,8 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       let found = false;
       this.userList.forEach((user)=>{
         if(user.id === dataMod.id){
-          user = dataMod;
+          user.pseudo = dataMod.pseudo;
+          user.status = dataMod.status;
           found = true;
         }
       })
@@ -60,11 +62,24 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       let newTeam: Team = JSON.parse(data);
       this.teamList.push(newTeam);
     })
+    this.socketService.socket!.on("teamDeleted", (data: any)=>{
+      let deletedTeam: Team = JSON.parse(data);
+      this.teamList.forEach((team)=>{
+        if(team.id === deletedTeam.id){
+          let index = this.teamList.indexOf(team);
+          this.teamList.splice(index);
+        }
+      })
+    })
   }
 
   joinTeam(team: Team){
     const joinTeamBody: JoinTeam = {teamName: team.name!, userId: this.userId};
     this.socketService.sendRequestJoinTeam(joinTeamBody);
   }
+  deleteTeam(team:Team){
+    const deleteTeamBody = {teamId: team.id!, userId: team.ownerId!};
+    this.teamService.deleteTeam(deleteTeamBody);
 
+  }
 }

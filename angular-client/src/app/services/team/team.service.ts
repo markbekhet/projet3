@@ -1,4 +1,4 @@
-import { HttpClient} from '@angular/common/http';
+import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Team } from '@src/app/models/teamsMeta';
 //import { Observable } from 'rxjs';
@@ -24,7 +24,17 @@ export class TeamService {
   }
 
   //TODO
-  deleteTeam(){
-
+  deleteTeam(data: {teamId: string, userId: string}){
+    const httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      body: data
+    }
+    this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions).subscribe((res)=>{
+      console.log(res);
+    },
+    (error)=>{
+      console.log(`error: ${error.message}`)
+    }
+    )
   }
 }
