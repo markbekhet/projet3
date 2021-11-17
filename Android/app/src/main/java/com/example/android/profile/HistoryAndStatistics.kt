@@ -63,8 +63,11 @@ class HistoryAndStatistics : AppCompatActivity() {
 
         updateUI()
     }
-    fun startDrawingActivity(){
-        startActivity(Intent(this, Drawing::class.java))
+    fun startDrawingActivity(data: String, drawingID: Int){
+        val bundle = Bundle()
+        bundle.putInt("drawingID", drawingID)
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this, Drawing::class.java).putExtras(bundle))
     }
 
     fun updateUI(){
@@ -130,18 +133,18 @@ class HistoryAndStatistics : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         //maybe change it back to socket later
-        var response: Response<ResponseBody>?=  null
-        runBlocking{
-            async{
-                launch{
-                   response = ClientService().getUserProfileInformation(ClientInfo.userId)
+        val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+        SocketHandler.getChatSocket().emit("getUserProfileRequest", profileRequest.toJson())
+        var i = 0
+        SocketHandler.getChatSocket().on("profileToClient"){ args ->
+            if(args[0]!=null && i==0){
+                val data = args[0] as String
+                userInfo = UserProfileInformation().fromJson(data)
+                runOnUiThread{
+                    updateUI()
                 }
+                i++
             }
-        }
-        if(response!!.isSuccessful){
-            val data = response!!.body()!!.string()
-            userInfo = UserProfileInformation().fromJson(data)
-            updateUI()
         }
     }
 }
@@ -175,18 +178,16 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
             viewHolder.itemView.join.isEnabled = false
         } else{
             viewHolder.itemView.join.setOnClickListener {
-                DrawingUtils.currentDrawingId = collaboration!!.drawingId!!
+                val drawingID = collaboration!!.drawingId!!
                 val joinRequest = JoinDrawingDto(
-                    DrawingUtils.currentDrawingId,
+                    drawingID,
                     ClientInfo.userId)
                 var i = 0
                 SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
                 SocketHandler.getChatSocket().on("drawingInformations") { args ->
                     if (args[0] != null && i == 0) {
                         val data = args[0] as String
-                        DrawingUtils.drawingInformation =
-                            AllDrawingInformation().fromJson(data)
-                        activity.startDrawingActivity()
+                        activity.startDrawingActivity(data, drawingID)
                         i++
                     }
                 }

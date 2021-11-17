@@ -179,6 +179,8 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
         }
 
+
+
         socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment)
         /*========================================================================================*/
 

@@ -146,11 +146,9 @@ class CreateDraw : AppCompatActivity() {
                     }
                 }
                 if (response!!.isSuccessful) {
-                    DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
-                    println(DrawingUtils.currentDrawingId)
+                    val drawingID = response?.body()!!.string().toInt()
                     //join the drawing
-                    val joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
-                        ClientInfo.userId)
+                    val joinRequest = JoinDrawingDto(drawingID, ClientInfo.userId)
 
 
                     var i = 0
@@ -158,9 +156,10 @@ class CreateDraw : AppCompatActivity() {
                     SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                         if(args[0]!=null && i == 0){
                             val data = args[0] as String
-                            DrawingUtils.drawingInformation =
-                                AllDrawingInformation().fromJson(data)
-                            startActivity(Intent(this, Drawing::class.java))
+                            val bundle = Bundle()
+                            bundle.putString("drawingInformation", data)
+                            bundle.putInt("drawingID", drawingID)
+                            startActivity(Intent(this, Drawing::class.java).putExtras(bundle))
                             i++
                             finish()
                         }

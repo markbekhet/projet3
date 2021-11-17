@@ -15,6 +15,8 @@ import java.util.*
 
 class Drawing : AppCompatActivity() {
     private var socket = SocketHandler.getChatSocket()
+    private var drawingRelatedInformation: ReceiveDrawingInformation?= null
+    private var drawingID: Int?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
@@ -24,24 +26,25 @@ class Drawing : AppCompatActivity() {
         DrawingUtils.primaryColor = black
         DrawingUtils.secondaryColor = none
 
+        val data = intent.extras!!.getString("drawingInformation")
+        drawingID = intent.extras!!.getInt("drawingID")
+        val allDrawingInformation = AllDrawingInformation().fromJson(data!!)
         //primaryColor.setBackgroundColor(Color.parseColor("#000000"))
         //secondaryColor.setBackgroundColor(Color.parseColor("#FFFFFF"))
-
         val params: ViewGroup.LayoutParams = fl_drawing_view_container.getLayoutParams()
         //Button new width
         //Button new width
-        val drawingRelatedInformation = DrawingUtils.drawingInformation!!.drawing
+        drawingRelatedInformation = allDrawingInformation.drawing
         nom.text = drawingRelatedInformation!!.name
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
-        val canvas = CanvasView(this)
-        canvas.parseExistingDrawings(drawingRelatedInformation.contents)
-        params.width= drawingRelatedInformation.width!!
-        params.height= drawingRelatedInformation.height!!
-//        params.width = longueur.text.toString().toInt()
-//        params.height =largeur.text.toString().toInt()
+        val canvas = CanvasView(drawingID!!,this)
+        canvas.parseExistingDrawings(drawingRelatedInformation!!.contents)
+        params.width= drawingRelatedInformation!!.width!!
+        params.height= drawingRelatedInformation!!.height!!
+
         fl_drawing_view_container.setLayoutParams(params)
         canvas.setBackgroundColor(
-            Color.parseColor("#ff${drawingRelatedInformation.bgColor}"))
+            Color.parseColor("#ff${drawingRelatedInformation!!.bgColor}"))
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
@@ -139,8 +142,8 @@ class Drawing : AppCompatActivity() {
     }*/
 
     private fun leaveDrawing(){
-        val leaveDrawing = LeaveDrawingDto(DrawingUtils.currentDrawingId, ClientInfo.userId)
-        socket!!.emit("leaveDrawing", leaveDrawing.toJson())
+        val leaveDrawing = LeaveDrawingDto(drawingID!!, ClientInfo.userId)
+        socket.emit("leaveDrawing", leaveDrawing.toJson())
         //finish()
     }
 

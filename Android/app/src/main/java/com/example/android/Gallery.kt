@@ -77,8 +77,11 @@ class Gallery :  Fragment() {
         }
     }
 
-    fun startDrawingActivity(){
-        startActivity(Intent(this.context, Drawing::class.java))
+    fun startDrawingActivity(data: String, drawingID: Int){
+        val bundle = Bundle()
+        bundle.putInt("drawingID", drawingID)
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this.context, Drawing::class.java).putExtras(bundle))
     }
 
     fun startModifyingActivity(information: ReceiveDrawingInformation){
@@ -141,8 +144,8 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
-            DrawingUtils.currentDrawingId = information!!.id!!
-            var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
+            val drawingID = information!!.id!!
+            val joinRequest = JoinDrawingDto(drawingID,
                 ClientInfo.userId)
 
             SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
@@ -150,8 +153,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
                 if(args[0]!=null && i==0){
                     val data = args[0] as String
-                    DrawingUtils.drawingInformation = AllDrawingInformation().fromJson(data)
-                    fragment.startDrawingActivity()
+                    fragment.startDrawingActivity(data, drawingID)
                     i++
                 }
             }
