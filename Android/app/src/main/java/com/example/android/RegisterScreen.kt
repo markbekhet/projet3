@@ -114,6 +114,7 @@ class RegisterScreen : AppCompatActivity() {
                 if(response?.isSuccessful == true){
                     ClientInfo.userId = response?.body()?.string().toString()
                     startActivity(Intent(this, LandingPage::class.java))
+                    finish()
                 }
                 else{
                     errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
