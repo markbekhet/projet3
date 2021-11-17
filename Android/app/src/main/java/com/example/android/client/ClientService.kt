@@ -181,20 +181,7 @@ class ClientService : Service() {
         }
         return response
     }
-    suspend fun modifyDrawings(): Response<ResponseBody>?{
-        val retrofit = Retrofit.Builder()
-            .baseUrl(url)
-            .build()
 
-        val service = retrofit.create(RestAPI::class.java)
-        var response: Response<ResponseBody>? = null
-        withContext(Dispatchers.IO){
-            response = service.getGalleryDrawings(ClientInfo.userId)
-            println( (response!!.code()))
-            return@withContext response
-        }
-        return response
-    }
     suspend fun deleteDrawing(deleteDrawing : DeleteDrawingDt): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(url)

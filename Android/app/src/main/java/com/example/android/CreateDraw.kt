@@ -161,8 +161,8 @@ class CreateDraw : AppCompatActivity() {
                             DrawingUtils.drawingInformation =
                                 AllDrawingInformation().fromJson(data)
                             startActivity(Intent(this, Drawing::class.java))
-                            finish()
                             i++
+                            finish()
                         }
                     }
                 } else {

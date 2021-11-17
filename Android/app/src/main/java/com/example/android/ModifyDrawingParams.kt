@@ -144,6 +144,7 @@ class ModifyDrawingParams : AppCompatActivity(), ChatRoomSwitcher {
                 if(response!!.isSuccessful){
                     Toast.makeText(this, "Les paramètres du dessin" +
                         " ont été modfiées avec succès", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
                 else{
                     Toast.makeText(this, response!!.errorBody()!!.string(),
