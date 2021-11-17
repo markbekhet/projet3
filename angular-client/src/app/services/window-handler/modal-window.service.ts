@@ -2,6 +2,7 @@ import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ export class ModalWindowService {
     this.dialogConfig.restoreFocus = false;
   }
 
-  openWindow(component: ComponentType<NewDrawingComponent>) {
+  openWindow(component: ComponentType<NewDrawingComponent | NewTeamDialogComponent>) {
     this.closeWindow();
     this.dialog.open(component, this.dialogConfig);
   }

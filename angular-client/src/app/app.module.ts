@@ -38,6 +38,7 @@ import { RegisterPage } from './components/register-page/register.page';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
     SvgViewComponent,
     ToolboxViewComponent,
     UserTeamListComponent,
+    NewTeamDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -8,6 +8,7 @@ import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { Router } from '@angular/router';
 import { SocketService } from '@src/app/services/socket/socket.service';
+import { NewTeamDialogComponent } from '../new-team-dialog/new-team-dialog.component';
 
 @Component({
   selector: 'app-landing-page',
@@ -57,6 +58,10 @@ export class LandingPage implements OnInit {
     // TODO: Implement
   }
 
+  openCraeteNewTeam(){
+    this.windowService.openWindow(NewTeamDialogComponent);
+  }
+
   disconnect() {
     this.auth.disconnect().subscribe(() => {
       this.router.navigate(['/login']);
@@ -76,6 +81,9 @@ export class LandingPage implements OnInit {
         break;
       case 'Profile':
         this.profile();
+        break;
+      case 'equipe':
+        this.openCraeteNewTeam();
         break;
       default:
         break;

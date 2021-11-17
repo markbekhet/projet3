@@ -16,6 +16,15 @@ export const menuItems: FeatureItem[] = [
     icon: 'add_circle',
   },
   {
+    name: 'Créer un nouveau equipe de collaboration',
+    shortcutName: 'equipe',
+    shortDescription:
+      "Cette option vous permet d'ouvrir une nouvelle equipe de collaboration selon la taille et la couleur de fond de votre choix.",
+    description: `La largeur et la hauteur du dessin sont automatiquement générées selon les dimensions de la fenêtre de votre navigateur. Par défaut, la couleur du nouveau dessin sera blanche, mais il est possible de la redéfinir avec une nouvelle valeur hexadécimale ou encore avec l’outil de sélection de couleur situé sur le formulaire. Il est possible d’ouvrir le formulaire via le raccourci 'ctrl+O'. Notez que si le dessin en cours n’a pas été sauvegardé sur la galerie, celui-ci sera écrasé.`,
+    icon: 'add_circle',
+  },
+
+  {
     name: 'Ouvrir la galerie de dessins',
     shortcutName: 'Ouvrir',
     shortDescription: `Cette option vous permet de visualiser tous les dessins que vous avez sauvegardés sur le serveur de PolyDessin, comme elle vous donne la possibilité de continuer un dessin sauvegardé en appuyant sur la flèche qui se trouve sous chaque dessin. Aussi, vous pouvez supprimer un dessin sauvegardé sur la base de données ou encore rechercher l'un d'entres eux à l'aide d'étiquettes.`,
