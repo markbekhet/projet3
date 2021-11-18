@@ -13,20 +13,20 @@ export class DrawingController {
     @Post()
     async createDrawing(@Body() drawingInformation: CreateDrawingDto){
         let createdDrawing = await this.databaseService.createDrawing(drawingInformation);
-        await this.chatGateway.notifyDrawingCreated(createdDrawing);
+        this.chatGateway.notifyDrawingCreated(createdDrawing);
         return createdDrawing.id;
     }
 
     @Delete()
     async deleteDrawing(@Body() deleteInformation: DeleteDrawingDto){
         let drawing = await this.databaseService.deleteDrawing(deleteInformation);
-        await this.chatGateway.notifyDrawingDeleted(drawing);
+        this.chatGateway.notifyDrawingDeleted(drawing);
         return drawing.id;
     }
     @Put()
     async modifyDrawingParameters(@Body() modificationParameters: ModifyDrawingDto){
         let drawingMod = await this.databaseService.modifyDrawing(modificationParameters);
-        await this.chatGateway.notifyDrawingModified(drawingMod);
+        this.chatGateway.notifyDrawingModified(drawingMod);
         return drawingMod.id;
     }
 }
