@@ -1,5 +1,7 @@
 package com.example.android.client
 
+import android.widget.ImageView
+
 object ClientInfo {
     var username:String ?= null
     var userId = ""
@@ -7,6 +9,9 @@ object ClientInfo {
     var teamsList = TeamsArrayList()
 }
 
+object avatarClientInfo{
+    var avatarClient : Int ?=null
+}
 class User(val id: String? = null,
            val status: Int?= null,
            val pseudo: String?= null){}

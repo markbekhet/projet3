@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.android.R
+import com.example.android.client.avatarClientInfo
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.Item
+import kotlinx.android.synthetic.main.fragment_avatar.view.*
 import kotlinx.android.synthetic.main.galleryavatar.*
 
 class Gallery : AppCompatActivity() {
@@ -37,5 +41,25 @@ class Gallery : AppCompatActivity() {
            finish()
        }
         setmessage()
+    }
+}
+class GalleryAvatar(val image: Int) : Item<GroupieViewHolder>() {
+    override fun getLayout(): Int {
+        return R.layout.fragment_avatar
+    }
+
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.itemView.avatarImage.apply {
+            Glide.with(viewHolder.root.context)
+                .load(image)
+                .into(avatarImage)
+
+        }
+        viewHolder.itemView.avatarImage.setOnClickListener(){
+            avatarClientInfo.avatarClient = image
+            print(viewHolder.itemView.avatarImage)
+            print("ok")
+            print(avatarClientInfo.avatarClient)
+        }
     }
 }

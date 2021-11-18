@@ -1,6 +1,7 @@
 package com.example.android
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -20,6 +21,7 @@ class LandingPage : AppCompatActivity() {
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
     private var drawingSocket: Socket?= null
+    //val music : MediaPlayer= MediaPlayer.create()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
@@ -28,6 +30,7 @@ class LandingPage : AppCompatActivity() {
         SocketHandler.establishChatSocketConnection()
         chatSocket = SocketHandler.getChatSocket()
 
+//        music.start()
         chatSocket?.on("usersArrayToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String

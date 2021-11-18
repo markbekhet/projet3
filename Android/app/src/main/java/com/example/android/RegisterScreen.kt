@@ -36,12 +36,16 @@ import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import androidx.activity.result.ActivityResultLauncher
 
 import android.R.attr.data
+import android.annotation.SuppressLint
 import androidx.activity.result.contract.ActivityResultContracts
+import com.bumptech.glide.Glide
+import com.example.android.client.avatarClientInfo
 
 
 class RegisterScreen : AppCompatActivity() {
 
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
@@ -66,6 +70,14 @@ class RegisterScreen : AppCompatActivity() {
 //                img_save.setImageBitmap(imageBitmap)
 //            }
 //        }
+        print(avatarClientInfo.avatarClient)
+        img_save.apply {
+            Glide.with(this)
+                .load(avatarClientInfo.avatarClient)
+                .into(img_save)
+        }
+
+        avatarClientInfo!!.avatarClient?.let { img_save.setImageResource(it) }
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
                 val imageBitmap = data!!.extras!!.get("data") as Bitmap

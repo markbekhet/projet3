@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.android.R
+import com.example.android.client.avatarClientInfo
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.avatar.view.*
+import kotlinx.android.synthetic.main.fragment_avatar.view.*
 
 
 class GalleryFrame : Fragment() {
@@ -54,17 +56,5 @@ class GalleryFrame : Fragment() {
 }
 
 
-class GalleryAvatar(val image: Int) : Item<GroupieViewHolder>() {
-    override fun getLayout(): Int {
-        return R.layout.avatar
-    }
 
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.img_save.apply {
-            Glide.with(viewHolder.root.context)
-                .load(image)
-                .into(img_save)
 
-        }
-    }
-}
