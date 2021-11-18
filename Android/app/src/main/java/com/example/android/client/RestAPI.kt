@@ -27,4 +27,17 @@ interface RestAPI {
 
     @POST("$drawingNamespace")
     suspend fun createDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @POST("$collaborationTeam")
+    suspend fun createTeam(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @HTTP(method = "DELETE",path = "$collaborationTeam", hasBody = true)
+    suspend fun deleteTeam(@Body requestBody: RequestBody): Response<ResponseBody>
+
+    @GET("$user/gallery/{Id}")
+    suspend fun getGalleryDrawings(@Path("Id") userId: String): Response<ResponseBody>
+
+    @HTTP(method = "DELETE",path="$drawingNamespace", hasBody = true)
+    suspend fun deleteDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
+
 }

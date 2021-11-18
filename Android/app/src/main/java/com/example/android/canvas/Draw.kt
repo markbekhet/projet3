@@ -17,6 +17,8 @@ class DrawingInformation (
 }
 
 class ReceiveDrawingInformation(
+    var id: Int?= null,
+    var ownerId: String? = null,
     var bgColor:String?= null,
     var height: Int?= null,
     var width: Int?= null,
@@ -29,6 +31,11 @@ class ReceiveDrawingInformation(
     }
 }
 
+class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= null){
+    fun fromJson(json:String): GalleryDrawing{
+        return Gson().fromJson(json, GalleryDrawing::class.java)
+    }
+}
 // This class encapsulates all the details needed for the chat,
 // drawing informations and connected users for a given drawing
 class AllDrawingInformation(
@@ -51,7 +58,18 @@ class LeaveDrawingDto(var drawingId:Int, var userId:String){
         return Gson().toJson(this)
     }
 }
+class DeleteDrawingDt(var drawingId:Int, var userId:String) {
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
+}
+    class ModifyDrawingDto(var drawingId:Int, var userId:String,var newName: String,var password: String?){
+        fun toJson(): String {
+            return Gson().toJson(this)
+        }
 
+
+}
 enum class Visibility(var int: Int){
     publicVisibility(0),
     protectedVisibility(1),
