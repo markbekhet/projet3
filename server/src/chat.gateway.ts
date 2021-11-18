@@ -128,9 +128,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     });
     let passwordMatch: boolean = false
     if(drawing.visibility === DrawingVisibility.PROTECTED){
-      passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
+      if(dto.password === undefined || dto.password === null){
+        client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, mot de passe requis pour joindre un dessin protege"}))
+      }
+      else{
+        passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
+      }
     }
-    if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
+    if(!passwordMatch && drawing.visibility === DrawingVisibility.PROTECTED){
+      client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, le mot de passe est incorrect"}))
+    }
+    else if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
       let user = await this.userRepo.findOne(dtoMod.userId,{
         relations:["joinedDrawings"]
       });
@@ -218,11 +226,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(team.id, team.name)
     let passwordMatches: boolean = false;
     if(team.visibility === TeamVisibility.PROTECTED){
-      passwordMatches = await bcrypt.compare(dto.password, team.password);
+      if(dto.password === undefined || dto.password === null){
+        client.emit("cantJoinTeam", JSON.stringify({message:"Impossible de joindre l'equipe, le mot de passe est requis pour joindre une equipe protegee "}));
+      }
+      else{
+        passwordMatches = await bcrypt.compare(dto.password, team.password);
+      }
     }
-    if(passwordMatches|| team.visibility === TeamVisibility.PUBLIC){
+    if(!passwordMatches && team.visibility === TeamVisibility.PROTECTED){
+      client.emit("cantJoinTeam", JSON.stringify({message:"Impossible de joindre l'equipe, le mot de passe est incorrecte"}));
+    }
+    else if(passwordMatches|| team.visibility === TeamVisibility.PUBLIC){
       if(team.activeUsers.length === team.nbCollaborators){
-        client.emit("cantJoinTeam", JSON.stringify({message:"Sorry the user can't join the team because it is complete"}));
+        client.emit("cantJoinTeam", JSON.stringify({message:"Impossible de joindre l'equipe, lequipe est complet"}));
       }
       else{
         let user = await this.userRepo.findOne(data.userId,{

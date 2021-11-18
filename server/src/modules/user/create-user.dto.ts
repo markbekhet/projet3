@@ -13,7 +13,7 @@ export class CreateUserDto
     @IsNotEmpty({message: `Le nom d'utilisateur ne peut pas etre vide`})
     pseudo: string;
 
-    @IsEmail()
+    @IsEmail({},{message: `Le courriel doit être valide`})
     emailAddress: string;
 
     @IsNotEmpty({message:"Le mot de passe ne peut pas etre vide et il doit avoir une longueur minimal de 8 caractère"})
