@@ -77,11 +77,18 @@ export class LandingPage implements OnInit {
       case 'Profile':
         this.profile();
         break;
+      case 'Chat':
+        this.chat();
+        break;
       default:
         break;
     }
   }
   profile() {
     this.router.navigate(['/profile']);
+  }
+
+  chat() {
+    this.router.navigate(['/chat']);
   }
 }

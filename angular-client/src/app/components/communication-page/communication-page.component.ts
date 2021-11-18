@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Message, CustomDate } from '@models/MessageMeta';
-import { AuthService } from '@services/authentication/auth.service';
+import { ServerMessage, ClientMessage } from '@models/MessageMeta';
+//import { AuthService } from '@services/authentication/auth.service';
 import { SocketService } from '@services/socket/socket.service';
 
 @Component({
@@ -13,12 +13,12 @@ import { SocketService } from '@services/socket/socket.service';
 })
 export class CommunicationPageComponent implements OnInit, OnDestroy {
   username: string = '';
-  messages: Message[] = [];
+  messages: ClientMessage[] = [];
   messageForm: FormGroup;
 
   constructor(
     private activeRoute: ActivatedRoute,
-    private auth: AuthService,
+    //private auth: AuthService,
     private formBuilder: FormBuilder,
     private router: Router,
     private socketService: SocketService
@@ -33,8 +33,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     this.messages = [];
     // this.chat.connect();
 
-    this.socketService.getNewMessage().subscribe((message: Message) => {
-      if (message.clientName) {
+    this.socketService.getNewMessage().subscribe((message: ClientMessage) => {
+      if (message.from) {
         this.messages.unshift(message);
       }
       console.log(this.messages);
@@ -43,22 +43,15 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const currentDate: Date = new Date();
+    const MESSAGE = this.messageForm.controls.message.value;
+    const messageToSend: ServerMessage = {
+      from: this.socketService.profile$.value.pseudo,
+      message: MESSAGE,
+      roomName: 'general'
+    }
 
-    const date: CustomDate = {
-      hour: currentDate.getHours().toString(),
-      minutes: currentDate.getMinutes().toString(),
-      seconds: currentDate.getSeconds().toString(),
-    };
-
-    const message: Message = {
-      clientName: this.username,
-      message: this.messageForm.value.message,
-      date,
-    };
-
-    this.socketService.sendMessage(message);
-    console.log(`client sent: ${message}`);
+    this.socketService.sendMessage(messageToSend);
+    console.log(`client sent: ${messageToSend}`);
 
     this.messageForm.reset();
   }
@@ -70,22 +63,11 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     this.messages = [];
-    this.socketService.disconnect();
+    //this.socketService.disconnect();
     this.disconnect();
   }
 
   disconnect(): void {
-    try {
-      this.auth.disconnect().subscribe(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (code) => {
-          this.router.navigate(['/']);
-        }, // this.username = username
-        (err) => {
-          console.log(err);
-        }
-      ); // LandingPageComponent.usernameExists = true
-    } catch (e: any) {}
-    this.messages = [];
+    this.router.navigate(['/home']);
   }
 }

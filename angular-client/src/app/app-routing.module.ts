@@ -6,6 +6,7 @@ import { LoginPage } from './components/login-page/login.page';
 import { RegisterPage } from './components/register-page/register.page';
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
 import { ProfilePage } from './components/profile-page/profile.page';
+import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -14,7 +15,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginPage },
   { path: 'register', component: RegisterPage },
   { path: 'profile', component: ProfilePage },
-  // { path: ':username', component: CommunicationPageComponent },
+  { path: 'chat', component: CommunicationPageComponent },
 ];
 
 @NgModule({

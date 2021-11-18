@@ -37,6 +37,13 @@ export const menuItems: FeatureItem[] = [
     description: `profile`,
     icon: 'camera',
   },
+  {
+    name: 'Chat',
+    shortcutName: 'Chat',
+    shortDescription: `chat`,
+    description: `chat`,
+    icon: 'camera',
+  },
 ];
 
 export const toolItems: FeatureItem[] = [
