@@ -40,6 +40,12 @@ import android.annotation.SuppressLint
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.example.android.client.avatarClientInfo
+import android.graphics.BitmapFactory
+
+import android.R.attr.data
+import android.content.res.Resources
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 
 
 class RegisterScreen : AppCompatActivity() {
@@ -61,6 +67,7 @@ class RegisterScreen : AppCompatActivity() {
         var galerie: Dialog? = null
         var clientService = ClientService()
         val REQUEST_IMAGE_CAPTURE = 1
+        val r: Resources = this.resources
 
 //        var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 //            if (result.resultCode == Activity.RESULT_OK ) {
@@ -70,12 +77,28 @@ class RegisterScreen : AppCompatActivity() {
 //                img_save.setImageBitmap(imageBitmap)
 //            }
 //        }
-        print(avatarClientInfo.avatarClient)
+    fun CreateImageStringFromBitmap(): String {
+
+    val bitmap:Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
+
+    val resized = Bitmap.createScaledBitmap(
+        bitmap, (300).toInt(),
+        (300).toInt(), true
+    )
+
+    val stream = ByteArrayOutputStream()
+    resized.compress(Bitmap.CompressFormat.PNG, 75, stream)
+    val byteArray: ByteArray = stream.toByteArray()
+
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+}
         img_save.apply {
             Glide.with(this)
                 .load(avatarClientInfo.avatarClient)
                 .into(img_save)
         }
+        print(avatarClientInfo.avatarClient)
+
 
         avatarClientInfo!!.avatarClient?.let { img_save.setImageResource(it) }
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -99,6 +122,12 @@ class RegisterScreen : AppCompatActivity() {
 //                }
 //            }
         }
+        //proceso de transformar la imagen BitMap en un String:
+//android:src="c:\logo.png"
+        //proceso de transformar la imagen BitMap en un String:
+
+
+
         gallery.setOnClickListener() {
 
                 pickImageFromGallery();
