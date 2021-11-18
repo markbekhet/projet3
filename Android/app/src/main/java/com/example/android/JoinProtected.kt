@@ -73,7 +73,7 @@ class JoinProtected : AppCompatActivity() {
             val teamGeneralInformation = TeamGeneralInformation().fromJson(teamData)
             joinProtectedLabel.text = "Joindre l'équipe protégée ${teamGeneralInformation.name}"
 
-            val joinTeamDto = JoinTeamDto(teamName = teamGeneralInformation.id,
+            val joinTeamDto = JoinTeamDto(teamName = teamGeneralInformation.name,
                 userId = ClientInfo.userId)
 
             joinProtectedTextPassword.doAfterTextChanged {
@@ -85,10 +85,12 @@ class JoinProtected : AppCompatActivity() {
                     joinProtected.isEnabled = false
                     joinProtected.isClickable = false
                 }
-                joinTeamDto.password = joinProtectedTextPassword.text.toString()
+                //joinTeamDto.password = joinProtectedTextPassword.text.toString()
             }
 
             joinProtected.setOnClickListener {
+                joinTeamDto.password = joinProtectedTextPassword.text.toString()
+                println(joinTeamDto.password)
                 joinProtectedTextPassword.text.clear()
                 var i = 0
                 SocketHandler.getChatSocket().emit("joinTeam", joinTeamDto.toJson())

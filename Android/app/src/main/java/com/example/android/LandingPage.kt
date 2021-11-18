@@ -325,13 +325,14 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
 
         createTeam?.setOnClickListener() {
             var canProcessQuery = true
-            if (newDrawing.visibility == Visibility.protectedVisibility.int) {
+            if (createTeamDto.visibility == Visibility.protectedVisibility.int) {
                 if (teamPassword.text.isBlank() || teamPassword.text.isEmpty()) {
                     canProcessQuery = false
                     errorTeam.text = "Le mot de passe est obligatoire et" +
                         " ne peut pas être composé seulemwnt d'espaces quand le dessin est protégé"
                 } else {
                     createTeamDto.password = teamPassword.text.toString()
+                    println(createTeamDto.password)
                 }
             } else {
                 createTeamDto.password = null
@@ -341,6 +342,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
             createTeamDto.name = teamName.text.toString()
             createTeamDto.ownerId = ClientInfo.userId
 
+            println(createTeamDto.password)
             teamPassword.text.clear()
             nbCollaborators.text.clear()
             teamName.text.clear()
@@ -375,8 +377,10 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                     }
 
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du l'équipe." +
-                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
+                    context.runOnUiThread{
+                        Toast.makeText(context, response!!.errorBody()!!.string(),
+                            Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
