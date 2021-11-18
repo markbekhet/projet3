@@ -84,6 +84,12 @@ class Gallery :  Fragment() {
         startActivity(Intent(this.context, Drawing::class.java).putExtras(bundle))
     }
 
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this.context, JoinProtected::class.java).putExtras(bundle))
+    }
+
     fun startModifyingActivity(information: ReceiveDrawingInformation){
         val bundle = Bundle()
         bundle.putString("drawingInformation", information.toJson())
@@ -144,19 +150,25 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
-            val drawingID = information!!.id!!
-            val joinRequest = JoinDrawingDto(drawingID,
-                ClientInfo.userId)
+            if(information!!.visibility != Visibility.protectedVisibility.int){
+                val drawingID = information!!.id!!
+                val joinRequest = JoinDrawingDto(drawingID,
+                    ClientInfo.userId)
 
-            SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
-            var i = 0
-            SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
-                if(args[0]!=null && i==0){
-                    val data = args[0] as String
-                    fragment.startDrawingActivity(data, drawingID)
-                    i++
+                SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("drawingInformations"){ args ->
+                    if(args[0]!=null && i==0){
+                        val data = args[0] as String
+                        fragment.startDrawingActivity(data, drawingID)
+                        i++
+                    }
                 }
             }
+            else{
+                fragment.startJoinProtectedActivity(information!!.toJson())
+            }
+
         }
 
     }

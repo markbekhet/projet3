@@ -148,7 +148,8 @@ class CreateDraw : AppCompatActivity() {
                 if (response!!.isSuccessful) {
                     val drawingID = response?.body()!!.string().toInt()
                     //join the drawing
-                    val joinRequest = JoinDrawingDto(drawingID, ClientInfo.userId)
+                    val joinRequest = JoinDrawingDto(drawingID, ClientInfo.userId,
+                        password = newDrawing.password)
 
 
                     var i = 0

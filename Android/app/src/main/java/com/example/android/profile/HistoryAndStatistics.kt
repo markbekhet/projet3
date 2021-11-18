@@ -10,12 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
+import com.example.android.JoinProtected
 import com.example.android.R
 import com.example.android.SocketHandler
-import com.example.android.canvas.AllDrawingInformation
-import com.example.android.canvas.DrawingUtils
-import com.example.android.canvas.JoinDrawingDto
-import com.example.android.canvas.ReceiveDrawingInformation
+import com.example.android.canvas.*
 import com.example.android.client.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -68,6 +66,12 @@ class HistoryAndStatistics : AppCompatActivity() {
         bundle.putInt("drawingID", drawingID)
         bundle.putString("drawingInformation", data)
         startActivity(Intent(this, Drawing::class.java).putExtras(bundle))
+    }
+
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this, JoinProtected::class.java).putExtras(bundle))
     }
 
     fun updateUI(){
@@ -177,19 +181,29 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
             viewHolder.itemView.join.isClickable = false
             viewHolder.itemView.join.isEnabled = false
         } else{
+            viewHolder.itemView.join.isClickable = true
+            viewHolder.itemView.join.isEnabled = true
             viewHolder.itemView.join.setOnClickListener {
-                val drawingID = collaboration!!.drawingId!!
-                val joinRequest = JoinDrawingDto(
-                    drawingID,
-                    ClientInfo.userId)
-                var i = 0
-                SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
-                SocketHandler.getChatSocket().on("drawingInformations") { args ->
-                    if (args[0] != null && i == 0) {
-                        val data = args[0] as String
-                        activity.startDrawingActivity(data, drawingID)
-                        i++
+                if(collaboration!!.drawingVisibility != Visibility.protectedVisibility.int){
+                    val drawingID = collaboration!!.drawingId!!
+                    val joinRequest = JoinDrawingDto(
+                        drawingID,
+                        ClientInfo.userId)
+                    var i = 0
+                    SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                    SocketHandler.getChatSocket().on("drawingInformations") { args ->
+                        if (args[0] != null && i == 0) {
+                            val data = args[0] as String
+                            activity.startDrawingActivity(data, drawingID)
+                            i++
+                        }
                     }
+                }
+
+                else{
+                    val drawingData = ReceiveDrawingInformation(id= collaboration!!.drawingId,
+                        name=collaboration!!.drawingName)
+                    activity.startJoinProtectedActivity(drawingData.toJson())
                 }
             }
         }
