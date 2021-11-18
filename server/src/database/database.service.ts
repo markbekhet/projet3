@@ -43,7 +43,14 @@ export class DatabaseService {
     async createUser(registrationInfo: CreateUserDto){
 
         console.log(registrationInfo)
-
+        let otherUser = await this.userRepo.findOne({where:[{emailAddress: registrationInfo.emailAddress}]})
+        if(otherUser!== undefined){
+            throw new HttpException("Il existe un compte avec cette addresse courriel", HttpStatus.BAD_REQUEST);
+        }
+        else if(otherUser=== undefined){
+            otherUser = await this.userRepo.findOne({where:[{pseudo: registrationInfo.pseudo}]})
+            throw new HttpException("Le nom d'utilisateur est déjà utilisé", HttpStatus.BAD_REQUEST);
+        }
         let user = User.createUserProfile(registrationInfo);
         let connection = new ConnectionHistory()
         const savedUser = await this.userRepo.save(user)
@@ -152,6 +159,12 @@ export class DatabaseService {
         if(user === undefined){
             throw new HttpException("Il n'existe aucun utilisateur avec cet identifiant", HttpStatus.BAD_REQUEST);
         }
+        if(newParameters.newPseudo!==undefined){
+            const otherUser = await this.userRepo.findOne({where:[{pseudo: newParameters.newPseudo}]});
+            if(otherUser!== undefined){
+                throw new HttpException("Impossible de modifier les paramètres de l'utilisateur, le nouveau pseudonyme est déjà utilisé", HttpStatus.BAD_REQUEST)
+            }
+        }
         else{
             let updatePassword: Boolean = newParameters.newPassword !== undefined&& newParameters.newPassword !== null
             let updatePseudo: boolean = newParameters.newPseudo !== undefined && newParameters.newPseudo!== null
@@ -252,6 +265,10 @@ export class DatabaseService {
     }*/
     //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
+        const chatRoom = await this.chatRoomRepo.findOne({where:[{name: drawingInformation.name}]})
+        if(chatRoom!==undefined){
+            throw new HttpException("Impossible de créer le dessin, le nom du dessin est déjà utilisé", HttpStatus.BAD_REQUEST);
+        }
         const user = await this.userRepo.findOne(drawingInformation.ownerId);
         if(user!== undefined){
             await this.userRepo.update(user.id, {
@@ -299,6 +316,10 @@ export class DatabaseService {
     }
 
     async modifyDrawing(dto: ModifyDrawingDto){
+        let otherChatRoom = await this.chatRoomRepo.findOne({where:[{name: dto.newName}]})
+        if(otherChatRoom!== undefined){
+            throw new HttpException("Impossible de modifier le dessin, le nouveau nom du dessin est déjà utilisé dans l'application", HttpStatus.BAD_REQUEST);
+        }
         let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
         // validating that the user is allowed to modify the drawing
         let chatRoom = await this.chatRoomRepo.findOne({
@@ -352,6 +373,10 @@ export class DatabaseService {
 
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
+        let chatRoom = await this.chatRoomRepo.findOne({where:[{name: dto.name}]});
+        if(chatRoom !== undefined){
+            throw new HttpException("Impossible de créer le nouveau équipe de collaboration, le nom de l'équipe est déjà utilisé", HttpStatus.BAD_REQUEST)
+        }
         if(dto.visibility === TeamVisibility.PROTECTED){
             if(dto.password=== undefined || dto.password === null){
                 throw new HttpException("Le mot de passe est requis pour créer une équipe protégée", HttpStatus.BAD_REQUEST);
