@@ -64,6 +64,9 @@ export class User extends BaseEntity{
     })
     numberAuthoredDrawings: number;
 
+    @Column({type: "bytea"})
+    avatar: string;
+
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
     connectionHistories: ConnectionHistory[]
 
