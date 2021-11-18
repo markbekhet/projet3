@@ -1,5 +1,6 @@
 package com.example.android
 
+import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,6 +18,7 @@ class Drawing : AppCompatActivity() {
     private var socket = SocketHandler.getChatSocket()
     private var drawingRelatedInformation: ReceiveDrawingInformation?= null
     private var drawingID: Int?= null
+    private var canvas: CanvasView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
@@ -37,26 +39,26 @@ class Drawing : AppCompatActivity() {
         drawingRelatedInformation = allDrawingInformation.drawing
         nom.text = drawingRelatedInformation!!.name
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
-        val canvas = CanvasView(drawingID!!,this)
-        canvas.parseExistingDrawings(drawingRelatedInformation!!.contents)
+        canvas = CanvasView(drawingID!!,this)
+        canvas!!.parseExistingDrawings(drawingRelatedInformation!!.contents)
         params.width= drawingRelatedInformation!!.width!!
         params.height= drawingRelatedInformation!!.height!!
 
         fl_drawing_view_container.setLayoutParams(params)
-        canvas.setBackgroundColor(
+        canvas!!.setBackgroundColor(
             Color.parseColor("#ff${drawingRelatedInformation!!.bgColor}"))
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
-                canvas.onReceivedDrawing(dataTransformed)
+                canvas!!.onReceivedDrawing(dataTransformed)
             }
         }
         socket.on("drawingContentCreated"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                canvas.receiveContentID(data)
+                canvas!!.receiveContentID(data)
             }
         }
         pencil.setOnClickListener {
@@ -99,12 +101,12 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor, canvas))
+                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor, canvas!!))
         }
 
         transparent.setOnCheckedChangeListener { buttonView, isChecked ->
             DrawingUtils.secondaryColor = none
-            canvas.updateToolSecondaryColor()
+            canvas!!.updateToolSecondaryColor()
         }
 
         secondaryColor.setOnClickListener {
@@ -118,19 +120,22 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(secondaryColor, "secondary", canvas))
+                .show(it, ColorPicker(secondaryColor, "secondary", canvas!!))
         }
         thickness.value = DrawingUtils.thickness.toFloat()
         thickness.addOnChangeListener { slider, value, fromUser ->
             DrawingUtils.thickness = value.toInt()
-            canvas.updateToolThickness()
+            canvas!!.updateToolThickness()
         }
         delete.setOnClickListener {
-            canvas.deleteTool()
+            canvas!!.deleteTool()
         }
     }
 
     override fun onDestroy() {
+        if(canvas != null){
+            canvas!!.unselectAllChildren()
+        }
         leaveDrawing()
         super.onDestroy()
     }
@@ -140,6 +145,12 @@ class Drawing : AppCompatActivity() {
         super.onBackPressed()
 
     }*/
+    override fun onPause(){
+        if(canvas != null){
+            canvas!!.unselectAllChildren()
+        }
+        super.onPause()
+    }
 
     private fun leaveDrawing(){
         val leaveDrawing = LeaveDrawingDto(drawingID!!, ClientInfo.userId)

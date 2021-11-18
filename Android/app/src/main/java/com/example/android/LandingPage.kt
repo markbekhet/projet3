@@ -40,6 +40,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
     private var chatFragmentTransaction: FragmentTransaction? = null
     var gallery  = GalleryDrawing()
     var response: Response<ResponseBody>?=null
+    private val galleryDraws = Gallery()
     private var displayDrawingGallery : RecyclerView?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         SocketHandler.establishChatSocketConnection()
         val manager = supportFragmentManager
         val galleryFragmentTransaction = manager.beginTransaction()
-        val galleryDraws = Gallery()
 
         galleryFragmentTransaction.replace(R.id.gallery_frame, galleryDraws).commit()
 
@@ -180,7 +180,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         }
 
 
-
         socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment)
         /*========================================================================================*/
 
@@ -252,6 +251,23 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
             chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
                 chatRoomsFragmentMap[name]!!)
         }
+    }
+
+    override fun onRestart() {
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(gallery.drawingList!!)
+        }
+        super.onRestart()
     }
 }
 

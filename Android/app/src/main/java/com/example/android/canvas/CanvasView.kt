@@ -59,7 +59,7 @@ class CanvasView(private var drawingId: Int,context: Context): View(context) {
                     mode = "translation"
                 }
                 else{
-                    unSelectAllChildren()
+                    unselectAllChildren()
                     when(DrawingUtils.currentTool){
                         selectionString -> tool = Selection(drawingId, doc as AbstractDocument)
                         ellipseString -> tool = Ellipse(drawingId,
@@ -175,7 +175,7 @@ class CanvasView(private var drawingId: Int,context: Context): View(context) {
         return false
     }
 
-    private fun unSelectAllChildren(){
+    fun unselectAllChildren(){
         if(tool != null){
             tool!!.unselect()
         }
