@@ -64,6 +64,8 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  //chatHistories$: BehaviorSubject<Map<string, ChatHistory>> = new BehaviorSubject<Map<string, ChatHistory>>();
+
   setDrawingID = (value: string) => {
     this.drawingID = value;
   };
@@ -74,7 +76,8 @@ export class SocketService {
   }
 
   public getNewMessage = () => {
-    this.socket!.on('msgToClient', (message: ClientMessage) => {
+    this.socket!.on('msgToClient', (messageString: any) => {
+      const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
       this.message$.next(message);
     });

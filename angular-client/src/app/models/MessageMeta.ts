@@ -10,3 +10,10 @@ export interface ClientMessage{
   date: string,
   roomName: string,
 }
+
+export interface ChatHistory {
+  id: number;
+  from: string;
+  date: string;
+  message: string;
+}
