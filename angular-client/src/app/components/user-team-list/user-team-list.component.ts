@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { JoinTeam } from '@src/app/models/joinTeam';
+import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
 import { Team } from '@src/app/models/teamsMeta';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
@@ -16,7 +16,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   userList: User[];
   teamList: Team[];
-  chatRoomList: string[];
+  chatRoomList: Team[];
   userId: string;
   constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService) { 
     this.userList = []
@@ -78,7 +78,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.socketService.socket!.on("teamInformations", ()=>{
       let requestedTeam = this.teamService.requestedTeamToJoin.value;
       this.teamService.activeTeams.value.set(requestedTeam.name!, requestedTeam)
-      this.chatRoomList.push(requestedTeam.name!);
+      this.chatRoomList.push(requestedTeam);
+      let index = this.teamList.indexOf(requestedTeam)
+      if(index !==-1){
+        this.teamList.splice(index);
+      }
     })
   }
 
@@ -91,5 +95,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     const deleteTeamBody = {teamId: team.id!, userId: team.ownerId!};
     this.teamService.deleteTeam(deleteTeamBody);
 
+  }
+
+  leaveTeam(team:Team){
+    const leaveTeamBodyRequest: LeaveTeam ={teamName: team.name!, userId: this.userId}
+    this.socketService.leaveTeam(leaveTeamBodyRequest);
+    let index = this.chatRoomList.indexOf(team);
+    this.chatRoomList.splice(index);
+    this.teamList.push(team);
+    this.teamService.activeTeams.value.delete(team.name!)
   }
 }

@@ -14,4 +14,10 @@
             <button *ngIf= "userId === team.ownerId" (click)="deleteTeam(team)"> Supprimer</button>
         </mat-list-item>
     </mat-list>
+    <mat-list class="chatRoomList">
+        <mat-list-item *ngFor="let room of chatRoomList">
+            <h3> {{room.name}}</h3>
+            <button (click)="leaveTeam(room)"> quitter equipe</button>
+        </mat-list-item>
+    </mat-list>
 </div>
