@@ -46,7 +46,7 @@ export class Drawing extends BaseEntity{
     @OneToMany(()=> DrawingContent, drawingContent=> drawingContent.drawing, {nullable: true,})
     contents: DrawingContent[];
 
-    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE'})
+    @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE', onUpdate: 'CASCADE'})
     @JoinColumn()
     chatRoom: ChatRoom
     
