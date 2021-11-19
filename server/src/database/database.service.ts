@@ -24,6 +24,7 @@ import { DrawingEditionRepository } from 'src/modules/drawingEditionHistory/draw
 import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
 import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
+import { DrawingGallery } from 'src/modules/drawing/gallery';
 
 @Injectable()
 export class DatabaseService {
@@ -121,13 +122,6 @@ export class DatabaseService {
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
             let userRet = {id: user.id, status: Status.ONLINE, pseudo: user.pseudo};
-            /*let userRet = await this.userRepo.findOne({
-                where: [
-                    {emailAddress: userCredentials.username},
-                    {pseudo: userCredentials.username}
-                ],
-                select:["id", "status", "pseudo"],
-            })*/
             return userRet;
         }
     }
@@ -231,38 +225,36 @@ export class DatabaseService {
         }
     }
     async getUserDrawings(userId: string){
-        const drawings = await this.drawingRepo.find({
+        let drawings = await this.drawingRepo.find({
             where: [
                 {visibility: DrawingVisibility.PUBLIC},
                 {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
                 {visibility: DrawingVisibility.PROTECTED},
             ],
-            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId"],
-            relations:["contents"],
+            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId","creationDate"],
+            relations:["contents", "activeUsers"],
         })
-        return {drawingList:drawings};
-    }
-    /*async getGallery(drawings: Drawing[]){
-        let drawingCollection: GalleryDrawing[] = []
-        for(const drawing of drawings){
-            let username: string = null;
-            let firstName: string = null;
-            let lastName: string = null;
-            let email: string = null;
-            // to change with collaboration team
-            const user = await this.userRepo.findOne(drawing.ownerId);
-            username = user.pseudo;
-            const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
-                                        ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
-                                        ownerLastName: lastName, contents: drawing.contents}
-            if(drawingCollection.indexOf(galleryDrawing) === -1){
-                drawingCollection.push(galleryDrawing);
-            }
-        };
-        console.log(drawingCollection)
-        return drawingCollection;
 
-    }*/
+        let userGallery: DrawingGallery[] = [];
+        for(let drawing of drawings){
+            drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone:'America/New_York'})
+            let user = await this.userRepo.findOne(drawing.ownerId);
+            if(user === undefined){
+                let team = await this.teamRepo.findOne(drawing.ownerId);
+                let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+                creationDate: drawing.creationDate, authorName: team.name, height: drawing.height, width: drawing.width,
+                ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length}
+                userGallery.push(galleryDrawing);
+            }
+            else{
+                let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+                    creationDate: drawing.creationDate, authorName: user.pseudo, height: drawing.height, width: drawing.width,
+                    ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length}
+                userGallery.push(galleryDrawing);
+            }
+        }
+        return {drawingList:userGallery};
+    }
     //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
         const chatRoom = await this.chatRoomRepo.findOne({where:[{name: drawingInformation.name}]})

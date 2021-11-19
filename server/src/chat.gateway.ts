@@ -32,6 +32,7 @@ import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawin
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
 import { stringify } from 'querystring';
 import { UserProfileRequest } from './modules/user/user-profile-request.dto';
+import { DrawingGallery } from './modules/drawing/gallery';
 
 @WebSocketGateway({cors: true})
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -187,6 +188,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
       this.wss.to(dtoMod.drawingId.toString()).emit("newJoinToDrawing", JSON.stringify({userId: dtoMod.userId}));
       client.join(dtoMod.drawingId.toString());
+      this.wss.emit("nbCollaboratorsDrawingIncreased", JSON.stringify({drawingId: dtoMod.drawingId}))
       // TODO: join client to the chat room
       client.join(drawingRet.name);
       client.emit("drawingInformations", JSON.stringify(drawingInformations))
@@ -213,6 +215,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.notifyUserUpdate(user);
     client.leave(drawing.name);
     client.leave(dtoMod.drawingId.toString());
+    this.wss.emit("nbCollaboratorsDrawingReduced", JSON.stringify({drawingId: dtoMod.drawingId}))
     this.wss.to(dtoMod.drawingId.toString()).emit("userLeftDrawing", JSON.stringify({userId: dtoMod.userId}));
   }
   // --------------------------------------------------- team secteion ----------------------------------
@@ -249,16 +252,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         newJoin.userId = data.userId;
         newJoin.team = team;
         await this.activeUsersRepo.save(newJoin);
+        // sending to the client only the private images of the team
         let teamGallery = await this.drawingRepo.find({
           where:[
-            {visibility: DrawingVisibility.PUBLIC},
             {ownerId: team.id, visibility: DrawingVisibility.PRIVATE},
-            {visibility: DrawingVisibility.PROTECTED}
           ],
-          select: ["id", "visibility", "name", "bgColor", "height", "width"],
-          relations:["contents"]
+          select: ["id", "visibility", "name", "bgColor", "height", "width", "creationDate", 'ownerId'],
+          relations:["contents", "activeUsers"]
         })
-        let gallery = {drawingsList: teamGallery};
+
+        let galleryRet: DrawingGallery[] = []
+        teamGallery.forEach((drawing)=>{
+          drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone:'America/New_York'})
+          const drawingGallery: DrawingGallery = {id: drawing.id, visibility: drawing.visibility, 
+            name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, creationDate:drawing.creationDate, 
+            ownerId: drawing.ownerId, authorName: team.name, nbCollaborators: drawing.activeUsers.length};
+          galleryRet.push(drawingGallery);
+        })
+
+        let gallery = {drawingsList: galleryRet};
         let chatRoom = await this.chatRoomRepo.findOne({
           where: [{name: data.teamName}],
           relations:["chatHistories"],
