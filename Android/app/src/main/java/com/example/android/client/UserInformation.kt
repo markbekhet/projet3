@@ -2,10 +2,25 @@ package com.example.android.client
 
 import com.google.gson.Gson
 
-enum class ClientStatus(var int: Int){
-    ONLINE(0), BUSY(1), OFFLINE(2)
+fun clientStatusFroInt(int:Int): ClientStatus{
+    when(int){
+        0 -> return ClientStatus.ONLINE
+        1 -> return ClientStatus.BUSY
+        else -> return ClientStatus.OFFLINE
+    }
 }
 
+enum class ClientStatus(var int: Int, var string: String){
+    ONLINE(0, "en ligne"),
+    BUSY(1, "Occupée"),
+    OFFLINE(2, "hors ligne")
+}
+
+data class UserProfileRequest(val userId: String, val visitedId: String){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
 data class UserProfileInformation(
     var firstName: String? = null,
     var lastName: String? = null,
@@ -51,6 +66,12 @@ data class DrawingEditionHistories(
     var drawingVisibility: Int?= null,
     var date: String? = null
 )
+
+data class ActiveUser(var userId:String?= null){
+    fun fromJson(json:String): ActiveUser{
+        return Gson().fromJson(json, ActiveUser::class.java)
+    }
+}
 
 data class UserRegistrationInfo(
     var firstName: String? = null,

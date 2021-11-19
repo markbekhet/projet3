@@ -19,6 +19,7 @@ import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.ClientInfo
 import com.example.android.client.ConnectionDisconnectionHistories
 import com.example.android.client.DrawingEditionHistories
+import com.example.android.client.UserProfileInformation
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -40,8 +41,8 @@ class HistoryAndStatistics : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
-
-        val userInfo = getProfile()
+        val data = intent.extras!!.getString("profileInformation")
+        val userInfo = UserProfileInformation().fromJson(data)
         val meanCollaborationTime:TextView = findViewById(R.id.meanCollaborationTime)
         val totalCollaborationTime: TextView = findViewById(R.id.totalCollaborationTime)
         val teamCount: TextView = findViewById(R.id.teamCount)
