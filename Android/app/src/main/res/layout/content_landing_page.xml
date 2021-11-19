@@ -49,12 +49,19 @@
             android:text="Deconnexion"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white" />
+        <Button
+            android:id="@+id/showChat"
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:text="Afficher le clavardage"
+            android:textColor="@color/main_color"
+            app:backgroundTint="@color/white"/>
 
 
     </LinearLayout>
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -67,13 +74,10 @@
         <FrameLayout
             android:id="@+id/usersAndTeamsFrameLandingPage"
             android:layout_width="match_parent"
-            android:layout_height="500dp">
+            android:layout_height="match_parent">
 
         </FrameLayout>
-        <FrameLayout
-            android:id="@+id/landingPageChatSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"/>
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="500dp"
@@ -96,23 +100,13 @@
 
 
 
-    <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/rectangle_background"
-        android:orientation="vertical"
-        android:backgroundTint="@color/white">
-
-        <FrameLayout
-            android:id="@+id/landingPageChatsFrame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
 
 
-    </LinearLayout>
-</LinearLayout>
+
+
+
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
