@@ -41,6 +41,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
 import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
 import { TeamService } from './services/team/team.service';
 import {MatListModule} from '@angular/material/list';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import {MatListModule} from '@angular/material/list';
     FlexLayoutModule,
     AngularMaterialModule,
     MatListModule,
+    MatCheckboxModule,
   ],
   providers: [
     AuthService,

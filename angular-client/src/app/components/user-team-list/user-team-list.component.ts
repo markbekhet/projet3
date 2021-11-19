@@ -16,10 +16,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   userList: User[];
   teamList: Team[];
+  chatRoomList: string[];
   userId: string;
   constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService) { 
     this.userList = []
     this.teamList = []
+    this.chatRoomList = []
     this.userId = this.authService.token$.value
     
   }
@@ -71,11 +73,19 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         }
       })
     })
+
+    // teamJoined
+    this.socketService.socket!.on("teamInformations", ()=>{
+      let requestedTeam = this.teamService.requestedTeamToJoin.value;
+      this.teamService.activeTeams.value.set(requestedTeam.name!, requestedTeam)
+      this.chatRoomList.push(requestedTeam.name!);
+    })
   }
 
   joinTeam(team: Team){
     const joinTeamBody: JoinTeam = {teamName: team.name!, userId: this.userId};
     this.socketService.sendRequestJoinTeam(joinTeamBody);
+    this.teamService.requestedTeamToJoin.next(team);
   }
   deleteTeam(team:Team){
     const deleteTeamBody = {teamId: team.id!, userId: team.ownerId!};

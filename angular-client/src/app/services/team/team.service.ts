@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Team } from '@src/app/models/teamsMeta';
+import { BehaviorSubject } from 'rxjs';
 //import { Observable } from 'rxjs';
 
 const PATH = "http://localhost:3000"
@@ -9,6 +10,9 @@ const PATH = "http://localhost:3000"
   providedIn: 'root'
 })
 export class TeamService {
+
+  activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
+  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({})
 
   constructor(private httpClient: HttpClient) { }
 
