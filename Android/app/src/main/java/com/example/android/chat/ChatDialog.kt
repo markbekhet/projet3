@@ -35,7 +35,10 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        val exist = ChatRooms.chatRooNames.contains(room)
+        if(!exist){
+            ChatRooms.chatRooNames.add(room)
+        }
         val manager = childFragmentManager
         val chatSwitchFragmentTransaction = manager.beginTransaction()
         val chatSwitchFragment = ChatSwitchFragment(this)
@@ -65,7 +68,19 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
                 val data = args[0] as String
                 val messageFromServer = ClientMessage().fromJson(data)
                 val roomName = messageFromServer.roomName
-                ChatRooms.chats[roomName]!!.add(messageFromServer)
+                val arrayListOfMessages = ChatRooms.chats[roomName]
+                var messageAlreadyExists = false
+                if (arrayListOfMessages != null) {
+                    for(message in arrayListOfMessages){
+                        if(message.from == messageFromServer.from &&
+                            message.date == messageFromServer.date){
+                            messageAlreadyExists = true
+                        }
+                    }
+                }
+                if(!messageAlreadyExists){
+                    ChatRooms.chats[roomName]!!.add(messageFromServer)
+                }
                 try{
                     chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
                 }

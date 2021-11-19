@@ -144,6 +144,8 @@ class Drawing : AppCompatActivity() {
         val chatDialog = ChatDialog(this, drawingRelatedInformation!!.name!!)
         ChatRooms.chats[drawingRelatedInformation!!.name!!] =
             allDrawingInformation.chatHistoryList!!
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        chatDialog.dismiss()
         chatDrawing.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }

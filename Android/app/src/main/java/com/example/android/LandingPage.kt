@@ -47,11 +47,7 @@ class LandingPage : AppCompatActivity(){
         //Initialize chat socket
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
-        val exist = ChatRooms.chatRooNames.contains("General")
-
-        if(!exist){
-            ChatRooms.chatRooNames.add("General")
-        }
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
 
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()

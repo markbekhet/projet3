@@ -50,11 +50,7 @@ class TeamActivity : AppCompatActivity() {
         val chatDialog = ChatDialog(this, teamGeneralInformation!!.name!!)
 
         chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
-
-        if(!chatRoomExists){
-            ChatRooms.chatRooNames.add(teamGeneralInformation!!.name!!)
-        }
-
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         try{
             chatDialog.setPreviousMessages(teamGeneralInformation!!.name!!)
         } catch(e: Exception){}
