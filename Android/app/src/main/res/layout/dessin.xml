@@ -21,15 +21,30 @@
                 <!--            android:layout_width="200dp"-->
                 <!--            android:layout_height="match_parent"-->
                 <!--            android:name="com.polymtl.faismoiundessin.FragmentPlayersInGame"/>-->
-                <TextView
-                    android:id="@+id/nom"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="nom du dessin"
-                    android:textColor="@color/main_color"
-                    android:textSize="32dp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/nom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="nom du dessin"
+                        android:textColor="@color/main_color"
+                        android:textSize="32dp"
+                        android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/chatDrawing"
+                        android:layout_width="200sp"
+                        android:layout_height="wrap_content"
+                        android:text="Afficher le clavardage"
+                        android:textColor="@color/main_color"
+                        android:layout_marginStart="5dp"
+                        android:textSize="10sp"
+                        app:backgroundTint="@color/white" />
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

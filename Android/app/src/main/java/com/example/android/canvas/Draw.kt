@@ -1,5 +1,6 @@
 package com.example.android.canvas
 
+import com.example.android.chat.ClientMessage
 import com.google.gson.Gson
 
 class DrawingInformation (
@@ -43,7 +44,8 @@ class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= nul
 // This class encapsulates all the details needed for the chat,
 // drawing informations and connected users for a given drawing
 class AllDrawingInformation(
-    var drawing: ReceiveDrawingInformation?= null
+    var drawing: ReceiveDrawingInformation?= null,
+    var chatHistoryList: ArrayList<ClientMessage>?=null
 ){
     fun fromJson(json: String): AllDrawingInformation{
         return Gson().fromJson(json, AllDrawingInformation::class.java)

@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
+import com.example.android.chat.ChatDialog
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import kotlinx.android.synthetic.main.chatfragment.view.*
@@ -37,6 +38,11 @@ class CreateDraw : AppCompatActivity() {
         var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
+
+        val chatDialog = ChatDialog(this)
+        chatCreateDrawing.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
 
         //switch=findViewById(R.id.visible) as Switch
         option = findViewById(R.id.sp_option) as Spinner

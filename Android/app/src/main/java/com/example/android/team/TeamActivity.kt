@@ -17,12 +17,13 @@ import com.example.android.client.UsersArrayList
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
 
-class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
+class TeamActivity : AppCompatActivity() {
     private val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null
     private var teamGeneralInformation: TeamGeneralInformation?= null
     private var manager: FragmentManager?=null
     private var socket: Socket?= null
+    private var chatRoomExists = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
@@ -46,13 +47,25 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
         val generalData = intent.extras!!.getString("teamGeneralInformation")
         teamGeneralInformation = TeamGeneralInformation().fromJson(generalData!!)
         ChatRooms.chats[teamGeneralInformation!!.name!!] = teamChatAndActiveUsers.chatHistoryList
+        val chatDialog = ChatDialog(this, teamGeneralInformation!!.name!!)
 
+        chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
 
-        ChatRooms.chatRooNames.add(teamGeneralInformation!!.name!!)
+        if(!chatRoomExists){
+            ChatRooms.chatRooNames.add(teamGeneralInformation!!.name!!)
+        }
+
+        try{
+            chatDialog.setPreviousMessages(teamGeneralInformation!!.name!!)
+        } catch(e: Exception){}
 
         teamNameTeamActivity.text = teamGeneralInformation!!.name
         createDrawingTeamButton.setOnClickListener{
             startActivity(Intent(this, CreateDraw::class.java))
+        }
+
+        showChatTeamPage.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
 
         /*================Fragments section=================================*/
@@ -66,41 +79,7 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
 
         //A hash map that has all the fragments
 
-        val chatSwitchFragmentTransaction = manager!!.beginTransaction()
-        val chatSwitchFragment = ChatSwitchFragment(this)
-        chatSwitchFragment.showChatSwitch()
-        chatSwitchFragmentTransaction.replace(R.id.teamPageChatSwitch,
-            chatSwitchFragment).commit()
-
-        for(room in ChatRooms.chatRooNames){
-            val chatRoom = Chat(room)
-            try{
-                chatRoom.setMessage(ChatRooms.chats[room]!!)
-            } catch(e: Exception){}
-            chatRoomsFragmentMap[room] = chatRoom
-
-        }
-        chatFragmentTransaction = manager!!.beginTransaction()
-        chatFragmentTransaction!!.replace(R.id.teamPageChatsFrame,
-            chatRoomsFragmentMap[teamGeneralInformation!!.name]!!).commit()
-
         /*========================socket actions=================================*/
-        socket?.on("msgToClient") { args ->
-            if (args[0] != null) {
-                val messageData = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(messageData)
-                val roomName = messageFromServer.roomName
-                // Each team and drawing will add its own information from the socket
-                // If not we will have duplicated of messages in the singleton
-                if(roomName == teamGeneralInformation!!.name){
-                    ChatRooms.chats[roomName]!!.add(messageFromServer)
-                }
-                try{
-                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                }catch(e:Exception){}
-            }
-        }
-
         socket?.on("newJoinToTeam"){ args ->
             if(args[0]!= null){
                 val newActiveUserData = args[0] as String
@@ -172,25 +151,20 @@ class TeamActivity : AppCompatActivity(), ChatRoomSwitcher {
     }
 
     override fun onDestroy() {
-        ChatRooms.chats.remove(teamGeneralInformation!!.name)
-        var i = 0
-        for(room in ChatRooms.chatRooNames){
-            if(room == teamGeneralInformation!!.name){
-                break
+        if(!chatRoomExists){
+            ChatRooms.chats.remove(teamGeneralInformation!!.name)
+            var i = 0
+            for(room in ChatRooms.chatRooNames){
+                if(room == teamGeneralInformation!!.name){
+                    break
+                }
+                i++
             }
-            i++
+            ChatRooms.chatRooNames.removeAt(i)
         }
-        ChatRooms.chatRooNames.removeAt(i)
 
         val leaveTeam = LeaveTeamDto(teamGeneralInformation!!.name, ClientInfo.userId)
         SocketHandler.getChatSocket().emit("leaveTeam", leaveTeam.toJson())
         super.onDestroy()
-    }
-    override fun switchChatRoom(name: String) {
-        if(chatFragmentTransaction != null){
-            chatFragmentTransaction = manager!!.beginTransaction()
-            chatFragmentTransaction!!.replace(R.id.teamPageChatsFrame,
-                chatRoomsFragmentMap[name]!!).commit()
-        }
     }
 }

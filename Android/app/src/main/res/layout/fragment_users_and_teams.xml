@@ -11,7 +11,8 @@
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -22,7 +23,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/usersRecycleView"
                 android:layout_width="match_parent"
-                android:layout_height="400dp" />
+                android:layout_height="300dp" />
         </LinearLayout>
         <TextView
             android:layout_width="match_parent"
@@ -34,7 +35,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/teamsRecycleView"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="300dp" />
     </LinearLayout>
 
 </FrameLayout>

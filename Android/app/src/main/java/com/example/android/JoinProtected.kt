@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
+import com.example.android.chat.ChatDialog
 import com.example.android.client.ClientInfo
 import com.example.android.team.CantJoin
 import com.example.android.team.JoinTeamDto
@@ -20,6 +21,12 @@ class JoinProtected : AppCompatActivity() {
         setContentView(R.layout.activity_join_protected)
         val drawingData = intent.extras!!.getString("drawingInformation")
         val teamData = intent.extras!!.getString("teamInformation")
+
+        val manager = supportFragmentManager
+        val chatDialog = ChatDialog(this)
+        chatJoinProtected.setOnClickListener {
+            chatDialog.show(manager, ChatDialog.TAG)
+        }
 
         if(drawingData != null){
             val receiveDrawingInformation = ReceiveDrawingInformation().fromJson(drawingData)

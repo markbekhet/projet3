@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.chatfragment.*
 import kotlinx.android.synthetic.main.message.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class Chat(var name:String) : Fragment() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null

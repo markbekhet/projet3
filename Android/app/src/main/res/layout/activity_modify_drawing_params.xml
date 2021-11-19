@@ -10,23 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <FrameLayout
-            android:id="@+id/modifyDrawingPageChatSwitch"
-            android:layout_width="150dp"
-            android:layout_height="match_parent"
-            android:visibility="invisible"/>
         <LinearLayout
-            android:layout_width="400dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center">
             <Button
-                android:id="@+id/modifyDrawingPageToggleChat"
-                android:layout_width="wrap_content"
+                android:id="@+id/showChatModifyDrawingPage"
+                android:layout_width="200sp"
                 android:layout_height="wrap_content"
                 android:text="Afficher le clavardage"
-                android:gravity="top"/>
-
+                android:textColor="@color/main_color"
+                android:textSize="20sp"
+                app:backgroundTint="@color/white"
+                />
             <EditText
                 android:id="@+id/modifyDrawingName"
                 android:layout_width="wrap_content"
@@ -69,13 +66,6 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/modifyDrawingPageChatsFrame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible">
-
-        </FrameLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

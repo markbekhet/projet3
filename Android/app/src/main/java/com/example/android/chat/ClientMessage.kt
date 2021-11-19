@@ -6,9 +6,9 @@ import org.json.JSONObject
 // change the data structure to correspond to the server
 // ClientMessage is the message received from the server
 data class ClientMessage(
+    var date: String?= null,
     var from: String?= null,
     var message: String? = null,
-    var date: String?= null,
     var roomName: String?= null
 
 ){

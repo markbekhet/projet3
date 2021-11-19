@@ -36,12 +36,6 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         super.onViewCreated(view, savedInstanceState)
 
 
-        val exist = ChatRooms.chatRooNames.contains(room)
-
-        if(!exist){
-            ChatRooms.chatRooNames.add(room)
-        }
-
         val manager = childFragmentManager
         val chatSwitchFragmentTransaction = manager.beginTransaction()
         val chatSwitchFragment = ChatSwitchFragment(this)
@@ -71,9 +65,7 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
                 val data = args[0] as String
                 val messageFromServer = ClientMessage().fromJson(data)
                 val roomName = messageFromServer.roomName
-                if(roomName == this.room && !exist){
-                    ChatRooms.chats[roomName]!!.add(messageFromServer)
-                }
+                ChatRooms.chats[roomName]!!.add(messageFromServer)
                 try{
                     chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
                 }
@@ -88,9 +80,10 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
     }
 
     override fun switchChatRoom(name: String) {
+        chatFragmentTransaction = childFragmentManager.beginTransaction()
         if(chatFragmentTransaction != null){
             chatFragmentTransaction!!.replace(R.id.chatsFrame,
-                chatRoomsFragmentMap[name]!!)
+                chatRoomsFragmentMap[name]!!).commit()
         }
     }
 

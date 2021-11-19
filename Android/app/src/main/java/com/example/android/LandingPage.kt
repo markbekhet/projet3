@@ -47,7 +47,12 @@ class LandingPage : AppCompatActivity(){
         //Initialize chat socket
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
-        chatDialog.show(manager, ChatDialog.TAG)
+        val exist = ChatRooms.chatRooNames.contains("General")
+
+        if(!exist){
+            ChatRooms.chatRooNames.add("General")
+        }
+
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         val galleryFragmentTransaction = manager.beginTransaction()
@@ -118,7 +123,9 @@ class LandingPage : AppCompatActivity(){
                 val data = args[0] as String
                 val generalChatList = ClientMessageArray().fromJson(data)
                 ChatRooms.chats["General"] = generalChatList.chatHistoryList!!
-                chatDialog.setPreviousMessages("General")
+                try{
+                    chatDialog.setPreviousMessages("General")
+                } catch(e: Exception){}
             }
         }
 

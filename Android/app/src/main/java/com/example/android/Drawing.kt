@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import com.example.android.canvas.*
+import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
 import com.example.android.client.ClientInfo
 import com.google.gson.Gson
 import io.socket.client.Socket
@@ -19,6 +21,7 @@ class Drawing : AppCompatActivity() {
     private var drawingRelatedInformation: ReceiveDrawingInformation?= null
     private var drawingID: Int?= null
     private var canvas: CanvasView? = null
+    private var chatRoomExists = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
@@ -130,12 +133,40 @@ class Drawing : AppCompatActivity() {
         delete.setOnClickListener {
             canvas!!.deleteTool()
         }
+
+
+        chatRoomExists = ChatRooms.chatRooNames.contains(drawingRelatedInformation!!.name!!)
+
+        if(!chatRoomExists){
+            ChatRooms.chatRooNames.add(drawingRelatedInformation!!.name!!)
+        }
+
+        val chatDialog = ChatDialog(this, drawingRelatedInformation!!.name!!)
+        ChatRooms.chats[drawingRelatedInformation!!.name!!] =
+            allDrawingInformation.chatHistoryList!!
+        chatDrawing.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+
     }
 
     override fun onDestroy() {
         if(canvas != null){
             canvas!!.unselectAllChildren()
         }
+        if(!chatRoomExists){
+            ChatRooms.chats.remove(drawingRelatedInformation!!.name)
+            var i = 0
+
+            for(room in ChatRooms.chatRooNames){
+                if(room == drawingRelatedInformation!!.name){
+                    break
+                }
+                i++
+            }
+            ChatRooms.chatRooNames.removeAt(i)
+        }
+
         leaveDrawing()
         super.onDestroy()
     }
