@@ -7,4 +7,5 @@ export interface Team{
     ownerId?: string;
     password?: string;
     nbCollaborators?: number;
+    bio?: string;
 }

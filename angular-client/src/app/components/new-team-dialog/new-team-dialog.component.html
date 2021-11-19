@@ -7,6 +7,11 @@
                 <input matInput type="text" required formControlName="teamName" [value]="name"
                 (keydown)="blockEvent($event)"/>
             </mat-form-field>
+
+            <mat-form-field class= "new-team-bio-input">
+                <mat-label for="teamBio">Bio</mat-label>
+                <input matInput type ="text" id = "bioField" formControlName = "teamBio" [value]="bio" (keydown)="blockEvent($event)"/>
+            </mat-form-field>
             <!--<p *ngIf = "teamName.invalid" class= "warnMessage"> Une equipe de collaboration doit avoir un nom</p> -->
             <mat-form-field class="new-team-form-input-visibility">
                 <mat-label for="teamVisibility">Niveau de visibilité</mat-label>

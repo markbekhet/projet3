@@ -62,7 +62,15 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     // newTeamCreated
     this.socketService.socket!.on("newTeamCreated", (data: any)=>{
       let newTeam: Team = JSON.parse(data);
-      this.teamList.push(newTeam);
+      let found = false;
+      this.chatRoomList.forEach((chatRoom)=>{
+        if(chatRoom.id === newTeam.id){
+          found = true;
+        }
+      })
+      if(!found){
+        this.teamList.push(newTeam);
+      }
     })
     this.socketService.socket!.on("teamDeleted", (data: any)=>{
       let deletedTeam: Team = JSON.parse(data);

@@ -17,14 +17,7 @@ export class TeamService {
   constructor(private httpClient: HttpClient) { }
 
   createTeam(team: Team){
-    this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team).subscribe((team)=>{
-      if(team) console.log(team)
-
-    },
-    (error)=>{
-      console.log(`error: ${error.message}`)
-    }
-    )
+    return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team)
   }
 
   //TODO

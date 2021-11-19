@@ -4,7 +4,7 @@ import { Team } from '@src/app/models/teamsMeta';
 import { TeamVisibilityItem, teamVisibilityItems, TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { TeamService } from '@src/app/services/team/team.service';
-//import { SocketService } from '@src/app/services/socket/socket.service';
+import { SocketService } from '@src/app/services/socket/socket.service';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
@@ -30,11 +30,12 @@ export class NewTeamDialogComponent implements OnInit {
     nbCollaborators: 4,
     visibility: TeamVisibilityLevel.PUBLIC,
   }
+  bio: string = '';
   inputEntered: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     private windowService: ModalWindowService,
-    //private readonly socketSeervice: SocketService,
+    private readonly socketSeervice: SocketService,
     private teamService: TeamService,
     private authService: AuthService
   ) {
@@ -54,6 +55,7 @@ export class NewTeamDialogComponent implements OnInit {
       teamVisibility: [TeamVisibilityLevel.PUBLIC,[Validators.required]],
       teamPassword:['', []],
       maxCollaborators:[4, [Validators.required, Validators.min(4)]],
+      teamBio: ['', []]
 
     })
   }
@@ -84,8 +86,12 @@ export class NewTeamDialogComponent implements OnInit {
       password: values.teamPassword,
       ownerId: this.userId,
       nbCollaborators: values.maxCollaborators,
+      bio: values.teamBio,
     }
-    this.teamService.createTeam(this.newTeam);
+    this.teamService.createTeam(this.newTeam).subscribe((team)=>{
+      this.teamService.requestedTeamToJoin.next(this.newTeam);
+      this.socketSeervice.sendRequestJoinTeam({teamName: this.newTeam.name!, userId: this.userId, password: this.newTeam.password});
+    });
     console.log(this.newTeam);
     this.closeModal();
 
