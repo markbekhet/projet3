@@ -123,72 +123,77 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let drawing: Drawing = await this.drawingRepo.findOne(dtoMod.drawingId, {
       relations:['contents', 'activeUsers']
     });
-    let passwordMatch: boolean = false
-    if(drawing.visibility === DrawingVisibility.PROTECTED){
-      if(dtoMod.password === undefined || dtoMod.password === null){
-        client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, mot de passe requis pour joindre un dessin protege"}))
-      }
-      else{
-        passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
-      }
+    if(drawing.activeUsers.length === 4){
+      client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, Il existe déjà 4 membres sur ce dessin (le dessin est complet)"}))
     }
-    if(!passwordMatch && drawing.visibility === DrawingVisibility.PROTECTED){
-      client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, le mot de passe est incorrect"}))
-    }
-    else if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
-      let user = await this.userRepo.findOne(dtoMod.userId,{
-        relations:["joinedDrawings"]
-      });
-      let haveJoinedDrawingBefore: boolean = false;
-      for(const joinedDrawing of user.joinedDrawings){
-        if(joinedDrawing.drawingId === dtoMod.drawingId){
-          haveJoinedDrawingBefore = true;
+    else{
+      let passwordMatch: boolean = false
+      if(drawing.visibility === DrawingVisibility.PROTECTED){
+        if(dtoMod.password === undefined || dtoMod.password === null){
+          client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, mot de passe requis pour joindre un dessin protegé"}))
+        }
+        else{
+          passwordMatch = await bcrypt.compare(dtoMod.password, drawing.password);
         }
       }
-      let newJoin = new ActiveUser();
-      newJoin.userId = dtoMod.userId;
-      newJoin.drawing = drawing;
-      await this.activeUsersRepo.save(newJoin);
-      let newEditionHistory = new DrawingEditionHistory();
-      newEditionHistory.user = user;
-      newEditionHistory.action = "join";
-      newEditionHistory.drawingName = drawing.name;
-      newEditionHistory.drawingVisibility = drawing.visibility;
-      newEditionHistory.drawingId = dtoMod.drawingId;
-      await this.drawingEditionRepository.save(newEditionHistory);
-      if(!haveJoinedDrawingBefore){
-        let newJoinedDrawing = new JoinedDrawing();
-        newJoinedDrawing.user = user;
-        newJoinedDrawing.drawingId = dtoMod.drawingId;
-        await this.joinedDrawingRepo.save(newJoinedDrawing);
-        await this.userRepo.update(user.id, {
-          numberCollaboratedDrawings: user.numberCollaboratedDrawings+1,
-          status: Status.BUSY,
+      if(!passwordMatch && drawing.visibility === DrawingVisibility.PROTECTED){
+        client.emit("cantJoinDrawing", JSON.stringify({message: "Impossible de joindre le dessin, le mot de passe est incorrect"}))
+      }
+      else if(passwordMatch || drawing.visibility === DrawingVisibility.PUBLIC || drawing.visibility === DrawingVisibility.PRIVATE){
+        let user = await this.userRepo.findOne(dtoMod.userId,{
+          relations:["joinedDrawings"]
         });
+        let haveJoinedDrawingBefore: boolean = false;
+        for(const joinedDrawing of user.joinedDrawings){
+          if(joinedDrawing.drawingId === dtoMod.drawingId){
+            haveJoinedDrawingBefore = true;
+          }
+        }
+        let newJoin = new ActiveUser();
+        newJoin.userId = dtoMod.userId;
+        newJoin.drawing = drawing;
+        await this.activeUsersRepo.save(newJoin);
+        let newEditionHistory = new DrawingEditionHistory();
+        newEditionHistory.user = user;
+        newEditionHistory.action = "join";
+        newEditionHistory.drawingName = drawing.name;
+        newEditionHistory.drawingVisibility = drawing.visibility;
+        newEditionHistory.drawingId = dtoMod.drawingId;
+        await this.drawingEditionRepository.save(newEditionHistory);
+        if(!haveJoinedDrawingBefore){
+          let newJoinedDrawing = new JoinedDrawing();
+          newJoinedDrawing.user = user;
+          newJoinedDrawing.drawingId = dtoMod.drawingId;
+          await this.joinedDrawingRepo.save(newJoinedDrawing);
+          await this.userRepo.update(user.id, {
+            numberCollaboratedDrawings: user.numberCollaboratedDrawings+1,
+            status: Status.BUSY,
+          });
+        }
+        else{
+          await this.userRepo.update(user.id, { status: Status.BUSY})
+        }
+        let drawingRet = {bgColor: drawing.bgColor, name: drawing.name, width: drawing.width, height: drawing.height,
+                        contents: drawing.contents, visibility: drawing.visibility};
+        
+        let userRet = {id: user.id, status: Status.BUSY, pseudo: user.pseudo}
+        this.notifyUserUpdate(userRet);
+        let chatRoom = await this.chatRoomRepo.findOne({
+          where: [{name: drawingRet.name}],
+          relations: ["chatHistories"],
+        })
+        for(let chatContent of chatRoom.chatHistories){
+          chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
+        }
+        let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
+        this.wss.to(dtoMod.drawingId.toString()).emit("newJoinToDrawing", JSON.stringify({userId: dtoMod.userId}));
+        client.join(dtoMod.drawingId.toString());
+        this.wss.emit("nbCollaboratorsDrawingIncreased", JSON.stringify({drawingId: dtoMod.drawingId}))
+        // TODO: join client to the chat room
+        client.join(drawingRet.name);
+        client.emit("drawingInformations", JSON.stringify(drawingInformations))
+        console.log(`client ${client.id} has succesfully joined ${dtoMod.drawingId}`)
       }
-      else{
-        await this.userRepo.update(user.id, { status: Status.BUSY})
-      }
-      let drawingRet = {bgColor: drawing.bgColor, name: drawing.name, width: drawing.width, height: drawing.height,
-                       contents: drawing.contents, visibility: drawing.visibility};
-      
-      let userRet = {id: user.id, status: Status.BUSY, pseudo: user.pseudo}
-      this.notifyUserUpdate(userRet);
-      let chatRoom = await this.chatRoomRepo.findOne({
-        where: [{name: drawingRet.name}],
-        relations: ["chatHistories"],
-      })
-      for(let chatContent of chatRoom.chatHistories){
-        chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
-      }
-      let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
-      this.wss.to(dtoMod.drawingId.toString()).emit("newJoinToDrawing", JSON.stringify({userId: dtoMod.userId}));
-      client.join(dtoMod.drawingId.toString());
-      this.wss.emit("nbCollaboratorsDrawingIncreased", JSON.stringify({drawingId: dtoMod.drawingId}))
-      // TODO: join client to the chat room
-      client.join(drawingRet.name);
-      client.emit("drawingInformations", JSON.stringify(drawingInformations))
-      console.log(`client ${client.id} has succesfully joined ${dtoMod.drawingId}`)
     }
   }
   @SubscribeMessage("leaveDrawing")
