@@ -96,6 +96,7 @@ export class User extends BaseEntity{
         newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;
         newUserProfile.pseudo = UserRegistrationInfo.pseudo;
         newUserProfile.password = UserRegistrationInfo.password;
+        newUserProfile.avatar = newUserProfile.avatar;
         return newUserProfile;
     }
 }

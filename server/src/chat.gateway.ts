@@ -14,9 +14,7 @@ import { JoinDrawingDto, JoinTeamDto, LeaveDrawingDto, LeaveTeamDto } from './mo
 import { ContentDrawingSocket } from './modules/drawing/socket-drawing.dto';
 import { DrawingEditionHistory } from './modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingEditionRepository } from './modules/drawingEditionHistory/drawingEditionHistory.repository';
-import { Team } from './modules/team/team.entity';
 import { TeamRepository } from './modules/team/team.repository';
-import { User } from './modules/user/user.entity';
 import { UserRespository } from './modules/user/user.repository';
 import * as bcrypt from 'bcrypt';
 import { ChatRoomRepository } from './modules/chatRoom/chat-room.repository';
@@ -25,12 +23,10 @@ import { ChatHistoryRepository } from './modules/chatHistory/chat-history.reposi
 import { ChatHistory } from './modules/chatHistory/chat-history.entity';
 import { ActiveUser } from './modules/active-users/active-users.entity';
 import { ACtiveUserRepository } from './modules/active-users/active-users.repository';
-import { timingSafeEqual } from 'crypto';
 import { JoinedTeam } from './modules/joined-teams/joined-teams.entity';
 import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.repository';
 import { JoinedDrawingRepository } from './modules/joined-drawings/joined-drawings.repository';
 import { JoinedDrawing } from './modules/joined-drawings/joined-drawings.entity';
-import { stringify } from 'querystring';
 import { UserProfileRequest } from './modules/user/user-profile-request.dto';
 import { DrawingGallery } from './modules/drawing/gallery';
 
@@ -70,7 +66,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
     let users = await this.userRepo.find({
-      select: ["id", "status", "pseudo"],
+      select: ["id", "status", "pseudo",'avatar'],
     })
     let usersRet = {userList: users}
     let usersString = JSON.stringify(usersRet);
@@ -376,7 +372,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if(dataMod.userId === dataMod.visitedId){
       let user =  await this.userRepo.findOne(dataMod.userId, {
         select: ["firstName", "lastName", "pseudo", "status", "emailAddress", "numberAuthoredDrawings", "numberCollaboratedDrawings",
-            "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams"],
+            "totalCollaborationTime", "averageCollaborationTime", "numberCollaborationTeams", 'avatar'],
         relations:["connectionHistories", "disconnectionHistories", "drawingEditionHistories"]
       })
       for(let connection of user.connectionHistories){
@@ -392,7 +388,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     else{
       let user =  await this.userRepo.findOne(dataMod.visitedId,{
-        select:["id", "pseudo", "status"]
+        select:["id", "pseudo", "status", 'avatar']
       })
       client.emit("profileToClient", JSON.stringify(user));
     }
