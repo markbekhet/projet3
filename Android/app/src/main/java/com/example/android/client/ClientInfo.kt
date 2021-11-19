@@ -1,6 +1,7 @@
 package com.example.android.client
 
 import android.widget.ImageView
+import com.example.android.R
 
 object ClientInfo {
     var username:String ?= null
@@ -10,7 +11,7 @@ object ClientInfo {
 }
 
 object avatarClientInfo{
-    var avatarClient : Int ?=null
+    var avatarClient : Int = R.drawable.avatar
 }
 class User(val id: String? = null,
            val status: Int?= null,

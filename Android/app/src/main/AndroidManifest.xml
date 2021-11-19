@@ -26,7 +26,7 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".canvas.Gallery"
+            android:name=".profile.Gallery"
             android:exported="true" />
         <activity
             android:name=".CreateDraw"

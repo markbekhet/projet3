@@ -26,8 +26,7 @@ import retrofit2.Response
 import android.text.TextUtils
 import android.util.Patterns
 import android.widget.ImageView
-import com.example.android.canvas.Gallery
-import com.example.android.canvas.GalleryAvatar
+import com.example.android.profile.GalleryAvatar
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.avatar.view.*
 import kotlinx.android.synthetic.main.fragment_avatar.*
@@ -45,6 +44,7 @@ import android.graphics.BitmapFactory
 import android.R.attr.data
 import android.content.res.Resources
 import android.util.Base64
+import com.example.android.profile.Gallery
 import java.io.ByteArrayOutputStream
 
 
@@ -85,22 +85,25 @@ class RegisterScreen : AppCompatActivity() {
         bitmap, (300).toInt(),
         (300).toInt(), true
     )
-
+    //CONVERT IN image
+//    val decodedString: ByteArray = Base64.decode(encodedImage, Base64.DEFAULT)
+//    val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     val stream = ByteArrayOutputStream()
     resized.compress(Bitmap.CompressFormat.PNG, 75, stream)
     val byteArray: ByteArray = stream.toByteArray()
 
     return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
-        img_save.apply {
-            Glide.with(this)
-                .load(avatarClientInfo.avatarClient)
-                .into(img_save)
-        }
-        print(avatarClientInfo.avatarClient)
+            println(avatarClientInfo.avatarClient)
+//            img_save.apply {if(avatarClientInfo.avatarSelection) {
+//                Glide.with(this)
+//                    .load(avatarClientInfo.avatarClient)
+//                    .into(img_save)
+//            }}
+                img_save.setImageResource(avatarClientInfo.avatarClient!!)
 
 
-        avatarClientInfo!!.avatarClient?.let { img_save.setImageResource(it) }
+//        avatarClientInfo!!.avatarClient?.let { img_save.setImageResource(it) }
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
                 val imageBitmap = data!!.extras!!.get("data") as Bitmap
@@ -151,6 +154,7 @@ class RegisterScreen : AppCompatActivity() {
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString()
                 ))
+                img_save.setImageResource(avatarClientInfo.avatarClient!!)
             }
 
             lastName.doAfterTextChanged {
