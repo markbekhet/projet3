@@ -48,7 +48,7 @@ class LandingPage : AppCompatActivity(){
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-
+        chatDialog.dismiss()
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         val galleryFragmentTransaction = manager.beginTransaction()
@@ -214,6 +214,8 @@ class LandingPage : AppCompatActivity(){
 
     override fun onDestroy() {
         disconnect()
+        ChatRooms.chats.clear()
+        ChatRooms.chatRooNames.clear()
         super.onDestroy()
     }
 

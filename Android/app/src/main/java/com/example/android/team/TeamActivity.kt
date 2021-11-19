@@ -51,6 +51,7 @@ class TeamActivity : AppCompatActivity() {
 
         chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        chatDialog.dismiss()
         try{
             chatDialog.setPreviousMessages(teamGeneralInformation!!.name!!)
         } catch(e: Exception){}

@@ -14,6 +14,7 @@ import com.example.android.JoinProtected
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.canvas.*
+import com.example.android.chat.ChatDialog
 import com.example.android.client.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -43,6 +44,11 @@ class HistoryAndStatistics : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
+        val chatDialog = ChatDialog(this)
+        showChatStatisticsPage.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+
         val data = intent.extras!!.getString("profileInformation")
         userInfo = UserProfileInformation().fromJson(data)
 

@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.R
 import com.example.android.SocketHandler
+import com.example.android.chat.ChatDialog
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
@@ -52,6 +53,12 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
+
+
+        val chatDialog= ChatDialog(this)
+        showChatOwnerProfile.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
         val dataForm = UserProfileInformation().fromJson(data)
         updateUI(dataForm)
 
