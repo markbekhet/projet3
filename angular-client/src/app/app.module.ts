@@ -42,6 +42,7 @@ import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-di
 import { TeamService } from './services/team/team.service';
 import {MatListModule} from '@angular/material/list';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     AngularMaterialModule,
     MatListModule,
     MatCheckboxModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,
