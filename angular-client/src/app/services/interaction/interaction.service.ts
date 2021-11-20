@@ -30,6 +30,9 @@ export class InteractionService {
 
   updateColorSignal: Subject<boolean> = new Subject<boolean>();
   $updateColorSignal: Observable<boolean> = this.updateColorSignal.asObservable();
+
+  chatRoomName: Subject<string> = new Subject<string>()
+  $chatRoomName: Observable<string> = this.chatRoomName.asObservable();
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }

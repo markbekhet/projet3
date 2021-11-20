@@ -8,6 +8,7 @@ import { SocketService } from '@services/socket/socket.service';
 import { Status } from '@common/user';
 import { User } from '@src/app/models/UserMeta';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
   selector: 'app-communication-page',
@@ -15,6 +16,7 @@ import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
   styleUrls: ['./communication-page.component.scss'],
 })
 export class CommunicationPageComponent implements OnInit, OnDestroy {
+  roomName: string = '';
   username: string = '';
   messages: ChatHistory[] = [];
   messageForm: FormGroup;
@@ -48,6 +50,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private router: Router,
     private socketService: SocketService,
     private chatRoomService: ChatRoomService,
+    private interactionService: InteractionService
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.token$.value,
@@ -60,15 +63,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.messages = this.chatRoomService.getChatHistoryList("General")!
-    //this.messages = []
-    /*this.chatRoomService.getChatHistoryList("General")!.forEach((chatHistory: ChatHistory)=>{
-      if(this.messages.indexOf(chatHistory) === -1)
-        this.messages.unshift(chatHistory);
-    })*/
+    this.messages = this.chatRoomService.getChatHistoryList(this.roomName)!
     this.username = this.activeRoute.snapshot.params.username;
-    //this.messages = [];
-    // this.chat.connect();
 
     this.socketService.socket!.on("msgToClient", (data: any) => {
       let message: ClientMessage = JSON.parse(data);
@@ -88,6 +84,9 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
       this.user = profile;
       console.log(`user loaded : ${profile.pseudo}`);
     });
+    this.interactionService.$chatRoomName.subscribe((name: string)=>{
+      this.roomName = name;
+    })
   }
 
   onSubmit() {
@@ -95,7 +94,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     const messageToSend: ServerMessage = {
       from: this.user.pseudo!,
       message: MESSAGE,
-      roomName: 'General'
+      roomName: this.roomName
     }
 
     this.socketService.sendMessage(messageToSend);

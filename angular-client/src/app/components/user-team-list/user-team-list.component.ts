@@ -1,8 +1,12 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+import { ChatHistory } from '@src/app/models/MessageMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 //import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { TeamService } from '@src/app/services/team/team.service';
@@ -16,13 +20,16 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   userList: User[];
   teamList: Team[];
-  chatRoomList: Team[];
+  chatRoomList: string[];
   userId: string;
-  constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService) { 
+  constructor(private socketService: SocketService, private authService: AuthService,
+     private teamService: TeamService, private readonly chatRoomService: ChatRoomService,
+      private router: Router, private interactionService: InteractionService) { 
     this.userList = []
     this.teamList = []
     this.chatRoomList = []
     this.userId = this.authService.token$.value
+    
     
   }
 
@@ -62,13 +69,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     // newTeamCreated
     this.socketService.socket!.on("newTeamCreated", (data: any)=>{
       let newTeam: Team = JSON.parse(data);
-      let found = false;
-      this.chatRoomList.forEach((chatRoom)=>{
+      //let found = false;
+      /*this.chatRoomList.forEach((chatRoom)=>{
         if(chatRoom.id === newTeam.id){
           found = true;
         }
-      })
-      if(!found){
+      })*/
+      
+      if(this.chatRoomList.indexOf(newTeam.name!) === -1){
         this.teamList.push(newTeam);
       }
     })
@@ -83,15 +91,22 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     })
 
     // teamJoined
-    this.socketService.socket!.on("teamInformations", ()=>{
+    this.socketService.socket!.on("teamInformations", (data: any)=>{
+      let teamInformations: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
       let requestedTeam = this.teamService.requestedTeamToJoin.value;
       this.teamService.activeTeams.value.set(requestedTeam.name!, requestedTeam)
-      this.chatRoomList.push(requestedTeam);
+      this.chatRoomService.addChatRoom(requestedTeam.name!, teamInformations.chatHistoryList);
+      this.chatRoomList.push(requestedTeam.name!);
       let index = this.teamList.indexOf(requestedTeam)
       if(index !==-1){
         this.teamList.splice(index);
       }
     })
+
+    console.log(this.chatRoomService.chatRooms.keys())
+    for(let key of this.chatRoomService.chatRooms.keys()){
+      this.chatRoomList.push(key);
+    }
   }
 
   joinTeam(team: Team){
@@ -105,12 +120,18 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   }
 
-  leaveTeam(team:Team){
-    const leaveTeamBodyRequest: LeaveTeam ={teamName: team.name!, userId: this.userId}
+  leaveTeam(teamName:string){
+    const leaveTeamBodyRequest: LeaveTeam ={teamName: teamName, userId: this.userId}
     this.socketService.leaveTeam(leaveTeamBodyRequest);
-    let index = this.chatRoomList.indexOf(team);
+    let index = this.chatRoomList.indexOf(teamName);
     this.chatRoomList.splice(index);
-    this.teamList.push(team);
-    this.teamService.activeTeams.value.delete(team.name!)
+    this.teamList.push(this.teamService.activeTeams.value.get(teamName)!);
+    this.teamService.activeTeams.value.delete(teamName)
+  }
+
+  joinChat(roomName: string){
+    console.log(roomName);
+    this.interactionService.chatRoomName.next(roomName)
+    this.router.navigate(['/chat'])
   }
 }
