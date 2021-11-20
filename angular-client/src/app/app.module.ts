@@ -43,6 +43,7 @@ import { TeamService } from './services/team/team.service';
 import {MatListModule} from '@angular/material/list';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ChatRoomService } from './services/chat-room/chat-room.service';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     SocketService,
     ValidationService,
     TeamService,
+    ChatRoomService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
