@@ -5,7 +5,7 @@ import { /* catchError, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { User } from '@models/UserMeta';
-import { Drawing } from '@models/DrawingMeta';
+import { /* Drawing, */ DrawingInfosForGallery } from '@models/DrawingMeta';
 import { UserToken } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
@@ -16,13 +16,12 @@ const PROFILE = 'user/profile/';
 const DISCONNECT = 'user/disconnect/';
 const GALLERY = 'user/gallery/';
 
-// TODO: à changer, juste pour tester
-const PAUL_USER_ID = 'a7e2dd1a-4746-40e1-b3a0-b7b6f611600a';
-
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  constructor(private httpClient: HttpClient) {}
+
   // login error codes
   readonly USER_LOGGED_IN = 'User is already logged in';
   readonly NO_USER_FOUND = 'There is no account with this username or email';
@@ -34,16 +33,14 @@ export class AuthService {
   readonly DUPLICATE_USERNAME =
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
-  readonly NULL_USER: User = {
-    id: '',
-  };
-  readonly NULL_DRAWINGS: Drawing[] = [];
+  readonly NULL_USER: User = { id: '' };
+  readonly NULL_DRAWINGS: DrawingInfosForGallery[] = [];
 
   $authenticatedUser = new BehaviorSubject<User>(this.NULL_USER);
 
-  $userDrawings = new BehaviorSubject<Drawing[]>(this.NULL_DRAWINGS);
-
-  constructor(private httpClient: HttpClient) {}
+  $userDrawings = new BehaviorSubject<DrawingInfosForGallery[]>(
+    this.NULL_DRAWINGS
+  );
 
   getAuthenticatedUserID() {
     return this.$authenticatedUser.value.id;
@@ -54,24 +51,6 @@ export class AuthService {
   }
 
   login(userCreds: UserCredentials) {
-    /*
-    return this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
-    .pipe(tap(token => {
-      registeredUser.token = token;
-    }), concatMap(responseData => this.httpClient.get<User>(PATH + GET_PROFILE_PATH + responseData)
-    .pipe(tap(responseData => {
-      console.log('profile returns: ' + responseData.toString());
-
-      registeredUser.firstName = 'first name test';
-      registeredUser.lastName = 'last name test';
-      registeredUser.email = 'prog.test@gmail.com';
-    }))),
-    tap(() => {
-
-      console.log(registeredUser);
-      this.authenticateUser(registeredUser);
-    }));
-    */
     return this.httpClient
       .post(PATH + LOGIN, userCreds, { responseType: 'text' })
       .pipe(
@@ -101,13 +80,18 @@ export class AuthService {
       );
   }
 
-  // this.authentifiedUser.next(this.NULL_USER);
   disconnect(): Observable<string> {
-    return this.httpClient.post(
-      PATH + DISCONNECT + this.$authenticatedUser.value.id,
-      this.$authenticatedUser.value.id,
-      { responseType: 'text' }
-    );
+    return this.httpClient
+      .post(PATH + DISCONNECT + this.$authenticatedUser.value.id, null, {
+        responseType: 'text',
+      })
+      .pipe(
+        tap((data) => {
+          console.log(data);
+          this.$authenticatedUser.next(this.NULL_USER);
+          this.$userDrawings.next(this.NULL_DRAWINGS);
+        })
+      );
   }
 
   getProfile() {
@@ -118,10 +102,16 @@ export class AuthService {
     );
   }
 
-  getPersonalGallery(): Observable<Drawing[]> {
-    return this.httpClient.get<Drawing[]>(PATH + GALLERY + PAUL_USER_ID, {
-      responseType: 'json',
-    });
+  getPersonalGallery(): Observable<{ drawingList: DrawingInfosForGallery[] }> {
+    return this.httpClient
+      .get<{ drawingList: DrawingInfosForGallery[] }>(
+        PATH + GALLERY + this.$authenticatedUser.value.id
+      )
+      .pipe(
+        tap((data) => {
+          this.$userDrawings.next(data.drawingList);
+        })
+      );
   }
 
   // .pipe(catchError(this.handleGalleryError('getDrawings', [])));
@@ -130,15 +120,29 @@ export class AuthService {
   //   throw new Error('Method not implemented.');
   // }
 
-  // @Get("/gallery/:userId")
-  //   async getUserGallery(@Param("userId") userId: string){
-  //       return await this.databaseService.getUserDrawings(userId);
-  //   }
-
   // A little bit weird you dont need that
   // passer socket id et username
   /* {
     socket_id: this.chat.getSocketID(),
     username: username,
   } */
+
+  /* login(userCreds: UserCredentials) {
+    return this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
+    .pipe(tap(token => {
+      registeredUser.token = token;
+    }), concatMap(responseData => this.httpClient.get<User>(PATH + GET_PROFILE_PATH + responseData)
+    .pipe(tap(responseData => {
+      console.log('profile returns: ' + responseData.toString());
+
+      registeredUser.firstName = 'first name test';
+      registeredUser.lastName = 'last name test';
+      registeredUser.email = 'prog.test@gmail.com';
+    }))),
+    tap(() => {
+
+      console.log(registeredUser);
+      this.authenticateUser(registeredUser);
+    }));
+    */
 }

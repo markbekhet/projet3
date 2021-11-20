@@ -22,13 +22,18 @@ import { ValidationService } from './services/validation/validation.service';
 import { AppComponent } from './components/app-component/app.component';
 import { ColorPickerComponent } from './components/color-picker-component/color-picker.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
+import { DeleteDrawingComponent } from './components/gallery-component/delete-drawing/delete-drawing.component';
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
-import { GalleryComponent } from './components/gallery-component/gallery.component';
+import {
+  DrawingPasswordBottomSheet,
+  GalleryComponent,
+} from './components/gallery-component/gallery.component';
 import { HeaderViewComponent } from './components/drawing-view/header-view/header-view.component';
 import { LandingPage } from './components/landing-page/landing-page.component';
 import { LoginPage } from './components/login-page/login-page.component';
 import { MiniColorPickerComponent } from './components/color-picker-component/mini-color-picker/mini-color-picker.component';
+import { ModifyDrawingComponent } from './components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from './components/new-drawing-dialog/new-drawing.component';
 import {
   OptionViewComponent,
@@ -37,6 +42,7 @@ import {
 import { ProfilePage } from './components/profile-page/profile-page.component';
 import { RegisterPage } from './components/register-page/register-page.component';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
+import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 
 @NgModule({
@@ -44,6 +50,8 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     AppComponent,
     ColorPickerComponent,
     CommunicationPageComponent,
+    DeleteDrawingComponent,
+    DrawingPasswordBottomSheet,
     DrawingViewComponent,
     ErrorDialogComponent,
     GalleryComponent,
@@ -51,12 +59,14 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     LandingPage,
     LoginPage,
     MiniColorPickerComponent,
+    ModifyDrawingComponent,
     NewDrawingComponent,
     OptionViewComponent,
     ProfilePage,
     RegisterPage,
     ShapeTypePipe,
     SvgViewComponent,
+    ThumbnailComponent,
     ToolboxViewComponent,
   ],
   imports: [
@@ -81,6 +91,13 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     SocketService,
     ValidationService,
   ],
+  entryComponents: [
+    ErrorDialogComponent,
+    NewDrawingComponent,
+    DeleteDrawingComponent,
+    ModifyDrawingComponent,
+    GalleryComponent,
+  ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -88,5 +105,3 @@ export class AppModule {}
 
 // Note (Paul) :
 // - HttpClientModule --> mis dans les providers dans mon projet 2 précédent
-// - entryComponents: [LandingPageComponent, DrawingViewComponent] --> à mettre après les providers,
-// peut être utile pour les modales.

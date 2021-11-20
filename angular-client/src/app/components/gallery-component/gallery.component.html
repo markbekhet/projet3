@@ -2,24 +2,37 @@
     <h1>Galerie de dessins</h1>
 
     <div class="gallery-grid">
-        <mat-card *ngFor="let drawing of drawings" class="drawing-card">
+        <mat-card *ngFor="let drawing of shownDrawings" class="drawing-card">
             <mat-card-header>
                 <img mat-card-avatar src="../../../assets/thumbnails/avatar_placeholder.png"
                      alt="Avatar du propriétaire" class="avatar-image" />
-                <mat-card-title>{{ drawing.name }}</mat-card-title>
-                <mat-card-subtitle>{{ displayVisibilityLevel(drawing.visibility) }}</mat-card-subtitle>
+                <mat-card-title><span>Nom : </span>{{ drawing.infos.name }}</mat-card-title>
+                <mat-card-subtitle>{{ displayVisibilityLevel(drawing.infos.visibility) }}</mat-card-subtitle>
             </mat-card-header>
 
-            <img mat-card-image src="../../../assets/thumbnails/drawing_placeholder.jpg" alt="Image de dessin" />
+            <!-- <img mat-card-image src="../../../assets/thumbnails/drawing_placeholder.jpg" alt="Image de dessin" /> -->
+            <app-thumbnail [drawing]="drawing.thumbnail" [svgWidth]="drawing.infos.width"
+                           [svgHeight]="drawing.infos.height"></app-thumbnail>
 
             <mat-card-actions>
-                <!--  -->
                 <!-- mettre le bouton modifier en haut à droite dans le header -->
-                <button *ngIf="getAuthenticatedUserID() === drawing.ownerId ">Modifier</button>
-                <button mat-raised-button color="accent">Supprimer</button>
-                <button mat-raised-button color="primary">Éditer</button>
+                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId" mat-flat-button color="warn"
+                        matTooltip="Supprimer" (click)="openDeleteDrawingDialog(drawing.infos)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId" mat-flat-button color="accent"
+                        matTooltip="Modifier les informations" (click)="openModifyDrawingDialog(drawing.infos)">
+                    <mat-icon>settings</mat-icon>
+                </button>
+                <button mat-flat-button color="primary" matTooltip="Éditer" (click)="editDrawing(drawing.infos)">
+                    <mat-icon>edit</mat-icon>
+                </button>
             </mat-card-actions>
         </mat-card>
     </div>
+
+    <!-- Could have a paginator related to the drawings Array instead of scrolling for ever -->
+    <!-- <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+    </mat-paginator> -->
 
 </div>
