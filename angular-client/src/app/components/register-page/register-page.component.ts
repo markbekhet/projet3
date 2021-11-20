@@ -10,7 +10,6 @@ import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
-  selector: 'app-register-page',
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.scss'],
 })

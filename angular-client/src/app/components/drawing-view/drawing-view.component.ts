@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { InteractionService } from '@services/interaction/interaction.service';
 
 @Component({
-  selector: 'app-drawing-view',
   templateUrl: './drawing-view.component.html',
   styleUrls: ['./drawing-view.component.scss'],
 })

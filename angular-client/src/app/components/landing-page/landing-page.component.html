@@ -5,7 +5,7 @@
 
     <div class="header-buttons">
         <div *ngFor="let item of menuItems" class="btn">
-            <button mat-fab (click)="execute(item.shortcutName)">
+            <button mat-fab (click)="execute(item.shortcutName)" matTooltip={{item.name}} color="primary">
                 <mat-icon>{{item.icon}}</mat-icon>
             </button>
         </div>
@@ -20,10 +20,12 @@
     </div>
 </div>
 
+<!-- TODO: Rajouter un effet visuel après le login ou register, genre un spinner ?
+    Faire jouer le son à la fin du spinner -->
 <div *ngIf="isLoggedIn">
     <audio src="../../../assets/audio/login.mp3" autoplay></audio>
 </div>
 
+<!-- Note (Paul) : Garder le footer et son css, peut être pratique pour la box de clavardage -->
 <div class="footer">
-    <p>© Équipe-101</p>
 </div>
