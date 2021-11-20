@@ -44,6 +44,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ChatRoomService } from './services/chat-room/chat-room.service';
+import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -65,6 +67,7 @@ import { ChatRoomService } from './services/chat-room/chat-room.service';
     ToolboxViewComponent,
     UserTeamListComponent,
     NewTeamDialogComponent,
+    UserProfileDialogComponent,
   ],
   imports: [
     BrowserModule,

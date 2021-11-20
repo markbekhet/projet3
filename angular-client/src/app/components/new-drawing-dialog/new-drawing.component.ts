@@ -18,7 +18,7 @@ import {
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 //import { DrawingService } from '@services/drawing/drawing.service';
-import { ModalWindowService } from '@services/window-handler/modal-window.service';
+//import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { JoinDrawing } from '@src/app/models/joinDrrawing';
 import { Team } from '@src/app/models/teamsMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
@@ -67,7 +67,7 @@ export class NewDrawingComponent implements OnInit {
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private windowService: ModalWindowService,
+    //private windowService: ModalWindowService,
     private readonly socketService: SocketService,
     private authService: AuthService,
     private teamService: TeamService
@@ -204,7 +204,7 @@ export class NewDrawingComponent implements OnInit {
   }
 
   closeModalForm(): void {
-    this.windowService.closeWindow();
+    //this.windowService.closeWindow();
   }
 
   get canvHeight(): AbstractControl | null {

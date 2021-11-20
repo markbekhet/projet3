@@ -10,6 +10,8 @@ import { InteractionService } from '@src/app/services/interaction/interaction.se
 //import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { TeamService } from '@src/app/services/team/team.service';
+import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
 
 @Component({
   selector: 'app-user-team-list',
@@ -24,13 +26,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   userId: string;
   constructor(private socketService: SocketService, private authService: AuthService,
      private teamService: TeamService, private readonly chatRoomService: ChatRoomService,
-      private router: Router, private interactionService: InteractionService) { 
+      private router: Router, private interactionService: InteractionService,private windowService: ModalWindowService) { 
     this.userList = []
     this.teamList = []
     this.chatRoomList = []
     this.userId = this.authService.token$.value
-    
-    
   }
 
   ngOnInit(): void {
@@ -47,7 +47,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     })
     console.log(this.userList);
     console.log(this.teamList);
-    
+
   }
   ngAfterViewInit(){
     // user update
@@ -134,4 +134,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.interactionService.chatRoomName.next(roomName)
     this.router.navigate(['/chat'])
   }
+
+  viewUserProfile(userId: string) {
+    // envoyer ce id vers la modale et executer les requetes
+    this.windowService.openDialog(UserProfileDialogComponent, userId);
+  }
+
 }

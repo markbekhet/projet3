@@ -3,7 +3,7 @@
         <mat-list-item *ngFor="let user of userList">
             <div *ngIf= "user.id !== userId && user.status !== 2">
                 <h3> {{user.pseudo}}</h3>
-                <button> Consulter son profile</button>
+                <button (click)="viewUserProfile(user.id!)"> Consulter son profile</button>
             </div>
         </mat-list-item>
     </mat-list>
