@@ -10,6 +10,9 @@ object ClientInfo {
     var usersList = UsersArrayList()
     var teamsList = TeamsArrayList()
     var gallery = GalleryDrawing()
+    var indexPossibleOwners = 0
+    //La liste des potentielles propriétaires de dessins
+    var possibleOwners = HashMap<Int, Pair<String,String>>()
 }
 
 class User(val id: String? = null,

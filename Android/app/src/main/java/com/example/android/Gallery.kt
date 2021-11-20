@@ -107,7 +107,15 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        if(ClientInfo.userId == information!!.ownerId){
+        var canModify = false
+        for(entry in ClientInfo.possibleOwners){
+            val value = entry.value
+            if(value.first == information!!.ownerId){
+                canModify = true
+                break
+            }
+        }
+        if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
             viewHolder.itemView.modify.setOnClickListener {
@@ -116,7 +124,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
 
             viewHolder.itemView.delete.setOnClickListener{
                 var response: Response<ResponseBody>?= null
-                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)
+                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, information!!.ownerId!!)
                 runBlocking {
                     async {
                         launch {
@@ -139,10 +147,20 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         }
 
         var authorName = ""
+        var foundInUsers = false
         for(user in ClientInfo.usersList.userList){
             if(user.id == information!!.ownerId){
                 authorName = user.pseudo!!
+                foundInUsers = true
                 break
+            }
+        }
+        if(!foundInUsers){
+            for(team in ClientInfo.teamsList.teamList){
+                if(team.id == information!!.ownerId){
+                    authorName = team.name!!
+                    break
+                }
             }
         }
 

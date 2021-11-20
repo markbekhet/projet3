@@ -24,6 +24,8 @@ class TeamActivity : AppCompatActivity() {
     private var manager: FragmentManager?=null
     private var socket: Socket?= null
     private var chatRoomExists = false
+    val galleryDrawings = Gallery()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
@@ -74,10 +76,13 @@ class TeamActivity : AppCompatActivity() {
 
         usersFragmentTransaction.replace(R.id.usersAndTeamsFrameTeamPage, usersAndTeamsFragment).commit()
 
-        val galleryDrawings = Gallery()
+
         //make sure that is the first time to visit the team
         if(!chatRoomExists){
             ClientInfo.gallery.addDrawingsToList(teamChatAndActiveUsers.drawingList)
+            ClientInfo.indexPossibleOwners++
+            val pair = Pair<String, String>(teamGeneralInformation!!.id!!, teamGeneralInformation!!.name!!)
+            ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners] = pair
         }
         galleryDrawings.set(ClientInfo.gallery.drawingList)
 
@@ -228,6 +233,8 @@ class TeamActivity : AppCompatActivity() {
                 }
                 i++
             }
+            ClientInfo.possibleOwners.remove(ClientInfo.indexPossibleOwners)
+            ClientInfo.indexPossibleOwners--
             ChatRooms.chatRooNames.removeAt(i)
             ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
         }
@@ -235,5 +242,10 @@ class TeamActivity : AppCompatActivity() {
         val leaveTeam = LeaveTeamDto(teamGeneralInformation!!.name, ClientInfo.userId)
         SocketHandler.getChatSocket().emit("leaveTeam", leaveTeam.toJson())
         super.onDestroy()
+    }
+
+    override fun onRestart(){
+        galleryDrawings.set(ClientInfo.gallery.drawingList)
+        super.onRestart()
     }
 }

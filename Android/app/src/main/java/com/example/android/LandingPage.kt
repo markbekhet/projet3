@@ -249,6 +249,8 @@ class LandingPage : AppCompatActivity(){
         disconnect()
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
+        ClientInfo.possibleOwners.clear()
+        ClientInfo.indexPossibleOwners = 0
         super.onDestroy()
     }
 
