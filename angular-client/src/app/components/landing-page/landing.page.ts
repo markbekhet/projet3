@@ -51,7 +51,7 @@ export class LandingPage implements OnInit {
   }
 
   openCreateNewDrawing() {
-    this.windowService.openWindow(NewDrawingComponent);
+    this.windowService.openDialog(NewDrawingComponent);
   }
 
   openGallery() {
@@ -59,7 +59,7 @@ export class LandingPage implements OnInit {
   }
 
   openCraeteNewTeam(){
-    this.windowService.openWindow(NewTeamDialogComponent);
+    this.windowService.openDialog(NewTeamDialogComponent);
   }
 
   disconnect() {

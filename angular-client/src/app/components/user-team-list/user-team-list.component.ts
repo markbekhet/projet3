@@ -6,6 +6,8 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 //import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { TeamService } from '@src/app/services/team/team.service';
+import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
 
 @Component({
   selector: 'app-user-team-list',
@@ -18,12 +20,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   teamList: Team[];
   chatRoomList: Team[];
   userId: string;
-  constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService) { 
+  constructor(private socketService: SocketService, private authService: AuthService, private teamService: TeamService, private windowService: ModalWindowService) {
     this.userList = []
     this.teamList = []
     this.chatRoomList = []
     this.userId = this.authService.token$.value
-    
+
   }
 
   ngOnInit(): void {
@@ -40,7 +42,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     })
     console.log(this.userList);
     console.log(this.teamList);
-    
+
   }
   ngAfterViewInit(){
     // user update
@@ -113,4 +115,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.teamList.push(team);
     this.teamService.activeTeams.value.delete(team.name!)
   }
+
+  viewUserProfile(userId: string) {
+    // envoyer ce id vers la modale et executer les requetes
+    this.windowService.openDialog(UserProfileDialogComponent, userId);
+  }
+
 }

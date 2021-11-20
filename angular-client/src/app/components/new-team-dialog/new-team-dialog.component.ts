@@ -5,7 +5,7 @@ import { TeamVisibilityItem, teamVisibilityItems, TeamVisibilityLevel } from '@s
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
-import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+//import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
   selector: 'app-new-team-dialog',
@@ -34,7 +34,7 @@ export class NewTeamDialogComponent implements OnInit {
   inputEntered: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
-    private windowService: ModalWindowService,
+    //private windowService: ModalWindowService,
     private readonly socketSeervice: SocketService,
     private teamService: TeamService,
     private authService: AuthService
@@ -97,7 +97,7 @@ export class NewTeamDialogComponent implements OnInit {
 
   }
   closeModal(){
-    this.windowService.closeWindow();
+    //this.windowService.closeWindow();
   }
   blockEvent(e: KeyboardEvent) {
     e.stopPropagation();

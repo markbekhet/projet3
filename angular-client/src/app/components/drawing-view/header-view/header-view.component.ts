@@ -32,7 +32,7 @@ export class HeaderViewComponent implements OnInit {
   openNewDrawingForm() {
     // eslint-disable-next-line no-alert
     if (window.confirm('Un dessin est déjà en cours. Voulez-vous continuer?')) {
-      this.winService.openWindow(NewDrawingComponent);
+      this.winService.openDialog(NewDrawingComponent);
     }
   }
 

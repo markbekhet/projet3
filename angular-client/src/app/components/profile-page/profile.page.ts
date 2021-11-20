@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DrawingState } from '@src/app/models/DrawingMeta';
-import { ConnectionHistory, DrawingEditionHistory, Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
+import { DrawingEditionHistory, Status, UpdateUserInformation, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
@@ -69,10 +69,6 @@ export class ProfilePage implements OnInit {
       this.user = profile;
       console.log(`user loaded : ${profile.pseudo}`);
     });
-
-    console.log((this.user.connectionHistories as ConnectionHistory[]).length);
-
-
   }
 
   onSubmit(formPseudo: FormGroup) {
