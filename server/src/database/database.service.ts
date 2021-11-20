@@ -301,6 +301,13 @@ export class DatabaseService {
     async modifyDrawing(dto: ModifyDrawingDto){
         let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
         // validating that the user is allowed to modify the drawing
+        let chatRoom = await this.chatRoomRepo.findOne({
+            where: [{name: drawing.name}]
+        })
+
+        let editionHistories = await this.drawingEditionRepo.find({
+            where: [{drawingId: dto.drawingId}]
+        })
         if(drawing.ownerId !== dto.userId){
             let team = await this.teamRepo.findOne(drawing.ownerId);
             if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
@@ -314,12 +321,24 @@ export class DatabaseService {
         let updateName: boolean = dto.newName!== undefined && dto.newName !== null
         let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
         if(updateName && !updateVisibility){
+            await this.chatRoomRepo.update(chatRoom.id, {name: dto.newName})
+            if(editionHistories !== undefined){
+                for(let editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
+                }
+            }
             await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
         }
         else if(!updateName && updateVisibility){
             await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
         }
         else if(updateName && updateVisibility){
+            await this.chatRoomRepo.update(chatRoom.id, {name: dto.newName})
+            if(editionHistories!== undefined){
+                for(let editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
+                }
+            }
             await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
         }
         if(updateVisibility){

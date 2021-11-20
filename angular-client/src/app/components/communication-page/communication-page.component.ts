@@ -18,7 +18,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   messages: ClientMessage[] = [];
   messageForm: FormGroup;
   user: User = {
-    token: '',
+    id: '',
     firstName: '',
     lastName: '',
     emailAddress: '',
@@ -76,7 +76,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   onSubmit() {
     const MESSAGE = this.messageForm.controls.message.value;
     const messageToSend: ServerMessage = {
-      from: this.user.pseudo,
+      from: this.user.pseudo!,
       message: MESSAGE,
       roomName: 'General'
     }

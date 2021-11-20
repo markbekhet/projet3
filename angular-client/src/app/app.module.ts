@@ -37,6 +37,12 @@ import { ProfilePage } from './components/profile-page/profile.page';
 import { RegisterPage } from './components/register-page/register.page';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
+import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
+import { TeamService } from './services/team/team.service';
+import {MatListModule} from '@angular/material/list';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -56,6 +62,8 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ShapeTypePipe,
     SvgViewComponent,
     ToolboxViewComponent,
+    UserTeamListComponent,
+    NewTeamDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,6 +74,9 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialModule,
+    MatListModule,
+    MatCheckboxModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,
@@ -78,6 +89,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ModalWindowService,
     SocketService,
     ValidationService,
+    TeamService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
