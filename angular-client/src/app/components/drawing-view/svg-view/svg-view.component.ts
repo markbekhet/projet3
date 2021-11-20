@@ -14,22 +14,14 @@ import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { DrawingTool } from '@services/drawing-tools/drawing-tool';
-//import { Ellipse } from '@services/drawing-tools/ellipse';
-//import { InputObserver } from '@services/drawing-tools/input-observer';
 import { InteractionService } from '@services/interaction/interaction.service';
-//import { MouseHandler } from '@services/mouse-handler/mouse-handler';
 import { Pencil } from '@services/drawing-tools/pencil';
-//import { Rectangle } from '@services/drawing-tools/rectangle';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
-import { ActiveDrawing } from '@src/app/services/static-services/user_token';
-//import { Selection } from 'src/app/services/drawing-tools/selection';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
-//import { User } from '@src/app/models/UserMeta';
 import { Point } from '@src/app/services/drawing-tools/point';
-//import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
 import { Renderer2 } from '@angular/core';
 import { Rectangle } from '@src/app/services/drawing-tools/rectangle';
 import { Ellipse } from '@src/app/services/drawing-tools/ellipse';
@@ -100,7 +92,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.width = drawingInformations.drawing.width;
       this.height = drawingInformations.drawing.height;
       this.drawingService.drawingName.next(drawingInformations.drawing.name);
-      ActiveDrawing.drawingName = drawingInformations.drawing.name;
       drawingInformations.drawing.contents.forEach((content) => {
         if(content.content!== null && content.content!== undefined){
           this.manipulateReceivedDrawing(content);

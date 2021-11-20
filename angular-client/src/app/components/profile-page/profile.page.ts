@@ -17,7 +17,7 @@ import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 })
 export class ProfilePage implements OnInit {
   user: User = {
-    token: '',
+    id: '',
     firstName: '',
     lastName: '',
     emailAddress: '',
@@ -102,16 +102,14 @@ export class ProfilePage implements OnInit {
   }
 
   private verifyPseudo(newPseudo: string) {
-    const CURRENT_PSEUDO: string = this.user.pseudo;
+    const CURRENT_PSEUDO: string = this.user.pseudo!;
     if (newPseudo === '') return null;
     if (newPseudo === CURRENT_PSEUDO) return null;
     return newPseudo;
   }
 
   private verifyPassword(newPassword: string) {
-    const CURRENT_PASSWORD: string = this.user.password;
     if (newPassword === '') return null;
-    if (newPassword === CURRENT_PASSWORD) return null;
     return newPassword;
   }
 
@@ -167,8 +165,8 @@ this.router.navigate(['/home']);
   }
 
   public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {
-    for (let i = this.user.drawingEditionHistories.length - 1; i >= 0; i--) {
-      let drawing = this.user.drawingEditionHistories[i];
+    for (let i = this.user.drawingEditionHistories!.length - 1; i >= 0; i--) {
+      let drawing = this.user.drawingEditionHistories![i];
       if (drawing.drawingId === collaboration.drawingId) {
         console.log(drawing.date + ' ' + collaboration.date);
         return drawing.date === collaboration.date;
