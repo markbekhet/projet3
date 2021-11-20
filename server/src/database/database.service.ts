@@ -50,7 +50,9 @@ export class DatabaseService {
         }
         else if(otherUser=== undefined){
             otherUser = await this.userRepo.findOne({where:[{pseudo: registrationInfo.pseudo}]})
-            throw new HttpException("Le nom d'utilisateur est déjà utilisé", HttpStatus.BAD_REQUEST);
+            if(otherUser !== undefined){
+                throw new HttpException("Le nom d'utilisateur est déjà utilisé", HttpStatus.BAD_REQUEST);
+            }
         }
         let user = User.createUserProfile(registrationInfo);
         let connection = new ConnectionHistory()
