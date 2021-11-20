@@ -227,7 +227,7 @@ export class DatabaseService {
             select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId"],
             relations:["contents"],
         })
-        return drawings; // {drawingList}:
+        return {drawingList:drawings};
     }
     /*async getGallery(drawings: Drawing[]){
         let drawingCollection: GalleryDrawing[] = []

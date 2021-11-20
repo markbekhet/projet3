@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
 import {
@@ -6,34 +7,34 @@ import {
   ElementRef,
   HostListener,
   OnInit,
-  //Renderer2,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
 
 import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
+import { DrawingInformations } from '@models/drawing-informations';
+import { User } from '@models/UserMeta';
 
+import { AuthService } from '@services/authentication/auth.service';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
+import { DrawingService } from '@services/drawing/drawing.service';
 import { DrawingTool } from '@services/drawing-tools/drawing-tool';
-//import { Ellipse } from '@services/drawing-tools/ellipse';
-//import { InputObserver } from '@services/drawing-tools/input-observer';
-import { InteractionService } from '@services/interaction/interaction.service';
-//import { MouseHandler } from '@services/mouse-handler/mouse-handler';
+import { Ellipse } from '@services/drawing-tools/ellipse';
 import { Pencil } from '@services/drawing-tools/pencil';
-//import { Rectangle } from '@services/drawing-tools/rectangle';
-import { SocketService } from '@src/app/services/socket/socket.service';
-import { DrawingInformations } from '@src/app/models/drawing-informations';
-import { ActiveDrawing } from '@src/app/services/static-services/user_token';
-//import { Selection } from 'src/app/services/drawing-tools/selection';
-import { DrawingService } from '@src/app/services/drawing/drawing.service';
-import { AuthService } from '@src/app/services/authentication/auth.service';
-import { ELLIPSE_TOOL_NAME, PENCIL_TOOL_NAME, RECT_TOOL_NAME } from '@src/app/services/drawing-tools/tool-names';
-import { User } from '@src/app/models/UserMeta';
-import { Point } from '@src/app/services/drawing-tools/point';
-//import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
-import { Renderer2 } from '@angular/core';
-import { Rectangle } from '@src/app/services/drawing-tools/rectangle';
-import { Ellipse } from '@src/app/services/drawing-tools/ellipse';
-import { Selection } from '@src/app/services/drawing-tools/selection';
+import { Point } from '@services/drawing-tools/point';
+import { Rectangle } from '@services/drawing-tools/rectangle';
+import { Selection } from '@services/drawing-tools/selection';
+import { InteractionService } from '@services/interaction/interaction.service';
+import { SocketService } from '@services/socket/socket.service';
+import { ActiveDrawing } from '@services/static-services/user_token';
+import {
+  ELLIPSE_TOOL_NAME,
+  PENCIL_TOOL_NAME,
+  RECT_TOOL_NAME,
+} from '@services/drawing-tools/tool-names';
+// import { ToolboxViewComponent } from '../toolbox-view/toolbox-view.component';
+// import { MouseHandler } from '@services/mouse-handler/mouse-handler';
+// import { InputObserver } from '@services/drawing-tools/input-observer';
 
 const PENCIL_COMP_TOOL_NAME = 'Crayon';
 const RECT_COMP_TOOL_NAME = 'Rectangle';
@@ -45,10 +46,10 @@ const SELECT_COMP_TOOL_NAME = 'Sélectionner';
   styleUrls: ['./svg-view.component.scss'],
 })
 export class SvgViewComponent implements OnInit, AfterViewInit {
-  @ViewChild("canvas", {static:false}) canvas!: ElementRef;
-  @ViewChild("drawingSpace", {static: false}) drawingSpace!: ElementRef;
-  @ViewChild("actualDrawing", {static: false}) doneDrawing!: ElementRef;
-  
+  @ViewChild('canvas', { static: false }) canvas!: ElementRef;
+  @ViewChild('drawingSpace', { static: false }) drawingSpace!: ElementRef;
+  @ViewChild('actualDrawing', { static: false }) doneDrawing!: ElementRef;
+
   height!: number;
   width!: number;
   backColor: string = '#FFFFFF';
@@ -58,113 +59,143 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   currentToolName = PENCIL_COMP_TOOL_NAME;
   drawingId!: number;
   userId!: string;
-  scalingPoint: [Point, Point] | null | undefined
-  mode: string = "";
+  scalingPoint: [Point, Point] | null | undefined;
+  mode: string = '';
   totalScaling: Point = new Point(0.0, 0.0);
   mouseIsDown: boolean = false;
+
   constructor(
     private interactionService: InteractionService,
     private renderer: Renderer2,
     private colorPick: ColorPickingService,
     private readonly socketService: SocketService,
     private readonly drawingService: DrawingService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {
-    this.toolsList = new Map<number, DrawingTool>()
+    this.toolsList = new Map<number, DrawingTool>();
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
     console.log(this.currentToolName);
     this.getDrawingId();
   }
 
-  getUserId(){
-    this.authService.authentifiedUser.subscribe((user: User)=>{
+  getUserId() {
+    this.authService.$authenticatedUser.subscribe((user: User) => {
       this.userId = user.id;
-    })
-  }
-  getDrawingId(){
-    this.drawingService.drawingId.subscribe((id: number)=>{
-      this.drawingId = id
-    })
-  }
-  ngOnInit(): void {
-    this.authService.authentifiedUser.subscribe((user: User)=>{
-      this.userId = user.id;
-    })
-    
-    
-  }
-
-  initDrawing(){
-    this.doneDrawing.nativeElement.innerHTML = "";
-    this.toolsList.clear();
-    this.socketService.getDrawingInformations().subscribe((drawingInformations: DrawingInformations)=>{
-      this.backColor = "#"+ drawingInformations.drawing.bgColor;
-      this.width = drawingInformations.drawing.width;
-      this.height = drawingInformations.drawing.height;
-      this.drawingService.drawingName.next(drawingInformations.drawing.name);
-      ActiveDrawing.drawingName = drawingInformations.drawing.name;
-      drawingInformations.drawing.contents.forEach((content) => {
-        if(content.content!== null && content.content!== undefined){
-          this.manipulateReceivedDrawing(content);
-        }        
-      });
-      this.draw();
     });
   }
-  
-  @HostListener('window:resize')
-  onResize() {
+
+  getDrawingId() {
+    this.drawingService.$drawingId.subscribe((id: number) => {
+      this.drawingId = id;
+    });
   }
+
+  ngOnInit(): void {
+    this.getUserId();
+  }
+
+  initDrawing() {
+    this.doneDrawing.nativeElement.innerHTML = '';
+    this.toolsList.clear();
+    this.socketService
+      .getDrawingInformations()
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.backColor = `#${drawingInformations.drawing.bgColor}`;
+        this.width = drawingInformations.drawing.width;
+        this.height = drawingInformations.drawing.height;
+        this.drawingService.$drawingName.next(drawingInformations.drawing.name);
+        ActiveDrawing.drawingName = drawingInformations.drawing.name;
+        drawingInformations.drawing.contents.forEach((content) => {
+          if (content.content !== null && content.content !== undefined) {
+            this.manipulateReceivedDrawing(content);
+          }
+        });
+        this.draw();
+      });
+  }
+
+  @HostListener('window:resize')
+  onResize() {}
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(e: MouseEvent) {
-    this.mouseIsDown = true
+    this.mouseIsDown = true;
     console.log(this.currentToolName);
-    if(this.currentTool !== undefined){
-      //repositionmouse
-      let respositionedEvent = Point.rpositionMouse(e,this.canvas.nativeElement)
-      this.scalingPoint = this.currentTool.getScalingPoint(new Point(respositionedEvent.x, respositionedEvent.y));
-      this.totalScaling.makeEqualTo(new Point(0,0))
+    if (this.currentTool !== undefined) {
+      // repositionmouse
+      const respositionedEvent = Point.rpositionMouse(
+        e,
+        this.canvas.nativeElement
+      );
+      this.scalingPoint = this.currentTool.getScalingPoint(
+        new Point(respositionedEvent.x, respositionedEvent.y)
+      );
+      this.totalScaling.makeEqualTo(new Point(0, 0));
     }
-    if(this.scalingPoint !== null && this.scalingPoint!==undefined){
-      this.mode = "scaling";
-      console.log(this.mode)
-    }
-    else if(this.isInsideTheSelection(e)){
-      this.mode = "translation";
-      console.log(this.mode)
-    }
-    else{
-      console.log("else statement")
-      if(this.currentTool!== undefined && this.currentTool!== null){
-        this.currentTool.unselect()
+    if (this.scalingPoint !== null && this.scalingPoint !== undefined) {
+      this.mode = 'scaling';
+      console.log(this.mode);
+    } else if (this.isInsideTheSelection(e)) {
+      this.mode = 'translation';
+      console.log(this.mode);
+    } else {
+      console.log('else statement');
+      if (this.currentTool !== undefined && this.currentTool !== null) {
+        this.currentTool.unselect();
       }
-      if(this.currentToolName === PENCIL_COMP_TOOL_NAME.valueOf()){
-        console.log("here");
-        this.currentTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+      if (this.currentToolName === PENCIL_COMP_TOOL_NAME.valueOf()) {
+        console.log('here');
+        this.currentTool = new Pencil(
+          this.interactionService,
+          this.colorPick,
+          this.socketService,
+          this.userId,
+          this.renderer,
+          this.canvas
+        );
         this.currentTool.drawingId = this.drawingId;
-      }
-      else if(this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()){
-        this.currentTool =  new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas)
+      } else if (this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()) {
+        this.currentTool = new Rectangle(
+          this.interactionService,
+          this.colorPick,
+          this.socketService,
+          this.userId,
+          this.renderer,
+          this.canvas
+        );
         this.currentTool.drawingId = this.drawingId;
-      }
-      else if(this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()){
-        this.currentTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
-        this.currentTool.drawingId = this.drawingId
-      }
-      else if(this.currentToolName === SELECT_COMP_TOOL_NAME){
+      } else if (this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()) {
+        this.currentTool = new Ellipse(
+          this.interactionService,
+          this.colorPick,
+          this.socketService,
+          this.userId,
+          this.renderer,
+          this.canvas
+        );
+        this.currentTool.drawingId = this.drawingId;
+      } else if (this.currentToolName === SELECT_COMP_TOOL_NAME) {
         // TODO
-        this.currentTool = new Selection(this.toolsList, this.socketService, this.colorPick, this.renderer, this.canvas, this.interactionService, this.drawingId, this.userId);
+        this.currentTool = new Selection(
+          this.toolsList,
+          this.socketService,
+          this.colorPick,
+          this.renderer,
+          this.canvas,
+          this.interactionService,
+          this.drawingId,
+          this.userId
+        );
       }
-      this.currentTool.onMouseDown(e)
-      this.mode = ""
+      this.currentTool.onMouseDown(e);
+      this.mode = '';
     }
-    //this.currentTool.mouseIsDown = true;
+    // this.currentTool.mouseIsDown = true;
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(e: MouseEvent) {
-    if(this.currentTool!== undefined && this.currentTool !== null){
+    if (this.currentTool !== undefined && this.currentTool !== null) {
       this.currentTool.onMouseUp(e);
       this.mouseIsDown = false;
     }
@@ -173,139 +204,189 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   @HostListener('mousemove', ['$event'])
   onMouseMove(e: MouseEvent) {
     // TODO
-    if(this.currentTool!== undefined && this.currentTool !== null && this.mouseIsDown){
-      let reposition = Point.rpositionMouse(e, this.canvas.nativeElement);
-      if(this.currentTool instanceof Selection && (this.currentTool as Selection).getSelectedTool()!== undefined){
-        switch(this.mode){
-          case "translation":
-            let translation: Point = this.currentTool.startTransformPoint.difference(reposition);
+    if (
+      this.currentTool !== undefined &&
+      this.currentTool !== null &&
+      this.mouseIsDown
+    ) {
+      const reposition = Point.rpositionMouse(e, this.canvas.nativeElement);
+      if (
+        this.currentTool instanceof Selection &&
+        (this.currentTool as Selection).getSelectedTool() !== undefined
+      ) {
+        switch (this.mode) {
+          case 'translation':
+            const translation: Point =
+              this.currentTool.startTransformPoint.difference(reposition);
             this.currentTool.translate(translation);
             break;
 
-          case "scaling":
-            //let position = Point.rpositionMouse(e, this.canvas.nativeElement);
-            let scalingFactor = new Point(reposition.x- this.scalingPoint![0].x - this.totalScaling.x,
-              reposition.y - this.scalingPoint![0].y - this.totalScaling.y)
-            
-              this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
-              this.totalScaling.plus(scalingFactor);
-              break;
+          case 'scaling':
+            // let position = Point.rpositionMouse(e, this.canvas.nativeElement);
+            const scalingFactor = new Point(
+              reposition.x - this.scalingPoint![0].x - this.totalScaling.x,
+              reposition.y - this.scalingPoint![0].y - this.totalScaling.y
+            );
+
+            this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
+            this.totalScaling.plus(scalingFactor);
+            break;
           default:
             break;
         }
-
-      }
-      else{
-        switch(this.mode){
-          case "translation":
-            let translation: Point = this.currentTool.startTransformPoint.difference(Point.rpositionMouse(e, this.canvas.nativeElement));
+      } else {
+        switch (this.mode) {
+          case 'translation':
+            const translation: Point =
+              this.currentTool.startTransformPoint.difference(
+                Point.rpositionMouse(e, this.canvas.nativeElement)
+              );
             this.currentTool.translate(translation);
             break;
 
-          case "scaling":
-            let position = Point.rpositionMouse(e, this.canvas.nativeElement);
-            let scalingFactor = new Point(position.x- this.scalingPoint![0].x - this.totalScaling.x,
-              position.y - this.scalingPoint![0].y - this.totalScaling.y)
+          case 'scaling':
+            const position = Point.rpositionMouse(e, this.canvas.nativeElement);
+            const scalingFactor = new Point(
+              position.x - this.scalingPoint![0].x - this.totalScaling.x,
+              position.y - this.scalingPoint![0].y - this.totalScaling.y
+            );
             this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
             break;
           default:
             this.currentTool.onMouseMove(e);
             break;
-        }  
-        //this.currentTool.onMouseMove(e)
+        }
+        // this.currentTool.onMouseMove(e)
       }
     }
   }
 
   ngAfterViewInit(): void {
+    this.interactionService.$wipeDrawing.subscribe((signal) => {
+      this.doneDrawing.nativeElement.innerHTML = '';
+      this.toolsList.clear();
+    });
     // TODO; Use interactionService to unselect all the tools and select the tool chosen by the user
     if (this.canvas !== undefined) {
       this.initDrawing();
-      this.interactionService.$selectedTool.subscribe((toolName: string)=>{
-        if(toolName) this.currentToolName = toolName;
-      })
-      this.drawingService.drawingId.subscribe((id: number)=>{
-        this.drawingId = id
-      })
+      this.interactionService.$selectedTool.subscribe((toolName: string) => {
+        if (toolName) this.currentToolName = toolName;
+      });
+      this.drawingService.$drawingId.subscribe((id: number) => {
+        this.drawingId = id;
+      });
       console.log(this.drawingId);
-      
-      
-      this.socketService.getDrawingContentId().subscribe((data:{contentId: number})=>{
-        this.currentTool.contentId = data.contentId;
-      })
-      this.socketService.getDrawingContent().subscribe((data: DrawingContent)=>{
-        console.log('here receiving')
-        if(this.drawingSpace !== undefined){
-          this.manipulateReceivedDrawing(data);
-          this.draw();
-        }
-      })
-      this.interactionService.$deleteDrawing.subscribe((sig)=>{
-        if(sig && this.currentTool!== undefined){
+
+      this.socketService
+        .getDrawingContentId()
+        .subscribe((data: { contentId: number }) => {
+          this.currentTool.contentId = data.contentId;
+        });
+      this.socketService
+        .getDrawingContent()
+        .subscribe((data: DrawingContent) => {
+          console.log('here receiving');
+          if (this.drawingSpace !== undefined) {
+            this.manipulateReceivedDrawing(data);
+            this.draw();
+          }
+        });
+      this.interactionService.$deleteDrawing.subscribe((sig) => {
+        if (sig && this.currentTool !== undefined) {
           this.currentTool.delete();
         }
-      })
+      });
 
-      this.interactionService.$updateToolSignal.subscribe((sig)=>{
-        if(sig && this.currentTool!== undefined){
+      this.interactionService.$updateToolSignal.subscribe((sig) => {
+        if (sig && this.currentTool !== undefined) {
           this.currentTool.updateThickness();
         }
-      })
+      });
 
-      this.interactionService.$updateColorSignal.subscribe((sig)=>{
-        if(sig && this.currentTool!== undefined){
+      this.interactionService.$updateColorSignal.subscribe((sig) => {
+        if (sig && this.currentTool !== undefined) {
           this.currentTool.updatePrimaryColor();
           this.currentTool.updateSecondaryColor();
         }
-      })
-    } 
-    else {
+      });
+    } else {
       console.log('canvas is undefined');
     }
   }
   draw() {
-    //throw new Error('Method not implemented.');
-    this.doneDrawing.nativeElement.innerHTML = "";
-    this.toolsList.forEach((tool: DrawingTool)=>{
-      console.log('hey')
+    // throw new Error('Method not implemented.');
+    this.doneDrawing.nativeElement.innerHTML = '';
+    this.toolsList.forEach((tool: DrawingTool) => {
+      console.log('hey');
       this.doneDrawing.nativeElement.innerHTML += tool.getString();
-    })
-      //this.doneDrawing.nativeElement.innerHTML += this.toolsList[i].getString();
+    });
+    // this.doneDrawing.nativeElement.innerHTML += this.toolsList[i].getString();
   }
 
-  manipulateReceivedDrawing(drawingContent: DrawingContent){
-    if(drawingContent.id !== undefined && drawingContent.content!== undefined){
-      if(this.toolsList.has(drawingContent.id)){
-        try{
+  manipulateReceivedDrawing(drawingContent: DrawingContent) {
+    if (
+      drawingContent.id !== undefined &&
+      drawingContent.content !== undefined
+    ) {
+      if (this.toolsList.has(drawingContent.id)) {
+        try {
           this.toolsList.get(drawingContent.id)!.parse(drawingContent.content);
-        }catch(e){}
-        this.toolsList.get(drawingContent.id)!.selected = drawingContent.status === DrawingStatus.Selected;
+        } catch (e) {}
+        this.toolsList.get(drawingContent.id)!.selected =
+          drawingContent.status === DrawingStatus.Selected;
         this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
-        if(drawingContent.status === DrawingStatus.Deleted.valueOf()){
+        if (drawingContent.status === DrawingStatus.Deleted.valueOf()) {
           this.toolsList.delete(drawingContent.id);
-          if(this.currentTool instanceof Selection){
+          if (this.currentTool instanceof Selection) {
             console.log('here deleting');
-            this.currentTool = new Selection(this.toolsList, this.socketService, this.colorPick, this.renderer, this.canvas, this.interactionService, this.drawingId, this.userId);
+            this.currentTool = new Selection(
+              this.toolsList,
+              this.socketService,
+              this.colorPick,
+              this.renderer,
+              this.canvas,
+              this.interactionService,
+              this.drawingId,
+              this.userId
+            );
           }
         }
-
-      } 
-
-      else{
-        try{
+      } else {
+        try {
           let newTool!: DrawingTool;
-          switch(drawingContent.toolName){
+          switch (drawingContent.toolName) {
             case PENCIL_TOOL_NAME:
-              newTool = new Pencil(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              newTool = new Pencil(
+                this.interactionService,
+                this.colorPick,
+                this.socketService,
+                this.userId,
+                this.renderer,
+                this.canvas
+              );
               break;
-            
+
             case RECT_TOOL_NAME:
-              //TODO
-              newTool = new Rectangle(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              // TODO
+              newTool = new Rectangle(
+                this.interactionService,
+                this.colorPick,
+                this.socketService,
+                this.userId,
+                this.renderer,
+                this.canvas
+              );
               break;
             case ELLIPSE_TOOL_NAME:
-              //TODO
-              newTool = new Ellipse(this.interactionService, this.colorPick, this.socketService, this.userId, this.renderer, this.canvas);
+              // TODO
+              newTool = new Ellipse(
+                this.interactionService,
+                this.colorPick,
+                this.socketService,
+                this.userId,
+                this.renderer,
+                this.canvas
+              );
               break;
             default:
               break;
@@ -314,19 +395,20 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           newTool.contentId = drawingContent.id;
           newTool.selected = drawingContent.status === DrawingStatus.Selected;
           newTool.parse(drawingContent.content);
-          //this.toolsList.push(newTool);
+          // this.toolsList.push(newTool);
           this.toolsList.set(drawingContent!.id, newTool);
-        }catch(err){
-        }
+        } catch (err) {}
       }
     }
   }
-  
+
   isInsideTheSelection(e: MouseEvent): boolean {
-    if(this.currentTool !== undefined && this.currentTool.inTranslationZone(e)){
+    if (
+      this.currentTool !== undefined &&
+      this.currentTool.inTranslationZone(e)
+    ) {
       return true;
     }
-    return false
+    return false;
   }
 }
-

@@ -57,7 +57,7 @@ export const toolItems: FeatureItem[] = [
     name: 'Sélectionner',
     shortcutName: 'Sélectionner',
     shortDescription:
-        "Grâce à cet outil, il vous est possible de sélectionner un objet sur l'espace de dessin et de le modifier. En effet, il vous est possible de le déplacer et de le pivoter.",
+      "Grâce à cet outil, il vous est possible de sélectionner un objet sur l'espace de dessin et de le modifier. En effet, il vous est possible de le déplacer et de le pivoter.",
     description: `Pour choisir cette option, vous pouvez sélectionner l'outil via la barre des outils en appuyant sur l'icône approprié,
     comme vous pouvez l'utiliser en appuyant sur la touche 'S' de votre clavier. Avec l'outil en main, vous pouvez cliquer sur un seul objet sur la planche à dessin
     ou encore en sélectionner plusieurs en effectuant un clic gauche et en faisant glisser la souris pour utiliser le rectangle de sélection, puis en relâchant le bouton de la souris pour sélectionner les items. À l'inverse,
