@@ -106,7 +106,7 @@ class LandingPage : AppCompatActivity(){
             }
         }
 
-        chatSocket?.on("drawingCreated"){ args ->
+        chatSocket?.on("newDrawingCreated"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 val drawingAdded = ReceiveDrawingInformation().fromJson(data)
@@ -250,6 +250,7 @@ class LandingPage : AppCompatActivity(){
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         ClientInfo.possibleOwners.clear()
+        ClientInfo.gallery.drawingList.clear()
         ClientInfo.indexPossibleOwners = 0
         super.onDestroy()
     }
@@ -259,9 +260,9 @@ class LandingPage : AppCompatActivity(){
         super.onBackPressed()
     }
 
-    override fun onRestart() {
+    override fun onResume() {
         galleryDraws.set(ClientInfo.gallery.drawingList)
-        super.onRestart()
+        super.onResume()
     }
 }
 

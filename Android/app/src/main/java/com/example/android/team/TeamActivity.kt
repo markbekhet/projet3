@@ -192,7 +192,7 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        socket?.on("drawingCreated"){ args ->
+        socket?.on("newDrawingCreated"){ args ->
             if(args[0] != null){
                 val newDrawing = args[0] as String
                 val drawingAdded = ReceiveDrawingInformation().fromJson(newDrawing)
@@ -223,8 +223,10 @@ class TeamActivity : AppCompatActivity() {
         }
         return false
     }
-    override fun onDestroy() {
+
+    override fun onBackPressed() {
         if(!chatRoomExists){
+            ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
             ChatRooms.chats.remove(teamGeneralInformation!!.name)
             var i = 0
             for(room in ChatRooms.chatRooNames){
@@ -236,16 +238,15 @@ class TeamActivity : AppCompatActivity() {
             ClientInfo.possibleOwners.remove(ClientInfo.indexPossibleOwners)
             ClientInfo.indexPossibleOwners--
             ChatRooms.chatRooNames.removeAt(i)
-            ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
         }
 
         val leaveTeam = LeaveTeamDto(teamGeneralInformation!!.name, ClientInfo.userId)
         SocketHandler.getChatSocket().emit("leaveTeam", leaveTeam.toJson())
-        super.onDestroy()
+        super.onBackPressed()
     }
 
-    override fun onRestart(){
+    override fun onResume(){
         galleryDrawings.set(ClientInfo.gallery.drawingList)
-        super.onRestart()
+        super.onResume()
     }
 }

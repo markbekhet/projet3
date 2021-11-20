@@ -57,18 +57,7 @@ class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation> = Arr
 
     fun addDrawingsToList(extraDrawings: ArrayList<ReceiveDrawingInformation>){
         // The double for loop is in the case if a team is joint twice
-        for(extraDrawing in extraDrawings){
-            var exist = false
-            for(existingDrawing in drawingList){
-                if(existingDrawing.id == extraDrawing.id){
-                    exist = true
-                    break
-                }
-                if(!exist){
-                    drawingList.add(extraDrawing)
-                }
-            }
-        }
+        drawingList.addAll(extraDrawings)
     }
 
     fun deleteExistingDrawing(deletedDrawing: ReceiveDrawingInformation){
