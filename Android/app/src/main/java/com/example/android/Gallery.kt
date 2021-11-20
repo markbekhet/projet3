@@ -107,7 +107,6 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        println(information!!.name)
         if(ClientInfo.userId == information!!.ownerId){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
@@ -138,6 +137,22 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.modify.isVisible= false
             viewHolder.itemView.delete.isVisible= false
         }
+
+        var authorName = ""
+        for(user in ClientInfo.usersList.userList){
+            if(user.id == information!!.ownerId){
+                authorName = user.pseudo!!
+                break
+            }
+        }
+
+        viewHolder.itemView.drawingsAuthorName.text = authorName
+        println(authorName)
+        viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()
+        viewHolder.itemView.creationDate.text = information!!.creationDate
+
+        println("nombre de collaborateurs ${information!!.nbCollaborators}")
+        println("date de cr/ation du dessin ${information!!.creationDate}")
         viewHolder.itemView.name.text = information!!.name
         val canvas = GalleryCanvasView(information!!.width!!, information!!.height!!,information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)

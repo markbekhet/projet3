@@ -39,8 +39,8 @@ class LandingPage : AppCompatActivity(){
         //Initialize chat socket
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
-        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-        chatDialog.dismiss()
+        //chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        //chatDialog.dismiss()
 
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
@@ -140,6 +140,30 @@ class LandingPage : AppCompatActivity(){
                 try{
                     chatDialog.setPreviousMessages("General")
                 } catch(e: Exception){}
+            }
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(data)
+                val roomName = messageFromServer.roomName
+                val arrayListOfMessages = ChatRooms.chats[roomName]
+                var messageAlreadyExists = false
+                if (arrayListOfMessages != null) {
+                    for(message in arrayListOfMessages){
+                        if(message.from == messageFromServer.from &&
+                            message.date == messageFromServer.date){
+                            messageAlreadyExists = true
+                        }
+                    }
+                }
+                try{
+
+                    ChatRooms.chats[roomName]!!.add(messageFromServer)
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
             }
         }
 

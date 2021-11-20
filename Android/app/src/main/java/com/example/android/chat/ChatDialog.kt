@@ -22,8 +22,15 @@ import kotlinx.android.synthetic.main.sample_chat_dialog.*
 
 class ChatDialog(var content: AppCompatActivity, var room: String = "General") : DialogFragment(), ChatRoomSwitcher {
 
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
+    val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null
+    init{
+        val exist = ChatRooms.chatRooNames.contains(room)
+        if(!exist){
+            ChatRooms.chatRooNames.add(room)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,10 +42,6 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val exist = ChatRooms.chatRooNames.contains(room)
-        if(!exist){
-            ChatRooms.chatRooNames.add(room)
-        }
         val manager = childFragmentManager
         val chatSwitchFragmentTransaction = manager.beginTransaction()
         val chatSwitchFragment = ChatSwitchFragment(this)
@@ -60,33 +63,6 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         chatFragmentTransaction = manager.beginTransaction()
         chatFragmentTransaction!!.replace(R.id.chatsFrame,
             chatRoomsFragmentMap[room]!!).commit()
-
-
-
-        SocketHandler.getChatSocket().on("msgToClient"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                val roomName = messageFromServer.roomName
-                val arrayListOfMessages = ChatRooms.chats[roomName]
-                var messageAlreadyExists = false
-                if (arrayListOfMessages != null) {
-                    for(message in arrayListOfMessages){
-                        if(message.from == messageFromServer.from &&
-                            message.date == messageFromServer.date){
-                            messageAlreadyExists = true
-                        }
-                    }
-                }
-                if(!messageAlreadyExists){
-                    ChatRooms.chats[roomName]!!.add(messageFromServer)
-                }
-                try{
-                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                }
-                catch(e: Exception){}
-            }
-        }
 
     }
 

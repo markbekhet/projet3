@@ -47,11 +47,12 @@ class TeamActivity : AppCompatActivity() {
         val generalData = intent.extras!!.getString("teamGeneralInformation")
         teamGeneralInformation = TeamGeneralInformation().fromJson(generalData!!)
         ChatRooms.chats[teamGeneralInformation!!.name!!] = teamChatAndActiveUsers.chatHistoryList
-        val chatDialog = ChatDialog(this, teamGeneralInformation!!.name!!)
 
         chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
-        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-        chatDialog.dismiss()
+        val chatDialog = ChatDialog(this, teamGeneralInformation!!.name!!)
+
+        //chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        //chatDialog.dismiss()
         try{
             chatDialog.setPreviousMessages(teamGeneralInformation!!.name!!)
         } catch(e: Exception){}
