@@ -5,10 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.android.CreateDraw
-import com.example.android.R
-import com.example.android.SocketHandler
-import com.example.android.UsersAndTeamsFragment
+import com.example.android.*
+import com.example.android.canvas.ModifyDrawingDto
+import com.example.android.canvas.ReceiveDrawingInformation
+import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.client.ActiveUser
 import com.example.android.client.ClientInfo
@@ -74,6 +74,15 @@ class TeamActivity : AppCompatActivity() {
 
         usersFragmentTransaction.replace(R.id.usersAndTeamsFrameTeamPage, usersAndTeamsFragment).commit()
 
+        val galleryDrawings = Gallery()
+        //make sure that is the first time to visit the team
+        if(!chatRoomExists){
+            ClientInfo.gallery.addDrawingsToList(teamChatAndActiveUsers.drawingList)
+        }
+        galleryDrawings.set(ClientInfo.gallery.drawingList)
+
+        val galleryFragmentTransaction = manager!!.beginTransaction()
+        galleryFragmentTransaction.replace(R.id.galleryFrameTeamPage, galleryDrawings).commit()
 
         //A hash map that has all the fragments
 
@@ -159,8 +168,56 @@ class TeamActivity : AppCompatActivity() {
                 usersAndTeamsFragment.updateTeamsRecycleView()
             }
         }
+
+        /*============Gallery related socket interaction================*/
+        socket?.on("drawingDeleted"){ args->
+            if(args[0] != null){
+                galleryDrawings.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        socket?.on("drawingModified"){ args->
+            if(args[0] != null){
+                val drawingModData = args[0] as String
+                val drawingModified = ReceiveDrawingInformation().fromJson(drawingModData)
+                if(isPrivateToTeam(drawingModified) && ! chatRoomExists){
+                    ClientInfo.gallery.modifyDrawing(drawingModified, teamGeneralInformation!!.id!!)
+                }
+                galleryDrawings.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        socket?.on("drawingCreated"){ args ->
+            if(args[0] != null){
+                val newDrawing = args[0] as String
+                val drawingAdded = ReceiveDrawingInformation().fromJson(newDrawing)
+                if(isPrivateToTeam(drawingAdded) && !chatRoomExists){
+                    ClientInfo.gallery.addNewCreatedDrawing(drawingAdded, teamGeneralInformation!!.id!!)
+                }
+                galleryDrawings.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        socket?.on("nbCollaboratorsDrawingIncreased"){ args ->
+            if(args[0] != null){
+                galleryDrawings.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        socket?.on("nbCollaboratorsDrawingReduced"){ args ->
+            if(args[0] != null){
+                galleryDrawings.set(ClientInfo.gallery.drawingList)
+            }
+        }
     }
 
+    fun isPrivateToTeam(drawing: ReceiveDrawingInformation): Boolean{
+        if(drawing.ownerId == teamGeneralInformation!!.id!!
+            && drawing.visibility == Visibility.privateVisibility.int){
+            return true
+        }
+        return false
+    }
     override fun onDestroy() {
         if(!chatRoomExists){
             ChatRooms.chats.remove(teamGeneralInformation!!.name)
@@ -172,6 +229,7 @@ class TeamActivity : AppCompatActivity() {
                 i++
             }
             ChatRooms.chatRooNames.removeAt(i)
+            ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
         }
 
         val leaveTeam = LeaveTeamDto(teamGeneralInformation!!.name, ClientInfo.userId)

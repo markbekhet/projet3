@@ -66,24 +66,20 @@
 
                 </LinearLayout>
 
+
                 <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-                    <LinearLayout
-                        android:layout_width="550dp"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/rectangle_background"
-                        android:orientation="vertical"
-                        android:backgroundTint="@color/white">
-                        <FrameLayout
-                            android:id="@+id/galleryFrameTeamPage"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rectangle_background"
+                    android:orientation="vertical"
+                    android:backgroundTint="@color/white">
+                    <FrameLayout
+                        android:id="@+id/galleryFrameTeamPage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                        </FrameLayout>
+                    </FrameLayout>
 
-                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
