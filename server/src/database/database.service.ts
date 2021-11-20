@@ -21,12 +21,10 @@ import { CreateTeamDto } from 'src/modules/team/create-team.dto';
 import { Team } from 'src/modules/team/team.entity';
 import { DeleteTeamDto } from 'src/modules/team/delete-team.dto';
 import { DrawingEditionRepository } from 'src/modules/drawingEditionHistory/drawingEditionHistory.repository';
-import { FindManyOptions } from 'typeorm';
-import { DrawingEditionHistory } from 'src/modules/drawingEditionHistory/drawingEditionHistory.entity';
 import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
 import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
-import { DrawingContent } from 'src/modules/drawing-content/drawing-content.entity';
+import { DrawingGallery } from 'src/modules/drawing/gallery';
 
 @Injectable()
 export class DatabaseService {
@@ -46,16 +44,20 @@ export class DatabaseService {
     async createUser(registrationInfo: CreateUserDto){
 
         console.log(registrationInfo)
-
+        let otherUser = await this.userRepo.findOne({where:[{emailAddress: registrationInfo.emailAddress}]})
+        if(otherUser!== undefined){
+            throw new HttpException("Il existe un compte avec cette addresse courriel", HttpStatus.BAD_REQUEST);
+        }
+        else if(otherUser=== undefined){
+            otherUser = await this.userRepo.findOne({where:[{pseudo: registrationInfo.pseudo}]})
+            throw new HttpException("Le nom d'utilisateur est déjà utilisé", HttpStatus.BAD_REQUEST);
+        }
         let user = User.createUserProfile(registrationInfo);
         let connection = new ConnectionHistory()
         const savedUser = await this.userRepo.save(user)
         connection.user = user
         await this.connectionRepo.save(connection)
         let returnedUser = {id: savedUser.id, status:Status.ONLINE, pseudo: registrationInfo.pseudo};
-        /*let returnedUser = await this.userRepo.findOne(user.id,{
-            select: ["status","id","pseudo"],
-        })*/
         console.log(connection.date)
         let date = connection.date.toString();
         console.log(date);
@@ -101,16 +103,16 @@ export class DatabaseService {
             select: ["id","password", "status", "pseudo"],
         })
         if(user === undefined){
-            throw new HttpException("There is no account with this username or email", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Aucun compte existe avec un tel courriel ou nom d'utilisateur", HttpStatus.BAD_REQUEST);
         }
         else{
 
             if(user.status == Status.ONLINE || user.status == Status.BUSY){
-                throw new HttpException("User is already logged in", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Cet utilisateur est déjà connecté à l'application", HttpStatus.BAD_REQUEST);
             }
             let userExist = await bcrypt.compare(userCredentials.password, user.password);
             if(!userExist){
-                throw new HttpException("Incorrect password", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Le mot de passe est invalide", HttpStatus.BAD_REQUEST);
             }
 
             await this.userRepo.update(user.id, {
@@ -120,13 +122,6 @@ export class DatabaseService {
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
             let userRet = {id: user.id, status: Status.ONLINE, pseudo: user.pseudo};
-            /*let userRet = await this.userRepo.findOne({
-                where: [
-                    {emailAddress: userCredentials.username},
-                    {pseudo: userCredentials.username}
-                ],
-                select:["id", "status", "pseudo"],
-            })*/
             return userRet;
         }
     }
@@ -139,7 +134,7 @@ export class DatabaseService {
             select: ["id","pseudo","status"]
         })
         if(user === undefined){
-            throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Il n'existe aucun utilisateur avec cet identifiant", HttpStatus.BAD_REQUEST);
         }
         else{
             const newDisconnection = new DisconnectionHistory()
@@ -147,7 +142,7 @@ export class DatabaseService {
             this.userRepo.update(userId, {status: Status.OFFLINE})
             this.disconnectionRepo.save(newDisconnection)
             let userRet = {id: user.id, pseudo: user.pseudo, status: Status.OFFLINE}
-            return user;
+            return userRet;
         }
     }
     async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
@@ -156,7 +151,13 @@ export class DatabaseService {
             select:["pseudo","password", 'status', 'id']
         });
         if(user === undefined){
-            throw new HttpException("There is no user with this id", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Il n'existe aucun utilisateur avec cet identifiant", HttpStatus.BAD_REQUEST);
+        }
+        if(newParameters.newPseudo!==undefined){
+            const otherUser = await this.userRepo.findOne({where:[{pseudo: newParameters.newPseudo}]});
+            if(otherUser!== undefined){
+                throw new HttpException("Impossible de modifier les paramètres de l'utilisateur, le nouveau pseudonyme est déjà utilisé", HttpStatus.BAD_REQUEST)
+            }
         }
         else{
             let updatePassword: Boolean = newParameters.newPassword !== undefined&& newParameters.newPassword !== null
@@ -167,34 +168,43 @@ export class DatabaseService {
             }
             else if(updatePassword && !updatePseudo){
                 if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
-                    throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+                    throw new HttpException("L'ancien mot de passe est requis", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
                 if(!validOldPassword){
-                    throw new HttpException("Invalid old password and cannot change the password", HttpStatus.BAD_REQUEST);
+                    throw new HttpException("Impossible de changer le mot de passe car l'ancien mot de passe est invalide", HttpStatus.BAD_REQUEST);
                 }
                 const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
                 if(samePassword){
-                    throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+                    throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
                 }
-                if(this.IsPasswordValide(newParameters.newPassword)){
+                if(!this.IsPasswordValide(newParameters.newPassword)){
+                    throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
+                     un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
+                }
+
+                else{
                     const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
                     await this.userRepo.update(userId,{password: hashedPassword})
                 }
             }
             else if(updatePseudo && updatePassword){
                 if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
-                    throw new HttpException("Old password required", HttpStatus.BAD_REQUEST);
+                    throw new HttpException("L'ancien mot de passe est requis", HttpStatus.BAD_REQUEST);
                 }
                 const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
                 if(!validOldPassword){
-                    throw new HttpException("Invalid old password and cannot modify the profile", HttpStatus.BAD_REQUEST);
+                    throw new HttpException("Impossible de changer le mot de passe car l'ancien mot de passe est invalide", HttpStatus.BAD_REQUEST);
                 }
                 const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
                 if(samePassword){
-                    throw new HttpException("New password must not be similar to old password", HttpStatus.BAD_REQUEST)
+                    throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
                 }
-                if(this.IsPasswordValide(newParameters.newPassword)){
+                if(!this.IsPasswordValide(newParameters.newPassword)){
+                    throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
+                     un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
+                }
+                else{
                     const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
                     await this.userRepo.update(userId,{
                         password: hashedPassword,
@@ -210,48 +220,47 @@ export class DatabaseService {
             else{
                 retUser = {id: user.id, pseudo: user.pseudo, status: user.status};
             }
-            /*let retuser = this.userRepo.findOne(userId, {
-                select:["id", "pseudo", "status"]
-            })*/
             return retUser;
 
         }
     }
     async getUserDrawings(userId: string){
-        const drawings = await this.drawingRepo.find({
+        let drawings = await this.drawingRepo.find({
             where: [
                 {visibility: DrawingVisibility.PUBLIC},
                 {ownerId: userId, visibility:DrawingVisibility.PRIVATE},
                 {visibility: DrawingVisibility.PROTECTED},
             ],
-            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId"],
-            relations:["contents"],
+            select: ["id", "visibility", "name", "bgColor", "height", "width", "ownerId","creationDate"],
+            relations:["contents", "activeUsers"],
         })
-        return {drawingList:drawings};
-    }
-    /*async getGallery(drawings: Drawing[]){
-        let drawingCollection: GalleryDrawing[] = []
-        for(const drawing of drawings){
-            let username: string = null;
-            let firstName: string = null;
-            let lastName: string = null;
-            let email: string = null;
-            // to change with collaboration team
-            const user = await this.userRepo.findOne(drawing.ownerId);
-            username = user.pseudo;
-            const galleryDrawing: GalleryDrawing = {drawingId: drawing.id, visibility: drawing.visibility, drawingName: drawing.name,
-                                        ownerUsername: username, height: drawing.height, width: drawing.width, ownerEmail: email, ownerFirstName: firstName,
-                                        ownerLastName: lastName, contents: drawing.contents}
-            if(drawingCollection.indexOf(galleryDrawing) === -1){
-                drawingCollection.push(galleryDrawing);
-            }
-        };
-        console.log(drawingCollection)
-        return drawingCollection;
 
-    }*/
+        let userGallery: DrawingGallery[] = [];
+        for(let drawing of drawings){
+            drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone:'America/New_York'})
+            let user = await this.userRepo.findOne(drawing.ownerId);
+            if(user === undefined){
+                let team = await this.teamRepo.findOne(drawing.ownerId);
+                let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+                creationDate: drawing.creationDate, authorName: team.name, height: drawing.height, width: drawing.width,
+                ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
+                userGallery.push(galleryDrawing);
+            }
+            else{
+                let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+                    creationDate: drawing.creationDate, authorName: user.pseudo, height: drawing.height, width: drawing.width,
+                    ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
+                userGallery.push(galleryDrawing);
+            }
+        }
+        return {drawingList:userGallery};
+    }
     //------------------------------------------------Drawing services----------------------------------------------------------------------------------------
     async createDrawing(drawingInformation: CreateDrawingDto){
+        const chatRoom = await this.chatRoomRepo.findOne({where:[{name: drawingInformation.name}]})
+        if(chatRoom!==undefined){
+            throw new HttpException("Impossible de créer le dessin, le nom du dessin est déjà utilisé", HttpStatus.BAD_REQUEST);
+        }
         const user = await this.userRepo.findOne(drawingInformation.ownerId);
         if(user!== undefined){
             await this.userRepo.update(user.id, {
@@ -260,17 +269,26 @@ export class DatabaseService {
         }
         if(drawingInformation.visibility === DrawingVisibility.PROTECTED){
             if(drawingInformation.password === undefined || drawingInformation.password === null){
-                throw new HttpException("Password required", HttpStatus.BAD_REQUEST)
+                throw new HttpException("Le mot de passe est requis pour créer un dessin protégé", HttpStatus.BAD_REQUEST)
             }
         }
         else if(drawingInformation.password === undefined){
             drawingInformation.password = null;
         }
+        let ownerName: string = '';
+        if(user!== undefined){
+            ownerName = user.pseudo;
+        }
+        else{
+            let team = await this.teamRepo.findOne(drawingInformation.ownerId);
+            ownerName = team.name
+        }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
-        const retDrawing = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
+        newDrawing.creationDate = new Date(newDrawing.creationDate.toString()).toLocaleString('en-us', {timeZone: "America/New_York"})
+        const retDrawing: DrawingGallery = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
                              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: [],
-                              ownerId: drawing.ownerId};
+                              ownerId: drawing.ownerId, creationDate:newDrawing.creationDate, nbCollaborators: 0, authorName: ownerName};
         return retDrawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
@@ -280,12 +298,12 @@ export class DatabaseService {
         if(drawing.ownerId !== deleteInformation.userId){
             let team = await this.teamRepo.findOne(drawing.ownerId);
             if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
-                throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Impossible de supprimer le dessin car vous n'en êtes pas le propriétaire", HttpStatus.BAD_REQUEST);
             }
         }
         
         if(drawing.activeUsers.length > 0){
-            throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Impossible de supprimer le dessin, car il est en cours d'édition", HttpStatus.BAD_REQUEST);
         }
         await this.drawingRepo.delete(drawing.id)
         let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: deleteInformation.drawingId}]});
@@ -299,8 +317,24 @@ export class DatabaseService {
     }
 
     async modifyDrawing(dto: ModifyDrawingDto){
-        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
+        let otherChatRoom = await this.chatRoomRepo.findOne({where:[{name: dto.newName}]})
+        if(otherChatRoom!== undefined){
+            throw new HttpException("Impossible de modifier le dessin, le nouveau nom du dessin est déjà utilisé dans l'application", HttpStatus.BAD_REQUEST);
+        }
+        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents", "activeUsers"]});
         // validating that the user is allowed to modify the drawing
+        if(drawing.activeUsers.length > 0){
+            throw new HttpException("Impossible de modifier le dessin parce qu'il est en cours d'édition par d'autres utilisateurs", HttpStatus.BAD_REQUEST)
+        }
+        let ownerName: string = ''
+        let user = await this.userRepo.findOne(drawing.ownerId);
+        if(user === undefined){
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            ownerName = team.name;
+        }
+        else{
+            ownerName = user.pseudo;
+        }
         let chatRoom = await this.chatRoomRepo.findOne({
             where: [{name: drawing.name}]
         })
@@ -311,12 +345,12 @@ export class DatabaseService {
         if(drawing.ownerId !== dto.userId){
             let team = await this.teamRepo.findOne(drawing.ownerId);
             if(team === undefined || team === null || team.ownerId !== drawing.ownerId){
-                throw new HttpException('Request denied because not the owner of the drawing', HttpStatus.BAD_REQUEST);
+                throw new HttpException(`Impossible de faire la modification du dessin, car vous n'êtes pas le propriétaire`, HttpStatus.BAD_REQUEST);
             }
         }
         // validating that the password exist if the new visibility is protected
         if(dto.newVisibility === DrawingVisibility.PROTECTED && (dto.password === undefined || dto.password === null)){
-            throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Le mot de passe est requis pour changer la visibilité de dessin à la visibilité protégé", HttpStatus.BAD_REQUEST);
         }
         let updateName: boolean = dto.newName!== undefined && dto.newName !== null
         let updateVisibility: boolean = dto.newVisibility !== undefined && dto.newVisibility !== null;
@@ -344,20 +378,25 @@ export class DatabaseService {
         if(updateVisibility){
             drawing.visibility = dto.newVisibility;
         }
-        let drawingMod = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
+        drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone: "America/New_York"})
+        let drawingMod: DrawingGallery = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
-            ownerId: drawing.ownerId};
+            ownerId: drawing.ownerId, nbCollaborators: drawing.activeUsers.length, authorName: ownerName, creationDate: drawing.creationDate};
         return drawingMod;
     }
 
     // ----------------------------------------Team services--------------------------------------------------------------------------------------------------
     async createTeam(dto: CreateTeamDto){
+        let chatRoom = await this.chatRoomRepo.findOne({where:[{name: dto.name}]});
+        if(chatRoom !== undefined){
+            throw new HttpException("Impossible de créer le nouveau équipe de collaboration, le nom de l'équipe est déjà utilisé", HttpStatus.BAD_REQUEST)
+        }
         if(dto.visibility === TeamVisibility.PROTECTED){
             if(dto.password=== undefined || dto.password === null){
-                throw new HttpException("Password required", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Le mot de passe est requis pour créer une équipe protégée", HttpStatus.BAD_REQUEST);
             }
         }
-        else if(dto.password === undefined){
+        else if(dto.password === undefined && dto.visibility === TeamVisibility.PUBLIC){
             dto.password = null;
         }
         const newTeam = Team.createTeam(dto);
@@ -376,10 +415,10 @@ export class DatabaseService {
             relations: ["activeUsers", "chatRoom"],
         });
         if(team.ownerId !== dto.userId){
-            throw new HttpException("User is not allowed to delete this team", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Impossible de supprimer cette équipe de collabration car vous n'en êtes pas le propriétaire", HttpStatus.BAD_REQUEST);
         }
         if(team.activeUsers.length > 0){
-            throw new HttpException("can not delete the collaboration team because some users are in the collaboration team", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Impossible de supprimer cette équipe de collaboration car il y a des utilisateurs dans cette équipe de collaboration", HttpStatus.BAD_REQUEST);
         }
         let drawingOccupied: boolean = false
         for(const drawing of drawings){
@@ -396,7 +435,7 @@ export class DatabaseService {
             }
         }
         if(drawingOccupied){
-            throw new HttpException("Can not delete team because there is at least one drawing in edition", HttpStatus.BAD_REQUEST);
+            throw new HttpException("Impossible de supprimer l'équipe de collaboration car il y a au moins un dessin en cours d'édition dont l'équipe de collaboration est propriétaire", HttpStatus.BAD_REQUEST);
         }
         await this.teamRepo.delete(dto.teamId);
         await this.chatRoomRepo.delete(team.chatRoom.id);
@@ -406,11 +445,11 @@ export class DatabaseService {
     //--------------------------------------------------------------------------------------------------------------------------------------------------------
     IsPasswordValide(password: string){
         if(password.length < 8){
-            throw new HttpException("The password must be longer than or equal to 8 characters", HttpStatus.BAD_REQUEST);
+            return false;
         }
         const FORMAT = new RegExp(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
         if(!FORMAT.test(password)){
-            throw new HttpException("Password is too weak", HttpStatus.BAD_REQUEST);
+            return false;
         }
 
         return true;

@@ -22,8 +22,11 @@ export class Team extends BaseEntity{
     @Column()
     ownerId: string;
 
-    @Column({default:4})
+    @Column({default:2})
     nbCollaborators: number;
+
+    @Column({default:''})
+    bio: string;
 
     @OneToOne(()=> ChatRoom, chatRoom => chatRoom.drawing, {cascade: true, onDelete:'CASCADE'})
     @JoinColumn()
@@ -49,6 +52,7 @@ export class Team extends BaseEntity{
         let newChatRoom = new ChatRoom()
         newChatRoom.name = dto.name;
         newTeam.chatRoom = newChatRoom;
+        newTeam.bio = dto.bio;
         return newTeam;
     }
 }
