@@ -1,12 +1,43 @@
 import { Injectable } from '@angular/core';
-import { ChatHistory } from '@src/app/models/MessageMeta';
-import { BehaviorSubject } from 'rxjs';
+import { ChatHistory, ClientMessage } from '@src/app/models/MessageMeta';
+//import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatRoomService {
-  chatRooms: BehaviorSubject<Map<string, ChatHistory[]>> = new BehaviorSubject<Map<string, ChatHistory[]>>(new Map())
+  chatRooms:Map<string, ChatHistory[]> = new Map<string, ChatHistory[]>()
   
-  
+  addChatRoom(roomName: string, chatHistories: ChatHistory[]){
+    let temp: ChatHistory[] = []
+    chatHistories.forEach((chatHistory: ChatHistory) =>{
+      temp.unshift(chatHistory)
+    })
+    this.chatRooms.set(roomName, temp);
+    console.log(this.chatRooms)
+  }
+
+  addChatHistory(message: ClientMessage){
+    console.log('here adding history')
+    let chatHistories = this.chatRooms.get(message.roomName)
+    if(chatHistories !== undefined){
+      let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message};
+      chatHistories.forEach((chatHistory: ChatHistory)=>{
+        if(!(chatHistory.from === newChatHistory.from && chatHistory.date === newChatHistory.date)){
+          chatHistories!.push(newChatHistory)
+        }
+      })
+      /*if(chatHistories.indexOf(newChatHistory) === -1)
+        chatHistories.push(newChatHistory);*/
+    }
+    console.log(chatHistories!.length);
+  }
+
+  deleteChatRoom(roomName: string){
+    this.chatRooms.delete(roomName);
+  }
+
+  getChatHistoryList(roomName: string){
+    return this.chatRooms.get(roomName);
+  }
 }
