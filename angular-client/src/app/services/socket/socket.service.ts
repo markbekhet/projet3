@@ -10,6 +10,7 @@ import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingContent } from '@src/app/models/DrawingMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+//import { ChatRoomService } from '../chat-room/chat-room.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -25,6 +26,8 @@ export class SocketService {
   drawingContent$: Subject<DrawingContent> = new Subject<DrawingContent>();
   users$: BehaviorSubject<Map<string, User>> = new BehaviorSubject<Map<string, User>>(new Map());
   teams$: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
+
+  //constructor(private readonly chatRoomService: ChatRoomService){}
   connect(): void {
     this.socket = io(PATH);
   }
@@ -80,6 +83,7 @@ export class SocketService {
     this.socket!.on('msgToClient', (messageString: any) => {
       const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
+      //this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
     });
 

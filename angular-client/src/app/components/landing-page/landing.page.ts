@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
@@ -9,13 +9,15 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 import { Router } from '@angular/router';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { NewTeamDialogComponent } from '../new-team-dialog/new-team-dialog.component';
+import { ChatHistory } from '@src/app/models/MessageMeta';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 
 @Component({
   selector: 'app-landing-page',
   templateUrl: './landing.page.html',
   styleUrls: ['./landing.page.scss'],
 })
-export class LandingPage implements OnInit {
+export class LandingPage implements OnInit, AfterViewInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
 
@@ -24,7 +26,8 @@ export class LandingPage implements OnInit {
     private dialog: MatDialog,
     private auth: AuthService,
     private router: Router,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
+    private readonly chatRoomService: ChatRoomService,
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = menuItems;
@@ -37,6 +40,13 @@ export class LandingPage implements OnInit {
     }
   }
 
+  ngAfterViewInit(){
+    this.socketService.socket!.on("RoomChatHistories", (data: string)=>{
+      let chatHistories: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
+      console.log(chatHistories);
+      this.chatRoomService.addChatRoom('General', chatHistories.chatHistoryList)
+    })
+  }
   @HostListener("window:beforeunload")
   disconnectX(){
     if(this.auth.token$.value !== ""){

@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ServerMessage, ClientMessage } from '@models/MessageMeta';
+import { ServerMessage, ClientMessage, ChatHistory } from '@models/MessageMeta';
 import { AuthService } from '@services/authentication/auth.service';
 import { SocketService } from '@services/socket/socket.service';
 import { Status } from '@common/user';
 import { User } from '@src/app/models/UserMeta';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 
 @Component({
   selector: 'app-communication-page',
@@ -15,7 +16,7 @@ import { User } from '@src/app/models/UserMeta';
 })
 export class CommunicationPageComponent implements OnInit, OnDestroy {
   username: string = '';
-  messages: ClientMessage[] = [];
+  messages: ChatHistory[] = [];
   messageForm: FormGroup;
   user: User = {
     id: '',
@@ -45,7 +46,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private chatRoomService: ChatRoomService,
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.token$.value,
@@ -55,19 +57,31 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [Validators.required, Validators.pattern(this.MESSAGE_REGEX)]),
     });
+    //this.messages = this.chatRoomService.getChatHistoryList("General")!
   }
 
   ngOnInit(): void {
+    this.messages = []
+    this.chatRoomService.getChatHistoryList("General")!.forEach((chatHistory: ChatHistory)=>{
+      if(this.messages.indexOf(chatHistory) === -1)
+        this.messages.unshift(chatHistory);
+    })
     this.username = this.activeRoute.snapshot.params.username;
-    this.messages = [];
+    //this.messages = [];
     // this.chat.connect();
 
-    this.socketService.getNewMessage().subscribe((message: ClientMessage) => {
+    this.socketService.socket!.on("msgToClient", (data: any) => {
+      let message: ClientMessage = JSON.parse(data);
       if (message.from) {
-        this.messages.unshift(message);
+        let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message}
+        let index = this.messages.indexOf(newChatHistory);
+        if(index === -1)
+          this.chatRoomService.addChatHistory(message);
+          this.messages.unshift(newChatHistory);
       }
       console.log(this.messages);
       console.log(`client received: ${message.message}`);
+
     });
 
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
@@ -96,6 +110,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload')
   ngOnDestroy() {
+    //this.chatRoomService.chatRooms.set("General", this.messages);
     this.messages = [];
     //this.socketService.disconnect();
     this.disconnect();

@@ -12,8 +12,8 @@ export interface ClientMessage{
 }
 
 export interface ChatHistory {
-  id: number;
-  from: string;
-  date: string;
-  message: string;
+  id?: number;
+  from?: string;
+  date?: string;
+  message?: string;
 }
