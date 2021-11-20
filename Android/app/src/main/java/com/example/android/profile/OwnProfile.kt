@@ -14,6 +14,8 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
@@ -59,6 +61,18 @@ class OwnProfile : AppCompatActivity() {
         showChatOwnerProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
         val dataForm = UserProfileInformation().fromJson(data)
         updateUI(dataForm)
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.google.gson.Gson
 import io.socket.client.Socket
@@ -150,6 +151,18 @@ class Drawing : AppCompatActivity() {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
 
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
     }
 
     override fun onDestroy() {

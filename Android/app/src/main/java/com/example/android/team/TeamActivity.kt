@@ -114,6 +114,19 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    //The message is being added from the landing page activity
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
         socket?.on("userUpdate"){ args ->
             if(args[0]!= null){
                 val userUpdated = User().fromJson(args[0] as String)

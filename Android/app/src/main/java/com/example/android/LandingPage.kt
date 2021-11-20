@@ -148,18 +148,9 @@ class LandingPage : AppCompatActivity(){
                 val data = args[0] as String
                 val messageFromServer = ClientMessage().fromJson(data)
                 val roomName = messageFromServer.roomName
-                val arrayListOfMessages = ChatRooms.chats[roomName]
-                var messageAlreadyExists = false
-                if (arrayListOfMessages != null) {
-                    for(message in arrayListOfMessages){
-                        if(message.from == messageFromServer.from &&
-                            message.date == messageFromServer.date){
-                            messageAlreadyExists = true
-                        }
-                    }
-                }
                 try{
-
+                    // This must be the only place where the add is called in order
+                        // for the message to be unique in the array list
                     ChatRooms.chats[roomName]!!.add(messageFromServer)
                     chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
                 }
