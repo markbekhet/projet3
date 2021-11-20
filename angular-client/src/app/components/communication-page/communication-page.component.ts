@@ -37,6 +37,9 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     drawingEditionHistories: [],
   };
 
+  readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
+
+
   constructor(
     private activeRoute: ActivatedRoute,
     private auth: AuthService,
@@ -50,7 +53,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     });
 
     this.messageForm = this.formBuilder.group({
-      message: formBuilder.control('', [Validators.required]),
+      message: formBuilder.control('', [Validators.required, Validators.pattern(this.MESSAGE_REGEX)]),
     });
   }
 
