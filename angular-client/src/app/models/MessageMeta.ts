@@ -1,11 +1,19 @@
-export interface Message {
-  clientName: string;
+export interface ServerMessage{
+  from:string;
   message: string;
-  date: CustomDate;
+  roomName:string;
 }
 
-export interface CustomDate {
-  hour: string;
-  minutes: string;
-  seconds: string;
+export interface ClientMessage{
+  from: string,
+  message: string,
+  date: string,
+  roomName: string,
+}
+
+export interface ChatHistory {
+  id: number;
+  from: string;
+  date: string;
+  message: string;
 }

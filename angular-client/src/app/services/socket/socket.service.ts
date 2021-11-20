@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject} from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
-import { Message } from '@models/MessageMeta';
+import { ServerMessage, ClientMessage } from '@models/MessageMeta';
 import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
 import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
@@ -18,7 +18,7 @@ const PATH = 'http://localhost:3000';
   providedIn: 'root',
 })
 export class SocketService {
-  socket: Socket| undefined;
+  socket: Socket | undefined;
   drawingID: string = '';
   drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
   contentId$: Subject<{contentId: number}> = new Subject<{contentId: number}>();
@@ -38,14 +38,11 @@ export class SocketService {
     return this.socket!.id;
   }
 
-  message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
-    clientName: '',
+  message$: BehaviorSubject<ClientMessage> = new BehaviorSubject<ClientMessage>({
+    from: '',
     message: '',
-    date: {
-      hour: '',
-      minutes: '',
-      seconds: '',
-    },
+    date: '',
+    roomName: '',
   });
 
   profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
@@ -68,17 +65,20 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  //chatHistories$: BehaviorSubject<Map<string, ChatHistory>> = new BehaviorSubject<Map<string, ChatHistory>>();
+
   setDrawingID = (value: string) => {
     this.drawingID = value;
   };
 
-  public sendMessage(message: Message) {
+  public sendMessage(message: ServerMessage) {
     console.log(`chat service sent: ${message.message}`);
     this.socket!.emit('msgToServer', JSON.stringify(message));
   }
 
   public getNewMessage = () => {
-    this.socket!.on('msgToClient', (message: Message) => {
+    this.socket!.on('msgToClient', (messageString: any) => {
+      const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
       this.message$.next(message);
     });
