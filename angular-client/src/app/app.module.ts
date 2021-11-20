@@ -37,6 +37,7 @@ import { ProfilePage } from './components/profile-page/profile.page';
 import { RegisterPage } from './components/register-page/register.page';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,
