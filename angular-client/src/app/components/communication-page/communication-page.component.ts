@@ -57,15 +57,15 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [Validators.required, Validators.pattern(this.MESSAGE_REGEX)]),
     });
-    //this.messages = this.chatRoomService.getChatHistoryList("General")!
   }
 
   ngOnInit(): void {
-    this.messages = []
-    this.chatRoomService.getChatHistoryList("General")!.forEach((chatHistory: ChatHistory)=>{
+    this.messages = this.chatRoomService.getChatHistoryList("General")!
+    //this.messages = []
+    /*this.chatRoomService.getChatHistoryList("General")!.forEach((chatHistory: ChatHistory)=>{
       if(this.messages.indexOf(chatHistory) === -1)
         this.messages.unshift(chatHistory);
-    })
+    })*/
     this.username = this.activeRoute.snapshot.params.username;
     //this.messages = [];
     // this.chat.connect();
@@ -76,7 +76,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
         let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message}
         let index = this.messages.indexOf(newChatHistory);
         if(index === -1)
-          this.chatRoomService.addChatHistory(message);
+          //this.chatRoomService.addChatHistory(message);
           this.messages.unshift(newChatHistory);
       }
       console.log(this.messages);
@@ -111,6 +111,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     //this.chatRoomService.chatRooms.set("General", this.messages);
+    console.log("destroyed")
     this.messages = [];
     //this.socketService.disconnect();
     this.disconnect();

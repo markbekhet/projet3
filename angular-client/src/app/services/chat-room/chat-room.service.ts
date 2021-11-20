@@ -9,11 +9,16 @@ export class ChatRoomService {
   chatRooms:Map<string, ChatHistory[]> = new Map<string, ChatHistory[]>()
   
   addChatRoom(roomName: string, chatHistories: ChatHistory[]){
-    this.chatRooms.set(roomName, chatHistories);
+    let temp: ChatHistory[] = []
+    chatHistories.forEach((chatHistory: ChatHistory) =>{
+      temp.unshift(chatHistory)
+    })
+    this.chatRooms.set(roomName, temp);
     console.log(this.chatRooms)
   }
 
   addChatHistory(message: ClientMessage){
+    console.log('here adding history')
     let chatHistories = this.chatRooms.get(message.roomName)
     if(chatHistories !== undefined){
       let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message};
@@ -33,7 +38,6 @@ export class ChatRoomService {
   }
 
   getChatHistoryList(roomName: string){
-    console.log(this.chatRooms.get(roomName))
     return this.chatRooms.get(roomName);
   }
 }
