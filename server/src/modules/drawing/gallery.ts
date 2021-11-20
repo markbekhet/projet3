@@ -1,4 +1,5 @@
 import { DrawingVisibility } from "src/enumerators/visibility";
+import { DrawingContent } from "../drawing-content/drawing-content.entity";
 
 export interface DrawingGallery{
     id: number,
@@ -11,4 +12,5 @@ export interface DrawingGallery{
     authorName: string, 
     ownerId: string,
     nbCollaborators: number,
+    contents: DrawingContent[]
 }

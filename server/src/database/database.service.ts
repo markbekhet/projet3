@@ -243,13 +243,13 @@ export class DatabaseService {
                 let team = await this.teamRepo.findOne(drawing.ownerId);
                 let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
                 creationDate: drawing.creationDate, authorName: team.name, height: drawing.height, width: drawing.width,
-                ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length}
+                ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
                 userGallery.push(galleryDrawing);
             }
             else{
                 let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
                     creationDate: drawing.creationDate, authorName: user.pseudo, height: drawing.height, width: drawing.width,
-                    ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length}
+                    ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
                 userGallery.push(galleryDrawing);
             }
         }
@@ -275,11 +275,20 @@ export class DatabaseService {
         else if(drawingInformation.password === undefined){
             drawingInformation.password = null;
         }
+        let ownerName: string = '';
+        if(user!== undefined){
+            ownerName = user.pseudo;
+        }
+        else{
+            let team = await this.teamRepo.findOne(drawingInformation.ownerId);
+            ownerName = team.name
+        }
         const drawing = Drawing.createDrawing(drawingInformation);
         const newDrawing = await this.drawingRepo.save(drawing);
-        const retDrawing = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
+        newDrawing.creationDate = new Date(newDrawing.creationDate.toString()).toLocaleString('en-us', {timeZone: "America/New_York"})
+        const retDrawing: DrawingGallery = {id: newDrawing.id, visibility: drawing.visibility, name: drawing.name,
                              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: [],
-                              ownerId: drawing.ownerId};
+                              ownerId: drawing.ownerId, creationDate:newDrawing.creationDate, nbCollaborators: 0, authorName: ownerName};
         return retDrawing;
     }
     async deleteDrawing(deleteInformation: DeleteDrawingDto){
@@ -312,8 +321,20 @@ export class DatabaseService {
         if(otherChatRoom!== undefined){
             throw new HttpException("Impossible de modifier le dessin, le nouveau nom du dessin est déjà utilisé dans l'application", HttpStatus.BAD_REQUEST);
         }
-        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents"]});
+        let drawing = await this.drawingRepo.findOne(dto.drawingId, {relations: ["contents", "activeUsers"]});
         // validating that the user is allowed to modify the drawing
+        if(drawing.activeUsers.length > 0){
+            throw new HttpException("Impossible de modifier le dessin parce qu'il est en cours d'édition par d'autres utilisateurs", HttpStatus.BAD_REQUEST)
+        }
+        let ownerName: string = ''
+        let user = await this.userRepo.findOne(drawing.ownerId);
+        if(user === undefined){
+            let team = await this.teamRepo.findOne(drawing.ownerId);
+            ownerName = team.name;
+        }
+        else{
+            ownerName = user.pseudo;
+        }
         let chatRoom = await this.chatRoomRepo.findOne({
             where: [{name: drawing.name}]
         })
@@ -357,9 +378,10 @@ export class DatabaseService {
         if(updateVisibility){
             drawing.visibility = dto.newVisibility;
         }
-        let drawingMod = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
+        drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone: "America/New_York"})
+        let drawingMod: DrawingGallery = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
-            ownerId: drawing.ownerId};
+            ownerId: drawing.ownerId, nbCollaborators: drawing.activeUsers.length, authorName: ownerName, creationDate: drawing.creationDate};
         return drawingMod;
     }
 

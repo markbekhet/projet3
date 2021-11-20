@@ -267,7 +267,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone:'America/New_York'})
           const drawingGallery: DrawingGallery = {id: drawing.id, visibility: drawing.visibility, 
             name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, creationDate:drawing.creationDate, 
-            ownerId: drawing.ownerId, authorName: team.name, nbCollaborators: drawing.activeUsers.length};
+            ownerId: drawing.ownerId, authorName: team.name, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents};
           galleryRet.push(drawingGallery);
         })
 
@@ -348,12 +348,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let teamString = JSON.stringify(team);
     this.wss.emit("teamDeleted", teamString);
   }
-  notifyDrawingCreated(drawing: {id: number, visibility: DrawingVisibility, name: string, 
-    bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
+  notifyDrawingCreated(drawing: DrawingGallery){
     // TODO:
-    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name, bgColor: drawing.bgColor,
-       height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
-    let drawingString = JSON.stringify(retDrawing);
+    let drawingString = JSON.stringify(drawing);
     this.wss.emit("newDrawingCreated",drawingString);
   }
   notifyDrawingDeleted(drawing: {id: number, ownerId: string, visibility: DrawingVisibility}){
@@ -361,11 +358,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let drawingString = JSON.stringify(retDrawing);
     this.wss.emit('drawingDeleted', drawingString);
   }
-  notifyDrawingModified(drawing: {id: number, visibility: DrawingVisibility, name: string, 
-    bgColor: string, height: number, width: number, contents: DrawingContent[], ownerId: string}){
-    let retDrawing = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
-       bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents, ownerId: drawing.ownerId}
-    let drawingString = JSON.stringify(retDrawing);
+  notifyDrawingModified(drawing: DrawingGallery){
+    let drawingString = JSON.stringify(drawing);
     this.wss.emit("drawingModified",drawingString);
     
   }
