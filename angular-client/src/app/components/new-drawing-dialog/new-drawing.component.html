@@ -26,6 +26,7 @@
                 <mat-label for="drawingPassword">Mot de passe</mat-label>
                 <input matInput type="password" placeholder="Saisir votre mot de passe" autocomplete="off"
                        formControlName="drawingPassword" [value]="password" (keydown)="blockEvent($event)" />
+                <!-- [disabled]="showPasswordRequired" -->
                 <mat-error *ngIf="showPasswordRequired">Un mot de passe est requis</mat-error>
             </mat-form-field>
 

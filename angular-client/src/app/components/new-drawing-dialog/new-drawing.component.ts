@@ -9,22 +9,20 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Drawing } from '@models/DrawingMeta';
+import { Drawing, JoinDrawing } from '@models/DrawingMeta';
 import {
   drawingVisibilityItems,
   DrawingVisibilityItem,
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-//import { DrawingService } from '@services/drawing/drawing.service';
+import { InteractionService } from '@services/interaction/interaction.service';
+import { DrawingService } from '@services/drawing/drawing.service';
+import { SocketService } from '@services/socket/socket.service';
+import { UserToken } from '@services/static-services/user_token';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
-import { JoinDrawing } from '@src/app/models/joinDrrawing';
-import { DrawingService } from '@src/app/services/drawing/drawing.service';
-import { SocketService } from '@src/app/services/socket/socket.service';
-import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
-  selector: 'app-new-drawing',
   templateUrl: './new-drawing.component.html',
   styleUrls: ['./new-drawing.component.scss'],
 })
@@ -35,7 +33,7 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
-  //drawingID?: number;
+  // drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';
@@ -61,6 +59,7 @@ export class NewDrawingComponent implements OnInit {
     private router: Router,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
+    private readonly interactionService: InteractionService
   ) {
     this.width = this.canvasBuilder.getDefWidth();
     this.height = this.canvasBuilder.getDefHeight();
@@ -130,8 +129,7 @@ export class NewDrawingComponent implements OnInit {
     return this.visibility === DrawingVisibilityLevel.PROTECTED;
   }
 
-  async onSubmit() {
-    // TODO: To change while integrating with socket
+  onSubmit() {
     const VALUES = this.newDrawingForm.value;
 
     if (VALUES.drawingPassword === '') {
@@ -155,25 +153,29 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingService.createDrawing(this.newDrawing).subscribe((drawingIdServer: number)=>{
-        console.log(drawingIdServer);
-        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: UserToken.userToken, password: this.password}
-        this.socketService.sendJoinDrawingRequest(joinDrawing);
-        this.closeModalForm();
-        this.router.navigate(['/draw']);
-    
-    
-        const LOAD_TIME = 15;
-        setTimeout(() => {
-          window.dispatchEvent(new Event('resize'));
-        }, LOAD_TIME);    
-      });
+      this.drawingService
+        .createDrawing(this.newDrawing)
+        .subscribe((drawingIdFromServer: number) => {
+          console.log(drawingIdFromServer);
+          const joinDrawing: JoinDrawing = {
+            drawingId: drawingIdFromServer,
+            userId: UserToken.userToken,
+            password: this.password,
+          };
+          this.socketService.sendJoinDrawingRequest(joinDrawing);
+          this.closeModalForm();
+          this.interactionService.emitWipeSignal();
+          this.router.navigate(['/draw']);
+
+          const LOAD_TIME = 15;
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, LOAD_TIME);
+        });
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
     }
-
-    
   }
 
   closeModalForm(): void {
