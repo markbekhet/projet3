@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 //import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
@@ -14,22 +15,22 @@ export class UserProfileDialogComponent implements OnInit {
     pseudo: ''
   };
 
+
   constructor(
     private auth: AuthService,
     private socketService: SocketService,
     //private windowService: ModalWindowService,
-    ) {}
+    @Inject(MAT_DIALOG_DATA) public data: string
+    ) {
+      this.socketService.getUserProfile({
+        userId: this.auth.token$.value,
+        visitedId: data,
+      });
+
+
+    }
 
   ngOnInit(): void {
-
-  }
-
-  receiveUserInfo(visitedId: string) {
-    this.socketService.getUserProfile({
-      userId: this.auth.token$.value,
-      visitedId: visitedId,
-    });
-
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
       this.visitedUser = profile;
     });

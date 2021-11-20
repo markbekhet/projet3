@@ -81,8 +81,8 @@ export class ModalWindowService {
 
   initUserProfileDialogConfig() {
     this.userProfileConfig.id = 'userProfileDialog';
-    this.userProfileConfig.height = '90vh';
-    this.userProfileConfig.width = '85vw';
+    this.userProfileConfig.height = '50vh';
+    this.userProfileConfig.width = '50vw';
     this.userProfileConfig.minWidth = '600px';
     this.userProfileConfig.disableClose = false;
     this.userProfileConfig.hasBackdrop = true;
