@@ -1,5 +1,6 @@
 package com.example.android.client
 
+import com.example.android.canvas.GalleryDrawing
 import com.example.android.team.TeamGeneralInformation
 import com.google.gson.Gson
 
@@ -8,6 +9,7 @@ object ClientInfo {
     var userId = ""
     var usersList = UsersArrayList()
     var teamsList = TeamsArrayList()
+    var gallery = GalleryDrawing()
 }
 
 class User(val id: String? = null,
