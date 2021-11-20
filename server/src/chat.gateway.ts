@@ -271,7 +271,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           galleryRet.push(drawingGallery);
         })
 
-        let gallery = {drawingsList: galleryRet};
+        //let gallery = {drawingsList: galleryRet};
         let chatRoom = await this.chatRoomRepo.findOne({
           where: [{name: data.teamName}],
           relations:["chatHistories"],
@@ -294,7 +294,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
         this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
         client.join(data.teamName);
-        let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, drawingList: gallery};
+        let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, drawingList: galleryRet};
         client.emit("teamInformations", JSON.stringify(teamInformations))
       }
     }
