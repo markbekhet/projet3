@@ -1,9 +1,8 @@
-/* eslint-disable max-classes-per-file */
-export class UserToken {
-  static userToken: string;
+/* export class UserToken{
+    static userToken: string;
 }
 
-export class ActiveDrawing {
-  static drawingId: number;
-  static drawingName: string;
-}
+export class ActiveDrawing{
+    static drawingId: number;
+    static drawingName: string;
+} */

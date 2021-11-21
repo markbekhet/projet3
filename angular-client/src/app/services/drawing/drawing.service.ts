@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Drawing /* , DrawingInfosForGallery */ } from '@models/DrawingMeta';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ActiveDrawing } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -26,7 +25,6 @@ export class DrawingService {
     return this.httpClient.post<number>(`${PATH}/drawing`, newDrawing).pipe(
       tap((token) => {
         console.log(token);
-        ActiveDrawing.drawingId = token;
         this.$drawingId.next(token);
       })
     );

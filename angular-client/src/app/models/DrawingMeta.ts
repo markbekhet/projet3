@@ -55,3 +55,14 @@ export interface LeaveDrawing {
   drawingId: number;
   userId: string;
 }
+
+export enum DrawingState {
+  AVAILABLE,
+  DELETED,
+}
+
+export enum DrawingVisibility {
+  PUBLIC,
+  PROTECTED,
+  PRIVATE,
+}

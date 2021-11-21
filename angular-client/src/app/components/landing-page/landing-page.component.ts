@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -7,8 +7,8 @@ import { homeHeaderItems, FeatureItem } from '@models/FeatureMeta';
 import { AuthService } from '@services/authentication/auth.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { SocketService } from '@services/socket/socket.service';
-import { UserToken } from '@services/static-services/user_token';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
 
 @Component({
   templateUrl: './landing-page.component.html',
@@ -32,11 +32,18 @@ export class LandingPage implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(UserToken.userToken);
     this.showWelcomeMsg();
-    this.socketService.connect();
+    if (this.socketService.socket === undefined) {
+      this.socketService.connect();
+    }
   }
 
+  @HostListener('window:beforeunload')
+  disconnectX() {
+    if (this.authService.token$.value !== '') {
+      this.authService.disconnect();
+    }
+  }
   showWelcomeMsg(): void {
     const CONFIG = new MatSnackBarConfig();
     const DURATION = 2000;
@@ -51,9 +58,14 @@ export class LandingPage implements OnInit {
     this.windowService.openDialog(NewDrawingComponent);
   }
 
+  openCraeteNewTeam() {
+    this.windowService.openDialog(NewTeamDialogComponent);
+  }
+
   disconnect() {
-    this.authService.disconnect();
-    this.router.navigate(['/login']);
+    this.authService.disconnect().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   execute(shortcutName: string) {
@@ -64,8 +76,24 @@ export class LandingPage implements OnInit {
       case 'Déconnexion':
         this.disconnect();
         break;
+      case 'Profile':
+        this.profile();
+        break;
+      case 'Chat':
+        this.chat();
+        break;
+      case 'equipe':
+        this.openCraeteNewTeam();
+        break;
       default:
         break;
     }
+  }
+  profile() {
+    this.router.navigate(['/profile']);
+  }
+
+  chat() {
+    this.router.navigate(['/chat']);
   }
 }

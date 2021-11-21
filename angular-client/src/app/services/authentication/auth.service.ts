@@ -4,9 +4,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { /* catchError, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
-import { User } from '@models/UserMeta';
 import { /* Drawing, */ DrawingInfosForGallery } from '@models/DrawingMeta';
-import { UserToken } from '../static-services/user_token';
+import { UpdateUserInformation } from '@models/UserMeta';
+import { SocketService } from '@services/socket/socket.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';
@@ -20,8 +20,6 @@ const GALLERY = 'user/gallery/';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private httpClient: HttpClient) {}
-
   // login error codes
   readonly USER_LOGGED_IN = 'User is already logged in';
   readonly NO_USER_FOUND = 'There is no account with this username or email';
@@ -33,21 +31,25 @@ export class AuthService {
   readonly DUPLICATE_USERNAME =
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
-  readonly NULL_USER: User = { id: '' };
   readonly NULL_DRAWINGS: DrawingInfosForGallery[] = [];
 
-  $authenticatedUser = new BehaviorSubject<User>(this.NULL_USER);
+  token$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   $userDrawings = new BehaviorSubject<DrawingInfosForGallery[]>(
     this.NULL_DRAWINGS
   );
 
-  getAuthenticatedUserID() {
-    return this.$authenticatedUser.value.id;
+  constructor(
+    private httpClient: HttpClient,
+    private socketService: SocketService
+  ) {}
+
+  getToken() {
+    return this.token$.value;
   }
 
-  private authenticateUser(user: User) {
-    if (user.id) this.$authenticatedUser.next(user);
+  private authenticateUser(token: string) {
+    if (token) this.token$.next(token);
   }
 
   login(userCreds: UserCredentials) {
@@ -55,12 +57,7 @@ export class AuthService {
       .post(PATH + LOGIN, userCreds, { responseType: 'text' })
       .pipe(
         tap((token) => {
-          const loggedInUser: User = {
-            id: token,
-          };
-          UserToken.userToken = token;
-          console.log(token);
-          this.authenticateUser(loggedInUser);
+          this.authenticateUser(token);
         })
       );
   }
@@ -70,48 +67,45 @@ export class AuthService {
       .post(PATH + REGISTER, userInfos, { responseType: 'text' })
       .pipe(
         tap((token) => {
-          const registeredUser: User = {
-            id: token,
-          };
-          UserToken.userToken = token;
-          console.log(token);
-          this.authenticateUser(registeredUser);
+          this.authenticateUser(token);
         })
       );
   }
 
   disconnect(): Observable<string> {
     return this.httpClient
-      .post(PATH + DISCONNECT + this.$authenticatedUser.value.id, null, {
+      .post(PATH + DISCONNECT + this.token$.value, null, {
         responseType: 'text',
       })
       .pipe(
-        tap((data) => {
-          console.log(data);
-          this.$authenticatedUser.next(this.NULL_USER);
+        tap(() => {
+          this.token$.next('');
           this.$userDrawings.next(this.NULL_DRAWINGS);
+          this.socketService.disconnect();
         })
       );
-  }
-
-  getProfile() {
-    return this.httpClient.get<User>(
-      `${PATH + PROFILE + this.$authenticatedUser.value.id}/${
-        this.$authenticatedUser.value.id
-      }`
-    );
   }
 
   getPersonalGallery(): Observable<{ drawingList: DrawingInfosForGallery[] }> {
     return this.httpClient
       .get<{ drawingList: DrawingInfosForGallery[] }>(
-        PATH + GALLERY + this.$authenticatedUser.value.id
+        PATH + GALLERY + this.getToken()
       )
       .pipe(
         tap((data) => {
           this.$userDrawings.next(data.drawingList);
         })
       );
+  }
+
+  public updateUserProfile(updatedUserProfile: UpdateUserInformation) {
+    return this.httpClient.put(
+      PATH + PROFILE + this.token$.value,
+      updatedUserProfile,
+      {
+        responseType: 'text',
+      }
+    );
   }
 
   // .pipe(catchError(this.handleGalleryError('getDrawings', [])));

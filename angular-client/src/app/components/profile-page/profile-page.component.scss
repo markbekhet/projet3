@@ -16,10 +16,25 @@
       left: 50%;
       margin: 20px 0 0 -135px;
     }
+    .information {
+      position: absolute;
+      width: 270px;
+      left: 50%;
+      margin: 320px 0 0 -135px;
+    }
   }
 
   .content {
     margin: 20px 0 0 20px;
+  }
+
+  .mat-form-field {
+    width: 250px;
+  }
+
+  .connection {
+    overflow: auto;
+    height: 20vh;
   }
 
 }

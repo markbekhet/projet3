@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AngularMaterialModule } from './angular-material.module';
@@ -44,6 +45,9 @@ import { RegisterPage } from './components/register-page/register-page.component
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
+import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
+import { TeamService } from './services/team/team.service';
 
 @NgModule({
   declarations: [
@@ -68,6 +72,8 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     SvgViewComponent,
     ThumbnailComponent,
     ToolboxViewComponent,
+    UserTeamListComponent,
+    NewTeamDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -78,6 +84,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,
@@ -90,6 +97,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ModalWindowService,
     SocketService,
     ValidationService,
+    TeamService,
   ],
   entryComponents: [
     ErrorDialogComponent,

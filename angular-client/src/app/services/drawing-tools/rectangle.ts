@@ -62,7 +62,7 @@ export class Rectangle implements  DrawingTool{
     this.primaryColor = DEFPRIM;
     this.secondaryColor = DEFSEC;
   }
-  
+
   onMouseDown(event: MouseEvent): void {
     //this.mouseIsDown = true;
     let position = Point.rpositionMouse(event, this.canvas.nativeElement);
@@ -71,7 +71,7 @@ export class Rectangle implements  DrawingTool{
     this.renderer.setAttribute(this.element, "y", position.y.toString())
     this.renderer.setAttribute(this.element, "width", "0");
     this.renderer.setAttribute(this.element, "height", "0")
-    this.renderer.setAttribute(this.element, "transform", "translate(0,0");
+    this.renderer.setAttribute(this.element, "transform", "translate(0,0)");
     this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
     this.renderer.setAttribute(this.element, "stroke-width", this.attr.shapeLineThickness!.toString())
     this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
@@ -114,7 +114,7 @@ export class Rectangle implements  DrawingTool{
   sendProgressToServer(drawingStatus: DrawingStatus){
     let drawingContent: DrawingContent = {drawingId: this.drawingId, userId: this.userId,
                                   id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
-    this.socketService.sendDrawingToServer(drawingContent);                              
+    this.socketService.sendDrawingToServer(drawingContent);
   }
   getString(): string {
     //throw new Error('Method not implemented.');

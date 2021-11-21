@@ -6,12 +6,14 @@ import { DeleteDrawingComponent } from '@components/gallery-component/delete-dra
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
 import { ModifyDrawingComponent } from '@components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
   | GalleryComponent
   | DeleteDrawingComponent
   | ModifyDrawingComponent
+  | NewTeamDialogComponent
 >;
 
 @Injectable({
@@ -19,6 +21,7 @@ type Component = ComponentType<
 })
 export class ModalWindowService {
   newDrawingConfig = new MatDialogConfig();
+  newTeamConfig = new MatDialogConfig();
   deleteDrawingConfig = new MatDialogConfig();
   modifyDrawingConfig = new MatDialogConfig();
   galleryConfig = new MatDialogConfig();
@@ -28,6 +31,7 @@ export class ModalWindowService {
     this.initDeleteDrawingDialogConfig();
     this.initModifyDrawingDialogConfig();
     this.initGalleryDialogConfig();
+    this.initNewTeamDialogConfig();
   }
 
   initNewDrawingDialogConfig() {
@@ -40,6 +44,18 @@ export class ModalWindowService {
     this.newDrawingConfig.disableClose = false;
     this.newDrawingConfig.hasBackdrop = true;
     this.newDrawingConfig.restoreFocus = false;
+  }
+
+  initNewTeamDialogConfig() {
+    this.newTeamConfig.id = 'newTeamConfig';
+    this.newTeamConfig.height = '86vh';
+    this.newTeamConfig.width = '35vw';
+    this.newTeamConfig.minWidth = '470px';
+    this.newTeamConfig.maxWidth = '480px';
+    this.newTeamConfig.maxHeight = '720px';
+    this.newTeamConfig.disableClose = false;
+    this.newTeamConfig.hasBackdrop = true;
+    this.newTeamConfig.restoreFocus = false;
   }
 
   initDeleteDrawingDialogConfig() {
@@ -79,6 +95,10 @@ export class ModalWindowService {
       case NewDrawingComponent:
         this.closeDialogs();
         this.dialog.open(NewDrawingComponent, this.newDrawingConfig);
+        break;
+      case NewTeamDialogComponent:
+        this.closeDialogs();
+        this.dialog.open(NewTeamDialogComponent, this.newTeamConfig);
         break;
       case DeleteDrawingComponent:
         this.deleteDrawingConfig.data = data;

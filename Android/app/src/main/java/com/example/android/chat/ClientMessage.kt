@@ -3,30 +3,43 @@ package com.example.android.chat
 import com.google.gson.Gson
 import org.json.JSONObject
 
+// change the data structure to correspond to the server
+// ClientMessage is the message received from the server
 data class ClientMessage(
-    var clientName: String?,
-    var message: String
+    var from: String?= null,
+    var message: String? = null,
+    var date: String?= null,
+    var roomName: String?= null
+
 ){
     fun toJson(): String{
         return Gson().toJson(this)
     }
+
+    fun fromJson(json: String): ClientMessage{
+        return Gson().fromJson(json, ClientMessage::class.java)
+    }
 }
 
+data class ClientMessageArray(var chatHistoryList: ArrayList<ClientMessage>?= null){
+    fun fromJson(json:String): ClientMessageArray{
+        return Gson().fromJson(json, ClientMessageArray::class.java)
+    }
+}
+
+// The serverMessage is the message sent to the server
 data class ServerMessage(
-    var clientName: String ?= null,
+    var from: String ?= null,
     var message: String ?= null,
-    var date: CustomDate ?= null
+    var roomName: String ?= null
 ){
-    fun fromJson(jsonObject:JSONObject): ServerMessage{
-        clientName = jsonObject.getString("clientName")
-        message = jsonObject.getString("message")
-        date = CustomDate().fromJson(jsonObject.getJSONObject("date"))
-        return ServerMessage(clientName,message, date)
+    fun fromJson(json:String): ServerMessage{
+        return Gson().fromJson(json, ServerMessage::class.java)
 
     }
-    override fun toString(): String{
+    /*override fun toString(): String{
         return "${clientName} ${message} ${date.toString()}"
-    }
+    }*/
     fun toJson(): String{
         return Gson().toJson(this)
     }

@@ -30,6 +30,16 @@
                 <mat-error *ngIf="showPasswordRequired">Un mot de passe est requis</mat-error>
             </mat-form-field>
 
+            <mat-checkbox id="teamAssignationCheckbox" (change)="assignationStatusChange($event)"
+                          *ngIf="currentTeams.length > 0"> Assigner a une equipe </mat-checkbox>
+            <div *ngIf="assignedToTeam">
+                <mat-label for="teamAssignation"> Equipe assignee</mat-label>
+                <mat-select formControlName="teamAssignation" [(value)]="assignedTeam" rquired>
+                    <mat-option>--</mat-option>
+                    <mat-option *ngFor="let team of currentTeams" [value]="team">{{team.name}}</mat-option>
+                </mat-select>
+            </div>
+
             <mat-form-field class="new-drawing-form-input">
                 <mat-label for="canvWidth">Largeur (px)</mat-label>
                 <input matInput type="text" required formControlName="canvWidth" [value]="width"

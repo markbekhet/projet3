@@ -7,19 +7,23 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 
 import { Drawing, JoinDrawing } from '@models/DrawingMeta';
+import { Team } from '@models/teamsMeta';
 import {
   drawingVisibilityItems,
   DrawingVisibilityItem,
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
+
+import { AuthService } from '@services/authentication/auth.service';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
-import { UserToken } from '@services/static-services/user_token';
+import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 
 @Component({
@@ -33,6 +37,9 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
+  currentTeams: Team[] = [];
+  assignedToTeam: boolean = false;
+  assignedTeam: Team | null = null;
   // drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
@@ -40,6 +47,7 @@ export class NewDrawingComponent implements OnInit {
   width: number;
   height: number;
   bgColor: string;
+  userId: string;
 
   newDrawing: Drawing = {
     drawingID: undefined,
@@ -53,10 +61,12 @@ export class NewDrawingComponent implements OnInit {
   };
 
   constructor(
+    private authService: AuthService,
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
+    private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
     private readonly interactionService: InteractionService
@@ -65,6 +75,10 @@ export class NewDrawingComponent implements OnInit {
     this.height = this.canvasBuilder.getDefHeight();
     this.bgColor = this.canvasBuilder.getDefColor();
     this.drawingVisibilityItems = drawingVisibilityItems;
+    this.userId = '';
+    this.teamService.activeTeams.value.forEach((team) => {
+      this.currentTeams.push(team);
+    });
   }
 
   ngOnInit(): void {
@@ -74,6 +88,9 @@ export class NewDrawingComponent implements OnInit {
       if (this.inputEntered) {
         this.resizeCanvas();
       }
+    });
+    this.authService.token$.subscribe((token) => {
+      this.userId = token;
     });
   }
 
@@ -101,6 +118,7 @@ export class NewDrawingComponent implements OnInit {
         [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
       ],
       canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
+      teamAssignation: [null, []],
     });
     this.newDrawingForm.setValue({
       drawingName: this.name,
@@ -109,6 +127,7 @@ export class NewDrawingComponent implements OnInit {
       canvWidth: this.canvasBuilder.getDefWidth(),
       canvHeight: this.canvasBuilder.getDefHeight(),
       canvColor: this.canvasBuilder.getDefColor(),
+      teamAssignation: this.assignedTeam,
     });
   }
 
@@ -143,7 +162,7 @@ export class NewDrawingComponent implements OnInit {
       width: VALUES.canvWidth,
       height: VALUES.canvHeight,
       color: VALUES.canvColor,
-      ownerId: UserToken.userToken,
+      ownerId: this.userId,
     };
 
     try {
@@ -153,13 +172,21 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
+      if (this.assignedToTeam) {
+        console.log(VALUES.teamAssignation.id);
+        this.newDrawing.ownerId = VALUES.teamAssignation.id;
+        if (VALUES.teamAssignation.id === undefined) {
+          throw new Error('Le dessin doit etre assigne a une equipe');
+        }
+        console.log(this.assignedTeam!.id);
+      }
       this.drawingService
         .createDrawing(this.newDrawing)
         .subscribe((drawingIdFromServer: number) => {
           console.log(drawingIdFromServer);
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
-            userId: UserToken.userToken,
+            userId: this.userId,
             password: this.password,
           };
           this.socketService.sendJoinDrawingRequest(joinDrawing);
@@ -203,6 +230,14 @@ export class NewDrawingComponent implements OnInit {
   onInput(): void {
     if (this.canvColor && this.canvColor.valid) {
       this.bgColor = this.canvColor.value;
+    }
+  }
+
+  assignationStatusChange(event: Event) {
+    if ((event as unknown as MatCheckboxChange).checked) {
+      this.assignedToTeam = true;
+    } else {
+      this.assignedToTeam = false;
     }
   }
 }

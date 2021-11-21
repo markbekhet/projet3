@@ -19,7 +19,6 @@ import { AuthService } from '@services/authentication/auth.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
-import { ActiveDrawing } from '@services/static-services/user_token';
 import { DeleteDrawingComponent } from './delete-drawing/delete-drawing.component';
 import { ModifyDrawingComponent } from './modify-drawing/modify-drawing.component';
 
@@ -42,7 +41,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   ) {}
 
   getAuthenticatedUserID(): string {
-    return this.authService.getAuthenticatedUserID();
+    return this.authService.getToken();
   }
 
   ngOnInit(): void {
@@ -115,16 +114,16 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       this.openDrawingPasswordBottomSheet(drawingInfos);
       // TODO: terminer avec la saisie du mot de passe, si correct alors continuer, sinon break return
     }
-    this.socketService.leaveDrawing();
+    // Note (Paul) : might need that to fix a bug
+    // this.socketService.leaveDrawing();
 
     const joinDrawing: JoinDrawing = {
       drawingId: drawingInfos.id,
-      userId: this.getAuthenticatedUserID(),
+      userId: this.authService.getToken(),
       password: undefined,
     };
     this.socketService.sendJoinDrawingRequest(joinDrawing);
 
-    ActiveDrawing.drawingId = drawingInfos.id;
     this.drawingService.$drawingId.next(drawingInfos.id);
 
     // TODO: might need those two lines, like in drawing creation. (for example if we use the gallery in a dialog, we need it to close)

@@ -13,7 +13,7 @@ import {
 
 import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { DrawingInformations } from '@models/drawing-informations';
-import { User } from '@models/UserMeta';
+// import { User } from '@models/UserMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
@@ -26,7 +26,6 @@ import { Rectangle } from '@services/drawing-tools/rectangle';
 import { Selection } from '@services/drawing-tools/selection';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '@services/socket/socket.service';
-import { ActiveDrawing } from '@services/static-services/user_token';
 import {
   ELLIPSE_TOOL_NAME,
   PENCIL_TOOL_NAME,
@@ -79,8 +78,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   getUserId() {
-    this.authService.$authenticatedUser.subscribe((user: User) => {
-      this.userId = user.id;
+    this.authService.token$.subscribe((token: string) => {
+      this.userId = token;
     });
   }
 
@@ -104,7 +103,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         this.width = drawingInformations.drawing.width;
         this.height = drawingInformations.drawing.height;
         this.drawingService.$drawingName.next(drawingInformations.drawing.name);
-        ActiveDrawing.drawingName = drawingInformations.drawing.name;
         drawingInformations.drawing.contents.forEach((content) => {
           if (content.content !== null && content.content !== undefined) {
             this.manipulateReceivedDrawing(content);
@@ -262,6 +260,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.interactionService.$wipeDrawing.subscribe((signal) => {
       this.doneDrawing.nativeElement.innerHTML = '';
       this.toolsList.clear();

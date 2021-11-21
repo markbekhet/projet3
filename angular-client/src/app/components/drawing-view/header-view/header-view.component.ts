@@ -8,6 +8,9 @@ import { Canvas } from '@models/CanvasInfo';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
+import { AuthService } from '@src/app/services/authentication/auth.service';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { SocketService } from '@src/app/services/socket/socket.service';
 
 @Component({
   selector: 'app-header-view',
@@ -20,7 +23,10 @@ export class HeaderViewComponent implements OnInit {
   currentCanvas!: Canvas;
 
   constructor(
-    private dialogService: ModalWindowService // private interaction: InteractionService
+    private dialogService: ModalWindowService, // private interaction: InteractionService
+    private authService: AuthService,
+    private drawingService: DrawingService,
+    private socketService: SocketService
   ) {
     this.menuItems = drawingHeaderItems;
   }
@@ -39,6 +45,13 @@ export class HeaderViewComponent implements OnInit {
     ) {
       this.dialogService.openDialog(GalleryComponent);
     }
+  }
+
+  leaveDrawing() {
+    this.socketService.leaveDrawing({
+      drawingId: this.drawingService.$drawingId.value,
+      userId: this.authService.token$.value,
+    });
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
