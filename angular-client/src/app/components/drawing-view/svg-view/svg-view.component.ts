@@ -270,6 +270,10 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+
+    this.interactionService.$leaveDrawingSignal.subscribe((sig)=>{
+      if(sig) this.currentTool.unselect();
+    })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.interactionService.$wipeDrawing.subscribe((signal) => {
       this.doneDrawing.nativeElement.innerHTML = '';
