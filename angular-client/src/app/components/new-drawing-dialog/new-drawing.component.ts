@@ -233,8 +233,8 @@ export class NewDrawingComponent implements OnInit {
     }
   }
 
-  assignationStatusChange(event: Event) {
-    if ((event as unknown as MatCheckboxChange).checked) {
+  assignationStatusChange(event: MatCheckboxChange) {
+    if (event.checked) {
       this.assignedToTeam = true;
     } else {
       this.assignedToTeam = false;

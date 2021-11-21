@@ -21,6 +21,7 @@ import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
+import { TeamService } from '@src/app/services/team/team.service';
 import { DeleteDrawingComponent } from './delete-drawing/delete-drawing.component';
 import { ModifyDrawingComponent } from './modify-drawing/modify-drawing.component';
 
@@ -41,10 +42,29 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private socketService: SocketService,
     private windowService: ModalWindowService,
     private interactionService: InteractionService,
+    private teamService: TeamService,
   ) {}
 
   getAuthenticatedUserID(): string {
     return this.authService.getToken();
+  }
+
+  isAuthorized(ownerId: string): boolean{
+    if(ownerId === this.getAuthenticatedUserID()){
+      return true;
+    }
+    else{
+      let teamFound = false;
+      this.teamService.activeTeams.value.forEach((team)=>{
+        if(team.id! === ownerId){
+          teamFound = true;
+        }
+      })
+      if(teamFound){
+        return true
+      }
+    }
+    return false;
   }
 
   ngOnInit(): void {
@@ -124,6 +144,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
             thumbnail: svg
           })
         }
+        // Add else statement if the drawing is private but associated to a team that we have joined
       })
   }
 
