@@ -46,6 +46,10 @@ import android.content.res.Resources
 import android.util.Base64
 import com.example.android.profile.Gallery
 import java.io.ByteArrayOutputStream
+import android.R.attr.data
+
+
+
 
 
 class RegisterScreen : AppCompatActivity() {
@@ -77,7 +81,7 @@ class RegisterScreen : AppCompatActivity() {
 //                img_save.setImageBitmap(imageBitmap)
 //            }
 //        }
-    fun CreateImageStringFromBitmap(): String {
+fun CreateImageStringFromBitmap(): String {
 
     val bitmap:Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
 
@@ -94,13 +98,21 @@ class RegisterScreen : AppCompatActivity() {
 
     return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
+
+
+
+        val encodedImage :String= CreateImageStringFromBitmap()
+        val decodedString = Base64.decode(encodedImage, Base64.DEFAULT)
+        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        Glide.with(this).load(decodedByte).fitCenter().into(img_save);
+
             println(avatarClientInfo.avatarClient)
 //            img_save.apply {if(avatarClientInfo.avatarSelection) {
 //                Glide.with(this)
 //                    .load(avatarClientInfo.avatarClient)
 //                    .into(img_save)
 //            }}
-                img_save.setImageResource(avatarClientInfo.avatarClient!!)
+//                img_save.setImageResource(avatarClientInfo.avatarClient!!)
 
 
 //        avatarClientInfo!!.avatarClient?.let { img_save.setImageResource(it) }
@@ -141,6 +153,7 @@ class RegisterScreen : AppCompatActivity() {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             try {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                finish()
             } catch (e: ActivityNotFoundException) {
                 // display error state to the user
             }
@@ -154,7 +167,7 @@ class RegisterScreen : AppCompatActivity() {
                     pseudo.text.toString(), password.text.toString(),
                     confirmPassword.text.toString(), email.text.toString()
                 ))
-                img_save.setImageResource(avatarClientInfo.avatarClient!!)
+
             }
 
             lastName.doAfterTextChanged {

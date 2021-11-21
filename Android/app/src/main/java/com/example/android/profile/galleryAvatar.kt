@@ -1,5 +1,6 @@
 package com.example.android.profile
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.android.R
+import com.example.android.RegisterScreen
 import com.example.android.client.avatarClientInfo
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -41,7 +43,7 @@ class Gallery : AppCompatActivity() {
 
         }
        fermer.setOnClickListener(){
-           finish()
+           startActivity(Intent(this, RegisterScreen::class.java))
        }
         setmessage()
     }
@@ -60,7 +62,6 @@ class GalleryAvatar(val image: Int) : Item<GroupieViewHolder>() {
         }
         viewHolder.itemView.avatarImage.setOnClickListener(){
             avatarClientInfo.avatarClient = image
-            img_save
             print(viewHolder.itemView.avatarImage)
             print("ok")
             print(avatarClientInfo.avatarClient)
