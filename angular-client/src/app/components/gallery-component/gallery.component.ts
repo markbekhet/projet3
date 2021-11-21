@@ -80,6 +80,24 @@ export class GalleryComponent implements OnInit, AfterViewInit {
           this.shownDrawings
         );
       });
+
+      this.socketService.socket!.on("nbCollaboratorsDrawingIncreased", (data: any)=>{
+        let drawingModified: {drawingId: number} = JSON.parse(data);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
+          if(drawingModified.drawingId === shownDrawing.infos.id){
+            shownDrawing.infos.nbCollaborators += 1;
+          }
+        })
+      })
+
+      this.socketService.socket!.on("nbCollaboratorsDrawingReduced", (data: any)=>{
+        let drawingModified: {drawingId: number} = JSON.parse(data);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
+          if(drawingModified.drawingId === shownDrawing.infos.id){
+            shownDrawing.infos.nbCollaborators -= 1;
+          }
+        })
+      })
   }
 
   createSVG(
