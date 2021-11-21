@@ -78,8 +78,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     const messageToSend: ServerMessage = {
       from: this.user.pseudo!,
       message: MESSAGE,
-      roomName: 'General'
-    }
+      roomName: 'General',
+    };
 
     this.socketService.sendMessage(messageToSend);
     console.log(messageToSend);
@@ -94,7 +94,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     this.messages = [];
-    //this.socketService.disconnect();
+    // this.socketService.disconnect();
     this.disconnect();
   }
 

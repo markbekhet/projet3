@@ -283,7 +283,7 @@ export class DatabaseService {
                 throw new HttpException("User is not allowed to delete this drawing", HttpStatus.BAD_REQUEST);
             }
         }
-        
+
         if(drawing.activeUsers.length > 0){
             throw new HttpException("can not delete drawing because there is a user editing this drawing", HttpStatus.BAD_REQUEST);
         }

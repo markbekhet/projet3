@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Calistoga&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Montagu+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Lobster:wght@100;200;300;400;500;600;700;800;900&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Buda&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Forum&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Orelega+One&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Poiret+One&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Ranchers&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap");
+
+.gallery-component {
+  width: 100%;
+  // overflow: hidden;
+  // padding-top: 0;
+
+  h1 {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin-bottom: 0;
+    padding: 1em 0 1em;
+    font-family: "Calistoga", cursive;
+    font-weight: 400;
+    font-size: 2.5em;
+    color: rgba(36, 36, 36, 0.85);
+    // color: #273039e0;
+    text-shadow: 1px 1px 3px rgba(51, 51, 51, 0.206);
+    background-color: white;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(226px, 1fr));
+    grid-gap: 2em;
+    padding: 0.5em 1em 2em 1em;
+
+    .drawing-card {
+      // TODO: remplacer la liste par une seule box-shadow
+      box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+        -1px 0px 2px -1px rgb(0 0 0 / 20%), 0px -1px 1px -1px rgb(0 0 0 / 20%),
+        1px -1px 1px 0px rgb(0 0 0 / 14%), 1px 2px 1px -1px rgb(0 0 0 / 20%),
+        0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+      transition: transform 500ms ease;
+
+      mat-card-header {
+        margin-bottom: 0.5em;
+        mat-card-title {
+          font-size: 0.8rem;
+          font-weight: 400;
+          margin: 0;
+          font-style: italic;
+          span {
+            font-style: normal;
+            font-weight: 300;
+          }
+        }
+        mat-card-subtitle {
+          font-size: 0.8rem;
+          margin: 0;
+        }
+      }
+
+      app-thumbnail {
+        width: 100%;
+        object-fit: contain;
+        object-position: center;
+        margin: 0;
+      }
+
+      // .mat-card-image {
+
+      // }
+
+      mat-card-actions {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-around;
+        margin: 0.5em 0 0 0;
+
+        button {
+          opacity: 0.85;
+          transition: opacity 500ms ease;
+        }
+        button:hover {
+          opacity: 1;
+        }
+
+        .mat-flat-button {
+          padding: 0 0;
+          min-width: 43px;
+        }
+      }
+    }
+    .drawing-card:hover {
+      transform: scale(1.02);
+    }
+  }
+}
