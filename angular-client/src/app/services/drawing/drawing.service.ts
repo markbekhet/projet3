@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Drawing /* , DrawingInfosForGallery */ } from '@models/DrawingMeta';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -30,13 +30,17 @@ export class DrawingService {
     );
   }
 
-  // deleteDrawing(drawingToDelete: DrawingInfosForGallery) {
-  //   return this.httpClient.delete(`${PATH}/drawing`, drawingToDelete).pipe(
-  //     tap((returnedDrawing) => {
-  //       console.log(returnedDrawing);
-  //     })
-  //   );
-  // }
+   deleteDrawing(drawingToDelete: {drawingId: number, userId: string}) {
+    const httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      body: drawingToDelete
+    }
+     return this.httpClient.delete(`${PATH}/drawing`, httpOptions).pipe(
+       tap((returnedDrawing) => {
+         console.log(returnedDrawing);
+       })
+     );
+   }
 
   // @Delete()
   //   async deleteDrawing(@Body() deleteInformation: DeleteDrawingDto){

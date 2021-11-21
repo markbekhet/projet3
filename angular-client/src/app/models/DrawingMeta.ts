@@ -38,6 +38,9 @@ export interface DrawingInfosForGallery {
   bgColor: string;
   ownerId?: string;
   contents: DrawingContent[];
+  nbCollaborators: number;
+  creationDate: string;
+  authorName: string;
 }
 
 export interface DrawingShownInGallery {
