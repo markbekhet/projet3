@@ -6,11 +6,11 @@ export interface DrawingInformations{
 
 }
 export interface CanvasDetails{
-    bgColor: string;
-    name: string;
-    width: number;
-    height: number;
+    bgColor?: string;
+    name?: string;
+    width?: number;
+    height?: number;
     ownerId?: string;
-    contents: DrawingContent[];
-    visibility: DrawingVisibilityLevel;
+    contents?: DrawingContent[];
+    visibility?: DrawingVisibilityLevel;
 }

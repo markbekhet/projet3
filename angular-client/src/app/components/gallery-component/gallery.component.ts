@@ -19,6 +19,8 @@ import { AuthService } from '@services/authentication/auth.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { DeleteDrawingComponent } from './delete-drawing/delete-drawing.component';
 import { ModifyDrawingComponent } from './modify-drawing/modify-drawing.component';
 
@@ -37,7 +39,8 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private renderer: Renderer2,
     private router: Router,
     private socketService: SocketService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private interactionService: InteractionService,
   ) {}
 
   getAuthenticatedUserID(): string {
@@ -49,6 +52,13 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+
+    this.socketService
+      .getDrawingInformations()
+      .subscribe((drawingInformations: DrawingInformations)=>{
+        this.interactionService.drawingInformations.next(drawingInformations.drawing);
+        this.router.navigate(['/draw']);
+      })
     this.authService
       .getPersonalGallery()
       .subscribe((data: { drawingList: DrawingInfosForGallery[] }) => {
@@ -130,7 +140,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     this.closeModalForm();
     // this.interactionService.emitWipeSignal();
 
-    this.router.navigate(['/draw']);
+    
   }
 
   openDrawingPasswordBottomSheet(drawingInfos: DrawingInfosForGallery): void {

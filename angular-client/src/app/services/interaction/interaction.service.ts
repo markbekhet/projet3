@@ -1,7 +1,8 @@
 import { ElementRef, Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DrawingContent } from '@models/DrawingMeta';
 import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
+import { CanvasDetails} from '@src/app/models/drawing-informations';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -36,7 +37,8 @@ export class InteractionService {
 
   generalRoomNameSignal: Subject<boolean> =  new Subject<boolean>();
   $generalRoomNameSignal: Observable<boolean> = this.generalRoomNameSignal.asObservable();
-
+  drawingInformations =  new BehaviorSubject<CanvasDetails>({});
+  //$drawingInformations = this.drawingInformations.asObservable()
   wipeDrawing: Subject<boolean> = new Subject<boolean>();
   $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
 
@@ -77,4 +79,7 @@ export class InteractionService {
   emitWipeSignal() {
     this.wipeDrawing.next(true);
   }
+  /*emitDrawingInformations(drawingInformations: DrawingInformations){
+    this.drawingInformations.next(drawingInformations)
+  }*/
 }
