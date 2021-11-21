@@ -33,6 +33,11 @@ export class InteractionService {
 
   chatRoomName: Subject<string> = new Subject<string>()
   $chatRoomName: Observable<string> = this.chatRoomName.asObservable();
+
+  generalRoomNameSignal: Subject<boolean> =  new Subject<boolean>();
+  $generalRoomNameSignal: Observable<boolean> = this.generalRoomNameSignal.asObservable();
+
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -59,5 +64,12 @@ export class InteractionService {
 
   emitUpdateColorSignal(){
     this.updateColorSignal.next(true);
+  }
+  emitGetGeneralChatRoom(){
+    this.generalRoomNameSignal.next(true);
+  }
+
+  emitFetchChatHistory(roomName: string){
+    this.chatRoomName.next(roomName)
   }
 }
