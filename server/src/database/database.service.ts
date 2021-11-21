@@ -303,7 +303,7 @@ export class DatabaseService {
                 throw new HttpException("Impossible de supprimer le dessin car vous n'en êtes pas le propriétaire", HttpStatus.BAD_REQUEST);
             }
         }
-        
+
         if(drawing.activeUsers.length > 0){
             throw new HttpException("Impossible de supprimer le dessin, car il est en cours d'édition", HttpStatus.BAD_REQUEST);
         }

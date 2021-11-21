@@ -1,0 +1,92 @@
+$base-color-dark: #403d39;
+$base-color-medium: #ccc5b9;
+$base-color-light1: #fffcf2;
+$base-color-light2: #fff1e6;
+$gray: #d9d9d9;
+$blue-graphite: #223b4b;
+$blue-graphite-faded: rgba(34, 59, 75, 0.8);
+
+.landing-page {
+  display: grid;
+  grid-template-rows: 12vh 88vh;
+  grid-template-columns: 70vw 30vw;
+  grid-template-areas:
+    "header header-buttons"
+    "gallery teams";
+  overflow: hidden;
+
+  .header {
+    position: relative;
+    background-color: $base-color-dark;
+    .logo {
+      position: absolute;
+      height: 80%;
+      top: 50%;
+      transform: translate(0, -50%);
+      margin: 0 1em;
+      border-radius: 5%;
+    }
+  }
+
+  .header-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: $base-color-dark;
+    .btn {
+      margin-right: 1em;
+    }
+  }
+
+  .gallery {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .usersTeamsList {
+    width: auto;
+    height: auto;
+  }
+
+  // To be removed only for testing
+  nav{
+    grid-area: nav;
+  }
+
+  main{
+    grid-area: content;
+
+    overflow: auto;
+  }
+
+  // .teams {
+
+  // }
+}
+
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin-right: 20px;
+}
+
+@media (max-width: 750px) {
+  #title {
+    font-size: 10vw;
+  }
+
+  div.buttons-container > div {
+    margin: 25px;
+  }
+
+  br {
+    display: none;
+  }
+
+  .footer {
+    font-size: 3vw;
+  }
+}

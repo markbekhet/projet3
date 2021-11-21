@@ -1,5 +1,6 @@
 import { DrawingVisibilityLevel } from '@models/VisibilityMeta';
 
+// TODO: should rename that one 'NewDrawing' to understand that we use it to create a new drawing.
 export interface Drawing {
   drawingID?: number; // we don't have it prior to the request, it's the db that gives it to us
   name: string;
@@ -13,7 +14,7 @@ export interface Drawing {
 }
 
 export interface DrawingContent {
-  userId?: string| undefined;
+  userId?: string | undefined;
   drawingId?: number;
   id?: number; // ID of the svg element drawn onto the surface
   content?: string; // Actual content of the svg element
@@ -26,6 +27,33 @@ export enum DrawingStatus {
   Done = 'Done',
   Selected = 'Selected',
   Deleted = 'Deleted',
+}
+
+export interface DrawingInfosForGallery {
+  id: number;
+  name: string;
+  visibility: DrawingVisibilityLevel;
+  width: number;
+  height: number;
+  bgColor: string;
+  ownerId?: string;
+  contents: DrawingContent[];
+}
+
+export interface DrawingShownInGallery {
+  infos: DrawingInfosForGallery;
+  thumbnail: Element;
+}
+
+export interface JoinDrawing {
+  drawingId?: number;
+  userId: string;
+  password: string | undefined;
+}
+
+export interface LeaveDrawing {
+  drawingId: number;
+  userId: string;
 }
 
 export enum DrawingState {

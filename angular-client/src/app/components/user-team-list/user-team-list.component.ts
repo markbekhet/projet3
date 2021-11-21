@@ -16,10 +16,9 @@ import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-
 @Component({
   selector: 'app-user-team-list',
   templateUrl: './user-team-list.component.html',
-  styleUrls: ['./user-team-list.component.scss']
+  styleUrls: ['./user-team-list.component.scss'],
 })
 export class UserTeamListComponent implements OnInit, AfterViewInit {
-
   userList: User[];
   teamList: Team[];
   chatRoomList: string[];
@@ -34,37 +33,37 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.socketService.getAllUsers().subscribe((usersMap)=>{
-      usersMap.forEach((user)=>{
+    this.socketService.getAllUsers().subscribe((usersMap) => {
+      usersMap.forEach((user) => {
         this.userList.push(user);
-      })
-    })
+      });
+    });
 
-    this.socketService.getAllTeams().subscribe((teamsMap)=>{
-      teamsMap.forEach((team)=>{
+    this.socketService.getAllTeams().subscribe((teamsMap) => {
+      teamsMap.forEach((team) => {
         this.teamList.push(team);
-      })
-    })
+      });
+    });
     console.log(this.userList);
     console.log(this.teamList);
-
   }
-  ngAfterViewInit(){
+
+  ngAfterViewInit() {
     // user update
-    this.socketService.socket!.on("userUpdate", (data: any)=>{
-      let dataMod: User = JSON.parse(data);
+    this.socketService.socket!.on('userUpdate', (data: any) => {
+      const dataMod: User = JSON.parse(data);
       let found = false;
-      this.userList.forEach((user)=>{
-        if(user.id === dataMod.id){
+      this.userList.forEach((user) => {
+        if (user.id === dataMod.id) {
           user.pseudo = dataMod.pseudo;
           user.status = dataMod.status;
           found = true;
         }
-      })
-      if(!found){
+      });
+      if (!found) {
         this.userList.push(dataMod);
       }
-    })
+    });
 
     // newTeamCreated
     this.socketService.socket!.on("newTeamCreated", (data: any)=>{
@@ -79,16 +78,16 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       if(this.chatRoomList.indexOf(newTeam.name!) === -1){
         this.teamList.push(newTeam);
       }
-    })
-    this.socketService.socket!.on("teamDeleted", (data: any)=>{
-      let deletedTeam: Team = JSON.parse(data);
-      this.teamList.forEach((team)=>{
-        if(team.id === deletedTeam.id){
-          let index = this.teamList.indexOf(team);
+    });
+    this.socketService.socket!.on('teamDeleted', (data: any) => {
+      const deletedTeam: Team = JSON.parse(data);
+      this.teamList.forEach((team) => {
+        if (team.id === deletedTeam.id) {
+          const index = this.teamList.indexOf(team);
           this.teamList.splice(index);
         }
-      })
-    })
+      });
+    });
 
     // teamJoined
     this.socketService.socket!.on("teamInformations", (data: any)=>{
@@ -109,15 +108,17 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  joinTeam(team: Team){
-    const joinTeamBody: JoinTeam = {teamName: team.name!, userId: this.userId};
+  joinTeam(team: Team) {
+    const joinTeamBody: JoinTeam = {
+      teamName: team.name!,
+      userId: this.userId,
+    };
     this.socketService.sendRequestJoinTeam(joinTeamBody);
     this.teamService.requestedTeamToJoin.next(team);
   }
-  deleteTeam(team:Team){
-    const deleteTeamBody = {teamId: team.id!, userId: team.ownerId!};
+  deleteTeam(team: Team) {
+    const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
     this.teamService.deleteTeam(deleteTeamBody);
-
   }
 
   leaveTeam(teamName:string){

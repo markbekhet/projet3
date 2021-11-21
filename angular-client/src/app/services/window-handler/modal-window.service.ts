@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { ComponentType } from '@angular/cdk/portal';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
-// import { DeleteDrawingComponent } from '@components/gallery-component/delete-drawing/delete-drawing.component';
-// import { GalleryComponent } from '@components/gallery-component/gallery.component';
-// import { ModifyDrawingComponent } from '@components/gallery-component/modify-drawing/modify-drawing.component';
+import { DeleteDrawingComponent } from '@components/gallery-component/delete-drawing/delete-drawing.component';
+import { GalleryComponent } from '@components/gallery-component/gallery.component';
+import { ModifyDrawingComponent } from '@components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { UserProfileDialogComponent } from '@src/app/components/user-profile-dialog/user-profile-dialog.component';
 import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
-  | UserProfileDialogComponent
+  | GalleryComponent
+  | DeleteDrawingComponent
+  | ModifyDrawingComponent
   | NewTeamDialogComponent
-  //| GalleryComponent
-  //| DeleteDrawingComponent
-  //| ModifyDrawingComponent
+  | UserProfileDialogComponent
 >;
 
 @Injectable({
@@ -23,6 +23,7 @@ type Component = ComponentType<
 })
 export class ModalWindowService {
   newDrawingConfig = new MatDialogConfig();
+  newTeamConfig = new MatDialogConfig();
   deleteDrawingConfig = new MatDialogConfig();
   modifyDrawingConfig = new MatDialogConfig();
   galleryConfig = new MatDialogConfig();
@@ -33,6 +34,7 @@ export class ModalWindowService {
     this.initDeleteDrawingDialogConfig();
     this.initModifyDrawingDialogConfig();
     this.initGalleryDialogConfig();
+    this.initNewTeamDialogConfig();
   }
 
   initNewDrawingDialogConfig() {
@@ -45,6 +47,18 @@ export class ModalWindowService {
     this.newDrawingConfig.disableClose = false;
     this.newDrawingConfig.hasBackdrop = true;
     this.newDrawingConfig.restoreFocus = false;
+  }
+
+  initNewTeamDialogConfig() {
+    this.newTeamConfig.id = 'newTeamConfig';
+    this.newTeamConfig.height = '86vh';
+    this.newTeamConfig.width = '35vw';
+    this.newTeamConfig.minWidth = '470px';
+    this.newTeamConfig.maxWidth = '480px';
+    this.newTeamConfig.maxHeight = '720px';
+    this.newTeamConfig.disableClose = false;
+    this.newTeamConfig.hasBackdrop = true;
+    this.newTeamConfig.restoreFocus = false;
   }
 
   initDeleteDrawingDialogConfig() {
@@ -96,7 +110,11 @@ export class ModalWindowService {
         this.closeDialogs();
         this.dialog.open(NewDrawingComponent, this.newDrawingConfig);
         break;
-      /*case DeleteDrawingComponent:
+      case NewTeamDialogComponent:
+        this.closeDialogs();
+        this.dialog.open(NewTeamDialogComponent, this.newTeamConfig);
+        break;
+      case DeleteDrawingComponent:
         this.deleteDrawingConfig.data = data;
         this.dialog.open(DeleteDrawingComponent, this.deleteDrawingConfig);
         break;
@@ -107,7 +125,7 @@ export class ModalWindowService {
       case GalleryComponent:
         this.closeDialogs();
         this.dialog.open(GalleryComponent, this.galleryConfig);
-        break;*/
+        break;
       case UserProfileDialogComponent:
         this.closeDialogs();
         this.userProfileConfig.data = data;

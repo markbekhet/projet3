@@ -10,19 +10,18 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
+  templateUrl: './login-page.component.html',
+  styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPage implements OnInit {
   inputForm: FormGroup;
-  usernameExists: boolean = false;
+  usernameExists = false;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
     private auth: AuthService,
     public errorDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -57,14 +56,14 @@ export class LoginPage implements OnInit {
           switch (errorCode) {
             case this.auth.USER_LOGGED_IN:
               interfaceErrorCode =
-                'Cet utilisateur est déjà connecté au serveur !';
+                'Cet utilisateur est déjà connecté au serveur.';
               break;
             case this.auth.NO_USER_FOUND:
               interfaceErrorCode =
-                "Ce nom d'utilisateur ou adresse courriel n'existe pas !";
+                "Ce nom d'utilisateur ou adresse courriel n'existe pas.";
               break;
             case this.auth.INCORRECT_PASSWORD:
-              interfaceErrorCode = 'Le mot de passe est incorrect !';
+              interfaceErrorCode = 'Le mot de passe est incorrect.';
               break;
             default:
               break;

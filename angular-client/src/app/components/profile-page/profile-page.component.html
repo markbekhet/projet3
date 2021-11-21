@@ -1,6 +1,6 @@
 <div class="profile-page">
     <div class="sidebar">
-        <img src="../../../assets/avatars/thumbnail.png" alt="Avatar thumbnail" class="avatar">
+        <img src="../../../assets/thumbnails/avatar_placeholder.png" alt="Avatar thumbnail" class="avatar">
         <span></span>
         <div class="information">
             <button mat-icon-button (click)="goLaunchingPage()">Disconnect</button>
@@ -73,9 +73,10 @@
                     <div *ngFor="let collaboration of user.drawingEditionHistories; let i = index">
                         <div *ngIf="mostRecentVersionDrawing(collaboration)">
                             {{ collaboration.drawingName }} - {{ collaboration.date }}
-                        <button (click)="joinDrawing(collaboration)" [disabled]="drawingEnabled(collaboration)">Joindre</button>
-                        <br>
-                        <br>
+                            <button (click)="joinDrawing(collaboration)"
+                                    [disabled]="drawingEnabled(collaboration)">Joindre</button>
+                            <br>
+                            <br>
                         </div>
                     </div>
                 </div>

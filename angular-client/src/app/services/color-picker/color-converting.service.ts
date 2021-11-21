@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { colorData } from '../../components/color-picker/color-data';
+import { colorData } from '@components/color-picker-component/color-data';
 
 @Injectable({
     providedIn: 'root',

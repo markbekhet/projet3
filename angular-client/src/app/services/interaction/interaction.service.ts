@@ -37,6 +37,8 @@ export class InteractionService {
   generalRoomNameSignal: Subject<boolean> =  new Subject<boolean>();
   $generalRoomNameSignal: Observable<boolean> = this.generalRoomNameSignal.asObservable();
 
+  wipeDrawing: Subject<boolean> = new Subject<boolean>();
+  $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
 
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
@@ -54,15 +56,15 @@ export class InteractionService {
     this.toolsAttributes.next(attr);
   }
 
-  emitDelete(){
+  emitDelete() {
     this.deleteDrawing.next(true);
   }
 
-  emitUpdateToolSignal(){
+  emitUpdateToolSignal() {
     this.updateToolSignal.next(true);
   }
 
-  emitUpdateColorSignal(){
+  emitUpdateColorSignal() {
     this.updateColorSignal.next(true);
   }
   emitGetGeneralChatRoom(){
@@ -71,5 +73,8 @@ export class InteractionService {
 
   emitFetchChatHistory(roomName: string){
     this.chatRoomName.next(roomName)
+  }
+  emitWipeSignal() {
+    this.wipeDrawing.next(true);
   }
 }

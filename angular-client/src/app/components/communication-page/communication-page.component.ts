@@ -112,7 +112,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     //this.chatRoomService.chatRooms.set("General", this.messages);
     console.log("destroyed")
     this.messages = [];
-    //this.socketService.disconnect();
+    // this.socketService.disconnect();
     this.disconnect();
   }
 
