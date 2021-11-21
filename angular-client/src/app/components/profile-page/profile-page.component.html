@@ -74,7 +74,7 @@
                         <div *ngIf="mostRecentVersionDrawing(collaboration)">
                             {{ collaboration.drawingName }} - {{ collaboration.date }}
                             <button (click)="joinDrawing(collaboration)"
-                                    [disabled]="drawingEnabled(collaboration)">Joindre</button>
+                                    [disabled]="!drawingEnabled(collaboration)">Joindre</button>
                             <br>
                             <br>
                         </div>
