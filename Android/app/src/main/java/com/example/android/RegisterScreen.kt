@@ -220,8 +220,7 @@ fun CreateImageStringFromBitmap(): String {
                 val user = UserRegistrationInfo(
                     firstName.text.toString(),
                     lastName.text.toString(), pseudo.text.toString(),
-                    email.text.toString(), password.text.toString()
-                )
+                    email.text.toString(), password.text.toString(),avatar = encodedImage)
 
                 var response: Response<ResponseBody>? = null
                 var canProcessQuery = true

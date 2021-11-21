@@ -6,7 +6,7 @@ const val login = "/login"
 const val profile = "/profile"
 const val disconnect = "/disconnect"
 
-const val localUrl = "http://192.168.0.112:3000"
+    const val localUrl = "http://192.168.2.238:3000"
 const val productionUrl = "http://projet3-101.eastus.cloud.azure.com:3000"
 const val url = localUrl
 
