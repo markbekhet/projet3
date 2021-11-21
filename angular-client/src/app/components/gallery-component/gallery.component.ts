@@ -98,6 +98,33 @@ export class GalleryComponent implements OnInit, AfterViewInit {
           }
         })
       })
+
+      this.socketService.socket!.on("drawingDeleted", (data: any)=>{
+        let drawingDeleted: {id: number} = JSON.parse(data);
+        let deleted = false;
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
+          if(!deleted && drawingDeleted.id === shownDrawing.infos.id){
+            deleted = true;
+            let index = this.shownDrawings.indexOf(shownDrawing);
+            this.shownDrawings.splice(index, 1)
+          }
+        })
+      })
+      this.socketService.socket!.on("newDrawingCreated", (darwingString:any)=>{
+        let drawing: DrawingInfosForGallery = JSON.parse(darwingString);
+        if(drawing.visibility !== DrawingVisibilityLevel.PRIVATE || (drawing.visibility === DrawingVisibilityLevel.PRIVATE && drawing.ownerId! === this.getAuthenticatedUserID())){
+          const svg = this.createSVG(
+            drawing.contents,
+            drawing.width,
+            drawing.height,
+            drawing.bgColor,
+          )
+          this.shownDrawings.push({
+            infos: drawing,
+            thumbnail: svg
+          })
+        }
+      })
   }
 
   createSVG(

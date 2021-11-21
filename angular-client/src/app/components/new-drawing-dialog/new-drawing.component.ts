@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
+//import { Router } from '@angular/router';
 
 import { Drawing, JoinDrawing } from '@models/DrawingMeta';
 import { Team } from '@models/teamsMeta';
@@ -65,7 +65,7 @@ export class NewDrawingComponent implements OnInit {
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    //private router: Router,
     private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
@@ -192,7 +192,7 @@ export class NewDrawingComponent implements OnInit {
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
           this.interactionService.emitWipeSignal();
-          this.router.navigate(['/draw']);
+          //this.router.navigate(['/draw']);
 
           const LOAD_TIME = 15;
           setTimeout(() => {
