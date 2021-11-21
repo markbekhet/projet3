@@ -25,6 +25,7 @@ import { DrawingState } from 'src/enumerators/drawing-state';
 import { ChatRoomRepository } from 'src/modules/chatRoom/chat-room.repository';
 import { ModifyDrawingDto } from 'src/modules/drawing/modify-drawing.dto';
 import { DrawingGallery } from 'src/modules/drawing/gallery';
+import { ChatGateway } from 'src/chat.gateway';
 
 @Injectable()
 export class DatabaseService {
@@ -37,6 +38,7 @@ export class DatabaseService {
         @InjectRepository(TeamRepository) private teamRepo: TeamRepository,
         @InjectRepository(DrawingEditionRepository) private drawingEditionRepo: DrawingEditionRepository,
         @InjectRepository(ChatRoomRepository) private chatRoomRepo: ChatRoomRepository,
+        private readonly chatGateway: ChatGateway
         ){
             this.logger.log("Initialized");
         }
@@ -128,7 +130,7 @@ export class DatabaseService {
         }
     }
 
-    async disconnect(userId: number) {
+    async disconnect(userId: string) {
         const user = await this.userRepo.findOne({
             where: [
                 {id: userId}
@@ -429,6 +431,7 @@ export class DatabaseService {
             }
             else{
                 await this.drawingRepo.delete(drawing.id);
+                this.chatGateway.notifyDrawingDeleted({id: drawing.id, ownerId:drawing.ownerId, visibility: drawing.visibility })
                 await this.chatRoomRepo.delete(drawing.chatRoom.id);
                 let editionHistories = await this.drawingEditionRepo.find({where: [{drawingId: drawing.id}]});
                 for(const editionHistory of editionHistories){

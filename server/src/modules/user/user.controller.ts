@@ -18,7 +18,7 @@ export class UserController {
 
     
     @Post(DISCONNECT_URL+"/:userId")
-    async disconnectUser(@Param("userId") userId: number){
+    async disconnectUser(@Param("userId") userId: string){
         let user = await this.databaseService.disconnect(userId);
         this.chatGateway.notifyUserUpdate(user);
         return HttpStatus.OK
