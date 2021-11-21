@@ -1,15 +1,20 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, /* , Observable */
-Subject} from 'rxjs';
+import { BehaviorSubject /* , Observable */, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
-import { Message } from '@models/MessageMeta';
-import { Status, UpdateUserInformation, User, UserProfileRequest } from '@src/app/models/UserMeta';
-// import { AuthService } from '../authentication/auth.service';
-import { JoinDrawing, LeaveDrawing } from '@src/app/models/joinDrrawing';
-import { DrawingInformations } from '@src/app/models/drawing-informations';
-import { DrawingContent } from '@src/app/models/DrawingMeta';
+import { ServerMessage, ClientMessage } from '@models/MessageMeta';
+import { DrawingInformations } from '@models/drawing-informations';
+import { DrawingContent, JoinDrawing, LeaveDrawing } from '@models/DrawingMeta';
+
+import {
+  Status,
+  UpdateUserInformation,
+  User,
+  UserProfileRequest,
+} from '@models/UserMeta';
+import { Team } from '@src/app/models/teamsMeta';
+import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -18,37 +23,25 @@ const PATH = 'http://localhost:3000';
   providedIn: 'root',
 })
 export class SocketService {
-  socket: Socket| undefined;
+  socket: Socket | undefined;
+
   drawingID: string = '';
-  drawingInformations$: Subject<DrawingInformations> = new Subject<DrawingInformations>();
-  contentId$: Subject<{contentId: number}> = new Subject<{contentId: number}>();
-  drawingContent$: Subject<DrawingContent> = new Subject<DrawingContent>();
+  drawingInformations$ = new Subject<DrawingInformations>();
+  contentId$ = new Subject<{ contentId: number }>();
+  drawingContent$ = new Subject<DrawingContent>();
 
-  connect(): void {
-    this.socket = io(PATH);
-  }
+  users$ = new BehaviorSubject<Map<string, User>>(new Map());
+  teams$ = new BehaviorSubject<Map<string, Team>>(new Map());
 
-  disconnect(): void {
-    this.socket!.disconnect();
-    this.socket = undefined
-  }
-
-  getSocketID(): string {
-    return this.socket!.id;
-  }
-
-  message$: BehaviorSubject<Message> = new BehaviorSubject<Message>({
-    clientName: '',
+  message$ = new BehaviorSubject<ClientMessage>({
+    from: '',
     message: '',
-    date: {
-      hour: '',
-      minutes: '',
-      seconds: '',
-    },
+    date: '',
+    roomName: '',
   });
 
   profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
-    token: '',
+    id: '',
     firstName: '',
     lastName: '',
     emailAddress: '',
@@ -67,17 +60,33 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  connect(): void {
+    this.socket = io(PATH);
+  }
+
+  disconnect(): void {
+    this.socket!.disconnect();
+    this.socket = undefined;
+  }
+
+  getSocketID(): string {
+    return this.socket!.id;
+  }
+
+  // chatHistories$: BehaviorSubject<Map<string, ChatHistory>> = new BehaviorSubject<Map<string, ChatHistory>>();
+
   setDrawingID = (value: string) => {
     this.drawingID = value;
   };
 
-  public sendMessage(message: Message) {
+  public sendMessage(message: ServerMessage) {
     console.log(`chat service sent: ${message.message}`);
     this.socket!.emit('msgToServer', JSON.stringify(message));
   }
 
   public getNewMessage = () => {
-    this.socket!.on('msgToClient', (message: Message) => {
+    this.socket!.on('msgToClient', (messageString: any) => {
+      const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
       this.message$.next(message);
     });
@@ -109,50 +118,88 @@ export class SocketService {
     this.profile$.next(this.profile$.value);
   }
 
-  public sendJoinDrawingRequest(joinInformation: JoinDrawing){
-    let joinInformationString = JSON.stringify(joinInformation);
+  public sendJoinDrawingRequest(joinInformation: JoinDrawing) {
+    const joinInformationString = JSON.stringify(joinInformation);
     console.log(joinInformationString);
-    this.socket!.emit("joinDrawing", JSON.stringify(joinInformation));
+    this.socket!.emit('joinDrawing', JSON.stringify(joinInformation));
   }
 
-  public getDrawingInformations= ()=>{
-    this.socket!.on('drawingInformations', (data: string) =>{
-      let dataMod: DrawingInformations = JSON.parse(data);
+  public getDrawingInformations = () => {
+    this.socket!.on('drawingInformations', (data: string) => {
+      const dataMod: DrawingInformations = JSON.parse(data);
       this.drawingInformations$.next(dataMod);
     });
     return this.drawingInformations$.asObservable();
+  };
+
+  public createDrawingContentRequest(data: { drawingId: number }) {
+    this.socket!.emit('createDrawingContent', JSON.stringify(data));
   }
 
-  public createDrawingContentRequest(data:{drawingId: number}){
-    this.socket!.emit("createDrawingContent", JSON.stringify(data));
-  }
-
-  public getDrawingContentId = ()=>{
-    this.socket!.on("drawingContentCreated", (data:any)=>{
-        let dataMod: {contentId: number} = JSON.parse(data);
-        if(dataMod !== undefined){
-          this.contentId$.next(dataMod);
+  public getDrawingContentId = () => {
+    this.socket!.on('drawingContentCreated', (data: any) => {
+      const dataMod: { contentId: number } = JSON.parse(data);
+      if (dataMod !== undefined) {
+        this.contentId$.next(dataMod);
       }
-    })
+    });
     return this.contentId$.asObservable();
-  }
+  };
 
-  public sendDrawingToServer(data: DrawingContent){
+  public sendDrawingToServer(data: DrawingContent) {
     console.log(data);
-    this.socket!.emit("drawingToServer", JSON.stringify(data));
+    this.socket!.emit('drawingToServer', JSON.stringify(data));
   }
 
-  public getDrawingContent= ()=>{
-    this.socket!.on("drawingToClient", (data:any)=>{
-      let dataMod: DrawingContent = JSON.parse(data);
-      if(dataMod !== undefined){
+  public getDrawingContent = () => {
+    this.socket!.on('drawingToClient', (data: any) => {
+      const dataMod: DrawingContent = JSON.parse(data);
+      if (dataMod !== undefined) {
         this.drawingContent$.next(dataMod);
       }
-    })
+    });
     return this.drawingContent$.asObservable();
+  };
+
+  public leaveDrawing(leaveDrawing: LeaveDrawing) {
+    this.socket!.emit('leaveDrawing', JSON.stringify(leaveDrawing));
   }
 
-  public leaveDrawing(leaveDrawing: LeaveDrawing){
-    this.socket!.emit("leaveDrawing", JSON.stringify(leaveDrawing));
+  public getAllUsers = () => {
+    this.socket!.on('usersArrayToClient', (data: any) => {
+      const dataMod: { userList: User[] } = JSON.parse(data);
+      const usersTemp: Map<string, User> = new Map();
+      dataMod.userList.forEach((user) => {
+        if (!usersTemp.has(user.id!)) {
+          usersTemp.set(user.id!, user);
+        }
+      });
+      this.users$.next(usersTemp);
+    });
+    return this.users$;
+  };
+
+  getAllTeams = () => {
+    this.socket!.on('teamsArrayToClient', (data) => {
+      const dataMod: { teamList: Team[] } = JSON.parse(data);
+      const teamsTemp: Map<string, Team> = new Map();
+      dataMod.teamList.forEach((team) => {
+        if (!teamsTemp.has(team.id!)) {
+          teamsTemp.set(team.id!, team);
+        }
+      });
+      this.teams$.next(teamsTemp);
+    });
+    return this.teams$;
+  };
+
+  sendRequestJoinTeam(joinTeam: JoinTeam) {
+    const joinTeamString = JSON.stringify(joinTeam);
+    this.socket!.emit('joinTeam', joinTeamString);
+  }
+
+  leaveTeam(leaveTeam: LeaveTeam) {
+    const leaveTeamString = JSON.stringify(leaveTeam);
+    this.socket!.emit('leaveTeam', leaveTeamString);
   }
 }

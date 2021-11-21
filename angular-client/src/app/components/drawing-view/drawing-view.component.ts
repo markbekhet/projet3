@@ -3,7 +3,6 @@ import { InteractionService } from '@services/interaction/interaction.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 
 @Component({
-  selector: 'app-drawing-view',
   templateUrl: './drawing-view.component.html',
   styleUrls: ['./drawing-view.component.scss'],
 })

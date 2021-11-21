@@ -1,0 +1,44 @@
+<div class="landing-page">
+    <div class=header>
+        <img src="../../../assets/logos/colorimage_logo1_curved.png" alt="Logo ColorImage" class="logo">
+    </div>
+
+    <div class="header-buttons">
+        <div *ngFor="let item of menuItems" class="btn">
+            <button mat-fab (click)="execute(item.shortcutName)" matTooltip={{item.name}} color="primary">
+                <mat-icon>{{item.icon}}</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="gallery">
+        <app-gallery></app-gallery>
+    </div>
+
+    <div class="teams">
+        <nav class="usersTeamsList">
+            <app-user-team-list></app-user-team-list>
+        </nav>
+        <!-- <main>
+            <div class="buttons-container">
+                <div *ngFor="let item of menuItems" class="btn">
+                    <button (click)="execute(item.shortcutName)">
+                        <mat-icon>{{item.icon}}</mat-icon>
+                        <br />
+                        <span class="button-text"> {{item.name}}</span>
+                    </button>
+                </div>
+            </div>
+        </main> -->
+    </div>
+</div>
+
+<!-- TODO: Rajouter un effet visuel après le login ou register, genre un spinner ?
+    Faire jouer le son à la fin du spinner -->
+<div *ngIf="isLoggedIn">
+    <audio src="../../../assets/audio/login.mp3" autoplay></audio>
+</div>
+
+<!-- Note (Paul) : Garder le footer et son css, peut être pratique pour la box de clavardage -->
+<div class="footer">
+</div>

@@ -10,18 +10,17 @@ import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
-  selector: 'app-register-page',
-  templateUrl: './register.page.html',
-  styleUrls: ['./register.page.scss'],
+  templateUrl: './register-page.component.html',
+  styleUrls: ['./register-page.component.scss'],
 })
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.registerForm = this.formBuilder.group({
       firstName: formBuilder.control('', [Validators.required]),

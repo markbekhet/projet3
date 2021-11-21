@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 
-import { toolItems, FeatureItem } from '@models/FeatureMeta';
+import { toolItems, ToolItem } from '@models/FeatureMeta';
 import { IconsService } from '@services/icons/icons.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 
@@ -10,7 +10,7 @@ import { InteractionService } from '@services/interaction/interaction.service';
   styleUrls: ['./toolbox-view.component.scss'],
 })
 export class ToolboxViewComponent implements OnInit {
-  toolItems: FeatureItem[];
+  toolItems: ToolItem[];
   activeButton: string = 'Crayon';
   // selectingToolsMap: Map<string, string> = new Map();
 
