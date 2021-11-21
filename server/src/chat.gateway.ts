@@ -186,7 +186,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           chatContent.date = new Date(chatContent.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
         }
         let drawingInformations = {drawing: drawingRet, chatHistoryList: chatRoom.chatHistories, activeUsers: drawing.activeUsers};
-        this.wss.to(dtoMod.drawingId.toString()).emit("newJoinToDrawing", JSON.stringify({userId: dtoMod.userId}));
+        this.wss.to(dtoMod.drawingId.toString()).emit("newJoinToDrawing", JSON.stringify({drawingId: dtoMod.drawingId ,userId: dtoMod.userId}));
         client.join(dtoMod.drawingId.toString());
         this.wss.emit("nbCollaboratorsDrawingIncreased", JSON.stringify({drawingId: dtoMod.drawingId}))
         // TODO: join client to the chat room
@@ -217,7 +217,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.leave(drawing.name);
     client.leave(dtoMod.drawingId.toString());
     this.wss.emit("nbCollaboratorsDrawingReduced", JSON.stringify({drawingId: dtoMod.drawingId}))
-    this.wss.to(dtoMod.drawingId.toString()).emit("userLeftDrawing", JSON.stringify({userId: dtoMod.userId}));
+    this.wss.to(dtoMod.drawingId.toString()).emit("userLeftDrawing", JSON.stringify({drawingId: dtoMod.drawingId, userId: dtoMod.userId}));
   }
   // --------------------------------------------------- team secteion ----------------------------------
   @SubscribeMessage("joinTeam")
@@ -292,7 +292,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           await this.joinedTeamRepo.save(newJoinedTeam);
           await this.userRepo.update(data.userId, {numberCollaborationTeams: user.numberCollaborationTeams + 1});
         }
-        this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({userId: data.userId}));
+        this.wss.to(data.teamName).emit("newJoinToTeam", JSON.stringify({teamName: data.teamName, userId: data.userId}));
         client.join(data.teamName);
         let teamInformations = {activeUsers: team.activeUsers, chatHistoryList: chatRoom.chatHistories, drawingList: galleryRet};
         client.emit("teamInformations", JSON.stringify(teamInformations))
@@ -307,7 +307,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let activeUser = await this.activeUsersRepo.findOne({where:[{userId: data.userId, team: team}]});
     await this.activeUsersRepo.delete(activeUser.id);
     client.leave(data.teamName);
-    this.wss.to(data.teamName).emit("userLeftTeam", JSON.stringify({userId: data.userId}))
+    this.wss.to(data.teamName).emit("userLeftTeam", JSON.stringify({teamName: data.teamName, userId: data.userId}))
   }
   //-----------------------------------------------------messages section --------------------------------
   @SubscribeMessage('msgToServer')
