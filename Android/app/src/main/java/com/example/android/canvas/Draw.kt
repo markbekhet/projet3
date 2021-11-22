@@ -1,5 +1,6 @@
 package com.example.android.canvas
 
+import com.example.android.chat.ClientMessage
 import com.google.gson.Gson
 
 class DrawingInformation (
@@ -29,6 +30,10 @@ class ReceiveDrawingInformation(
     fun fromJson(json: String): ReceiveDrawingInformation{
         return Gson().fromJson(json, ReceiveDrawingInformation::class.java)
     }
+
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
 }
 
 class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= null){
@@ -39,7 +44,8 @@ class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation>?= nul
 // This class encapsulates all the details needed for the chat,
 // drawing informations and connected users for a given drawing
 class AllDrawingInformation(
-    var drawing: ReceiveDrawingInformation?= null
+    var drawing: ReceiveDrawingInformation?= null,
+    var chatHistoryList: ArrayList<ClientMessage>?=null
 ){
     fun fromJson(json: String): AllDrawingInformation{
         return Gson().fromJson(json, AllDrawingInformation::class.java)
@@ -63,12 +69,16 @@ class DeleteDrawingDt(var drawingId:Int, var userId:String) {
         return Gson().toJson(this)
     }
 }
-    class ModifyDrawingDto(var drawingId:Int, var userId:String,var newName: String,var password: String?){
-        fun toJson(): String {
-            return Gson().toJson(this)
-        }
-
-
+class ModifyDrawingDto(
+    var drawingId:Int?= null,
+    var userId:String?= null,
+    var newName: String?= null,
+    var newVisibility: Int?= null,
+    var password: String?= null)
+{
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
 }
 enum class Visibility(var int: Int){
     publicVisibility(0),

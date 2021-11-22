@@ -19,6 +19,15 @@
             android:textSize="72sp"
             android:textStyle="bold"
             />
+
+        <Button
+            android:id="@+id/showChatVisitorProfile"
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:text="Afficher le clavardage"
+            android:textColor="@color/main_color"
+            app:backgroundTint="@color/white"/>
+
         <ImageView
             android:id="@+id/avatarVisitor"
             android:layout_width="323dp"

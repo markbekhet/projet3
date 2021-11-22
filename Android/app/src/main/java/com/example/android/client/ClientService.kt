@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.example.android.canvas.DeleteDrawingDt
 import com.example.android.canvas.DrawingInformation
+import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.team.CreateTeamDto
 import com.example.android.team.DeleteTeamDto
 import com.example.android.url
@@ -180,20 +181,7 @@ class ClientService : Service() {
         }
         return response
     }
-    suspend fun modifyDrawings(): Response<ResponseBody>?{
-        val retrofit = Retrofit.Builder()
-            .baseUrl(url)
-            .build()
 
-        val service = retrofit.create(RestAPI::class.java)
-        var response: Response<ResponseBody>? = null
-        withContext(Dispatchers.IO){
-            response = service.getGalleryDrawings(ClientInfo.userId)
-            println( (response!!.code()))
-            return@withContext response
-        }
-        return response
-    }
     suspend fun deleteDrawing(deleteDrawing : DeleteDrawingDt): Response<ResponseBody>?{
         val retrofit = Retrofit.Builder()
             .baseUrl(url)
@@ -216,4 +204,25 @@ class ClientService : Service() {
         return response
     }
 
+    suspend fun modifyDrawing(modificationParams: ModifyDrawingDto): Response<ResponseBody>?{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .build()
+
+        val service = retrofit.create(RestAPI::class.java)
+        val jsonString = modificationParams.toJson()
+        println(jsonString)
+        val requestBody = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
+        var response: Response<ResponseBody>? = null
+        println(ClientInfo.userId)
+        withContext(Dispatchers.IO){
+            response =
+                service.modifyDrawingParameters(requestBody)
+            if(response != null){
+                println(response!!.code())
+            }
+            return@withContext response
+        }
+        return response
+    }
 }

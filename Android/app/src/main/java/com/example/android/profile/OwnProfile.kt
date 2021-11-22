@@ -18,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.example.android.R
 import com.example.android.SocketHandler
+import com.example.android.chat.ChatDialog
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
@@ -60,6 +61,12 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
+
+
+        val chatDialog= ChatDialog(this)
+        showChatOwnerProfile.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
         val dataForm = UserProfileInformation().fromJson(data)
         updateUI(dataForm)
 
@@ -72,8 +79,10 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.show()
             modifyParamsDialog!!.setOnDismissListener {
                 val newData = intent.extras!!.getString("newProfileInformation")
-                val dataForm = UserProfileInformation().fromJson(newData)
-                updateUI(dataForm)
+                if(newData != null){
+                    val newDataForm = UserProfileInformation().fromJson(newData)
+                    updateUI(newDataForm)
+                }
             }
 
         }

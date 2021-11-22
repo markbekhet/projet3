@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.android.R
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.avatar.img_save
+import com.example.android.chat.ChatDialog
 import com.example.android.client.UserProfileInformation
 import com.example.android.client.clientStatusFroInt
 import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
@@ -21,6 +22,11 @@ class VisitorProfileView : AppCompatActivity() {
         val dataForm = UserProfileInformation().fromJson(data)
         nicknameForeignValue.text = dataForm.pseudo
         foreignStatusValue.text = clientStatusFroInt(dataForm.status!!).string
+
+        val chatDialog = ChatDialog(this)
+        showChatVisitorProfile.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
 
     }
 }

@@ -14,6 +14,14 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/chatCreateDrawing"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:text="Afficher le clavardage"
+            android:textColor="@color/main_color"
+            android:textSize="20sp"
+            app:backgroundTint="@color/white" />
         <TextView
             android:id="@+id/nom_app"
             android:layout_width="wrap_content"

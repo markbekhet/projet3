@@ -1,11 +1,14 @@
 package com.example.android
 
+import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import com.example.android.canvas.*
+import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
 import com.example.android.client.ClientInfo
 import com.google.gson.Gson
 import io.socket.client.Socket
@@ -15,6 +18,10 @@ import java.util.*
 
 class Drawing : AppCompatActivity() {
     private var socket = SocketHandler.getChatSocket()
+    private var drawingRelatedInformation: ReceiveDrawingInformation?= null
+    private var drawingID: Int?= null
+    private var canvas: CanvasView? = null
+    private var chatRoomExists = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
@@ -24,36 +31,37 @@ class Drawing : AppCompatActivity() {
         DrawingUtils.primaryColor = black
         DrawingUtils.secondaryColor = none
 
+        val data = intent.extras!!.getString("drawingInformation")
+        drawingID = intent.extras!!.getInt("drawingID")
+        val allDrawingInformation = AllDrawingInformation().fromJson(data!!)
         //primaryColor.setBackgroundColor(Color.parseColor("#000000"))
         //secondaryColor.setBackgroundColor(Color.parseColor("#FFFFFF"))
-
         val params: ViewGroup.LayoutParams = fl_drawing_view_container.getLayoutParams()
         //Button new width
         //Button new width
-        val drawingRelatedInformation = DrawingUtils.drawingInformation!!.drawing
+        drawingRelatedInformation = allDrawingInformation.drawing
         nom.text = drawingRelatedInformation!!.name
         pencil.setBackgroundColor(Color.parseColor(selectedColor))
-        val canvas = CanvasView(this)
-        canvas.parseExistingDrawings(drawingRelatedInformation.contents)
-        params.width= drawingRelatedInformation.width!!
-        params.height= drawingRelatedInformation.height!!
-//        params.width = longueur.text.toString().toInt()
-//        params.height =largeur.text.toString().toInt()
+        canvas = CanvasView(drawingID!!,this)
+        canvas!!.parseExistingDrawings(drawingRelatedInformation!!.contents)
+        params.width= drawingRelatedInformation!!.width!!
+        params.height= drawingRelatedInformation!!.height!!
+
         fl_drawing_view_container.setLayoutParams(params)
-        canvas.setBackgroundColor(
-            Color.parseColor("#ff${drawingRelatedInformation.bgColor}"))
+        canvas!!.setBackgroundColor(
+            Color.parseColor("#ff${drawingRelatedInformation!!.bgColor}"))
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
-                canvas.onReceivedDrawing(dataTransformed)
+                canvas!!.onReceivedDrawing(dataTransformed)
             }
         }
         socket.on("drawingContentCreated"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
-                canvas.receiveContentID(data)
+                canvas!!.receiveContentID(data)
             }
         }
         pencil.setOnClickListener {
@@ -96,12 +104,12 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor, canvas))
+                .show(it, ColorPicker(primaryColor, DrawingUtils.primaryColor, canvas!!))
         }
 
         transparent.setOnCheckedChangeListener { buttonView, isChecked ->
             DrawingUtils.secondaryColor = none
-            canvas.updateToolSecondaryColor()
+            canvas!!.updateToolSecondaryColor()
         }
 
         secondaryColor.setOnClickListener {
@@ -115,19 +123,52 @@ class Drawing : AppCompatActivity() {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(it, ColorPicker(secondaryColor, "secondary", canvas))
+                .show(it, ColorPicker(secondaryColor, "secondary", canvas!!))
         }
         thickness.value = DrawingUtils.thickness.toFloat()
         thickness.addOnChangeListener { slider, value, fromUser ->
             DrawingUtils.thickness = value.toInt()
-            canvas.updateToolThickness()
+            canvas!!.updateToolThickness()
         }
         delete.setOnClickListener {
-            canvas.deleteTool()
+            canvas!!.deleteTool()
         }
+
+
+        chatRoomExists = ChatRooms.chatRooNames.contains(drawingRelatedInformation!!.name!!)
+
+        if(!chatRoomExists){
+            ChatRooms.chatRooNames.add(drawingRelatedInformation!!.name!!)
+        }
+
+        val chatDialog = ChatDialog(this, drawingRelatedInformation!!.name!!)
+        ChatRooms.chats[drawingRelatedInformation!!.name!!] =
+            allDrawingInformation.chatHistoryList!!
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        chatDialog.dismiss()
+        chatDrawing.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+
     }
 
     override fun onDestroy() {
+        if(canvas != null){
+            canvas!!.unselectAllChildren()
+        }
+        if(!chatRoomExists){
+            ChatRooms.chats.remove(drawingRelatedInformation!!.name)
+            var i = 0
+
+            for(room in ChatRooms.chatRooNames){
+                if(room == drawingRelatedInformation!!.name){
+                    break
+                }
+                i++
+            }
+            ChatRooms.chatRooNames.removeAt(i)
+        }
+
         leaveDrawing()
         super.onDestroy()
     }
@@ -137,10 +178,16 @@ class Drawing : AppCompatActivity() {
         super.onBackPressed()
 
     }*/
+    override fun onPause(){
+        if(canvas != null){
+            canvas!!.unselectAllChildren()
+        }
+        super.onPause()
+    }
 
     private fun leaveDrawing(){
-        val leaveDrawing = LeaveDrawingDto(DrawingUtils.currentDrawingId, ClientInfo.userId)
-        socket!!.emit("leaveDrawing", leaveDrawing.toJson())
+        val leaveDrawing = LeaveDrawingDto(drawingID!!, ClientInfo.userId)
+        socket.emit("leaveDrawing", leaveDrawing.toJson())
         //finish()
     }
 

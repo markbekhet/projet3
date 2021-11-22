@@ -65,11 +65,18 @@ class UsersAndTeamsFragment() : Fragment() {
                 val data = args[0] as String
                 val bundle = Bundle()
                 bundle.putString("teamInformation", data)
-                //ToComplete: Collect the rest of information concerning
-                // the team like the gallery and the list of users
                 bundle.putString("teamGeneralInformation", createTeamDto.toJson())
                 startActivity(Intent(context, TeamActivity::class.java).putExtras(bundle))
                 i++
+            }
+        }
+        SocketHandler.getChatSocket().on("cantJoinTeam"){ args ->
+            if(args[0]!= null){
+                val data = args[0] as String
+                val cantJoin = CantJoin().fromJson(data)
+                requireActivity().runOnUiThread{
+                    Toast.makeText(context, cantJoin.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -94,28 +101,25 @@ class UsersAndTeamsFragment() : Fragment() {
         updateTeamsRecycleView()
     }
     fun setUsersList(usersList: ArrayList<User>) {
-        if(usersList!= null){
-            this.usersList = usersList
-        }
+        this.usersList = usersList
         updateUsersRecycleView()
     }
 
     fun updateUserListInformation(user: User){
-        if(usersList != null){
-            var exist = false
-            var i = 0
-            for(existingUser in usersList!!){
-                if(existingUser.id == user.id){
-                    exist = true
-                    break
-                }
-                i++
+
+        var exist = false
+        var i = 0
+        for(existingUser in usersList!!){
+            if(existingUser.id == user.id){
+                exist = true
+                break
             }
-            if(exist){
-                usersList!!.removeAt(i)
-            }
-            usersList!!.add(user)
+            i++
         }
+        if(exist){
+            usersList!!.removeAt(i)
+        }
+        usersList!!.add(user)
         updateUsersRecycleView()
     }
 
@@ -170,6 +174,12 @@ class UsersAndTeamsFragment() : Fragment() {
         updateUsersRecycleView()
     }
 
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("teamInformation",data)
+        startActivity(Intent(context, JoinProtected::class.java).putExtras(bundle))
+    }
+
     fun updateUsersRecycleView(){
         usersAdapter = GroupAdapter<GroupieViewHolder>()
         for(user in usersList){
@@ -184,11 +194,9 @@ class UsersAndTeamsFragment() : Fragment() {
                 }
             }
         }
-        try{
-            activity?.runOnUiThread{
-                usersRecycleView.adapter = usersAdapter
-            }
-        } catch(e: Exception){}
+        activity?.runOnUiThread{
+            usersRecycleView.adapter = usersAdapter
+        }
     }
 
     fun updateTeamsRecycleView(){
@@ -258,6 +266,9 @@ class TeamItem(var clientService: ClientService,
         viewHolder.itemView.teamName.setOnClickListener {
             if(team!!.visibility != Visibility.protectedVisibility.int){
                 fragment.startTeamActivity(team!!)
+            }
+            else{
+                fragment.startJoinProtectedActivity(team!!.toJson())
             }
         }
         if(team!!.ownerId != ClientInfo.userId){

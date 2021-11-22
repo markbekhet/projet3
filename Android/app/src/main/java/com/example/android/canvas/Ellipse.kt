@@ -311,7 +311,7 @@ class Ellipse(private var drawingId:Int? ,
             id = contentID, content= getOriginalString(),
             status = status, toolName = ellipseString)
         val socket = SocketHandler.getChatSocket()
-        socket!!.emit("drawingToServer", drawingContent.toJson())
+        socket.emit("drawingToServer", drawingContent.toJson())
     }
 
     private fun requestCreation(){
