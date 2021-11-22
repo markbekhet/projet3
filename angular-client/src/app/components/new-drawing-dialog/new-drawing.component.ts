@@ -187,7 +187,7 @@ export class NewDrawingComponent implements OnInit {
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
             userId: this.userId,
-            password: this.password,
+            password: VALUES.drawingPassword,
           };
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
