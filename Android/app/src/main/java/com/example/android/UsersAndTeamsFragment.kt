@@ -101,28 +101,25 @@ class UsersAndTeamsFragment() : Fragment() {
         updateTeamsRecycleView()
     }
     fun setUsersList(usersList: ArrayList<User>) {
-        if(usersList!= null){
-            this.usersList = usersList
-        }
+        this.usersList = usersList
         updateUsersRecycleView()
     }
 
     fun updateUserListInformation(user: User){
-        if(usersList != null){
-            var exist = false
-            var i = 0
-            for(existingUser in usersList!!){
-                if(existingUser.id == user.id){
-                    exist = true
-                    break
-                }
-                i++
+
+        var exist = false
+        var i = 0
+        for(existingUser in usersList!!){
+            if(existingUser.id == user.id){
+                exist = true
+                break
             }
-            if(exist){
-                usersList!!.removeAt(i)
-            }
-            usersList!!.add(user)
+            i++
         }
+        if(exist){
+            usersList!!.removeAt(i)
+        }
+        usersList!!.add(user)
         updateUsersRecycleView()
     }
 
@@ -197,11 +194,9 @@ class UsersAndTeamsFragment() : Fragment() {
                 }
             }
         }
-        try{
-            activity?.runOnUiThread{
-                usersRecycleView.adapter = usersAdapter
-            }
-        } catch(e: Exception){}
+        activity?.runOnUiThread{
+            usersRecycleView.adapter = usersAdapter
+        }
     }
 
     fun updateTeamsRecycleView(){

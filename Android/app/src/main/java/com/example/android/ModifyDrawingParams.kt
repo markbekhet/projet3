@@ -23,7 +23,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class ModifyDrawingParams : AppCompatActivity(), ChatRoomSwitcher {
+class ModifyDrawingParams : AppCompatActivity(){
 
     private val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null
@@ -39,35 +39,9 @@ class ModifyDrawingParams : AppCompatActivity(), ChatRoomSwitcher {
 
         /*==========Fragments========================================*/
         val manager = supportFragmentManager
-        val chatSwitchFragmentTransaction = manager.beginTransaction()
-        val chatSwitchFragment = ChatSwitchFragment(this)
-        chatSwitchFragment.showChatSwitch()
-        chatSwitchFragmentTransaction.replace(R.id.modifyDrawingPageChatSwitch,
-            chatSwitchFragment).commit()
-
-        for(room in ChatRooms.chatRooNames){
-            val chatRoom = Chat(room)
-            try{
-                chatRoom.setMessage(ChatRooms.chats[room]!!)
-            } catch(e: Exception){}
-            chatRoomsFragmentMap[room] = chatRoom
-        }
-        chatFragmentTransaction = manager.beginTransaction()
-        chatFragmentTransaction!!.replace(R.id.modifyDrawingPageChatsFrame,
-            chatRoomsFragmentMap["General"]!!).commit()
-
-
-        /*===============Socket interaction===================*/
-        socket?.on("msgToClient"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                val roomName = messageFromServer.roomName
-                try{
-                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                }
-                catch(e: Exception){}
-            }
+        val chatDialog = ChatDialog(this)
+        showChatModifyDrawingPage.setOnClickListener {
+            chatDialog.show(manager, ChatDialog.TAG)
         }
         /*=====================================================*/
 
@@ -154,17 +128,6 @@ class ModifyDrawingParams : AppCompatActivity(), ChatRoomSwitcher {
         }
 
         //Toggle the output of the button
-        modifyDrawingPageToggleChat.setOnClickListener {
-            if(modifyDrawingPageChatsFrame.visibility == View.INVISIBLE){
-                modifyDrawingPageChatSwitch.visibility = View.VISIBLE
-                modifyDrawingPageChatsFrame.visibility = View.VISIBLE
-            }
-            else{
-                modifyDrawingPageChatSwitch.visibility = View.INVISIBLE
-                modifyDrawingPageChatsFrame.visibility = View.INVISIBLE
-            }
-
-        }
 
 
 
@@ -183,10 +146,4 @@ class ModifyDrawingParams : AppCompatActivity(), ChatRoomSwitcher {
         return false
     }
 
-    override fun switchChatRoom(name: String) {
-        if(chatFragmentTransaction != null){
-            chatFragmentTransaction!!.replace(R.id.modifyDrawingPageChatsFrame,
-                chatRoomsFragmentMap[name]!!)
-        }
-    }
 }

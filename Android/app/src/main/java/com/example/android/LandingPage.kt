@@ -32,12 +32,10 @@ import kotlinx.serialization.json.JSON.Companion.context
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
+class LandingPage : AppCompatActivity(){
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
-    private var drawingSocket: Socket?= null
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
+
     var gallery  = GalleryDrawing()
     var response: Response<ResponseBody>?=null
     private val galleryDraws = Gallery()
@@ -47,11 +45,13 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         setContentView(R.layout.content_landing_page)
         val clientService = ClientService()
         //Initialize chat socket
+        val manager = supportFragmentManager
+        val chatDialog = ChatDialog(this, "General")
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        chatDialog.dismiss()
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
-        val manager = supportFragmentManager
         val galleryFragmentTransaction = manager.beginTransaction()
-
         galleryFragmentTransaction.replace(R.id.gallery_frame, galleryDraws).commit()
 
 
@@ -76,21 +76,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
         //A hash map that has all the fragments
 
-        ChatRooms.chatRooNames.add("General")
 
-        val chatSwitchFragmentTransaction = manager.beginTransaction()
-        val chatSwitchFragment = ChatSwitchFragment(this)
-        chatSwitchFragment.showChatSwitch()
-        chatSwitchFragmentTransaction.replace(R.id.landingPageChatSwitch,
-            chatSwitchFragment).commit()
-
-        for(room in ChatRooms.chatRooNames){
-            chatRoomsFragmentMap[room] = Chat(room)
-        }
-
-        chatFragmentTransaction = manager.beginTransaction()
-        chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
-            chatRoomsFragmentMap["General"]!!).commit()
 
 /*======================Socket interactions==================================*/
         chatSocket?.on("usersArrayToClient"){ args ->
@@ -127,33 +113,19 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
             }
         }
-        //This code happens once here for the genral chat room
+
         chatSocket?.on("RoomChatHistories"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
                 val generalChatList = ClientMessageArray().fromJson(data)
                 ChatRooms.chats["General"] = generalChatList.chatHistoryList!!
-                chatRoomsFragmentMap["General"]!!.setMessage(ChatRooms.chats["General"]!!)
-
-            }
-        }
-
-        chatSocket?.on("msgToClient"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                val roomName = messageFromServer.roomName
-                if(roomName == "General"){
-                    ChatRooms.chats[roomName]!!.add(messageFromServer)
-                }
                 try{
-                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                }
-                catch(e: Exception){}
-
+                    chatDialog.setPreviousMessages("General")
+                } catch(e: Exception){}
             }
         }
 
+        //This code happens once here for the genral chat room
         chatSocket?.on("userUpdate"){ args ->
             if(args[0]!= null){
                 val userUpdated = User().fromJson(args[0] as String)
@@ -214,6 +186,10 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
             disconnect()
             finish()
         }
+
+        showChat.setOnClickListener {
+            chatDialog.show(manager, ChatDialog.TAG)
+        }
         /*=======================================================================================*/
     }
 
@@ -238,19 +214,14 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
     override fun onDestroy() {
         disconnect()
+        ChatRooms.chats.clear()
+        ChatRooms.chatRooNames.clear()
         super.onDestroy()
     }
 
     override fun onBackPressed() {
         disconnect()
         super.onBackPressed()
-    }
-
-    override fun switchChatRoom(name: String) {
-        if(chatFragmentTransaction != null){
-            chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
-                chatRoomsFragmentMap[name]!!)
-        }
     }
 
     override fun onRestart() {
