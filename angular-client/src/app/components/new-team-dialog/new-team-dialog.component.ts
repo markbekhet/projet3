@@ -15,7 +15,7 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
-//import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+// import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
   selector: 'app-new-team-dialog',
@@ -43,11 +43,11 @@ export class NewTeamDialogComponent implements OnInit {
   bio: string = '';
   inputEntered: boolean = false;
   constructor(
+    private authService: AuthService,
     private formBuilder: FormBuilder,
-    private windowService: ModalWindowService,
-    private readonly socketSeervice: SocketService,
+    private socketService: SocketService,
     private teamService: TeamService,
-    private authService: AuthService
+    private windowService: ModalWindowService
   ) {
     this.userId = '';
     this.teamVisibilityItems = teamVisibilityItems;
@@ -56,7 +56,7 @@ export class NewTeamDialogComponent implements OnInit {
   ngOnInit(): void {
     this.inputEntered = true;
     this.initForm();
-    this.userId = this.authService.token$.value;
+    this.userId = this.authService.getUserToken();
   }
 
   initForm() {
@@ -102,7 +102,7 @@ export class NewTeamDialogComponent implements OnInit {
     };
     this.teamService.createTeam(this.newTeam).subscribe((team) => {
       this.teamService.requestedTeamToJoin.next(this.newTeam);
-      this.socketSeervice.sendRequestJoinTeam({
+      this.socketService.sendRequestJoinTeam({
         teamName: this.newTeam.name!,
         userId: this.userId,
         password: this.newTeam.password,

@@ -42,7 +42,6 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
 
-
   constructor(
     private activeRoute: ActivatedRoute,
     private auth: AuthService,
@@ -53,40 +52,46 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private interactionService: InteractionService
   ) {
     this.socketService.getUserProfile({
-      userId: this.auth.token$.value,
-      visitedId: this.auth.token$.value,
+      userId: this.auth.getUserToken(),
+      visitedId: this.auth.getUserToken(),
     });
 
     this.messageForm = this.formBuilder.group({
-      message: formBuilder.control('', [Validators.required, Validators.pattern(this.MESSAGE_REGEX)]),
+      message: formBuilder.control('', [
+        Validators.required,
+        Validators.pattern(this.MESSAGE_REGEX),
+      ]),
     });
   }
 
   ngOnInit(): void {
-    this.messages = this.chatRoomService.getChatHistoryList(this.roomName)!
+    this.messages = this.chatRoomService.getChatHistoryList(this.roomName)!;
     this.username = this.activeRoute.snapshot.params.username;
 
-    this.socketService.socket!.on("msgToClient", (data: any) => {
-      let message: ClientMessage = JSON.parse(data);
+    this.socketService.socket!.on('msgToClient', (data: any) => {
+      const message: ClientMessage = JSON.parse(data);
       if (message.from) {
-        let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message}
-        let index = this.messages.indexOf(newChatHistory);
-        if(index === -1)
-          //this.chatRoomService.addChatHistory(message);
+        const newChatHistory: ChatHistory = {
+          from: message.from,
+          date: message.date,
+          message: message.message,
+        };
+        const index = this.messages.indexOf(newChatHistory);
+        if (index === -1)
+          // this.chatRoomService.addChatHistory(message);
           this.messages.unshift(newChatHistory);
       }
       console.log(this.messages);
       console.log(`client received: ${message.message}`);
-
     });
 
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
       this.user = profile;
       console.log(`user loaded : ${profile.pseudo}`);
     });
-    this.interactionService.$chatRoomName.subscribe((name: string)=>{
+    this.interactionService.$chatRoomName.subscribe((name: string) => {
       this.roomName = name;
-    })
+    });
   }
 
   onSubmit() {
@@ -94,8 +99,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     const messageToSend: ServerMessage = {
       from: this.user.pseudo!,
       message: MESSAGE,
-      roomName: this.roomName
-    }
+      roomName: this.roomName,
+    };
 
     this.socketService.sendMessage(messageToSend);
     console.log(messageToSend);
@@ -109,8 +114,8 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload')
   ngOnDestroy() {
-    //this.chatRoomService.chatRooms.set("General", this.messages);
-    console.log("destroyed")
+    // this.chatRoomService.chatRooms.set("General", this.messages);
+    console.log('destroyed');
     this.messages = [];
     // this.socketService.disconnect();
     this.disconnect();

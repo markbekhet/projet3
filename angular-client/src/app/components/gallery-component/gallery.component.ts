@@ -40,11 +40,11 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private router: Router,
     private socketService: SocketService,
     private windowService: ModalWindowService,
-    private interactionService: InteractionService,
+    private interactionService: InteractionService
   ) {}
 
   getAuthenticatedUserID(): string {
-    return this.authService.getToken();
+    return this.authService.getUserToken();
   }
 
   ngOnInit(): void {
@@ -52,13 +52,14 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-
     this.socketService
       .getDrawingInformations()
-      .subscribe((drawingInformations: DrawingInformations)=>{
-        this.interactionService.drawingInformations.next(drawingInformations.drawing);
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.interactionService.drawingInformations.next(
+          drawingInformations.drawing
+        );
         this.router.navigate(['/draw']);
-      })
+      });
     this.authService
       .getPersonalGallery()
       .subscribe((data: { drawingList: DrawingInfosForGallery[] }) => {
@@ -81,50 +82,60 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         );
       });
 
-      this.socketService.socket!.on("nbCollaboratorsDrawingIncreased", (data: any)=>{
-        let drawingModified: {drawingId: number} = JSON.parse(data);
-        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
-          if(drawingModified.drawingId === shownDrawing.infos.id){
+    this.socketService.socket!.on(
+      'nbCollaboratorsDrawingIncreased',
+      (data: any) => {
+        const drawingModified: { drawingId: number } = JSON.parse(data);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery) => {
+          if (drawingModified.drawingId === shownDrawing.infos.id) {
             shownDrawing.infos.nbCollaborators += 1;
           }
-        })
-      })
+        });
+      }
+    );
 
-      this.socketService.socket!.on("nbCollaboratorsDrawingReduced", (data: any)=>{
-        let drawingModified: {drawingId: number} = JSON.parse(data);
-        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
-          if(drawingModified.drawingId === shownDrawing.infos.id){
+    this.socketService.socket!.on(
+      'nbCollaboratorsDrawingReduced',
+      (data: any) => {
+        const drawingModified: { drawingId: number } = JSON.parse(data);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery) => {
+          if (drawingModified.drawingId === shownDrawing.infos.id) {
             shownDrawing.infos.nbCollaborators -= 1;
           }
-        })
-      })
+        });
+      }
+    );
 
-      this.socketService.socket!.on("drawingDeleted", (data: any)=>{
-        let drawingDeleted: {id: number} = JSON.parse(data);
-        let deleted = false;
-        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
-          if(!deleted && drawingDeleted.id === shownDrawing.infos.id){
-            deleted = true;
-            let index = this.shownDrawings.indexOf(shownDrawing);
-            this.shownDrawings.splice(index, 1)
-          }
-        })
-      })
-      this.socketService.socket!.on("newDrawingCreated", (darwingString:any)=>{
-        let drawing: DrawingInfosForGallery = JSON.parse(darwingString);
-        if(drawing.visibility !== DrawingVisibilityLevel.PRIVATE || (drawing.visibility === DrawingVisibilityLevel.PRIVATE && drawing.ownerId! === this.getAuthenticatedUserID())){
-          const svg = this.createSVG(
-            drawing.contents,
-            drawing.width,
-            drawing.height,
-            drawing.bgColor,
-          )
-          this.shownDrawings.push({
-            infos: drawing,
-            thumbnail: svg
-          })
+    this.socketService.socket!.on('drawingDeleted', (data: any) => {
+      const drawingDeleted: { id: number } = JSON.parse(data);
+      let deleted = false;
+      this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery) => {
+        if (!deleted && drawingDeleted.id === shownDrawing.infos.id) {
+          deleted = true;
+          const index = this.shownDrawings.indexOf(shownDrawing);
+          this.shownDrawings.splice(index, 1);
         }
-      })
+      });
+    });
+    this.socketService.socket!.on('newDrawingCreated', (darwingString: any) => {
+      const drawing: DrawingInfosForGallery = JSON.parse(darwingString);
+      if (
+        drawing.visibility !== DrawingVisibilityLevel.PRIVATE ||
+        (drawing.visibility === DrawingVisibilityLevel.PRIVATE &&
+          drawing.ownerId! === this.getAuthenticatedUserID())
+      ) {
+        const svg = this.createSVG(
+          drawing.contents,
+          drawing.width,
+          drawing.height,
+          drawing.bgColor
+        );
+        this.shownDrawings.push({
+          infos: drawing,
+          thumbnail: svg,
+        });
+      }
+    });
   }
 
   createSVG(
@@ -174,18 +185,16 @@ export class GalleryComponent implements OnInit, AfterViewInit {
 
     const joinDrawing: JoinDrawing = {
       drawingId: drawingInfos.id,
-      userId: this.authService.getToken(),
+      userId: this.authService.getUserToken(),
       password: undefined,
     };
     this.socketService.sendJoinDrawingRequest(joinDrawing);
 
-    this.drawingService.$drawingId.next(drawingInfos.id);
+    this.drawingService.drawingId$.next(drawingInfos.id);
 
     // TODO: might need those two lines, like in drawing creation. (for example if we use the gallery in a dialog, we need it to close)
     this.closeModalForm();
     // this.interactionService.emitWipeSignal();
-
-    
   }
 
   openDrawingPasswordBottomSheet(drawingInfos: DrawingInfosForGallery): void {
