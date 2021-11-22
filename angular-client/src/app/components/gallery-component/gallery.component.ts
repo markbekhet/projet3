@@ -22,6 +22,7 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
@@ -47,6 +48,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private interactionService: InteractionService,
     private teamService: TeamService,
     private errorDialog: MatDialog,
+    private chatRoomService: ChatRoomService
   ) {}
 
   getAuthenticatedUserID(): string {
@@ -80,7 +82,9 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     this.socketService
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations)=>{
+        this.chatRoomService.addChatRoom(drawingInformations.drawing.name!, drawingInformations.chatHistoryList)
         this.interactionService.drawingInformations.next(drawingInformations.drawing);
+        this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
         this.router.navigate(['/draw']);
       })

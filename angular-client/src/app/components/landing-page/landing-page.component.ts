@@ -11,6 +11,7 @@ import { NewTeamDialogComponent } from '../new-team-dialog/new-team-dialog.compo
 import { ChatHistory } from '@src/app/models/MessageMeta';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { Router } from '@angular/router';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
   templateUrl: './landing-page.component.html',
@@ -22,6 +23,7 @@ export class LandingPage implements OnInit, AfterViewInit {
   isLoggedIn = false;
 
   constructor(
+    private interactionService: InteractionService,
     private authService: AuthService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -44,6 +46,7 @@ export class LandingPage implements OnInit, AfterViewInit {
   ngAfterViewInit(){
     this.socketService.socket!.on("RoomChatHistories", (data: string)=>{
       let chatHistories: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
+      this.interactionService.emitUpdateChatListSignal()
       console.log(chatHistories);
       this.chatRoomService.addChatRoom('General', chatHistories.chatHistoryList)
     })
