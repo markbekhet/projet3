@@ -43,7 +43,7 @@ export class DrawingService {
      );
   }
 
-  modifyDrawing(newParameters: {userId: string, drawingId: number, newName?: string, newVisbility?: DrawingVisibilityLevel, password?: string}){
+  modifyDrawing(newParameters: {userId: string, drawingId: number, newName?: string, newVisibility?: DrawingVisibilityLevel, password?: string}){
     return this.httpClient.put(`${PATH}/drawing`, newParameters)
   }
 

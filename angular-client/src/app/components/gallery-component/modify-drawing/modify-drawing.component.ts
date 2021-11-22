@@ -35,7 +35,7 @@ export class ModifyDrawingComponent implements OnInit {
   modifyDrawing(){
     console.log(this.newName, this.newVisibility, this.password);
     this.drawingService.modifyDrawing({userId: this.drawingToModify.ownerId!, drawingId: this.drawingToModify.id,
-       newName: this.newName, newVisbility: this.newVisibility, password: this.password}).subscribe((response)=>{
+       newName: this.newName, newVisibility: this.newVisibility, password: this.password}).subscribe((response)=>{
 
        },
        (error)=>{

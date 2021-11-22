@@ -164,6 +164,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         this.shownDrawings.forEach((drawing:DrawingShownInGallery)=>{
           if(drawing.infos.id === drawingInfosForGallery.id){
             console.log('drawing found')
+            console.log(drawingInfosForGallery.visibility)
             found = true;
             if(!isUserGallery){
               this.shownDrawings.splice(this.shownDrawings.indexOf(drawing), 1)
