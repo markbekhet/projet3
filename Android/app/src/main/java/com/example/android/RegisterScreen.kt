@@ -47,9 +47,11 @@ import android.util.Base64
 import com.example.android.profile.Gallery
 import java.io.ByteArrayOutputStream
 import android.R.attr.data
-
-
-
+import android.graphics.Color
+import android.os.SystemClock.sleep
+import nl.dionsegijn.konfetti.models.Shape
+import nl.dionsegijn.konfetti.models.Size
+import okhttp3.internal.wait
 
 
 class RegisterScreen : AppCompatActivity() {
@@ -255,6 +257,53 @@ fun CreateImageStringFromBitmap(): String {
                     }
                     if (response?.isSuccessful == true) {
                         ClientInfo.userId = response?.body()?.string().toString()
+                        runBlocking {
+                            async {
+                                launch {
+                                    viewKonfetti.build()
+                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                        .setDirection(0.0, 359.0)
+                                        .setSpeed(1f, 5f)
+                                        .setFadeOutEnabled(true)
+                                        .setTimeToLive(2000L)
+                                        .addShapes(Shape.RECT, Shape.CIRCLE)
+                                        .addSizes(Size(12, 5F)).setPosition(-50f, viewKonfetti.getWidth() + 50f, -50f, -50f)
+                                        .streamFor(300, 5000L)
+
+                                    viewKonfetti2.build()
+                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                        .setDirection(0.0, 359.0)
+                                        .setSpeed(1f, 5f)
+                                        .setFadeOutEnabled(true)
+                                        .setTimeToLive(2000L)
+                                        .addShapes(Shape.RECT, Shape.CIRCLE)
+                                        .addSizes(Size(12, 5F)).setPosition(500F, viewKonfetti.getWidth() + 500F, -50f, -50f)
+                                        .streamFor(300, 5000L)
+
+                                    viewKonfetti3.build()
+                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                        .setDirection(0.0, 359.0)
+                                        .setSpeed(1f, 5f)
+                                        .setFadeOutEnabled(true)
+                                        .setTimeToLive(2000L)
+                                        .addShapes(Shape.RECT, Shape.CIRCLE)
+                                        .addSizes(Size(12, 5F)).setPosition(1000f, viewKonfetti.getWidth() + 1000f, -50f, -50f)
+                                        .streamFor(300, 5000L)
+
+                                    viewKonfetti4.build()
+                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                        .setDirection(0.0, 359.0)
+                                        .setSpeed(1f, 5f)
+                                        .setFadeOutEnabled(true)
+                                        .setTimeToLive(2000L)
+                                        .addShapes(Shape.RECT, Shape.CIRCLE)
+                                        .addSizes(Size(12, 5F)).setPosition(1500f, viewKonfetti.getWidth() + 1500f, -50f, -50f)
+                                        .streamFor(300, 5000L)
+
+                            }}}
+
+
+
                         startActivity(Intent(this, LandingPage::class.java))
                     } else {
                         errorPassword.text = "Il semble qu'un autre utilisateur a le même" +

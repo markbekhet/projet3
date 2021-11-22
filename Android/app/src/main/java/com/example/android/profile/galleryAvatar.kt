@@ -65,6 +65,7 @@ class GalleryAvatar(val image: Int) : Item<GroupieViewHolder>() {
             print(viewHolder.itemView.avatarImage)
             print("ok")
             print(avatarClientInfo.avatarClient)
+            viewHolder.itemView.selectionne.visibility
         }
     }
 }
