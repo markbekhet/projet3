@@ -123,7 +123,8 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         let drawingModified: {drawingId: number} = JSON.parse(data);
         this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
           if(drawingModified.drawingId === shownDrawing.infos.id){
-            shownDrawing.infos.nbCollaborators -= 1;
+            if(shownDrawing.infos.nbCollaborators > 0)
+              shownDrawing.infos.nbCollaborators -= 1;
           }
         })
       })
@@ -328,7 +329,7 @@ export class DrawingPasswordBottomSheet {
   constructor(
     private socketService: SocketService,
     private authService: AuthService,
-    // private drawingService: DrawingService,
+    private drawingService: DrawingService,
     private bottomSheetRef: MatBottomSheetRef<DrawingPasswordBottomSheet>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private infos: {drawing: DrawingInfosForGallery}
   ) {
@@ -350,5 +351,6 @@ export class DrawingPasswordBottomSheet {
     console.log(joinDrawingRequest);
     this.close(event)
     this.socketService.sendJoinDrawingRequest(joinDrawingRequest);
+    this.drawingService.$drawingId.next(this.infos.drawing.id);
   }
 }
