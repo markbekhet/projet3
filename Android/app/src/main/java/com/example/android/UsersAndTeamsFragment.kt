@@ -189,11 +189,11 @@ class UsersAndTeamsFragment() : Fragment() {
                 usersAdapter?.add(newUserItem)
             }
             else{
-                if(ClientInfo.username == null){
-                    ClientInfo.username = user.pseudo
-                    val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
-                    ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
-                }
+
+                ClientInfo.username = user.pseudo
+                val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
+                ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
+
             }
         }
         activity?.runOnUiThread{
