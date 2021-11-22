@@ -9,7 +9,7 @@ $blue-graphite-faded: rgba(34, 59, 75, 0.8);
 .landing-page {
   display: grid;
   grid-template-rows: 12vh 88vh;
-  grid-template-columns: 70vw 30vw;
+  grid-template-columns: 80vw 20vw;
   grid-template-areas:
     "header header-buttons"
     "gallery teams";
@@ -43,22 +43,6 @@ $blue-graphite-faded: rgba(34, 59, 75, 0.8);
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
-  }
-
-  .usersTeamsList {
-    width: auto;
-    height: auto;
-  }
-
-  // To be removed only for testing
-  nav{
-    grid-area: nav;
-  }
-
-  main{
-    grid-area: content;
-
-    overflow: auto;
   }
 
   // .teams {

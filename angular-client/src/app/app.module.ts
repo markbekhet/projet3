@@ -23,6 +23,7 @@ import { TeamService } from './services/team/team.service';
 import { ValidationService } from './services/validation/validation.service';
 
 import { AppComponent } from './components/app-component/app.component';
+import { ChatComponent } from './components/chat-component/chat.component';
 import { ColorPickerComponent } from './components/color-picker-component/color-picker.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
 import { DeleteDrawingComponent } from './components/gallery-component/delete-drawing/delete-drawing.component';
@@ -54,6 +55,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
 @NgModule({
   declarations: [
     AppComponent,
+    ChatComponent,
     ColorPickerComponent,
     CommunicationPageComponent,
     DeleteDrawingComponent,

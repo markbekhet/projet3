@@ -1,8 +1,51 @@
-.userList {
-    width: auto;
-    height: 250px;
-    border: thick;
-    float: left;
-    padding-bottom: 1vh;
-    margin-left: 0;
+$base-color-dark: #403d39;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.component-wrapper {
+  display: grid;
+  grid-template-rows: 30vh 30vh 28vh;
+  grid-template-areas:
+    "usersList"
+    "teamsList"
+    "chat";
+
+  mat-list {
+    padding: 1em;
+    border-left: 2px solid $base-color-dark;
+    border-bottom: 2px solid $base-color-dark;
+    overflow: auto;
+
+    &:last-child {
+      border-bottom: 0px;
+    }
+
+    mat-list-item {
+      display: block;
+      margin-bottom: 1em;
+      // span {
+      //   vertical-align: baseline;
+      // }
+
+      // .buttons-wrapper {
+      //   display: flex; inline-flex ??????
+      //   flex-direction: row;
+      //   justify-content: flex-end;
+      //   align-items: center;
+
+      button {
+        margin: 0 0.5em;
+      }
+      // }
+    }
+  }
+
+
+
+  // .usersList {
+  // }
 }
