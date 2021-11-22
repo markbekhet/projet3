@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
+} from '@angular/core';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 
@@ -9,15 +15,18 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 export class DrawingViewComponent implements AfterViewInit {
   @ViewChild('workingSpace', { static: false }) workingSpaceRef!: ElementRef;
 
-  constructor(public interaction: InteractionService, private authService: AuthService) {}
+  constructor(
+    public interaction: InteractionService,
+    private authService: AuthService
+  ) {}
 
-  @HostListener("window:beforeunload")
-  disconnect(){
-    if(this.authService.token$.value !== ""){
-      this.authService.disconnect()
+  @HostListener('window:beforeunload')
+  disconnect() {
+    if (this.authService.getUserToken() !== '') {
+      this.authService.disconnect();
     }
   }
-  
+
   ngAfterViewInit(): void {
     this.interaction.emitRef(this.workingSpaceRef);
   }

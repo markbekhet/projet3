@@ -35,7 +35,7 @@ export class AuthService {
 
   token$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  $userDrawings = new BehaviorSubject<DrawingInfosForGallery[]>(
+  userDrawings$ = new BehaviorSubject<DrawingInfosForGallery[]>(
     this.NULL_DRAWINGS
   );
 
@@ -44,7 +44,7 @@ export class AuthService {
     private socketService: SocketService
   ) {}
 
-  getToken() {
+  getUserToken() {
     return this.token$.value;
   }
 
@@ -74,13 +74,13 @@ export class AuthService {
 
   disconnect(): Observable<string> {
     return this.httpClient
-      .post(PATH + DISCONNECT + this.token$.value, null, {
+      .post(PATH + DISCONNECT + this.getUserToken(), null, {
         responseType: 'text',
       })
       .pipe(
         tap(() => {
           this.token$.next('');
-          this.$userDrawings.next(this.NULL_DRAWINGS);
+          this.userDrawings$.next(this.NULL_DRAWINGS);
           this.socketService.disconnect();
         })
       );
@@ -89,18 +89,18 @@ export class AuthService {
   getPersonalGallery(): Observable<{ drawingList: DrawingInfosForGallery[] }> {
     return this.httpClient
       .get<{ drawingList: DrawingInfosForGallery[] }>(
-        PATH + GALLERY + this.getToken()
+        PATH + GALLERY + this.getUserToken()
       )
       .pipe(
         tap((data) => {
-          this.$userDrawings.next(data.drawingList);
+          this.userDrawings$.next(data.drawingList);
         })
       );
   }
 
   public updateUserProfile(updatedUserProfile: UpdateUserInformation) {
     return this.httpClient.put(
-      PATH + PROFILE + this.token$.value,
+      PATH + PROFILE + this.getUserToken(),
       updatedUserProfile,
       {
         responseType: 'text',

@@ -16,35 +16,45 @@ const PATH = 'http://localhost:3000';
 export class DrawingService {
   constructor(private httpClient: HttpClient) {}
 
-  readonly NULL_ID: number = 0;
-  readonly NULL_NAME: string = '';
+  drawingId$ = new BehaviorSubject<number>(0);
+  drawingName$ = new BehaviorSubject<string>('');
 
-  $drawingId = new BehaviorSubject<number>(this.NULL_ID);
-  $drawingName = new BehaviorSubject<string>(this.NULL_NAME);
+  getActiveDrawingID() {
+    return this.drawingId$.value;
+  }
+
+  getActiveDrawingName() {
+    return this.drawingName$.value;
+  }
 
   createDrawing(newDrawing: Drawing): Observable<number> {
     return this.httpClient.post<number>(`${PATH}/drawing`, newDrawing).pipe(
-      tap((token) => {
-        console.log(token);
-        this.$drawingId.next(token);
+      tap((drawingId) => {
+        console.log(drawingId);
+        this.drawingId$.next(drawingId);
       })
     );
   }
 
-   deleteDrawing(drawingToDelete: {drawingId: number, userId: string}) {
+  deleteDrawing(drawingToDelete: { drawingId: number; userId: string }) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      body: drawingToDelete
-    }
-     return this.httpClient.delete(`${PATH}/drawing`, httpOptions).pipe(
-       tap((returnedDrawing) => {
-         console.log(returnedDrawing);
-       })
-     );
+      body: drawingToDelete,
+    };
+    return this.httpClient.delete(`${PATH}/drawing`, httpOptions).pipe(
+      tap((returnedDrawing) => {
+        console.log(returnedDrawing);
+      })
+    );
   }
 
-  modifyDrawing(newParameters: {userId: string, drawingId: number, newName?: string, newVisibility?: DrawingVisibilityLevel, password?: string}){
-    return this.httpClient.put(`${PATH}/drawing`, newParameters)
+  modifyDrawing(newParameters: {
+    userId: string;
+    drawingId: number;
+    newName?: string;
+    newVisibility?: DrawingVisibilityLevel;
+    password?: string;
+  }) {
+    return this.httpClient.put(`${PATH}/drawing`, newParameters);
   }
-
 }

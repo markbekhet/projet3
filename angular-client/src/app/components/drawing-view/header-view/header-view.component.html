@@ -8,9 +8,12 @@
                 (click)="openGallery()">
             <mat-icon class="topIcon"> {{ menuItems[1].icon }}</mat-icon>
         </button>
+        <button class="topBtn" mat-mini-fab color="primary" matTooltip="{{ menuItems[2].name }}" (click)="disconnect()">
+            <mat-icon class="topIcon"> {{ menuItems[2].icon }}</mat-icon>
+        </button>
     </div>
     <div fxLayout='row' fxLayoutGap='20px' id='roots-container'>
         <a routerLink='/profile'>Profil</a>
-        <a href (click)='leaveDrawing()' routerLink='/home'>Quitter dessin</a>
+        <a routerLink='/home' (click)='leaveDrawing()'>Quitter dessin</a>
     </div>
 </mat-toolbar>

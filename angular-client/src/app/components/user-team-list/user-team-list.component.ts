@@ -1,17 +1,24 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+/* eslint-disable no-param-reassign */
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
-import { ChatHistory } from '@src/app/models/MessageMeta';
-import { Team } from '@src/app/models/teamsMeta';
-import { User } from '@src/app/models/UserMeta';
-import { AuthService } from '@src/app/services/authentication/auth.service';
-import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
-import { InteractionService } from '@src/app/services/interaction/interaction.service';
-//import { InteractionService } from '@src/app/services/interaction/interaction.service';
-import { SocketService } from '@src/app/services/socket/socket.service';
-import { TeamService } from '@src/app/services/team/team.service';
-import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
-import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
+
+import { JoinTeam, LeaveTeam } from '@models/joinTeam';
+import { ChatHistory } from '@models/MessageMeta';
+import { Team } from '@models/teamsMeta';
+import { User } from '@models/UserMeta';
+import { AuthService } from '@services/authentication/auth.service';
+import { ChatRoomService } from '@services/chat-room/chat-room.service';
+import { InteractionService } from '@services/interaction/interaction.service';
+import { SocketService } from '@services/socket/socket.service';
+import { TeamService } from '@services/team/team.service';
+import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
 
 @Component({
   selector: 'app-user-team-list',
@@ -19,33 +26,41 @@ import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-
   styleUrls: ['./user-team-list.component.scss'],
 })
 export class UserTeamListComponent implements OnInit, AfterViewInit {
-  userList: User[];
-  teamList: Team[];
-  chatRoomList: string[];
-  userId: string;
-  constructor(private socketService: SocketService, private authService: AuthService,
-     private teamService: TeamService, private readonly chatRoomService: ChatRoomService,
-      private router: Router, private interactionService: InteractionService,private windowService: ModalWindowService) {
-    this.userList = []
-    this.teamList = []
-    this.chatRoomList = []
-    this.userId = this.authService.token$.value
+  users: User[] = [];
+  teams: Team[] = [];
+  chatrooms: string[] = [];
+  authenticatedUserId: string;
+
+  @Output()
+  chatroomName = new EventEmitter<string>();
+
+  constructor(
+    private authService: AuthService,
+    private readonly chatRoomService: ChatRoomService,
+    private interactionService: InteractionService,
+    private router: Router,
+    private socketService: SocketService,
+    private teamService: TeamService,
+    private windowService: ModalWindowService
+  ) {
+    this.authenticatedUserId = this.authService.getUserToken();
   }
 
   ngOnInit(): void {
     this.socketService.getAllUsers().subscribe((usersMap) => {
       usersMap.forEach((user) => {
-        this.userList.push(user);
+        this.users.push(user);
       });
     });
 
     this.socketService.getAllTeams().subscribe((teamsMap) => {
       teamsMap.forEach((team) => {
-        this.teamList.push(team);
+        this.teams.push(team);
       });
     });
-    console.log(this.userList);
-    console.log(this.teamList);
+
+    console.log(this.users);
+    console.log(this.teams);
   }
 
   ngAfterViewInit() {
@@ -53,7 +68,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.socketService.socket!.on('userUpdate', (data: any) => {
       const dataMod: User = JSON.parse(data);
       let found = false;
-      this.userList.forEach((user) => {
+      this.users.forEach((user) => {
         if (user.id === dataMod.id) {
           user.pseudo = dataMod.pseudo;
           user.status = dataMod.status;
@@ -61,83 +76,94 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         }
       });
       if (!found) {
-        this.userList.push(dataMod);
+        this.users.push(dataMod);
       }
     });
 
     // newTeamCreated
-    this.socketService.socket!.on("newTeamCreated", (data: any)=>{
-      let newTeam: Team = JSON.parse(data);
-      //let found = false;
-      /*this.chatRoomList.forEach((chatRoom)=>{
+    this.socketService.socket!.on('newTeamCreated', (data: any) => {
+      const newTeam: Team = JSON.parse(data);
+      // let found = false;
+      /* this.chatRoomList.forEach((chatRoom)=>{
         if(chatRoom.id === newTeam.id){
           found = true;
         }
-      })*/
+      }) */
 
-      if(this.chatRoomList.indexOf(newTeam.name!) === -1){
-        this.teamList.push(newTeam);
+      if (this.chatrooms.indexOf(newTeam.name!) === -1) {
+        this.teams.push(newTeam);
       }
     });
+
     this.socketService.socket!.on('teamDeleted', (data: any) => {
       const deletedTeam: Team = JSON.parse(data);
-      this.teamList.forEach((team) => {
+      this.teams.forEach((team) => {
         if (team.id === deletedTeam.id) {
-          const index = this.teamList.indexOf(team);
-          this.teamList.splice(index);
+          const index = this.teams.indexOf(team);
+          this.teams.splice(index);
         }
       });
     });
 
     // teamJoined
-    this.socketService.socket!.on("teamInformations", (data: any)=>{
-      let teamInformations: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
-      let requestedTeam = this.teamService.requestedTeamToJoin.value;
-      this.teamService.activeTeams.value.set(requestedTeam.name!, requestedTeam)
-      this.chatRoomService.addChatRoom(requestedTeam.name!, teamInformations.chatHistoryList);
-      this.chatRoomList.push(requestedTeam.name!);
-      let index = this.teamList.indexOf(requestedTeam)
-      if(index !==-1){
-        this.teamList.splice(index);
+    this.socketService.socket!.on('teamInformations', (data: any) => {
+      const teamInformations: { chatHistoryList: ChatHistory[] } =
+        JSON.parse(data);
+      const requestedTeam = this.teamService.requestedTeamToJoin.value;
+      this.teamService.activeTeams.value.set(
+        requestedTeam.name!,
+        requestedTeam
+      );
+      this.chatRoomService.addChatRoom(
+        requestedTeam.name!,
+        teamInformations.chatHistoryList
+      );
+      this.chatrooms.push(requestedTeam.name!);
+      const index = this.teams.indexOf(requestedTeam);
+      if (index !== -1) {
+        this.teams.splice(index, 1);
       }
-    })
+    });
 
-    console.log(this.chatRoomService.chatRooms.keys())
-    for(let key of this.chatRoomService.chatRooms.keys()){
-      this.chatRoomList.push(key);
+    console.log(this.chatRoomService.chatRooms.keys());
+    for (const key of this.chatRoomService.chatRooms.keys()) {
+      this.chatrooms.push(key);
     }
   }
 
   joinTeam(team: Team) {
     const joinTeamBody: JoinTeam = {
       teamName: team.name!,
-      userId: this.userId,
+      userId: this.authenticatedUserId,
     };
     this.socketService.sendRequestJoinTeam(joinTeamBody);
     this.teamService.requestedTeamToJoin.next(team);
   }
+
   deleteTeam(team: Team) {
     const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
     this.teamService.deleteTeam(deleteTeamBody);
   }
 
-  leaveTeam(teamName:string){
-    const leaveTeamBodyRequest: LeaveTeam ={teamName: teamName, userId: this.userId}
+  leaveTeam(teamName: string) {
+    const leaveTeamBodyRequest: LeaveTeam = {
+      teamName,
+      userId: this.authenticatedUserId,
+    };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
-    let index = this.chatRoomList.indexOf(teamName);
-    this.chatRoomList.splice(index);
-    this.teamList.push(this.teamService.activeTeams.value.get(teamName)!);
-    this.teamService.activeTeams.value.delete(teamName)
+    const index = this.chatrooms.indexOf(teamName);
+    this.chatrooms.splice(index);
+    this.teams.push(this.teamService.activeTeams.value.get(teamName)!);
+    this.teamService.activeTeams.value.delete(teamName);
   }
 
-  joinChat(roomName: string){
+  joinChat(roomName: string) {
     console.log(roomName);
-    this.interactionService.chatRoomName.next(roomName)
-    this.router.navigate(['/chat'])
+    this.interactionService.chatRoomName.next(roomName);
+    this.router.navigate(['/chat']);
   }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
-
 }

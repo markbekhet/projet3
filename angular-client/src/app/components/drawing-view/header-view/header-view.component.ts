@@ -49,11 +49,20 @@ export class HeaderViewComponent implements OnInit {
     }
   }
 
+  disconnect() {
+    if (
+      window.confirm('Vous avez un dessin en cours. Voulez-vous continuer ?')
+    ) {
+      this.leaveDrawing();
+      this.authService.disconnect();
+    }
+  }
+
   leaveDrawing() {
     this.interactionService.emitLeaveDrawingSignal()
     this.socketService.leaveDrawing({
-      drawingId: this.drawingService.$drawingId.value,
-      userId: this.authService.token$.value,
+      drawingId: this.drawingService.getActiveDrawingID(),
+      userId: this.authService.getUserToken(),
     });
   }
 

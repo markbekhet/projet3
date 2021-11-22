@@ -9,22 +9,25 @@ import { ErrorDialogComponent } from '../../error-dialog/error-dialog.component'
   styleUrls: ['./delete-drawing.component.scss'],
 })
 export class DeleteDrawingComponent implements OnInit {
-
   constructor(
-     private drawingService: DrawingService,
-     private errorDialog: MatDialog,
+    private drawingService: DrawingService,
+    private errorDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public drawingToDelete: DrawingInfosForGallery
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {}
 
-  deleteDrawing(){
-    this.drawingService.deleteDrawing({drawingId: this.drawingToDelete.id, userId: this.drawingToDelete.ownerId!}).subscribe((respomse)=>{
-
-    },
-    (error)=>{
-      this.errorDialog.open(ErrorDialogComponent, {data:error.message});
-    });
+  deleteDrawing() {
+    this.drawingService
+      .deleteDrawing({
+        drawingId: this.drawingToDelete.id,
+        userId: this.drawingToDelete.ownerId!,
+      })
+      .subscribe(
+        (respomse) => {},
+        (error) => {
+          this.errorDialog.open(ErrorDialogComponent, { data: error.message });
+        }
+      );
   }
 }

@@ -48,16 +48,16 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private router: Router,
-    private auth: AuthService,
+    private authService: AuthService,
     private socketService: SocketService,
     private formBuilder: FormBuilder,
     public errorDialog: MatDialog,
     private interactionService: InteractionService,
-    private drawingService: DrawingService 
+    private drawingService: DrawingService
   ) {
     this.socketService.getUserProfile({
-      userId: this.auth.token$.value,
-      visitedId: this.auth.token$.value,
+      userId: this.authService.getUserToken(),
+      visitedId: this.authService.getUserToken(),
     });
 
     this.updateForm = this.formBuilder.group({
@@ -75,8 +75,8 @@ export class ProfilePage implements OnInit {
 
   @HostListener('window:beforeunload')
   disconnect() {
-    if (this.auth.token$.value !== '') {
-      this.auth.disconnect();
+    if (this.authService.getUserToken() !== '') {
+      this.authService.disconnect();
     }
   }
 
@@ -91,10 +91,12 @@ export class ProfilePage implements OnInit {
 
     this.socketService
       .getDrawingInformations()
-      .subscribe((drawingInformations: DrawingInformations)=>{
-        this.interactionService.drawingInformations.next(drawingInformations.drawing);
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.interactionService.drawingInformations.next(
+          drawingInformations.drawing
+        );
         this.router.navigate(['/draw']);
-      })
+      });
   }
 
   onSubmit(formPseudo: FormGroup) {
@@ -106,7 +108,7 @@ export class ProfilePage implements OnInit {
       oldPassword: this.updateForm.controls.oldPassword.value,
     };
 
-    this.auth.updateUserProfile(updates).subscribe(
+    this.authService.updateUserProfile(updates).subscribe(
       (response) => {
         // success
         this.socketService.updateUserProfile(updates);
@@ -142,7 +144,7 @@ export class ProfilePage implements OnInit {
     this.updateForm.controls.newPassword.setValue('');
   }
 
-  goLaunchingPage() {
+  backToLandingPage() {
     /* this.auth.disconnect().subscribe((token) => {
       console.log('disconnect successful');
       this.router.navigate(['/login']);
@@ -181,12 +183,12 @@ export class ProfilePage implements OnInit {
   public joinDrawing(collaboration: DrawingEditionHistory) {
     const joinDrawing = {
       drawingId: collaboration.drawingId,
-      userId: this.auth.token$.value,
+      userId: this.authService.getUserToken(),
       password: undefined,
     };
     this.socketService.sendJoinDrawingRequest(joinDrawing);
-    this.drawingService.$drawingId.next(collaboration.drawingId);
-    //this.router.navigate(['/home']);
+    this.drawingService.drawingId$.next(collaboration.drawingId);
+    // this.router.navigate(['/home']);
   }
 
   public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {

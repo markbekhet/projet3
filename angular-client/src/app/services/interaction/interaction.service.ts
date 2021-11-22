@@ -2,7 +2,7 @@ import { ElementRef, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DrawingContent } from '@models/DrawingMeta';
 import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
-import { CanvasDetails} from '@src/app/models/drawing-informations';
+import { CanvasDetails } from '@src/app/models/drawing-informations';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -30,20 +30,25 @@ export class InteractionService {
   $updateToolSignal: Observable<boolean> = this.updateToolSignal.asObservable();
 
   updateColorSignal: Subject<boolean> = new Subject<boolean>();
-  $updateColorSignal: Observable<boolean> = this.updateColorSignal.asObservable();
+  $updateColorSignal: Observable<boolean> =
+    this.updateColorSignal.asObservable();
 
-  chatRoomName: Subject<string> = new Subject<string>()
+  chatRoomName: Subject<string> = new Subject<string>();
   $chatRoomName: Observable<string> = this.chatRoomName.asObservable();
 
-  generalRoomNameSignal: Subject<boolean> =  new Subject<boolean>();
-  $generalRoomNameSignal: Observable<boolean> = this.generalRoomNameSignal.asObservable();
-  drawingInformations =  new BehaviorSubject<CanvasDetails>({});
-  //$drawingInformations = this.drawingInformations.asObservable()
+  generalRoomNameSignal: Subject<boolean> = new Subject<boolean>();
+  $generalRoomNameSignal: Observable<boolean> =
+    this.generalRoomNameSignal.asObservable();
+
+  drawingInformations = new BehaviorSubject<CanvasDetails>({});
+  // $drawingInformations = this.drawingInformations.asObservable()
+
   wipeDrawing: Subject<boolean> = new Subject<boolean>();
   $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
 
   leaveDrawingSignal: Subject<boolean> = new Subject<boolean>();
-  $leaveDrawingSignal: Observable<boolean> = this.leaveDrawingSignal.asObservable()
+  $leaveDrawingSignal: Observable<boolean> =
+    this.leaveDrawingSignal.asObservable();
 
   updateChatListSignal: Subject<boolean> = new Subject<boolean>();
   $updateChatListSignal: Observable<boolean> = this.updateChatListSignal.asObservable()
@@ -75,20 +80,24 @@ export class InteractionService {
   emitUpdateColorSignal() {
     this.updateColorSignal.next(true);
   }
-  emitGetGeneralChatRoom(){
+
+  emitGetGeneralChatRoom() {
     this.generalRoomNameSignal.next(true);
   }
 
-  emitFetchChatHistory(roomName: string){
-    this.chatRoomName.next(roomName)
+  emitFetchChatHistory(roomName: string) {
+    this.chatRoomName.next(roomName);
   }
+
   emitWipeSignal() {
     this.wipeDrawing.next(true);
   }
-  /*emitDrawingInformations(drawingInformations: DrawingInformations){
+
+  /* emitDrawingInformations(drawingInformations: DrawingInformations){
     this.drawingInformations.next(drawingInformations)
-  }*/
-  emitLeaveDrawingSignal(){
+  } */
+
+  emitLeaveDrawingSignal() {
     this.leaveDrawingSignal.next(true);
   }
 

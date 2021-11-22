@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 
 import { DrawingContent, DrawingStatus } from '@models/DrawingMeta';
-//import { DrawingInformations } from '@models/drawing-informations';
+// import { DrawingInformations } from '@models/drawing-informations';
 // import { User } from '@models/UserMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
@@ -69,7 +69,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     private colorPick: ColorPickingService,
     private readonly socketService: SocketService,
     private readonly drawingService: DrawingService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {
     this.toolsList = new Map<number, DrawingTool>();
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
@@ -84,7 +84,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   getDrawingId() {
-    this.drawingService.$drawingId.subscribe((id: number) => {
+    this.drawingService.drawingId$.subscribe((id: number) => {
       this.drawingId = id;
     });
   }
@@ -96,30 +96,30 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   initDrawing() {
     this.doneDrawing.nativeElement.innerHTML = '';
     this.toolsList.clear();
-    let drawingInformations = this.interactionService
-      .drawingInformations.value;
-    this.backColor = `#${drawingInformations.bgColor!}`
+    const drawingInformations =
+      this.interactionService.drawingInformations.value;
+    this.backColor = `#${drawingInformations.bgColor!}`;
     this.height = drawingInformations.height!;
     this.width = drawingInformations.width!;
-    this.drawingService.$drawingName.next(drawingInformations.name!);
+    this.drawingService.drawingName$.next(drawingInformations.name!);
     drawingInformations.contents!.forEach((content) => {
       if (content.content !== null && content.content !== undefined) {
         this.manipulateReceivedDrawing(content);
       }
     });
     this.draw();
-      /*.subscribe((drawingInformations: DrawingInformations) => {
+    /* .subscribe((drawingInformations: DrawingInformations) => {
         this.backColor = `#${drawingInformations.drawing.bgColor}`;
         this.width = drawingInformations.drawing.width;
         this.height = drawingInformations.drawing.height;
-        this.drawingService.$drawingName.next(drawingInformations.drawing.name);
+        this.drawingService.drawingName$.next(drawingInformations.drawing.name);
         drawingInformations.drawing.contents.forEach((content) => {
           if (content.content !== null && content.content !== undefined) {
             this.manipulateReceivedDrawing(content);
           }
         });
         this.draw();
-      });*/
+      }); */
   }
 
   @HostListener('window:resize')
@@ -285,7 +285,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.interactionService.$selectedTool.subscribe((toolName: string) => {
         if (toolName) this.currentToolName = toolName;
       });
-      this.drawingService.$drawingId.subscribe((id: number) => {
+      this.drawingService.drawingId$.subscribe((id: number) => {
         this.drawingId = id;
       });
       console.log(this.drawingId);
