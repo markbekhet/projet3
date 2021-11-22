@@ -1,4 +1,4 @@
-import { BaseEntity, BeforeInsert, Column, Entity, Generated, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, Generated, Index, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user/user.entity";
 
 @Entity("ConnectionHistory")
@@ -12,7 +12,8 @@ export class ConnectionHistory extends BaseEntity{
     })
     date:string
 
-    @ManyToOne(()=> User, user => user.connectionHistories, {nullable: true, onDelete:"CASCADE"})
+    @Index()
+    @ManyToOne(()=> User, user => user.connectionHistories, {onDelete:"CASCADE"})
     user: User
 
 }

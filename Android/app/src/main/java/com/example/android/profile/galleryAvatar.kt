@@ -44,6 +44,7 @@ class Gallery : AppCompatActivity() {
         }
        fermer.setOnClickListener(){
            startActivity(Intent(this, RegisterScreen::class.java))
+           finish()
        }
         setmessage()
     }

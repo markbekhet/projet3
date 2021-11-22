@@ -1,0 +1,40 @@
+.profile-page {
+  display: grid;
+  grid-template-rows: 70vh 30vh;
+  grid-template-columns: 1fr 4fr;
+  grid-template-areas:
+    "sidebar content"
+    "sidebar-bottom content-bottom";
+  .sidebar {
+    position: relative;
+    width: 350px;
+    height: 100vh;
+    background-color: teal;
+    .avatar {
+      position: absolute;
+      width: 270px;
+      left: 50%;
+      margin: 20px 0 0 -135px;
+    }
+    .information {
+      position: absolute;
+      width: 270px;
+      left: 50%;
+      margin: 320px 0 0 -135px;
+    }
+  }
+
+  .content {
+    margin: 20px 0 0 20px;
+  }
+
+  .mat-form-field {
+    width: 250px;
+  }
+
+  .connection {
+    overflow: auto;
+    height: 20vh;
+  }
+
+}

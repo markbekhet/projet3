@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:background="@drawable/rectangle_background"
+
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/teamName"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="nom"
+        android:textSize="36sp"
+        android:textColor="@color/black" />
+    <ImageView
+        android:id="@+id/deleteBin"
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:contentDescription="image"
+        android:scaleType="fitXY"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/bin"
+        android:tag="@color/white"
+        android:layout_marginStart="10dp"/>
+
+
+</LinearLayout>

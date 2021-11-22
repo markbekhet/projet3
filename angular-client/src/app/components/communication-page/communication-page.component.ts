@@ -2,9 +2,11 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Message, CustomDate } from '@models/MessageMeta';
+import { ServerMessage, ClientMessage } from '@models/MessageMeta';
 import { AuthService } from '@services/authentication/auth.service';
 import { SocketService } from '@services/socket/socket.service';
+import { Status } from '@common/user';
+import { User } from '@src/app/models/UserMeta';
 
 @Component({
   selector: 'app-communication-page',
@@ -13,8 +15,27 @@ import { SocketService } from '@services/socket/socket.service';
 })
 export class CommunicationPageComponent implements OnInit, OnDestroy {
   username: string = '';
-  messages: Message[] = [];
+  messages: ClientMessage[] = [];
   messageForm: FormGroup;
+  user: User = {
+    id: '',
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
+    password: '',
+    status: Status.OFFLINE,
+    pseudo: '',
+
+    averageCollaborationTime: 0,
+    totalCollaborationTime: 0,
+    numberCollaborationTeams: 0,
+    numberCollaboratedDrawings: 0,
+    numberAuthoredDrawings: 0,
+
+    connectionHistories: [],
+    disconnectionHistories: [],
+    drawingEditionHistories: [],
+  };
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -23,6 +44,11 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     private router: Router,
     private socketService: SocketService
   ) {
+    this.socketService.getUserProfile({
+      userId: this.auth.token$.value,
+      visitedId: this.auth.token$.value,
+    });
+
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [Validators.required]),
     });
@@ -33,59 +59,46 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     this.messages = [];
     // this.chat.connect();
 
-    this.socketService.getNewMessage().subscribe((message: Message) => {
-      if (message.clientName) {
+    this.socketService.getNewMessage().subscribe((message: ClientMessage) => {
+      if (message.from) {
         this.messages.unshift(message);
       }
       console.log(this.messages);
       console.log(`client received: ${message.message}`);
     });
+
+    this.socketService.receiveUserProfile().subscribe((profile: User) => {
+      this.user = profile;
+      console.log(`user loaded : ${profile.pseudo}`);
+    });
   }
 
   onSubmit() {
-    const currentDate: Date = new Date();
-
-    const date: CustomDate = {
-      hour: currentDate.getHours().toString(),
-      minutes: currentDate.getMinutes().toString(),
-      seconds: currentDate.getSeconds().toString(),
+    const MESSAGE = this.messageForm.controls.message.value;
+    const messageToSend: ServerMessage = {
+      from: this.user.pseudo!,
+      message: MESSAGE,
+      roomName: 'General',
     };
 
-    const message: Message = {
-      clientName: this.username,
-      message: this.messageForm.value.message,
-      date,
-    };
-
-    this.socketService.sendMessage(message);
-    console.log(`client sent: ${message}`);
+    this.socketService.sendMessage(messageToSend);
+    console.log(messageToSend);
 
     this.messageForm.reset();
   }
 
   public self(clientName: string): boolean {
-    return this.username === clientName;
+    return this.user.pseudo === clientName;
   }
 
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     this.messages = [];
-    this.socketService.disconnect();
+    // this.socketService.disconnect();
     this.disconnect();
   }
 
   disconnect(): void {
-    try {
-      this.auth.disconnect().subscribe(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (code) => {
-          this.router.navigate(['/']);
-        }, // this.username = username
-        (err) => {
-          console.log(err);
-        }
-      ); // LandingPageComponent.usernameExists = true
-    } catch (e: any) {}
-    this.messages = [];
+    this.router.navigate(['/home']);
   }
 }

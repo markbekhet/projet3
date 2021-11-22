@@ -2,6 +2,8 @@ package com.example.android.client
 
 import android.widget.ImageView
 import com.example.android.R
+import com.example.android.team.TeamGeneralInformation
+import com.google.gson.Gson
 
 object ClientInfo {
     var username:String ?= null
@@ -15,12 +17,12 @@ object avatarClientInfo{
 }
 class User(val id: String? = null,
            val status: Int?= null,
-           val pseudo: String?= null){}
-
-class Team(val id:Int?= null,
-            val name:String?= null,
-            val visibility: Int?=null){}
+           val pseudo: String?= null){
+    fun fromJson(json: String): User{
+        return Gson().fromJson(json, User::class.java)
+    }
+}
 
 class UsersArrayList(val userList: ArrayList<User>? = null){}
 
-class TeamsArrayList(val teamList: ArrayList<Team>?= null){}
+class TeamsArrayList(val teamList: ArrayList<TeamGeneralInformation> = ArrayList()){}

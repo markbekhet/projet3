@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserCredentials } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
@@ -10,19 +10,18 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
-  selector: 'app-login-page',
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss'],
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPage implements OnInit {
   inputForm: FormGroup;
-  usernameExists: boolean = false;
+  usernameExists = false;
 
   constructor(
-    private formBuilder: FormBuilder,
-    // private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.inputForm = this.formBuilder.group({
       username: formBuilder.control('', [Validators.required]),
@@ -46,8 +45,7 @@ export class LoginPageComponent implements OnInit {
       this.auth.login(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
-          // this.router.navigate(['/' + this.username]);
-          console.log(`${user.username} is logged in`);
+          this.router.navigate(['/home']);
           form.reset();
         },
         (error) => {
@@ -58,14 +56,14 @@ export class LoginPageComponent implements OnInit {
           switch (errorCode) {
             case this.auth.USER_LOGGED_IN:
               interfaceErrorCode =
-                'Cet utilisateur est déjà connecté au serveur !';
+                'Cet utilisateur est déjà connecté au serveur.';
               break;
             case this.auth.NO_USER_FOUND:
               interfaceErrorCode =
-                "Ce nom d'utilisateur ou adresse courriel n'existe pas !";
+                "Ce nom d'utilisateur ou adresse courriel n'existe pas.";
               break;
             case this.auth.INCORRECT_PASSWORD:
-              interfaceErrorCode = 'Le mot de passe est incorrect !';
+              interfaceErrorCode = 'Le mot de passe est incorrect.';
               break;
             default:
               break;

@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AngularMaterialModule } from './angular-material.module';
@@ -20,40 +21,59 @@ import { SocketService } from './services/socket/socket.service';
 import { ValidationService } from './services/validation/validation.service';
 
 import { AppComponent } from './components/app-component/app.component';
-import { ColorPickerComponent } from './components/color-picker/color-picker.component';
+import { ColorPickerComponent } from './components/color-picker-component/color-picker.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
+import { DeleteDrawingComponent } from './components/gallery-component/delete-drawing/delete-drawing.component';
 import { DrawingViewComponent } from './components/drawing-view/drawing-view.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+import {
+  DrawingPasswordBottomSheet,
+  GalleryComponent,
+} from './components/gallery-component/gallery.component';
 import { HeaderViewComponent } from './components/drawing-view/header-view/header-view.component';
-import { LandingPageComponent } from './components/landing-page/landing-page.component';
-import { LoginPageComponent } from './components/login-page/login-page.component';
-import { MiniColorPickerComponent } from './components/color-picker/mini-color-picker/mini-color-picker.component';
+import { LandingPage } from './components/landing-page/landing-page.component';
+import { LoginPage } from './components/login-page/login-page.component';
+import { MiniColorPickerComponent } from './components/color-picker-component/mini-color-picker/mini-color-picker.component';
+import { ModifyDrawingComponent } from './components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from './components/new-drawing-dialog/new-drawing.component';
 import {
   OptionViewComponent,
   ShapeTypePipe,
 } from './components/drawing-view/toolbox-view/option-view/option-view.component';
-import { RegisterPageComponent } from './components/register-page/register-page.component';
+import { ProfilePage } from './components/profile-page/profile-page.component';
+import { RegisterPage } from './components/register-page/register-page.component';
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
+import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
+import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
+import { TeamService } from './services/team/team.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     ColorPickerComponent,
     CommunicationPageComponent,
+    DeleteDrawingComponent,
+    DrawingPasswordBottomSheet,
     DrawingViewComponent,
     ErrorDialogComponent,
+    GalleryComponent,
     HeaderViewComponent,
-    LandingPageComponent,
-    LoginPageComponent,
+    LandingPage,
+    LoginPage,
     MiniColorPickerComponent,
+    ModifyDrawingComponent,
     NewDrawingComponent,
     OptionViewComponent,
-    RegisterPageComponent,
+    ProfilePage,
+    RegisterPage,
     ShapeTypePipe,
     SvgViewComponent,
+    ThumbnailComponent,
     ToolboxViewComponent,
+    UserTeamListComponent,
+    NewTeamDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,6 +84,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,
@@ -76,6 +97,14 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
     ModalWindowService,
     SocketService,
     ValidationService,
+    TeamService,
+  ],
+  entryComponents: [
+    ErrorDialogComponent,
+    NewDrawingComponent,
+    DeleteDrawingComponent,
+    ModifyDrawingComponent,
+    GalleryComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -84,5 +113,3 @@ export class AppModule {}
 
 // Note (Paul) :
 // - HttpClientModule --> mis dans les providers dans mon projet 2 précédent
-// - entryComponents: [LandingPageComponent, DrawingViewComponent] --> à mettre après les providers,
-// peut être utile pour les modales.

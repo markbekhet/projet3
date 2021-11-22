@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserRegistrationInfo } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
@@ -10,18 +10,17 @@ import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 
 @Component({
-  selector: 'app-register-page',
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.scss'],
 })
-export class RegisterPageComponent implements OnInit {
+export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
-    // private router: Router,
     private auth: AuthService,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.registerForm = this.formBuilder.group({
       firstName: formBuilder.control('', [Validators.required]),
@@ -60,16 +59,15 @@ export class RegisterPageComponent implements OnInit {
       this.auth.register(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (token) => {
-          console.log(this.auth.authentifiedUser);
-          // this.router.navigate(['/' + user.pseudo]);
+          this.router.navigate(['/home']);
         },
         (error) => {
           const errorCode = JSON.parse(
             (error as HttpErrorResponse).error
           ).message;
-          console.log(errorCode);
-          let interfaceErrorCode;
-          switch (errorCode) {
+          console.log(error);
+          // let interfaceErrorCode;
+          /* switch (errorCode) {
             case this.auth.DUPLICATE_EMAIL:
               interfaceErrorCode = 'Un compte avec ce courriel existe déjà !';
               break;
@@ -79,9 +77,9 @@ export class RegisterPageComponent implements OnInit {
               break;
             default:
               break;
-          }
+          } */
           this.errorDialog.open(ErrorDialogComponent, {
-            data: interfaceErrorCode,
+            data: errorCode,
           });
 
           this.resetForm();

@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { /* concatMap, */ tap } from 'rxjs/operators';
+import { /* catchError, */ tap } from 'rxjs/operators';
 
 import { UserRegistrationInfo, UserCredentials } from '@common/user';
-import { User } from '@models/UserMeta';
+import { /* Drawing, */ DrawingInfosForGallery } from '@models/DrawingMeta';
+import { UpdateUserInformation } from '@models/UserMeta';
+import { SocketService } from '@services/socket/socket.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000/';
-// const CONNECTION_PATH = 'connection/connect/';
-// const DISCONNECTION_PATH = 'connection/disconnect/';
-const REGISTER_PATH = 'register/';
-const LOGIN_PATH = 'login/';
-const DISCONNECT_PATH = 'user/disconnect/';
-const GET_PROFILE_PATH = 'user/profile/';
+const LOGIN = 'login/';
+const REGISTER = 'register/';
+const PROFILE = 'user/profile/';
+const DISCONNECT = 'user/disconnect/';
+const GALLERY = 'user/gallery/';
 
 @Injectable({
   providedIn: 'root',
@@ -30,17 +31,97 @@ export class AuthService {
   readonly DUPLICATE_USERNAME =
     'duplicate key value violates unique constraint "UQ_31b55a63ebb518f30d7e20dc922"';
 
-  readonly NULL_USER: User = {
-    token: '',
-  };
-  authentifiedUser: BehaviorSubject<User> = new BehaviorSubject<User>(
-    this.NULL_USER
+  readonly NULL_DRAWINGS: DrawingInfosForGallery[] = [];
+
+  token$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  $userDrawings = new BehaviorSubject<DrawingInfosForGallery[]>(
+    this.NULL_DRAWINGS
   );
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(
+    private httpClient: HttpClient,
+    private socketService: SocketService
+  ) {}
 
-  login(user: UserCredentials) {
-    /*
+  getToken() {
+    return this.token$.value;
+  }
+
+  private authenticateUser(token: string) {
+    if (token) this.token$.next(token);
+  }
+
+  login(userCreds: UserCredentials) {
+    return this.httpClient
+      .post(PATH + LOGIN, userCreds, { responseType: 'text' })
+      .pipe(
+        tap((token) => {
+          this.authenticateUser(token);
+        })
+      );
+  }
+
+  register(userInfos: UserRegistrationInfo): Observable<string> {
+    return this.httpClient
+      .post(PATH + REGISTER, userInfos, { responseType: 'text' })
+      .pipe(
+        tap((token) => {
+          this.authenticateUser(token);
+        })
+      );
+  }
+
+  disconnect(): Observable<string> {
+    return this.httpClient
+      .post(PATH + DISCONNECT + this.token$.value, null, {
+        responseType: 'text',
+      })
+      .pipe(
+        tap(() => {
+          this.token$.next('');
+          this.$userDrawings.next(this.NULL_DRAWINGS);
+          this.socketService.disconnect();
+        })
+      );
+  }
+
+  getPersonalGallery(): Observable<{ drawingList: DrawingInfosForGallery[] }> {
+    return this.httpClient
+      .get<{ drawingList: DrawingInfosForGallery[] }>(
+        PATH + GALLERY + this.getToken()
+      )
+      .pipe(
+        tap((data) => {
+          this.$userDrawings.next(data.drawingList);
+        })
+      );
+  }
+
+  public updateUserProfile(updatedUserProfile: UpdateUserInformation) {
+    return this.httpClient.put(
+      PATH + PROFILE + this.token$.value,
+      updatedUserProfile,
+      {
+        responseType: 'text',
+      }
+    );
+  }
+
+  // .pipe(catchError(this.handleGalleryError('getDrawings', [])));
+
+  // handleGalleryError(arg0: string, arg1: never[]): (err: any, caught: Observable<Drawing[]>) => import("rxjs").ObservableInput<any> {
+  //   throw new Error('Method not implemented.');
+  // }
+
+  // A little bit weird you dont need that
+  // passer socket id et username
+  /* {
+    socket_id: this.chat.getSocketID(),
+    username: username,
+  } */
+
+  /* login(userCreds: UserCredentials) {
     return this.httpClient.post(PATH + LOGIN_PATH, user, { responseType: 'text' })
     .pipe(tap(token => {
       registeredUser.token = token;
@@ -58,54 +139,4 @@ export class AuthService {
       this.authenticateUser(registeredUser);
     }));
     */
-    return this.httpClient
-      .post(PATH + LOGIN_PATH, user, { responseType: 'text' })
-      .pipe(
-        tap((token) => {
-          const loggedInUser: User = {
-            token,
-          };
-          this.authenticateUser(loggedInUser);
-        })
-      );
-  }
-
-  register(user: UserRegistrationInfo): Observable<string> {
-    return this.httpClient
-      .post(PATH + REGISTER_PATH, user, { responseType: 'text' })
-      .pipe(
-        tap((token) => {
-          const registeredUser: User = {
-            token,
-          };
-          this.authenticateUser(registeredUser);
-        })
-      );
-  }
-
-  // this.authentifiedUser.next(this.NULL_USER);
-  disconnect(): Observable<string> {
-    return this.httpClient.post(
-      PATH + DISCONNECT_PATH + this.authentifiedUser.value.token,
-      null,
-      { responseType: 'text' }
-    );
-  }
-
-  getProfile() {
-    return this.httpClient.get<User>(
-      PATH + GET_PROFILE_PATH + this.authentifiedUser.value.token
-    );
-  }
-
-  private authenticateUser(user: User) {
-    if (user.token) this.authentifiedUser.next(user);
-  }
-
-  // A little bit weird you dont need that
-  // passer socket id et username
-  /* {
-    socket_id: this.chat.getSocketID(),
-    username: username,
-  } */
 }

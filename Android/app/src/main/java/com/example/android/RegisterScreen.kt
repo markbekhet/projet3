@@ -305,6 +305,7 @@ fun CreateImageStringFromBitmap(): String {
 
 
                         startActivity(Intent(this, LandingPage::class.java))
+                        finish()
                     } else {
                         errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
                                 " adresse courriel ou le même pseudonyme."
