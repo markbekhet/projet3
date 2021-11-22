@@ -8,6 +8,10 @@ import { UserRegistrationInfo } from '@common/user';
 import { AuthService } from '@services/authentication/auth.service';
 import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
+import { Avatar, avatarList } from '@src/app/models/UserMeta';
+import { MatRadioChange } from '@angular/material/radio';
+import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
+import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
   templateUrl: './register-page.component.html',
@@ -15,13 +19,17 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 })
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
+  selectedRadio: boolean = true; //true: choisir avatar, false: televerser avatar
+  avatarList: Avatar[];
 
   constructor(
     private auth: AuthService,
     public errorDialog: MatDialog,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private windowService: ModalWindowService
   ) {
+    this.avatarList = avatarList;
     this.registerForm = this.formBuilder.group({
       firstName: formBuilder.control('', [Validators.required]),
       lastName: formBuilder.control('', [Validators.required]),
@@ -53,6 +61,7 @@ export class RegisterPage implements OnInit {
       pseudo: form.controls.username.value,
       emailAddress: form.controls.email.value,
       password: form.controls.password.value,
+      avatar: ''
     };
 
     try {
@@ -66,18 +75,6 @@ export class RegisterPage implements OnInit {
             (error as HttpErrorResponse).error
           ).message;
           console.log(error);
-          // let interfaceErrorCode;
-          /* switch (errorCode) {
-            case this.auth.DUPLICATE_EMAIL:
-              interfaceErrorCode = 'Un compte avec ce courriel existe déjà !';
-              break;
-            case this.auth.DUPLICATE_USERNAME:
-              interfaceErrorCode =
-                "Un compte avec ce nom d'utilisateur existe déjà !";
-              break;
-            default:
-              break;
-          } */
           this.errorDialog.open(ErrorDialogComponent, {
             data: errorCode,
           });
@@ -114,4 +111,17 @@ export class RegisterPage implements OnInit {
       avatar: this.formBuilder.control('', []),
     });
   }
+
+  selectAvatarOption(event: MatRadioChange) {
+    this.selectedRadio = !this.selectedRadio;
+    if (event.value === 'chooseAvatar') {
+      this.windowService.openDialog(UserProfileDialogComponent);
+    }
+
+  }
+
+  selectAvatar(avatar: string) {
+    alert(avatar);
+  }
+
 }

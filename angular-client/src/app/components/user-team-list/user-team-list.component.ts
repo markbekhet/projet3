@@ -25,7 +25,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   userId: string;
   constructor(private socketService: SocketService, private authService: AuthService,
      private teamService: TeamService, private readonly chatRoomService: ChatRoomService,
-      private router: Router, private interactionService: InteractionService,private windowService: ModalWindowService) {
+      private router: Router, private interactionService: InteractionService, private windowService: ModalWindowService) {
     this.userList = []
     this.teamList = []
     this.chatRoomList = []

@@ -12,6 +12,7 @@
       min-width: 300px;
       max-width: 400px;
     }
+
   }
 
   .form-container {
@@ -33,6 +34,11 @@
       width: 15%;
       margin: 15px 0 20px;
     }
+  }
+
+  .avatar {
+    display: inline-flex;
+    margin-right: 10px;
   }
 
   .footer {

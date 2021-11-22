@@ -50,6 +50,7 @@ import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-di
 import { TeamService } from './services/team/team.service';
 import { ChatRoomService } from './services/chat-room/chat-room.service';
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
+import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
 
 
 @NgModule({
@@ -78,6 +79,7 @@ import { UserProfileDialogComponent } from './components/user-profile-dialog/use
     UserTeamListComponent,
     NewTeamDialogComponent,
     UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -111,6 +113,7 @@ import { UserProfileDialogComponent } from './components/user-profile-dialog/use
     ModifyDrawingComponent,
     GalleryComponent,
     UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

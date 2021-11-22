@@ -50,14 +50,25 @@
             </mat-form-field>
             <br />
 
-            <!--
-            <mat-form-field>
-                <mat-label>Avatar</mat-label>
-                <input type="text" matInput placeholder="Avatar" formControlName="avatar" />
-                <mat-error *ngIf="checkError('avatar', 'required')">Un avatar est requis !</mat-error>
-            </mat-form-field>
-            <br />
-            -->
+            <mat-radio-group (change)="selectAvatarOption($event)">
+                    <mat-radio-button value="chooseAvatar" >Choisir un avatar prédéfini</mat-radio-button>
+                    <mat-radio-button value="uploadAvatar">Téléverser son avatar</mat-radio-button>
+            </mat-radio-group>
+
+            <div *ngIf="selectedRadio" class="logo-wrapper">
+                <!--<mat-radio-group>
+                    <mat-card *ngFor="let avatar of avatarList" class="avatar" (click)="selectAvatar(avatar.filename)">
+                        <img mat-card-sm-image src={{avatar.url}} alt="Logo ColorImage">
+                        <mat-card-actions>
+                            <mat-radio-button value={{avatar.filename}}>Choisir</mat-radio-button>
+                        </mat-card-actions>
+                    </mat-card>
+                </mat-radio-group>-->
+            </div>
+
+            <div *ngIf="!selectedRadio">
+
+            </div>
 
             <button mat-icon-button [disabled]="registerForm.invalid">
                 Créer <mat-icon>add</mat-icon>
@@ -66,7 +77,7 @@
 
             <div>
                 Si vous avez déjà un compte,
-                <a matLine routerLink="/login">cliquez ici</a>
+                <a matLine routerLink="/login">Cliquez ici</a>
                 pour vous connecter ! 🚀
             </div>
         </form>

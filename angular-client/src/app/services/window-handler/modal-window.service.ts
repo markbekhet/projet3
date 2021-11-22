@@ -8,6 +8,7 @@ import { ModifyDrawingComponent } from '@components/gallery-component/modify-dra
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { UserProfileDialogComponent } from '@src/app/components/user-profile-dialog/user-profile-dialog.component';
 import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
+import { AvatarDialogComponent } from '@src/app/components/avatar-dialog/avatar-dialog.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
@@ -16,6 +17,7 @@ type Component = ComponentType<
   | ModifyDrawingComponent
   | NewTeamDialogComponent
   | UserProfileDialogComponent
+  | AvatarDialogComponent
 >;
 
 @Injectable({
@@ -28,6 +30,7 @@ export class ModalWindowService {
   modifyDrawingConfig = new MatDialogConfig();
   galleryConfig = new MatDialogConfig();
   userProfileConfig = new MatDialogConfig();
+  avatarConfig = new MatDialogConfig();
 
   constructor(private dialog: MatDialog) {
     this.initNewDrawingDialogConfig();
@@ -36,6 +39,7 @@ export class ModalWindowService {
     this.initGalleryDialogConfig();
     this.initNewTeamDialogConfig();
     this.initUserProfileDialogConfig();
+    this.initAvatarDialogConfig();
   }
 
   initNewDrawingDialogConfig() {
@@ -105,6 +109,16 @@ export class ModalWindowService {
     this.userProfileConfig.data = undefined;
   }
 
+  initAvatarDialogConfig() {
+    this.avatarConfig.id = 'avatarDialog';
+    this.avatarConfig.height = '90vh';
+    this.avatarConfig.width = '85vw';
+    this.avatarConfig.minWidth = '600px';
+    this.avatarConfig.disableClose = false;
+    this.avatarConfig.hasBackdrop = true;
+    this.avatarConfig.restoreFocus = false;
+  }
+
   openDialog(component: Component, data?: any) {
     switch (component) {
       case NewDrawingComponent:
@@ -132,7 +146,11 @@ export class ModalWindowService {
         this.userProfileConfig.data = data;
         this.dialog.open(UserProfileDialogComponent, this.userProfileConfig);
         break;
-      default:
+      case AvatarDialogComponent:
+        this.closeDialogs();
+        this.dialog.open(AvatarDialogComponent, this.avatarConfig);
+        break;
+       default:
         break;
     }
   }
