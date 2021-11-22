@@ -43,8 +43,8 @@
 
             <mat-tab label="Statistiques">
                 <br>
-                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}} mins.</div>
-                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}} mins.</div>
+                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime! * 60000 | date:'mm:ss'}} mins.</div>
+                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime! * 60000 | date:'mm:ss'}} mins.</div>
                 <br>
                 <div class="info-field">Nombre d'équipes de collaboration: {{user.numberCollaborationTeams}}</div>
                 <div class="info-field">Nombre de dessins: {{user.numberAuthoredDrawings}}</div>
