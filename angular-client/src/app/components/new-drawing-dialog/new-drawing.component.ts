@@ -7,25 +7,26 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 
-import { Drawing } from '@models/DrawingMeta';
+import { Drawing, JoinDrawing } from '@models/DrawingMeta';
+import { Team } from '@models/teamsMeta';
 import {
   drawingVisibilityItems,
   DrawingVisibilityItem,
   DrawingVisibilityLevel,
 } from '@models/VisibilityMeta';
+
+import { AuthService } from '@services/authentication/auth.service';
 import { CanvasBuilderService } from '@services/canvas-builder/canvas-builder.service';
-//import { DrawingService } from '@services/drawing/drawing.service';
+import { InteractionService } from '@services/interaction/interaction.service';
+import { DrawingService } from '@services/drawing/drawing.service';
+import { SocketService } from '@services/socket/socket.service';
+import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
-import { JoinDrawing } from '@src/app/models/joinDrrawing';
-import { AuthService } from '@src/app/services/authentication/auth.service';
-import { DrawingService } from '@src/app/services/drawing/drawing.service';
-import { SocketService } from '@src/app/services/socket/socket.service';
-//import { UserToken } from '@src/app/services/static-services/user_token';
 
 @Component({
-  selector: 'app-new-drawing',
   templateUrl: './new-drawing.component.html',
   styleUrls: ['./new-drawing.component.scss'],
 })
@@ -36,7 +37,10 @@ export class NewDrawingComponent implements OnInit {
   drawingVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
-  //drawingID?: number;
+  currentTeams: Team[] = [];
+  assignedToTeam: boolean = false;
+  assignedTeam: Team | null = null;
+  // drawingID?: number;
   name: string = '';
   visibility: DrawingVisibilityLevel | null = null;
   password?: string = '';
@@ -57,19 +61,24 @@ export class NewDrawingComponent implements OnInit {
   };
 
   constructor(
+    private authService: AuthService,
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
     private router: Router,
+    private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
-    private authService: AuthService
+    private readonly interactionService: InteractionService
   ) {
     this.width = this.canvasBuilder.getDefWidth();
     this.height = this.canvasBuilder.getDefHeight();
     this.bgColor = this.canvasBuilder.getDefColor();
     this.drawingVisibilityItems = drawingVisibilityItems;
     this.userId = '';
+    this.teamService.activeTeams.value.forEach((team) => {
+      this.currentTeams.push(team);
+    });
   }
 
   ngOnInit(): void {
@@ -109,6 +118,7 @@ export class NewDrawingComponent implements OnInit {
         [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
       ],
       canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
+      teamAssignation: [null, []],
     });
     this.newDrawingForm.setValue({
       drawingName: this.name,
@@ -117,6 +127,7 @@ export class NewDrawingComponent implements OnInit {
       canvWidth: this.canvasBuilder.getDefWidth(),
       canvHeight: this.canvasBuilder.getDefHeight(),
       canvColor: this.canvasBuilder.getDefColor(),
+      teamAssignation: this.assignedTeam,
     });
   }
 
@@ -137,8 +148,7 @@ export class NewDrawingComponent implements OnInit {
     return this.visibility === DrawingVisibilityLevel.PROTECTED;
   }
 
-  async onSubmit() {
-    // TODO: To change while integrating with socket
+  onSubmit() {
     const VALUES = this.newDrawingForm.value;
 
     if (VALUES.drawingPassword === '') {
@@ -162,29 +172,41 @@ export class NewDrawingComponent implements OnInit {
       ) {
         throw new Error('Un mot de passe est requis');
       }
-      this.drawingService.createDrawing(this.newDrawing).subscribe((drawingIdServer: number)=>{
-        console.log(drawingIdServer);
-        let joinDrawing: JoinDrawing = {drawingId: drawingIdServer, userId: this.userId, password: this.password}
-        this.socketService.sendJoinDrawingRequest(joinDrawing);
-        this.closeModalForm();
-        this.router.navigate(['/draw']);
+      if (this.assignedToTeam) {
+        console.log(VALUES.teamAssignation.id);
+        this.newDrawing.ownerId = VALUES.teamAssignation.id;
+        if (VALUES.teamAssignation.id === undefined) {
+          throw new Error('Le dessin doit etre assigne a une equipe');
+        }
+        console.log(this.assignedTeam!.id);
+      }
+      this.drawingService
+        .createDrawing(this.newDrawing)
+        .subscribe((drawingIdFromServer: number) => {
+          console.log(drawingIdFromServer);
+          const joinDrawing: JoinDrawing = {
+            drawingId: drawingIdFromServer,
+            userId: this.userId,
+            password: this.password,
+          };
+          this.socketService.sendJoinDrawingRequest(joinDrawing);
+          this.closeModalForm();
+          this.interactionService.emitWipeSignal();
+          this.router.navigate(['/draw']);
 
-
-        const LOAD_TIME = 15;
-        setTimeout(() => {
-          window.dispatchEvent(new Event('resize'));
-        }, LOAD_TIME);
-      });
+          const LOAD_TIME = 15;
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, LOAD_TIME);
+        });
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
     }
-
-
   }
 
   closeModalForm(): void {
-    this.windowService.closeWindow();
+    this.windowService.closeDialogs();
   }
 
   get canvHeight(): AbstractControl | null {
@@ -208,6 +230,14 @@ export class NewDrawingComponent implements OnInit {
   onInput(): void {
     if (this.canvColor && this.canvColor.valid) {
       this.bgColor = this.canvColor.value;
+    }
+  }
+
+  assignationStatusChange(event: Event) {
+    if ((event as unknown as MatCheckboxChange).checked) {
+      this.assignedToTeam = true;
+    } else {
+      this.assignedToTeam = false;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { DrawingState } from "src/enumerators/drawing-state";
 import { DrawingVisibility } from "src/enumerators/visibility";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Drawing } from "../drawing/drawing.entity";
 import { User } from "../user/user.entity";
 
@@ -12,6 +12,7 @@ export class DrawingEditionHistory extends BaseEntity{
     @Column()
     action: string;
 
+    @Index()
     @ManyToOne(()=> User, user=> user.drawingEditionHistories, {onDelete:'CASCADE'})
     user:User;
 

@@ -1,0 +1,44 @@
+.form-container {
+    padding: 10px 20px 0px;
+}
+.new-team-form > *{
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+}
+
+/*#bioField{
+    height: 100px;
+    width :fit-content;
+    overflow-y: auto;
+    border:black;
+    border-width: 20px;
+}*/
+h1 {
+    text-align: center;
+}
+
+.new-team-form-input {
+    margin-bottom: 5px;
+}
+  
+.new-team-form-input-visibility {
+    margin-bottom: 20px;
+}
+  
+#submitButton {
+    margin-top: -15px;
+    margin-bottom: 12px;
+}
+.warnMessage {
+    font-size: 12px;
+    color: rgb(255, 46, 46);
+    position: absolute;
+    top: 65%;
+}
+  
+@media only screen and (max-width: 600px) {
+    h1 {
+      font-size: 20px;
+    }
+}
