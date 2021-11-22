@@ -245,10 +245,12 @@ export class DatabaseService {
             let user = await this.userRepo.findOne(drawing.ownerId);
             if(user === undefined){
                 let team = await this.teamRepo.findOne(drawing.ownerId);
-                let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
-                creationDate: drawing.creationDate, authorName: team.name, height: drawing.height, width: drawing.width,
-                ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
-                userGallery.push(galleryDrawing);
+                if(team!== undefined){
+                    let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
+                        creationDate: drawing.creationDate, authorName: team.name, height: drawing.height, width: drawing.width,
+                        ownerId: drawing.ownerId, bgColor: drawing.bgColor, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents}
+                        userGallery.push(galleryDrawing);
+                    }
             }
             else{
                 let galleryDrawing : DrawingGallery = {id: drawing.id, visibility: drawing.visibility, name: drawing.name,
@@ -368,7 +370,9 @@ export class DatabaseService {
             await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
         }
         else if(!updateName && updateVisibility){
-            let hashedPassword = await bcrypt.hash(dto.password, 10)
+            let hashedPassword = null;
+            if(dto.newVisibility === DrawingVisibility.PROTECTED)
+                hashedPassword = await bcrypt.hash(dto.password, 10)
             await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: hashedPassword});
         }
         else if(updateName && updateVisibility){
@@ -378,7 +382,9 @@ export class DatabaseService {
                     await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
                 }
             }
-            let hashedPassword = await bcrypt.hash(dto.password, 10)
+            let hashedPassword = null;
+            if(dto.newVisibility === DrawingVisibility.PROTECTED)
+                hashedPassword = await bcrypt.hash(dto.password, 10)
             await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: hashedPassword});
         }
         if(updateVisibility){
