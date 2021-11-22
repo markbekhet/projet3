@@ -65,4 +65,12 @@ class JoinTeamDto(
     }
 }
 
+class CantJoin(
+    var message: String = ""
+){
+    fun fromJson(json: String): CantJoin{
+        return Gson().fromJson(json, CantJoin::class.java)
+    }
+}
+
 

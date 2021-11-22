@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.*
-import com.example.android.client.Gallery
+import com.example.android.Gallery
 import com.example.android.profile.OwnProfile
 import com.example.android.team.*
 import com.google.gson.Gson
@@ -40,6 +40,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
     private var chatFragmentTransaction: FragmentTransaction? = null
     var gallery  = GalleryDrawing()
     var response: Response<ResponseBody>?=null
+    private val galleryDraws = Gallery()
     private var displayDrawingGallery : RecyclerView?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         SocketHandler.establishChatSocketConnection()
         val manager = supportFragmentManager
         val galleryFragmentTransaction = manager.beginTransaction()
-        val galleryDraws = Gallery()
 
         galleryFragmentTransaction.replace(R.id.gallery_frame, galleryDraws).commit()
 
@@ -172,10 +172,13 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
                     }
                     ClientInfo.usersList.userList!!.add(userUpdated)
                 }
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                try{
+                    usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                }catch(e: Exception){}
             }
 
         }
+
 
         socketUpdatesForUsersAndTeam(chatSocket, usersAndTeamsFragment)
         /*========================================================================================*/
@@ -209,6 +212,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
         disconnect.setOnClickListener {
             disconnect()
+            finish()
         }
         /*=======================================================================================*/
     }
@@ -223,8 +227,6 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         chatSocket?.disconnect()
-        drawingSocket?.disconnect()
-        finish()
     }
 
     fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
@@ -241,6 +243,7 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
 
     override fun onBackPressed() {
         disconnect()
+        super.onBackPressed()
     }
 
     override fun switchChatRoom(name: String) {
@@ -248,6 +251,23 @@ class LandingPage : AppCompatActivity(), ChatRoomSwitcher {
             chatFragmentTransaction!!.replace(R.id.landingPageChatsFrame,
                 chatRoomsFragmentMap[name]!!)
         }
+    }
+
+    override fun onRestart() {
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(gallery.drawingList!!)
+        }
+        super.onRestart()
     }
 }
 
@@ -305,13 +325,14 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
 
         createTeam?.setOnClickListener() {
             var canProcessQuery = true
-            if (newDrawing.visibility == Visibility.protectedVisibility.int) {
+            if (createTeamDto.visibility == Visibility.protectedVisibility.int) {
                 if (teamPassword.text.isBlank() || teamPassword.text.isEmpty()) {
                     canProcessQuery = false
                     errorTeam.text = "Le mot de passe est obligatoire et" +
                         " ne peut pas être composé seulemwnt d'espaces quand le dessin est protégé"
                 } else {
                     createTeamDto.password = teamPassword.text.toString()
+                    println(createTeamDto.password)
                 }
             } else {
                 createTeamDto.password = null
@@ -321,6 +342,7 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
             createTeamDto.name = teamName.text.toString()
             createTeamDto.ownerId = ClientInfo.userId
 
+            println(createTeamDto.password)
             teamPassword.text.clear()
             nbCollaborators.text.clear()
             teamName.text.clear()
@@ -355,8 +377,10 @@ internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(c
                     }
 
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du l'équipe." +
-                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
+                    context.runOnUiThread{
+                        Toast.makeText(context, response!!.errorBody()!!.string(),
+                            Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

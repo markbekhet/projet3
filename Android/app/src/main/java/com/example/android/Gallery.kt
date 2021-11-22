@@ -1,4 +1,4 @@
-package com.example.android.client
+package com.example.android
 
 import android.content.Context
 import android.content.Intent
@@ -19,6 +19,8 @@ import com.example.android.SocketHandler
 import com.example.android.canvas.*
 import com.example.android.chat.ServerMessage
 import com.example.android.chat.UserMessage
+import com.example.android.client.ClientInfo
+import com.example.android.client.ClientService
 import com.example.android.delete
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -75,10 +77,28 @@ class Gallery :  Fragment() {
         }
     }
 
-    fun startDrawingActivity(){
-        startActivity(Intent(this.context, Drawing::class.java))
+    fun startDrawingActivity(data: String, drawingID: Int){
+        val bundle = Bundle()
+        bundle.putInt("drawingID", drawingID)
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this.context, Drawing::class.java).putExtras(bundle))
+    }
+
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this.context, JoinProtected::class.java).putExtras(bundle))
+    }
+
+    fun startModifyingActivity(information: ReceiveDrawingInformation){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", information.toJson())
+
+        startActivity(Intent(this.context, ModifyDrawingParams::class.java).putExtras(bundle))
     }
 }
+
+
 class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     private var information: ReceiveDrawingInformation?= null
     private var clientService = ClientService()
@@ -91,6 +111,10 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         if(ClientInfo.userId == information!!.ownerId){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
+            viewHolder.itemView.modify.setOnClickListener {
+                fragment.startModifyingActivity(information!!)
+            }
+
             viewHolder.itemView.delete.setOnClickListener{
                 var response: Response<ResponseBody>?= null
                 val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)
@@ -115,7 +139,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.delete.isVisible= false
         }
         viewHolder.itemView.name.text = information!!.name
-        val canvas = GalleryCanvasView(information!!.id!!, fragment.requireContext())
+        val canvas = GalleryCanvasView(information!!.width!!, information!!.height!!,information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
         canvas.setBackgroundColor(
             Color.parseColor("#ff${information!!.bgColor}"))
@@ -126,20 +150,25 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
-            DrawingUtils.currentDrawingId = information!!.id!!
-            var joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
-                ClientInfo.userId)
+            if(information!!.visibility != Visibility.protectedVisibility.int){
+                val drawingID = information!!.id!!
+                val joinRequest = JoinDrawingDto(drawingID,
+                    ClientInfo.userId)
 
-            SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
-            var i = 0
-            SocketHandler.getChatSocket()!!.on("drawingInformations"){ args ->
-                if(args[0]!=null && i==0){
-                    val data = args[0] as String
-                    DrawingUtils.drawingInformation = AllDrawingInformation().fromJson(data)
-                    fragment.startDrawingActivity()
-                    i++
+                SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("drawingInformations"){ args ->
+                    if(args[0]!=null && i==0){
+                        val data = args[0] as String
+                        fragment.startDrawingActivity(data, drawingID)
+                        i++
+                    }
                 }
             }
+            else{
+                fragment.startJoinProtectedActivity(information!!.toJson())
+            }
+
         }
 
     }

@@ -60,12 +60,18 @@ data class ConnectionDisconnectionHistories(
 
 data class DrawingEditionHistories(
     var id: Int? = null,
+    var drawingStae: Int? = null,
     var action: String? = null,
     var drawingName: String?= null,
     var drawingId: Int?= null,
     var drawingVisibility: Int?= null,
     var date: String? = null
 )
+
+enum class DrawingAvailability(var i: Int){
+    AVAILABLE(0),
+    DELETED(1)
+}
 
 data class ActiveUser(var userId:String?= null){
     fun fromJson(json:String): ActiveUser{

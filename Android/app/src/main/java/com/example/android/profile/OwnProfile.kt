@@ -64,8 +64,10 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.show()
             modifyParamsDialog!!.setOnDismissListener {
                 val newData = intent.extras!!.getString("newProfileInformation")
-                val dataForm = UserProfileInformation().fromJson(newData)
-                updateUI(dataForm)
+                if(newData != null){
+                    val newDataForm = UserProfileInformation().fromJson(newData)
+                    updateUI(newDataForm)
+                }
             }
 
         }

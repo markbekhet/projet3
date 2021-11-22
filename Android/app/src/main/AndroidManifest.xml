@@ -14,6 +14,12 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".JoinProtected"
+            android:exported="true" />
+        <activity
+            android:name=".ModifyDrawingParams"
+            android:exported="true" />
+        <activity
             android:name=".team.TeamActivity"
             android:exported="true" />
         <activity
@@ -21,15 +27,14 @@
             android:exported="true"
             android:label="@string/title_activity_createdraw"
             android:theme="@style/Theme.Android.NoActionBar" />
-
         <activity
             android:name=".Drawing"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".LandingPage"
             android:exported="true"
             android:label="@string/title_activity_landing_page"
-            android:theme="@style/Theme.Android.NoActionBar"/>
+            android:theme="@style/Theme.Android.NoActionBar" />
         <activity
             android:name=".profile.HistoryAndStatistics"
             android:exported="true" />
@@ -63,7 +68,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-      <activity
+        <activity
             android:name=".MainActivity"
             android:exported="true" />
     </application>

@@ -10,22 +10,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
+import com.example.android.JoinProtected
 import com.example.android.R
 import com.example.android.SocketHandler
-import com.example.android.canvas.AllDrawingInformation
-import com.example.android.canvas.DrawingUtils
-import com.example.android.canvas.JoinDrawingDto
-import com.example.android.canvas.ReceiveDrawingInformation
-import com.example.android.client.ClientInfo
-import com.example.android.client.ConnectionDisconnectionHistories
-import com.example.android.client.DrawingEditionHistories
-import com.example.android.client.UserProfileInformation
+import com.example.android.canvas.*
+import com.example.android.client.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import kotlinx.android.synthetic.main.activity_history_and_statistics.*
 import kotlinx.android.synthetic.main.collaboration_history.view.*
 import kotlinx.android.synthetic.main.connection_disconnection_item.view.*
 import kotlinx.android.synthetic.main.createdraw.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -37,18 +38,43 @@ class HistoryAndStatistics : AppCompatActivity() {
     private var disconnectionAdapter: GroupAdapter<GroupieViewHolder>? = null
     private var collaborationArray: ArrayList<DrawingEditionHistories>? = null
     private var collaborationAdapter: GroupAdapter<GroupieViewHolder>? = null
+    private var userInfo = UserProfileInformation()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
         val data = intent.extras!!.getString("profileInformation")
-        val userInfo = UserProfileInformation().fromJson(data)
-        val meanCollaborationTime:TextView = findViewById(R.id.meanCollaborationTime)
-        val totalCollaborationTime: TextView = findViewById(R.id.totalCollaborationTime)
-        val teamCount: TextView = findViewById(R.id.teamCount)
-        val drawingAuthorCount: TextView = findViewById(R.id.drawingAuthorCount)
-        val drawingCollaborationCount: TextView = findViewById(R.id.drawingCollaborationCount)
+        userInfo = UserProfileInformation().fromJson(data)
 
+        val connectionLayoutManager = LinearLayoutManager(this)
+        connectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        recycle_view_connection.layoutManager = connectionLayoutManager
+
+        val disconnectionLayoutManager = LinearLayoutManager(this)
+        disconnectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        recycle_view_disconnection?.layoutManager = disconnectionLayoutManager
+
+
+        val collaborationLayoutManager = LinearLayoutManager(this)
+        collaborationLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        recycle_view_collaborations.layoutManager = collaborationLayoutManager
+
+        updateUI()
+    }
+    fun startDrawingActivity(data: String, drawingID: Int){
+        val bundle = Bundle()
+        bundle.putInt("drawingID", drawingID)
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this, Drawing::class.java).putExtras(bundle))
+    }
+
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("drawingInformation", data)
+        startActivity(Intent(this, JoinProtected::class.java).putExtras(bundle))
+    }
+
+    fun updateUI(){
         meanCollaborationTime.text =
             userInfo.averageCollaborationTime.toString()
         totalCollaborationTime.text =
@@ -60,85 +86,70 @@ class HistoryAndStatistics : AppCompatActivity() {
         drawingCollaborationCount.text =
             userInfo.numberCollaboratedDrawings.toString()
 
-        val connectionRecycleView: RecyclerView? =
-            findViewById(R.id.recycle_view_connection)
-
-
-        val connectionLayoutManager = LinearLayoutManager(this)
-        connectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        connectionRecycleView?.layoutManager = connectionLayoutManager
         connectionArray = userInfo.getConnectionHistory()
-
-        fun setConnectionHistory(){
-            connectionAdapter = GroupAdapter<GroupieViewHolder>()
-            for(connection in connectionArray!!){
-                val connectionInstance = ConnectionDisconnectionEntry()
-                connectionInstance.set(connection.date)
-                connectionAdapter?.add(connectionInstance)
-            }
-            runOnUiThread {
-                connectionRecycleView?.adapter = connectionAdapter
-            }
-
-        }
-
         setConnectionHistory()
 
-        val disconnectionRecycleView: RecyclerView? =
-            findViewById(R.id.recycle_view_disconnection)
-        val disconnectionLayoutManager = LinearLayoutManager(this)
-        disconnectionLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        disconnectionRecycleView?.layoutManager = disconnectionLayoutManager
-
         disconnectionArray = userInfo.getDisconnectionHistory()
-        fun setDisconnectionHistory(){
-            disconnectionAdapter = GroupAdapter<GroupieViewHolder>()
-            for(disconnection in disconnectionArray!!){
-                val disconnectionInstance = ConnectionDisconnectionEntry()
-                disconnectionInstance.set(disconnection.date)
-                disconnectionAdapter?.add(disconnectionInstance)
-            }
-            runOnUiThread {
-                disconnectionRecycleView?.adapter = disconnectionAdapter
-            }
-        }
-
         setDisconnectionHistory()
 
-        val collaborationRecycleView: RecyclerView? =
-            findViewById(R.id.recycle_view_collaborations)
-        val collaborationLayoutManager = LinearLayoutManager(this)
-        collaborationLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        collaborationRecycleView?.layoutManager = collaborationLayoutManager
-
         collaborationArray = userInfo.getDrawingHistories()
-        fun setCollaborationHistory(){
-            collaborationAdapter = GroupAdapter<GroupieViewHolder>()
-            for(collaboration in collaborationArray!!){
-                val collaborationInstance = CollaborationEntry(this)
-                collaboration.drawingId?.let {
-                    collaboration.date?.let { it1 ->
-                        collaboration.drawingVisibility?.let { it2 ->
-                            collaboration.drawingName?.let { it3 ->
-                                collaborationInstance.set(
-                                    it, it1,
-                                    it2, it3
-                                )
-                            }
-                        }
-                    }
-                }
-                collaborationAdapter?.add(collaborationInstance)
-            }
-            runOnUiThread {
-                collaborationRecycleView?.adapter = collaborationAdapter
-            }
-        }
-
         setCollaborationHistory()
     }
-    fun startDrawingActivity(){
-        startActivity(Intent(this, Drawing::class.java))
+
+    fun setDisconnectionHistory(){
+        disconnectionAdapter = GroupAdapter<GroupieViewHolder>()
+        for(disconnection in disconnectionArray!!){
+            val disconnectionInstance = ConnectionDisconnectionEntry()
+            disconnectionInstance.set(disconnection.date)
+            disconnectionAdapter?.add(disconnectionInstance)
+        }
+        runOnUiThread {
+            recycle_view_disconnection?.adapter = disconnectionAdapter
+        }
+    }
+
+    fun setCollaborationHistory(){
+        collaborationAdapter = GroupAdapter<GroupieViewHolder>()
+        for(collaboration in collaborationArray!!){
+            val collaborationInstance = CollaborationEntry(this)
+            collaborationInstance.set(collaboration)
+
+            collaborationAdapter?.add(collaborationInstance)
+        }
+        runOnUiThread {
+            recycle_view_collaborations?.adapter = collaborationAdapter
+        }
+    }
+
+    fun setConnectionHistory(){
+        connectionAdapter = GroupAdapter<GroupieViewHolder>()
+        for(connection in connectionArray!!){
+            val connectionInstance = ConnectionDisconnectionEntry()
+            connectionInstance.set(connection.date)
+            connectionAdapter?.add(connectionInstance)
+        }
+        runOnUiThread {
+            recycle_view_connection?.adapter = connectionAdapter
+        }
+
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        //maybe change it back to socket later
+        val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+        SocketHandler.getChatSocket().emit("getUserProfileRequest", profileRequest.toJson())
+        var i = 0
+        SocketHandler.getChatSocket().on("profileToClient"){ args ->
+            if(args[0]!=null && i==0){
+                val data = args[0] as String
+                userInfo = UserProfileInformation().fromJson(data)
+                runOnUiThread{
+                    updateUI()
+                }
+                i++
+            }
+        }
     }
 }
 
@@ -161,41 +172,49 @@ class ConnectionDisconnectionEntry : Item<GroupieViewHolder>() {
 
 class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewHolder>() {
 
-    private var date: String ?= null
-    private var drawingId: Int?= null
-    private var drawingName: String?=null
-    private var visibility: Int?=null
+    private var collaboration:DrawingEditionHistories?= null
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.collaborationTime.text = date
-        viewHolder.itemView.drawingName.text = drawingName
-        viewHolder.itemView.join.setOnClickListener {
-            DrawingUtils.currentDrawingId = drawingId!!
-            val joinRequest = JoinDrawingDto(
-                DrawingUtils.currentDrawingId,
-                ClientInfo.userId)
-            var i = 0
-            SocketHandler.getChatSocket()!!.emit("joinDrawing", joinRequest.toJson())
-            SocketHandler.getChatSocket()!!.on("drawingInformations") { args ->
-                if (args[0] != null && i == 0) {
-                    val data = args[0] as String
-                    DrawingUtils.drawingInformation =
-                        AllDrawingInformation().fromJson(data)
-                    activity.startDrawingActivity()
-                    i++
+        viewHolder.itemView.collaborationTime.text = collaboration!!.date
+        viewHolder.itemView.drawingName.text = collaboration!!.drawingName
+        if(collaboration!!.drawingStae == DrawingAvailability.DELETED.i){
+            viewHolder.itemView.join.isClickable = false
+            viewHolder.itemView.join.isEnabled = false
+        } else{
+            viewHolder.itemView.join.isClickable = true
+            viewHolder.itemView.join.isEnabled = true
+            viewHolder.itemView.join.setOnClickListener {
+                if(collaboration!!.drawingVisibility != Visibility.protectedVisibility.int){
+                    val drawingID = collaboration!!.drawingId!!
+                    val joinRequest = JoinDrawingDto(
+                        drawingID,
+                        ClientInfo.userId)
+                    var i = 0
+                    SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
+                    SocketHandler.getChatSocket().on("drawingInformations") { args ->
+                        if (args[0] != null && i == 0) {
+                            val data = args[0] as String
+                            activity.startDrawingActivity(data, drawingID)
+                            i++
+                        }
+                    }
+                }
+
+                else{
+                    val drawingData = ReceiveDrawingInformation(id= collaboration!!.drawingId,
+                        name=collaboration!!.drawingName)
+                    activity.startJoinProtectedActivity(drawingData.toJson())
                 }
             }
         }
+
     }
 
     override fun getLayout(): Int {
         return R.layout.collaboration_history
     }
 
-    fun set(drawingId: Int, date: String, visibility: Int, drawingName: String){
-        this.date = date
-        this.drawingId = drawingId
-        this.drawingName = drawingName
-        this.visibility =  visibility
+    fun set(collaboration: DrawingEditionHistories){
+        this.collaboration = collaboration
     }
 }
