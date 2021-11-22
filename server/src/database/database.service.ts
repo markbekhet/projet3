@@ -368,7 +368,8 @@ export class DatabaseService {
             await this.drawingRepo.update(dto.drawingId, {name: dto.newName});
         }
         else if(!updateName && updateVisibility){
-            await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: dto.password});
+            let hashedPassword = await bcrypt.hash(dto.password, 10)
+            await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: hashedPassword});
         }
         else if(updateName && updateVisibility){
             await this.chatRoomRepo.update(chatRoom.id, {name: dto.newName})
@@ -377,7 +378,8 @@ export class DatabaseService {
                     await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
                 }
             }
-            await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: dto.password});
+            let hashedPassword = await bcrypt.hash(dto.password, 10)
+            await this.drawingRepo.update(dto.drawingId, {name: dto.newName, visibility: dto.newVisibility, password: hashedPassword});
         }
         if(updateVisibility){
             drawing.visibility = dto.newVisibility;
