@@ -158,15 +158,6 @@ class LandingPage : AppCompatActivity(){
                         // for the message to be unique in the array list
                     ChatRooms.chats[roomName]!!.add(messageFromServer)
                     chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                    val notificationManager = ContextCompat.getSystemService(
-                        this,
-                        NotificationManager::class.java
-                    ) as NotificationManager
-
-                    notificationManager.sendNotification(
-                        messageFromServer.message!!,
-                        this
-                    )
                 }
                 catch(e: Exception){}
             }
@@ -231,7 +222,7 @@ class LandingPage : AppCompatActivity(){
 
         disconnect.setOnClickListener {
             disconnect()
-            finish()
+            finishAndRemoveTask()
         }
 
         showChat.setOnClickListener {
@@ -285,6 +276,27 @@ class LandingPage : AppCompatActivity(){
         galleryDraws.set(ClientInfo.gallery.drawingList)
         super.onResume()
     }
+
+    /*override fun onPause(){
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null) {
+                val data = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(data)
+                try {
+                    val notificationManager = ContextCompat.getSystemService(
+                        this,
+                        NotificationManager::class.java
+                    ) as NotificationManager
+                    notificationManager.sendNotification(
+                        messageFromServer.message!!,
+                        this
+                    )
+                } catch (e: Exception) {
+                }
+            }
+        }
+        super.onPause()
+    }*/
 }
 
 
