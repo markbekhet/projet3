@@ -72,13 +72,15 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-
+    // to receiving the drawing informations after join
     this.socketService
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations)=>{
         this.interactionService.drawingInformations.next(drawingInformations.drawing);
         this.router.navigate(['/draw']);
       })
+
+    // Getting user gallery
     this.authService
       .getPersonalGallery()
       .subscribe((data: { drawingList: DrawingInfosForGallery[] }) => {
@@ -101,6 +103,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         );
       });
 
+      //Increasing number collaborators for a drawing when another user joins the drawing
       this.socketService.socket!.on("nbCollaboratorsDrawingIncreased", (data: any)=>{
         let drawingModified: {drawingId: number} = JSON.parse(data);
         this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
@@ -110,6 +113,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         })
       })
 
+      // Reducing number collaborators for a drawing when another user leaves the drawing
       this.socketService.socket!.on("nbCollaboratorsDrawingReduced", (data: any)=>{
         let drawingModified: {drawingId: number} = JSON.parse(data);
         this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
@@ -119,6 +123,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         })
       })
 
+      //Receiving notification when a drawing is deleted
       this.socketService.socket!.on("drawingDeleted", (data: any)=>{
         let drawingDeleted: {id: number} = JSON.parse(data);
         let deleted = false;
@@ -129,7 +134,10 @@ export class GalleryComponent implements OnInit, AfterViewInit {
             this.shownDrawings.splice(index, 1)
           }
         })
+        //TODO: Handle case that the drawing is private but is a proprety of a team
       })
+
+      // Receiving when a drawing is created
       this.socketService.socket!.on("newDrawingCreated", (darwingString:any)=>{
         let drawing: DrawingInfosForGallery = JSON.parse(darwingString);
         if(drawing.visibility !== DrawingVisibilityLevel.PRIVATE || (drawing.visibility === DrawingVisibilityLevel.PRIVATE && drawing.ownerId! === this.getAuthenticatedUserID())){
@@ -145,6 +153,41 @@ export class GalleryComponent implements OnInit, AfterViewInit {
           })
         }
         // Add else statement if the drawing is private but associated to a team that we have joined
+      })
+
+      this.socketService.socket!.on("drawingModified", (data: any)=>{
+        let drawingInfosForGallery: DrawingInfosForGallery = JSON.parse(data);
+        let isUserGallery = drawingInfosForGallery.visibility !== DrawingVisibilityLevel.PRIVATE ||
+         (drawingInfosForGallery.ownerId! === this.getAuthenticatedUserID() &&
+          drawingInfosForGallery.visibility === DrawingVisibilityLevel.PRIVATE)
+        let found = false;
+        this.shownDrawings.forEach((drawing:DrawingShownInGallery)=>{
+          if(drawing.infos.id === drawingInfosForGallery.id){
+            console.log('drawing found')
+            found = true;
+            if(!isUserGallery){
+              this.shownDrawings.splice(this.shownDrawings.indexOf(drawing), 1)
+            }
+            else{
+              console.log('modifying the name')
+              console.log(drawingInfosForGallery.name)
+              drawing.infos.name = drawingInfosForGallery.name;
+              drawing.infos.visibility = drawingInfosForGallery.visibility;
+            }
+          }
+        })
+        if(!found && isUserGallery){
+          const svg = this.createSVG(
+            drawingInfosForGallery.contents,
+            drawingInfosForGallery.width,
+            drawingInfosForGallery.height,
+            drawingInfosForGallery.bgColor,
+          )
+          this.shownDrawings.push({
+            infos: drawingInfosForGallery,
+            thumbnail: svg
+          })
+        }
       })
   }
 
