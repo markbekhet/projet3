@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
@@ -33,8 +34,6 @@ import retrofit2.Response
 
 
 val clientService = ClientService()
-var decodedString = Base64.decode(userInformation.avatar, Base64.DEFAULT)
-var decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 fun getProfile():UserProfileInformation{
     var ret = UserProfileInformation()
     var response: Response<ResponseBody>?= null
@@ -75,8 +74,8 @@ class OwnProfile : AppCompatActivity() {
             lastName.text = userInformation.lastName
             nickname.text = userInformation.pseudo
             firstName.text = userInformation.firstName
-            decodedString = Base64.decode(userInformation.avatar, Base64.DEFAULT)
-            decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            val decodedString = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
             Glide.with(this).load(decodedByte).fitCenter().into(avatarImage);
 
 
@@ -88,7 +87,7 @@ class OwnProfile : AppCompatActivity() {
 
         modifyParams.setOnClickListener{
             modifyParamsDialog = ModifyParams(this, email,
-                lastName, firstName, nickname)
+                lastName, firstName, nickname,avatarImage)
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
         }
@@ -108,12 +107,13 @@ class OwnProfile : AppCompatActivity() {
 }
 
 class ModifyParams(context: Context, email: TextView,
-                   lastName: TextView, firstName: TextView, nickname: TextView) : Dialog(context){
+                   lastName: TextView, firstName: TextView, nickname: TextView,avatar: ImageView) : Dialog(context){
 
     private var emailValue = email
     private var lastNameValue = lastName
     private var firstNameValue = firstName
     private var nicknameValue = nickname
+    private var avatar =avatar
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -266,8 +266,8 @@ class ModifyParams(context: Context, email: TextView,
                     }
                 }
                 if(response!!.isSuccessful){
-                    updateUI(this.emailValue, this.lastNameValue,
-                        firstNameValue, nicknameValue)
+//                    updateUI(this.emailValue, this.lastNameValue,
+//                        firstNameValue, nicknameValue,avatar= avatar)
                     dismiss()
                 }
                 else{
