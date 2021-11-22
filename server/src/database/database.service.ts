@@ -382,6 +382,9 @@ export class DatabaseService {
         if(updateVisibility){
             drawing.visibility = dto.newVisibility;
         }
+        if(updateName){
+            drawing.name = dto.newName;
+        }
         drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone: "America/New_York"})
         let drawingMod: DrawingGallery = {id: dto.drawingId, visibility: drawing.visibility, name: drawing.name,
              bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, contents: drawing.contents,
