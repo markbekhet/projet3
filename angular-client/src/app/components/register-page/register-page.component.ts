@@ -10,8 +10,8 @@ import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { Avatar, avatarList } from '@src/app/models/UserMeta';
 import { MatRadioChange } from '@angular/material/radio';
-import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
 
 @Component({
   templateUrl: './register-page.component.html',
@@ -19,8 +19,8 @@ import { ModalWindowService } from '@src/app/services/window-handler/modal-windo
 })
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
-  selectedRadio: boolean = true; //true: choisir avatar, false: televerser avatar
   avatarList: Avatar[];
+  selectedAvatar!: Avatar;
 
   constructor(
     private auth: AuthService,
@@ -113,15 +113,24 @@ export class RegisterPage implements OnInit {
   }
 
   selectAvatarOption(event: MatRadioChange) {
-    this.selectedRadio = !this.selectedRadio;
-    if (event.value === 'chooseAvatar') {
-      this.windowService.openDialog(UserProfileDialogComponent);
+    switch(event.value) {
+      case 'selectAvatar':
+        this.selectAvatar();
+        break;
+      case 'uploadAvatar':
+        break;
     }
-
   }
 
-  selectAvatar(avatar: string) {
-    alert(avatar);
+  private selectAvatar() {
+    const ref = this.windowService.openDialog(AvatarDialogComponent);
+    ref!.afterClosed().subscribe(result => {
+      const avatar: Avatar = result;
+      //set la valeur dans le form
+      this.selectedAvatar = avatar;
+    })
+
+
   }
 
 }

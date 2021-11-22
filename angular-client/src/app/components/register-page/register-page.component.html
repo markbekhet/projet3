@@ -3,70 +3,55 @@
         <img src="../../../assets/logos/register-page_logo.png" alt="Logo ColorImage" class="logo">
     </div>
 
-    <div class="form-container">
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit(registerForm)">
-            <mat-form-field class="username-field">
-                <mat-label>Nom d'utilisateur</mat-label>
-                <input type="text" matInput formControlName="username" required />
-                <mat-error *ngIf="checkError('username', 'required')">Un nom d'utilisateur est requis !</mat-error>
-                <mat-error *ngIf="
-						checkError('username', 'invalidUsername') &&
-						!checkError('username', 'required')
-					">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
-            </mat-form-field>
-            <br />
+    <div class="grid">
+        <div class="form-container">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit(registerForm)">
+                <mat-form-field class="username-field">
+                    <mat-label>Nom d'utilisateur</mat-label>
+                    <input type="text" matInput formControlName="username" required />
+                    <mat-error *ngIf="checkError('username', 'required')">Un nom d'utilisateur est requis !</mat-error>
+                    <mat-error *ngIf="
+                            checkError('username', 'invalidUsername') &&
+                            !checkError('username', 'required')
+                        ">Ceci n'est pas un nom d'utilisateur valide !</mat-error>
+                </mat-form-field>
+                <br />
 
-            <mat-form-field class="firstname-field">
-                <mat-label>Prénom</mat-label>
-                <input type="text" matInput formControlName="firstName" required />
-                <mat-error *ngIf="checkError('firstName', 'required')">Un prénom est requis !</mat-error>
-            </mat-form-field>
-            <br />
+                <mat-form-field class="firstname-field">
+                    <mat-label>Prénom</mat-label>
+                    <input type="text" matInput formControlName="firstName" required />
+                    <mat-error *ngIf="checkError('firstName', 'required')">Un prénom est requis !</mat-error>
+                </mat-form-field>
+                <br />
 
-            <mat-form-field class="lastname-field">
-                <mat-label>Nom</mat-label>
-                <input type="text" matInput formControlName="lastName" required />
-                <mat-error *ngIf="checkError('lastName', 'required')">Un nom est requis !</mat-error>
-            </mat-form-field>
-            <br />
+                <mat-form-field class="lastname-field">
+                    <mat-label>Nom</mat-label>
+                    <input type="text" matInput formControlName="lastName" required />
+                    <mat-error *ngIf="checkError('lastName', 'required')">Un nom est requis !</mat-error>
+                </mat-form-field>
+                <br />
 
-            <mat-form-field class="email-field">
-                <mat-label>Adresse courriel</mat-label>
-                <input type="email" matInput formControlName="email" required />
-                <mat-error *ngIf="checkError('email', 'required')">Une adresse courriel est requise !</mat-error>
-                <mat-error *ngIf="
-						checkError('email', 'invalidEmail') &&
-						!checkError('email', 'required')
-					">Ceci n'est pas une adresse courriel valide !</mat-error>
-            </mat-form-field>
-            <br />
+                <mat-form-field class="email-field">
+                    <mat-label>Adresse courriel</mat-label>
+                    <input type="email" matInput formControlName="email" required />
+                    <mat-error *ngIf="checkError('email', 'required')">Une adresse courriel est requise !</mat-error>
+                    <mat-error *ngIf="
+                            checkError('email', 'invalidEmail') &&
+                            !checkError('email', 'required')
+                        ">Ceci n'est pas une adresse courriel valide !</mat-error>
+                </mat-form-field>
+                <br />
 
-            <mat-form-field class="password-field">
-                <mat-label>Mot de passe</mat-label>
-                <input type="password" matInput formControlName="password" required />
-                <mat-error *ngIf="checkError('password', 'required')">Un mot de passe est requis !</mat-error>
-                <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">Ceci
-                    n'est pas un mot de passe valide !</mat-error>
-            </mat-form-field>
-            <br />
+                <mat-form-field class="password-field">
+                    <mat-label>Mot de passe</mat-label>
+                    <input type="password" matInput formControlName="password" required />
+                    <mat-error *ngIf="checkError('password', 'required')">Un mot de passe est requis !</mat-error>
+                    <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">Ceci
+                        n'est pas un mot de passe valide !</mat-error>
+                </mat-form-field>
+                <br />
 
-            <mat-radio-group (change)="selectAvatarOption($event)">
-                    <mat-radio-button value="chooseAvatar" >Choisir un avatar prédéfini</mat-radio-button>
-                    <mat-radio-button value="uploadAvatar">Téléverser son avatar</mat-radio-button>
-            </mat-radio-group>
-
-            <div *ngIf="selectedRadio" class="logo-wrapper">
-                <!--<mat-radio-group>
-                    <mat-card *ngFor="let avatar of avatarList" class="avatar" (click)="selectAvatar(avatar.filename)">
-                        <img mat-card-sm-image src={{avatar.url}} alt="Logo ColorImage">
-                        <mat-card-actions>
-                            <mat-radio-button value={{avatar.filename}}>Choisir</mat-radio-button>
-                        </mat-card-actions>
-                    </mat-card>
-                </mat-radio-group>-->
-            </div>
-
-            <div *ngIf="!selectedRadio">
+            <div *ngIf="!true">
 
             </div>
 
@@ -74,13 +59,27 @@
                 Créer <mat-icon>add</mat-icon>
             </button>
             <br />
-
-            <div>
-                Si vous avez déjà un compte,
-                <a matLine routerLink="/login">Cliquez ici</a>
-                pour vous connecter ! 🚀
-            </div>
         </form>
+    </div>
+
+    <div class="avatar">
+        <mat-radio-group (change)="selectAvatarOption($event)">
+            <mat-radio-button value="selectAvatar" >Choisir un avatar prédéfini</mat-radio-button>
+            <mat-radio-button value="uploadAvatar">Téléverser son avatar</mat-radio-button>
+        </mat-radio-group>
+
+        <div *ngIf="selectedAvatar">
+            <h3>Votre avatar</h3>
+            <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
+        </div>
+    </div>
+
+    <div class="link-wrapper">
+        <div class="link">
+            Si vous avez déjà un compte,
+            <a matLine routerLink="/login"> cliquez ici </a>
+            pour vous connecter ! 🚀
+        </div>
     </div>
 
     <div class="footer">

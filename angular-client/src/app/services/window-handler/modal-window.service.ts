@@ -111,9 +111,9 @@ export class ModalWindowService {
 
   initAvatarDialogConfig() {
     this.avatarConfig.id = 'avatarDialog';
-    this.avatarConfig.height = '90vh';
-    this.avatarConfig.width = '85vw';
-    this.avatarConfig.minWidth = '600px';
+    this.avatarConfig.height = '52vh';
+    this.avatarConfig.width = '44vw';
+    this.avatarConfig.minWidth = '700px';
     this.avatarConfig.disableClose = false;
     this.avatarConfig.hasBackdrop = true;
     this.avatarConfig.restoreFocus = false;
@@ -148,11 +148,13 @@ export class ModalWindowService {
         break;
       case AvatarDialogComponent:
         this.closeDialogs();
-        this.dialog.open(AvatarDialogComponent, this.avatarConfig);
+        const ref = this.dialog.open(AvatarDialogComponent, this.avatarConfig);
+        return ref;
         break;
        default:
         break;
     }
+    return null;
   }
 
   closeDialogs() {

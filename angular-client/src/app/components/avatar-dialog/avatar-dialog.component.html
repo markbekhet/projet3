@@ -1,1 +1,12 @@
-<p>avatar-dialog works!</p>
+<h1>Choisir un avatar</h1>
+<mat-radio-group>
+    <mat-card *ngFor="let avatar of avatarList; let first = first" class="avatar" (click)="selectAvatar(avatar.filename)">
+        <img mat-card-sm-image src={{avatar.url}} alt="Avatar image">
+        <mat-card-actions>
+            <mat-radio-button value={{avatar.filename}} [checked]=first>Choisir</mat-radio-button>
+        </mat-card-actions>
+    </mat-card>
+</mat-radio-group>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" (click)="onSubmit()">Choisir</button>
+</mat-dialog-actions>
