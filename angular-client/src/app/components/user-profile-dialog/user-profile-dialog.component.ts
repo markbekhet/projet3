@@ -24,6 +24,7 @@ export class UserProfileDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: string
     ) {
       const visitedUserData = data as User;
+      console.log(visitedUserData.id);
       this.socketService.getUserProfile({
         userId: this.auth.token$.value,
         visitedId: visitedUserData.id!,

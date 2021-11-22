@@ -110,6 +110,7 @@ import { UserProfileDialogComponent } from './components/user-profile-dialog/use
     DeleteDrawingComponent,
     ModifyDrawingComponent,
     GalleryComponent,
+    UserProfileDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

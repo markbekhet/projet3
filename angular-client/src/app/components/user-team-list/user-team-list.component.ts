@@ -137,14 +137,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   }
 
   viewUserProfile(user: User) {
-    const userId = user.id;
-    const userStatus = user.status;
-    //add avatar here
-    console.log(userId + ' ' + userStatus);
-      this.windowService.openDialog(UserProfileDialogComponent, {
-        userId,
-        userStatus
-      });
+    this.windowService.openDialog(UserProfileDialogComponent, user);
   }
 
 }
