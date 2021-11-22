@@ -35,6 +35,7 @@ export class ModalWindowService {
     this.initModifyDrawingDialogConfig();
     this.initGalleryDialogConfig();
     this.initNewTeamDialogConfig();
+    this.initUserProfileDialogConfig();
   }
 
   initNewDrawingDialogConfig() {

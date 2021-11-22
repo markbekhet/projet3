@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 //import { ModalWindowService } from '@services/window-handler/modal-window.service';
-import { User } from '@src/app/models/UserMeta';
+import { Status, User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 
@@ -12,7 +12,8 @@ import { SocketService } from '@src/app/services/socket/socket.service';
 })
 export class UserProfileDialogComponent implements OnInit {
   visitedUser: User = {
-    pseudo: ''
+    pseudo: '',
+    status: Status.ONLINE,
   };
 
 
@@ -22,9 +23,10 @@ export class UserProfileDialogComponent implements OnInit {
     //private windowService: ModalWindowService,
     @Inject(MAT_DIALOG_DATA) public data: string
     ) {
+      const visitedUserData = data as User;
       this.socketService.getUserProfile({
         userId: this.auth.token$.value,
-        visitedId: data,
+        visitedId: visitedUserData.id!,
       });
 
 

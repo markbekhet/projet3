@@ -25,7 +25,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   userId: string;
   constructor(private socketService: SocketService, private authService: AuthService,
      private teamService: TeamService, private readonly chatRoomService: ChatRoomService,
-      private router: Router, private interactionService: InteractionService,private windowService: ModalWindowService) { 
+      private router: Router, private interactionService: InteractionService,private windowService: ModalWindowService) {
     this.userList = []
     this.teamList = []
     this.chatRoomList = []
@@ -74,7 +74,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
           found = true;
         }
       })*/
-      
+
       if(this.chatRoomList.indexOf(newTeam.name!) === -1){
         this.teamList.push(newTeam);
       }
@@ -136,9 +136,15 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/chat'])
   }
 
-  viewUserProfile(userId: string) {
-    // envoyer ce id vers la modale et executer les requetes
-    this.windowService.openDialog(UserProfileDialogComponent, userId);
+  viewUserProfile(user: User) {
+    const userId = user.id;
+    const userStatus = user.status;
+    //add avatar here
+    console.log(userId + ' ' + userStatus);
+      this.windowService.openDialog(UserProfileDialogComponent, {
+        userId,
+        userStatus
+      });
   }
 
 }
