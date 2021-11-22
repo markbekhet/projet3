@@ -1,0 +1,23 @@
+<div>
+    <mat-list class= "usersList">
+        <mat-list-item *ngFor="let user of userList">
+            <div *ngIf= "user.id !== userId && user.status !== 2">
+                <h3> {{user.pseudo}}</h3>
+                <button> Consulter son profile</button>
+            </div>
+        </mat-list-item>
+    </mat-list>
+    <mat-list class= "teamsList">
+        <mat-list-item *ngFor="let team of teamList">
+            <h3> {{team.name}}</h3>
+            <button (click)="joinTeam(team)"> joindre</button>
+            <button *ngIf= "userId === team.ownerId" (click)="deleteTeam(team)"> Supprimer</button>
+        </mat-list-item>
+    </mat-list>
+    <mat-list class="chatRoomList">
+        <mat-list-item *ngFor="let room of chatRoomList">
+            <h3> {{room.name}}</h3>
+            <button (click)="leaveTeam(room)"> quitter equipe</button>
+        </mat-list-item>
+    </mat-list>
+</div>

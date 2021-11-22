@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ChosenColors } from '@models/ChosenColors';
-import { colorData } from '@components/color-picker/color-data';
+import { colorData } from '@components/color-picker-component/color-data';
 import { ColorConvertingService } from './color-converting.service';
 import { InteractionService } from '../interaction/interaction.service';
 

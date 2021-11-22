@@ -200,7 +200,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     user = await this.userRepo.findOne(dtoMod.userId, {select: ["id", "pseudo", "status"]});
     let drawing = await this.drawingRepo.findOne(dtoMod.drawingId);
     // TODO: emit to the users who are in the room to notify them that a user has joined
-    let activeUser = await this.activeUsersRepo.findOne({where:[{userId: dtoMod.userId}]});
+    let activeUser = await this.activeUsersRepo.findOne({where:[{userId: dtoMod.userId, drawing: drawing}]});
     await this.activeUsersRepo.delete(activeUser.id);
     this.notifyUserUpdate(user);
     client.leave(drawing.name);
@@ -273,7 +273,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage("leaveTeam")
   async leaveTeam(client: Socket, dto: any){
     let data: LeaveTeamDto = JSON.parse(dto);
-    let activeUser = await this.activeUsersRepo.findOne({where:[{userId: data.userId}]});
+    let team = await this.teamRepo.findOne({where: [{name: data.teamName}]})
+    let activeUser = await this.activeUsersRepo.findOne({where:[{userId: data.userId, team: team}]});
     await this.activeUsersRepo.delete(activeUser.id);
     client.leave(data.teamName);
     this.wss.to(data.teamName).emit("userLeftTeam", JSON.stringify({userId: data.userId}))
@@ -298,7 +299,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         where: [{name: dataMod.roomName}]
       })
       chatHistory.chatRoom = chatRoom;
-      const savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      let savedChatHistory = await this.chatHistoryRepo.save(chatHistory);
+      savedChatHistory.date = new Date(savedChatHistory.date.toString()).toLocaleString('en-Us', {timeZone:'America/New_York'});
       let message: ClientMessage = {from:dataMod.from, message: dataMod.message, date: savedChatHistory.date, roomName: dataMod.roomName};
       this.wss.to(dataMod.roomName).emit("msgToClient", JSON.stringify(message));
     }

@@ -2,10 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Drawing } from '@models/DrawingMeta';
-import { BehaviorSubject, Observable} from 'rxjs';
+import { Drawing /* , DrawingInfosForGallery */ } from '@models/DrawingMeta';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ActiveDrawing } from '../static-services/user_token';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -16,23 +15,35 @@ const PATH = 'http://localhost:3000';
 export class DrawingService {
   constructor(private httpClient: HttpClient) {}
 
-  readonly id: number = 0
-  readonly name: string = ''
-  drawingId: BehaviorSubject<number> = new BehaviorSubject<number>(this.id)
-  drawingName: BehaviorSubject<string> = new BehaviorSubject<string>(this.name);
-  
-  createDrawing(newDrawing: Drawing): Observable<number>{
-    //let drawingID!: number;
-    return this.httpClient
-      .post<number>(`${PATH}/drawing`, newDrawing)
-      .pipe(
-        tap((token)=>{
-          console.log(token);
-          ActiveDrawing.drawingId = token;
-          this.drawingId.next(token);
-        })
-      )
+  readonly NULL_ID: number = 0;
+  readonly NULL_NAME: string = '';
+
+  $drawingId = new BehaviorSubject<number>(this.NULL_ID);
+  $drawingName = new BehaviorSubject<string>(this.NULL_NAME);
+
+  createDrawing(newDrawing: Drawing): Observable<number> {
+    return this.httpClient.post<number>(`${PATH}/drawing`, newDrawing).pipe(
+      tap((token) => {
+        console.log(token);
+        this.$drawingId.next(token);
+      })
+    );
   }
+
+  // deleteDrawing(drawingToDelete: DrawingInfosForGallery) {
+  //   return this.httpClient.delete(`${PATH}/drawing`, drawingToDelete).pipe(
+  //     tap((returnedDrawing) => {
+  //       console.log(returnedDrawing);
+  //     })
+  //   );
+  // }
+
+  // @Delete()
+  //   async deleteDrawing(@Body() deleteInformation: DeleteDrawingDto){
+  //       let drawing = await this.databaseService.deleteDrawing(deleteInformation);
+  //       await this.chatGateway.notifyDrawingDeleted(drawing);
+  //       return drawing.id;
+  //   }
 
   // async createDrawing(newDrawing: Drawing): Promise<string | undefined> {
   //   let drawingId: string | undefined;
