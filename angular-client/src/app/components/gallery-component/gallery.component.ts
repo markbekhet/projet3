@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @angular-eslint/component-class-suffix */
-import { AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import {
   MatBottomSheet,
   MatBottomSheetRef,
+  MAT_BOTTOM_SHEET_DATA,
 } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import {
@@ -22,6 +24,7 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 import { DeleteDrawingComponent } from './delete-drawing/delete-drawing.component';
 import { ModifyDrawingComponent } from './modify-drawing/modify-drawing.component';
 
@@ -43,6 +46,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private windowService: ModalWindowService,
     private interactionService: InteractionService,
     private teamService: TeamService,
+    private errorDialog: MatDialog,
   ) {}
 
   getAuthenticatedUserID(): string {
@@ -77,6 +81,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations)=>{
         this.interactionService.drawingInformations.next(drawingInformations.drawing);
+        this.closeModalForm();
         this.router.navigate(['/draw']);
       })
 
@@ -190,6 +195,10 @@ export class GalleryComponent implements OnInit, AfterViewInit {
           })
         }
       })
+      this.socketService.socket!.on("cantJoinDrawing", (data: any)=>{
+        let errorMessage:{message: string} = JSON.parse(data);
+        this.errorDialog.open(ErrorDialogComponent, {data: errorMessage.message});
+      })
   }
 
   createSVG(
@@ -237,17 +246,18 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     // Note (Paul) : might need that to fix a bug
     // this.socketService.leaveDrawing();
 
-    const joinDrawing: JoinDrawing = {
-      drawingId: drawingInfos.id,
-      userId: this.authService.getToken(),
-      password: undefined,
-    };
-    this.socketService.sendJoinDrawingRequest(joinDrawing);
+    else{
+      const joinDrawing: JoinDrawing = {
+        drawingId: drawingInfos.id,
+        userId: this.authService.getToken(),
+        password: undefined,
+      };
+      this.socketService.sendJoinDrawingRequest(joinDrawing);
 
-    this.drawingService.$drawingId.next(drawingInfos.id);
-
+      this.drawingService.$drawingId.next(drawingInfos.id);
+    }
     // TODO: might need those two lines, like in drawing creation. (for example if we use the gallery in a dialog, we need it to close)
-    this.closeModalForm();
+    
     // this.interactionService.emitWipeSignal();
 
     
@@ -313,13 +323,32 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   styleUrls: ['./drawing-password/drawing-password.component.scss'],
 })
 export class DrawingPasswordBottomSheet {
+  password: string = ''
+  userId: string;
   constructor(
+    private socketService: SocketService,
+    private authService: AuthService,
     // private drawingService: DrawingService,
-    private bottomSheetRef: MatBottomSheetRef<DrawingPasswordBottomSheet>
-  ) {}
+    private bottomSheetRef: MatBottomSheetRef<DrawingPasswordBottomSheet>,
+    @Inject(MAT_BOTTOM_SHEET_DATA) private infos: {drawing: DrawingInfosForGallery}
+  ) {
+    console.log(this.infos.drawing.id);
+    this.userId = this.authService.token$.value
+  }
 
-  openLink(event: MouseEvent): void {
+  /*openLink(event: MouseEvent): void {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
+  }*/
+  close(event: MouseEvent){
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+  }
+
+  submit(event: MouseEvent){
+    const joinDrawingRequest: JoinDrawing = {drawingId: this.infos.drawing.id, userId: this.userId, password: this.password}
+    console.log(joinDrawingRequest);
+    this.close(event)
+    this.socketService.sendJoinDrawingRequest(joinDrawingRequest);
   }
 }
