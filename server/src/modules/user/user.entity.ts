@@ -64,7 +64,7 @@ export class User extends BaseEntity{
     })
     numberAuthoredDrawings: number;
 
-    @Column({type: "bytea", nullable: true})
+    @Column({nullable: true})
     avatar: string;
 
     @OneToMany(()=> ConnectionHistory, connectionHistory => connectionHistory.user, {nullable:true})
@@ -96,7 +96,8 @@ export class User extends BaseEntity{
         newUserProfile.emailAddress = UserRegistrationInfo.emailAddress;
         newUserProfile.pseudo = UserRegistrationInfo.pseudo;
         newUserProfile.password = UserRegistrationInfo.password;
-        newUserProfile.avatar = newUserProfile.avatar;
+        newUserProfile.avatar = UserRegistrationInfo.avatar
+        console.log()
         return newUserProfile;
     }
 }
