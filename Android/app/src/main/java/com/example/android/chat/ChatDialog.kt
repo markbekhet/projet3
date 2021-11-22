@@ -1,11 +1,14 @@
 package com.example.android.chat
 
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.text.TextPaint
 import android.util.AttributeSet
@@ -36,6 +39,10 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        createChannel(
+            getString(R.string.color_image_notification_id),
+            room
+        )
         return inflater.inflate(R.layout.sample_chat_dialog, container, false)
     }
 
@@ -63,6 +70,24 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         chatFragmentTransaction = manager.beginTransaction()
         chatFragmentTransaction!!.replace(R.id.chatsFrame,
             chatRoomsFragmentMap[room]!!).commit()
+
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        // TODO: Step 1.6 START create a channel
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Time for breakfast"
+            val notificationManager = requireActivity().getSystemService(
+                NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        // TODO: Step 1.6 END create a channel
 
     }
 

@@ -59,10 +59,10 @@ class JoinProtected : AppCompatActivity() {
                     joinProtected.isEnabled = false
                     joinProtected.isClickable = false
                 }
-                joinDrawingDto.password = joinProtectedTextPassword.text.toString()
             }
 
             joinProtected.setOnClickListener {
+                joinDrawingDto.password = joinProtectedTextPassword.text.toString()
                 joinProtectedTextPassword.text.clear()
                 var i = 0
                 SocketHandler.getChatSocket().emit("joinDrawing", joinDrawingDto.toJson())

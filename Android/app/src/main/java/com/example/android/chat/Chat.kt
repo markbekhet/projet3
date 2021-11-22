@@ -94,7 +94,7 @@ class Chat(var name:String) : Fragment() {
         try{
             requireActivity().runOnUiThread {
                 messageListView?.adapter = messageDisplay
-                if(serverMessagesArray.size > 0){
+                if(serverMessagesArray.size > 0 && messageListView!= null){
                     messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
                 }
             }

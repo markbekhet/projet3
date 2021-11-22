@@ -183,13 +183,13 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
+            var i = 0
             if(information!!.visibility != Visibility.protectedVisibility.int){
                 val drawingID = information!!.id!!
                 val joinRequest = JoinDrawingDto(drawingID,
                     ClientInfo.userId)
 
                 SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
-                var i = 0
                 SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                     if(args[0]!=null && i==0){
                         val data = args[0] as String
