@@ -18,8 +18,6 @@ import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
 
 class TeamActivity : AppCompatActivity() {
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
     private var teamGeneralInformation: TeamGeneralInformation?= null
     private var manager: FragmentManager?=null
     private var socket: Socket?= null
@@ -38,7 +36,7 @@ class TeamActivity : AppCompatActivity() {
         val teamChatAndActiveUsers = TeamChatAndActiveUsers().fromJson(data!!)
         println(teamChatAndActiveUsers.activeUsers.size)
         for(userId in teamChatAndActiveUsers.activeUsers){
-            for(userInformation in ClientInfo.usersList.userList!!){
+            for(userInformation in ClientInfo.usersList.userList){
                 if(userId.userId == userInformation.id){
                     usersList.add(userInformation)
                     break
@@ -96,17 +94,18 @@ class TeamActivity : AppCompatActivity() {
             if(args[0]!= null){
                 val newActiveUserData = args[0] as String
                 val newActiveUser = ActiveUser().fromJson(newActiveUserData)
-                var newActiveUserInformation = User()
-                for(existingUser in ClientInfo.usersList.userList!!){
-                    if(existingUser.id == newActiveUser.userId){
-                        println("${existingUser.pseudo} has joined ${teamGeneralInformation!!.name}")
-                        newActiveUserInformation = existingUser
-                        break
+                if(newActiveUser.teamName == teamGeneralInformation!!.name){
+                    var newActiveUserInformation = User()
+                    for(existingUser in ClientInfo.usersList.userList){
+                        if(existingUser.id == newActiveUser.userId){
+                            println("${existingUser.pseudo} has joined ${teamGeneralInformation!!.name}")
+                            newActiveUserInformation = existingUser
+                            break
+                        }
                     }
+                    usersList.add(newActiveUserInformation)
+                    usersAndTeamsFragment.setUsersList(usersList)
                 }
-                usersList.add(newActiveUserInformation)
-                usersAndTeamsFragment.setUsersList(usersList)
-
             }
 
         }
@@ -115,16 +114,18 @@ class TeamActivity : AppCompatActivity() {
             if(args[0]!= null){
                 val userLeftData = args[0] as String
                 val userLeft = ActiveUser().fromJson(userLeftData)
-                var i = 0
-                for(existingUsers in usersList){
-                    if(existingUsers.id == userLeft.userId){
-                        println("user ${existingUsers.pseudo} has left the iterator = $i")
-                        break
+                if(userLeft.teamName == teamGeneralInformation!!.name){
+                    var i = 0
+                    for(existingUsers in usersList){
+                        if(existingUsers.id == userLeft.userId){
+                            println("user ${existingUsers.pseudo} has left the iterator = $i")
+                            break
+                        }
+                        i++
                     }
-                    i++
+                    usersList.removeAt(i)
+                    usersAndTeamsFragment.setUsersList(usersList)
                 }
-                usersList.removeAt(i)
-                usersAndTeamsFragment.setUsersList(usersList)
             }
         }
 

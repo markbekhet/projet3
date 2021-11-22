@@ -1,6 +1,7 @@
 package com.example.android.canvas
 
 import com.example.android.chat.ClientMessage
+import com.example.android.client.ActiveUser
 import com.example.android.client.ClientInfo
 import com.google.gson.Gson
 
@@ -140,7 +141,8 @@ class GalleryDrawing(var drawingList: ArrayList<ReceiveDrawingInformation> = Arr
 // drawing informations and connected users for a given drawing
 class AllDrawingInformation(
     var drawing: ReceiveDrawingInformation?= null,
-    var chatHistoryList: ArrayList<ClientMessage>?=null
+    var chatHistoryList: ArrayList<ClientMessage>?=null,
+    var activeUsers: ArrayList<ActiveUser> = ArrayList()
 ){
     fun fromJson(json: String): AllDrawingInformation{
         return Gson().fromJson(json, AllDrawingInformation::class.java)

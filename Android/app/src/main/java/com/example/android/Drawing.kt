@@ -9,7 +9,9 @@ import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
+import com.example.android.client.ActiveUser
 import com.example.android.client.ClientInfo
+import com.example.android.client.User
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.dessin.*
 import top.defaults.colorpicker.ColorPickerPopup
@@ -29,12 +31,101 @@ class Drawing : AppCompatActivity() {
         val unselectedColor = "#FFFFFF"
         DrawingUtils.primaryColor = black
         DrawingUtils.secondaryColor = none
+        val usersList = ArrayList<User>()
+
 
         val data = intent.extras!!.getString("drawingInformation")
         drawingID = intent.extras!!.getInt("drawingID")
         val allDrawingInformation = AllDrawingInformation().fromJson(data!!)
         //primaryColor.setBackgroundColor(Color.parseColor("#000000"))
         //secondaryColor.setBackgroundColor(Color.parseColor("#FFFFFF"))
+        /*=======Users and teams fragment=======*/
+        for(userId in allDrawingInformation.activeUsers){
+            for(userInformation in ClientInfo.usersList.userList){
+                if(userId.userId == userInformation.id){
+                    usersList.add(userInformation)
+                    break
+                }
+            }
+        }
+
+        val usersFragmentTransaction = supportFragmentManager.beginTransaction()
+        val usersAndTeamsFragment = UsersAndTeamsFragment()
+        usersAndTeamsFragment.setUsersList(usersList)
+        usersFragmentTransaction.replace(R.id.usersAndTeamsFrameDrawingPage,
+            usersAndTeamsFragment).commit()
+
+
+        socket.on("newJoinToDrawing"){ args->
+            if(args[0]!= null){
+                val newJoinData = args[0] as String
+                val newJoinUser = ActiveUser().fromJson(newJoinData)
+                if(newJoinUser.drawingId == drawingID){
+                    var newJoinUserInformation = User()
+                    for(existingUser in ClientInfo.usersList.userList){
+                        if(existingUser.id == newJoinUser.userId){
+                             newJoinUserInformation = existingUser
+                             break
+                        }
+                    }
+                    usersList.add(newJoinUserInformation)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        socket.on("userLeftDrawing"){args ->
+            if(args[0] != null){
+                val userLeftData = args[0] as String
+                val userLeft = ActiveUser().fromJson(userLeftData)
+                if(userLeft.drawingId == drawingID){
+                    var i = 0
+                    for(existingUsers in usersList){
+                        if(existingUsers.id == userLeft.userId){
+                            break
+                        }
+                        i++
+                    }
+                    usersList.removeAt(i)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        socket.on("userUpdate"){ args ->
+            if(args[0]!= null){
+                val userUpdated = User().fromJson(args[0] as String)
+                var exist = false
+                var i = 0
+                for(existingUser in usersList){
+                    println(usersList.size)
+                    if(existingUser.id == userUpdated.id){
+                        exist = true
+                        break
+                    }
+                    i++
+                }
+                if(exist){
+                    usersList.removeAt(i)
+                    usersList.add(userUpdated)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        socket.on("teamDeleted"){ args ->
+            if(args[0] != null){
+                usersAndTeamsFragment.updateTeamsRecycleView()
+            }
+        }
+
+        socket.on("newTeamCreated"){ args ->
+            if(args[0] != null){
+                usersAndTeamsFragment.updateTeamsRecycleView()
+            }
+        }
+
+        /*=======================================*/
         val params: ViewGroup.LayoutParams = fl_drawing_view_container.getLayoutParams()
         //Button new width
         //Button new width
@@ -166,6 +257,10 @@ class Drawing : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
         if(canvas != null){
             canvas!!.unselectAllChildren()
         }
@@ -183,14 +278,9 @@ class Drawing : AppCompatActivity() {
         }
 
         leaveDrawing()
-        super.onDestroy()
-    }
-
-    /*override fun onBackPressed() {
-        leaveDrawing()
         super.onBackPressed()
 
-    }*/
+    }
     override fun onPause(){
         if(canvas != null){
             canvas!!.unselectAllChildren()
