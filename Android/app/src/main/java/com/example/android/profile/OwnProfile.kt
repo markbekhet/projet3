@@ -5,27 +5,36 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
+import com.bumptech.glide.Glide
 import com.example.android.R
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.client.ProfileModification
 import com.example.android.client.UserProfileInformation
+import com.google.android.material.internal.ContextUtils.getActivity
 import kotlinx.android.synthetic.main.activity_own_profile.*
+import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
+import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.JSON.Companion.context
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 
 
 val clientService = ClientService()
-
+var decodedString = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+var decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 fun getProfile():UserProfileInformation{
     var ret = UserProfileInformation()
     var response: Response<ResponseBody>?= null
@@ -42,15 +51,7 @@ fun getProfile():UserProfileInformation{
     return ret
 }
 
-fun updateUI(email:TextView, lastName: TextView,
-             firstName: TextView, nickname: TextView) {
 
-    val userInformation = getProfile()
-    email.text = userInformation.emailAddress
-    lastName.text = userInformation.lastName
-    nickname.text = userInformation.pseudo
-    firstName.text = userInformation.firstName
-}
 
 class OwnProfile : AppCompatActivity() {
 
@@ -64,8 +65,23 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
+        val avatarImage : ImageView = findViewById(R.id.avatarVisitor)
+        @SuppressLint("RestrictedApi")
+        fun updateUI(email:TextView, lastName: TextView,
+                     firstName: TextView, nickname: TextView, avatar : ImageView) {
 
-        updateUI(email, lastName, firstName, nickname)
+            val userInformation = getProfile()
+            email.text = userInformation.emailAddress
+            lastName.text = userInformation.lastName
+            nickname.text = userInformation.pseudo
+            firstName.text = userInformation.firstName
+            decodedString = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+            decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            Glide.with(this).load(decodedByte).fitCenter().into(avatarImage);
+
+
+        }
+        updateUI(email, lastName, firstName, nickname,avatarImage)
 
 
         val modifyParams: Button = findViewById(R.id.modifyParams)
