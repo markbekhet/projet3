@@ -37,7 +37,7 @@ export interface DrawingEditionHistory {
   drawingName: string;
   drawingId: number;
   drawingVisibility: DrawingVisibility;
-  drawingState: DrawingState;
+  drawingStae: DrawingState;
   date: string;
 }
 

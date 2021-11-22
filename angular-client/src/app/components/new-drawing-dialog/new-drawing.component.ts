@@ -187,7 +187,7 @@ export class NewDrawingComponent implements OnInit {
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
             userId: this.userId,
-            password: this.password,
+            password: VALUES.drawingPassword,
           };
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
@@ -233,8 +233,8 @@ export class NewDrawingComponent implements OnInit {
     }
   }
 
-  assignationStatusChange(event: Event) {
-    if ((event as unknown as MatCheckboxChange).checked) {
+  assignationStatusChange(event: MatCheckboxChange) {
+    if (event.checked) {
       this.assignedToTeam = true;
     } else {
       this.assignedToTeam = false;

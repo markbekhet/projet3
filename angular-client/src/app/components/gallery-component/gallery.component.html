@@ -19,11 +19,11 @@
 
             <mat-card-actions>
                 <!-- mettre le bouton modifier en haut à droite dans le header -->
-                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId && drawing.infos.nbCollaborators === 0" mat-flat-button color="warn"
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0" mat-flat-button color="warn"
                         matTooltip="Supprimer" (click)="openDeleteDrawingDialog(drawing.infos)">
                     <mat-icon>delete</mat-icon>
                 </button>
-                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId && drawing.infos.nbCollaborators === 0" mat-flat-button color="accent"
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0" mat-flat-button color="accent"
                         matTooltip="Modifier les informations" (click)="openModifyDrawingDialog(drawing.infos)">
                     <mat-icon>settings</mat-icon>
                 </button>

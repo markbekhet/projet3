@@ -4,7 +4,7 @@
         <mat-list-item *ngFor="let user of users">
             <div *ngIf="user.id !== authenticatedUserId && user.status !== 2">
                 <span>{{user.pseudo}}</span>
-                <button (click)="viewUserProfile(user.id!)">Consulter son profil</button>
+                <button (click)="viewUserProfile(user)">Consulter son profil</button>
             </div>
         </mat-list-item>
     </mat-list>

@@ -1,6 +1,13 @@
+.profile-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .avatar {
-  position: absolute;
+  //position: absolute;
   width: 270px;
-  left: 50%;
-  margin: 20px 0 0 -135px;
+  //left: 50%;
+  //margin: 20px 0 0 -135px;
 }

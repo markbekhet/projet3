@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {
   AfterViewInit,
   Component,
@@ -162,8 +163,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/chat']);
   }
 
-  viewUserProfile(userId: string) {
-    // envoyer ce id vers la modale et executer les requetes
-    this.windowService.openDialog(UserProfileDialogComponent, userId);
+  viewUserProfile(user: User) {
+    this.windowService.openDialog(UserProfileDialogComponent, user);
   }
 }

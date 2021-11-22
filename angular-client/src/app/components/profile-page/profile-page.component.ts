@@ -3,6 +3,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingState } from '@src/app/models/DrawingMeta';
 import {
   ConnectionHistory,
@@ -12,6 +13,8 @@ import {
   User,
 } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { DrawingService } from '@src/app/services/drawing/drawing.service';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
@@ -48,7 +51,9 @@ export class ProfilePage implements OnInit {
     private authService: AuthService,
     private socketService: SocketService,
     private formBuilder: FormBuilder,
-    public errorDialog: MatDialog
+    public errorDialog: MatDialog,
+    private interactionService: InteractionService,
+    private drawingService: DrawingService
   ) {
     this.socketService.getUserProfile({
       userId: this.authService.getUserToken(),
@@ -83,6 +88,15 @@ export class ProfilePage implements OnInit {
     });
 
     console.log((this.user.connectionHistories as ConnectionHistory[]).length);
+
+    this.socketService
+      .getDrawingInformations()
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.interactionService.drawingInformations.next(
+          drawingInformations.drawing
+        );
+        this.router.navigate(['/draw']);
+      });
   }
 
   onSubmit(formPseudo: FormGroup) {
@@ -163,7 +177,7 @@ export class ProfilePage implements OnInit {
   }
 
   public drawingEnabled(drawing: DrawingEditionHistory) {
-    return drawing.drawingState === DrawingState.AVAILABLE;
+    return drawing.drawingStae === DrawingState.AVAILABLE;
   }
 
   public joinDrawing(collaboration: DrawingEditionHistory) {
@@ -173,7 +187,8 @@ export class ProfilePage implements OnInit {
       password: undefined,
     };
     this.socketService.sendJoinDrawingRequest(joinDrawing);
-    this.router.navigate(['/draw']);
+    this.drawingService.drawingId$.next(collaboration.drawingId);
+    // this.router.navigate(['/home']);
   }
 
   public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {

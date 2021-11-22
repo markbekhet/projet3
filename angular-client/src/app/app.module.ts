@@ -112,6 +112,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
     DeleteDrawingComponent,
     ModifyDrawingComponent,
     GalleryComponent,
+    UserProfileDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

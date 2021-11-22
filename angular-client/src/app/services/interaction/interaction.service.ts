@@ -46,6 +46,10 @@ export class InteractionService {
   wipeDrawing: Subject<boolean> = new Subject<boolean>();
   $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
 
+  leaveDrawingSignal: Subject<boolean> = new Subject<boolean>();
+  $leaveDrawingSignal: Observable<boolean> =
+    this.leaveDrawingSignal.asObservable();
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -89,4 +93,8 @@ export class InteractionService {
   /* emitDrawingInformations(drawingInformations: DrawingInformations){
     this.drawingInformations.next(drawingInformations)
   } */
+
+  emitLeaveDrawingSignal() {
+    this.leaveDrawingSignal.next(true);
+  }
 }
