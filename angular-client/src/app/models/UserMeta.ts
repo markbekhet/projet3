@@ -60,6 +60,7 @@ export interface UpdateUserInformation {
 export interface Avatar {
   filename: string;
   url: string;
+  encoding?: string;
 }
 
 export const avatarList: Avatar[] = [

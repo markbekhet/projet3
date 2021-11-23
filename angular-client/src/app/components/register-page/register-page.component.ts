@@ -9,9 +9,9 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { Avatar, avatarList } from '@src/app/models/UserMeta';
-import { MatRadioChange } from '@angular/material/radio';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
+import { AvatarService } from '@src/app/services/avatar/avatar.service';
 
 @Component({
   templateUrl: './register-page.component.html',
@@ -27,7 +27,8 @@ export class RegisterPage implements OnInit {
     public errorDialog: MatDialog,
     private formBuilder: FormBuilder,
     private router: Router,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private avatarService: AvatarService
   ) {
     this.avatarList = avatarList;
     this.registerForm = this.formBuilder.group({
@@ -45,7 +46,9 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
-      avatar: formBuilder.control('', []),
+      avatar: formBuilder.control('', [
+        Validators.required,
+      ]),
     });
   }
 
@@ -61,7 +64,7 @@ export class RegisterPage implements OnInit {
       pseudo: form.controls.username.value,
       emailAddress: form.controls.email.value,
       password: form.controls.password.value,
-      avatar: ''
+      avatar: form.controls.avatar.value,
     };
 
     try {
@@ -108,12 +111,14 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
-      avatar: this.formBuilder.control('', []),
+      avatar: this.formBuilder.control('', [
+        Validators.required,
+      ]),
     });
   }
 
-  selectAvatarOption(event: MatRadioChange) {
-    switch(event.value) {
+  selectAvatarOption(option: string) {
+    switch(option) {
       case 'selectAvatar':
         this.selectAvatar();
         break;
@@ -126,8 +131,23 @@ export class RegisterPage implements OnInit {
     const ref = this.windowService.openDialog(AvatarDialogComponent);
     ref!.afterClosed().subscribe(result => {
       const avatar: Avatar = result;
-      //set la valeur dans le form
       this.selectedAvatar = avatar;
+      console.log(this.selectedAvatar.url);
+      this.avatarService.encodeImageFileAsURL(this.selectedAvatar)
+      .subscribe(data => {
+        const reader = new FileReader();
+        reader.readAsDataURL(data);
+        reader.onloadend = () => {
+          let base64data = reader.result as string;
+          this.registerForm.controls.avatar.setValue(base64data);
+          this.selectedAvatar.encoding = base64data;
+        }
+
+      }, error => {
+        console.log(error);
+      })
+
+
     })
 
 

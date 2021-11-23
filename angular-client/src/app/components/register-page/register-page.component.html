@@ -46,43 +46,43 @@
                     <mat-label>Mot de passe</mat-label>
                     <input type="password" matInput formControlName="password" required />
                     <mat-error *ngIf="checkError('password', 'required')">Un mot de passe est requis !</mat-error>
-                    <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">Ceci
+                    <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">
+                        Ceci
                         n'est pas un mot de passe valide !</mat-error>
                 </mat-form-field>
                 <br />
 
-            <div *ngIf="!true">
+                <button mat-icon-button [disabled]="registerForm.invalid">
+                    Créer <mat-icon>add</mat-icon>
+                </button>
+                <br />
+            </form>
+        </div>
 
+        <div class="avatar">
+            <button mat-raised-button color="primary" value="selectAvatar"
+                    (click)="selectAvatarOption('selectAvatar')">Choisir un avatar
+                prédéfini</button>
+            <button mat-raised-button color="primary" value="uploadAvatar"
+                    (click)="selectAvatarOption('uploadAvatar')">Téléverser son avatar</button>
+
+
+            <div *ngIf="selectedAvatar">
+                <h3>Votre avatar</h3>
+                <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
+                <p> {{selectedAvatar.encoding}} </p>
             </div>
+        </div>
 
-            <button mat-icon-button [disabled]="registerForm.invalid">
-                Créer <mat-icon>add</mat-icon>
-            </button>
-            <br />
-        </form>
-    </div>
+        <div class="link-wrapper">
+            <div class="link">
+                Si vous avez déjà un compte,
+                <a matLine routerLink="/login"> cliquez ici </a>
+                pour vous connecter ! 🚀
+            </div>
+        </div>
 
-    <div class="avatar">
-        <mat-radio-group (change)="selectAvatarOption($event)">
-            <mat-radio-button value="selectAvatar" >Choisir un avatar prédéfini</mat-radio-button>
-            <mat-radio-button value="uploadAvatar">Téléverser son avatar</mat-radio-button>
-        </mat-radio-group>
-
-        <div *ngIf="selectedAvatar">
-            <h3>Votre avatar</h3>
-            <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
+        <div class="footer">
+            <p>© Équipe-101</p>
         </div>
     </div>
-
-    <div class="link-wrapper">
-        <div class="link">
-            Si vous avez déjà un compte,
-            <a matLine routerLink="/login"> cliquez ici </a>
-            pour vous connecter ! 🚀
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>© Équipe-101</p>
-    </div>
-</div>
