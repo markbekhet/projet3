@@ -46,12 +46,12 @@ export class LandingPage implements OnInit, AfterViewInit {
   ngAfterViewInit(){
     this.socketService.socket!.on("RoomChatHistories", (data: string)=>{
       let chatHistories: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
-      this.interactionService.emitUpdateChatListSignal()
       console.log(chatHistories);
       this.chatRoomService.addChatRoom(
         'General',
         chatHistories.chatHistoryList
       );
+      this.interactionService.emitUpdateChatListSignal()
     });
   }
 

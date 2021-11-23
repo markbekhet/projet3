@@ -204,4 +204,8 @@ export class SocketService {
     const leaveTeamString = JSON.stringify(leaveTeam);
     this.socket!.emit('leaveTeam', leaveTeamString);
   }
+
+  getTeamGallery(data: {teamName: string}){
+    this.socket!.emit("getTeamGallery", JSON.stringify(data));
+  }
 }

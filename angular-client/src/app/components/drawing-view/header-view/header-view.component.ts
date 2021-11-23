@@ -12,6 +12,7 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 
 @Component({
   selector: 'app-header-view',
@@ -28,7 +29,8 @@ export class HeaderViewComponent implements OnInit {
     private authService: AuthService,
     private drawingService: DrawingService,
     private socketService: SocketService,
-    private interactionService: InteractionService
+    private interactionService: InteractionService,
+    private chatRoomService: ChatRoomService,
   ) {
     this.menuItems = drawingHeaderItems;
   }
@@ -64,6 +66,8 @@ export class HeaderViewComponent implements OnInit {
       drawingId: this.drawingService.getActiveDrawingID(),
       userId: this.authService.getUserToken(),
     });
+    this.chatRoomService.chatRooms.delete(this.drawingService.drawingName$.value);
+    this.interactionService.emitUpdateChatListSignal();
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
