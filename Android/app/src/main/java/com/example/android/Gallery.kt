@@ -193,7 +193,9 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                 SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                     if(args[0]!=null && i==0){
                         val data = args[0] as String
-                        fragment.startDrawingActivity(data, drawingID)
+                        fragment.requireActivity().runOnUiThread{
+                            fragment.startDrawingActivity(data, drawingID)
+                        }
                         i++
                     }
                 }

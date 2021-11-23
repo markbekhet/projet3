@@ -16,7 +16,9 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.dessin.*
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
+import kotlin.collections.HashMap
 
+var selectionColors:HashMap<String, String?> = HashMap()
 class Drawing : AppCompatActivity() {
     private var socket = SocketHandler.getChatSocket()
     private var drawingRelatedInformation: ReceiveDrawingInformation?= null
@@ -29,6 +31,11 @@ class Drawing : AppCompatActivity() {
         DrawingUtils.currentTool = pencilString
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"
+        selectionColors.clear()
+        selectionColors["CBCB28"] = ClientInfo.userId
+        selectionColors["0000FF"] = null
+        selectionColors["00FF00"] = null
+        selectionColors["0000FF"] = null
         DrawingUtils.primaryColor = black
         DrawingUtils.secondaryColor = none
         val usersList = ArrayList<User>()
@@ -47,10 +54,18 @@ class Drawing : AppCompatActivity() {
                     break
                 }
             }
+            for(color in selectionColors){
+                if(color.value == null){
+                    color.setValue(userId.userId)
+                    break
+                }
+            }
         }
 
         val usersFragmentTransaction = supportFragmentManager.beginTransaction()
-        val usersAndTeamsFragment = UsersAndTeamsFragment()
+        //don't build
+        val usersAndTeamsFragment = UsersAndTeamsFragment(false)
+        usersAndTeamsFragment.setColorsMap(selectionColors)
         usersAndTeamsFragment.setUsersList(usersList)
         usersFragmentTransaction.replace(R.id.usersAndTeamsFrameDrawingPage,
             usersAndTeamsFragment).commit()
@@ -68,6 +83,13 @@ class Drawing : AppCompatActivity() {
                              break
                         }
                     }
+                    for(color in selectionColors){
+                        if(color.value == null){
+                            color.setValue(newJoinUser.userId)
+                            break
+                        }
+                    }
+                    usersAndTeamsFragment.setColorsMap(selectionColors)
                     usersList.add(newJoinUserInformation)
                     usersAndTeamsFragment.setUsersList(usersList)
                 }
@@ -86,7 +108,14 @@ class Drawing : AppCompatActivity() {
                         }
                         i++
                     }
+                    for(color in selectionColors){
+                        if(color.value == userLeft.userId){
+                            color.setValue(null)
+                            break
+                        }
+                    }
                     usersList.removeAt(i)
+                    usersAndTeamsFragment.setColorsMap(selectionColors)
                     usersAndTeamsFragment.setUsersList(usersList)
                 }
             }
@@ -110,18 +139,6 @@ class Drawing : AppCompatActivity() {
                     usersList.add(userUpdated)
                     usersAndTeamsFragment.setUsersList(usersList)
                 }
-            }
-        }
-
-        socket.on("teamDeleted"){ args ->
-            if(args[0] != null){
-                usersAndTeamsFragment.updateTeamsRecycleView()
-            }
-        }
-
-        socket.on("newTeamCreated"){ args ->
-            if(args[0] != null){
-                usersAndTeamsFragment.updateTeamsRecycleView()
             }
         }
 
