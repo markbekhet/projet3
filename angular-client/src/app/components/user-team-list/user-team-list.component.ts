@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 
 import { JoinTeam, LeaveTeam } from '@models/joinTeam';
-import { ChatHistory } from '@models/MessageMeta';
+//import { ChatHistory } from '@models/MessageMeta';
 import { Team } from '@models/teamsMeta';
 import { User } from '@models/UserMeta';
 import { AuthService } from '@services/authentication/auth.service';
@@ -106,24 +106,23 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     });
 
     // teamJoined
-    this.socketService.socket!.on('teamInformations', (data: any) => {
-      const teamInformations: { chatHistoryList: ChatHistory[] } =
-        JSON.parse(data);
-      const requestedTeam = this.teamService.requestedTeamToJoin.value;
-      this.teamService.activeTeams.value.set(
-        requestedTeam.name!,
-        requestedTeam
-      );
-      this.chatRoomService.addChatRoom(
-        requestedTeam.name!,
-        teamInformations.chatHistoryList
-      );
-      this.chatrooms.push(requestedTeam.name!);
-      const index = this.teams.indexOf(requestedTeam);
-      if (index !== -1) {
-        this.teams.splice(index, 1);
+    this.interactionService.$updateChatListSignal.subscribe((sig: boolean)=>{
+      if(sig){
+        this.chatrooms = [];
+        let roomNames = this.chatRoomService.chatRooms.keys();
+        for(let roomName of roomNames){
+          this.chatrooms.push(roomName);
+        }
+        //let teamFound = false;
+        this.chatrooms.forEach((room: string)=>{
+          this.teams.forEach((team:Team)=>{
+            if(team.name! === room){
+              this.teams.splice(this.teams.indexOf(team), 1)
+            }
+          })
+        })
       }
-    });
+    })
 
     console.log(this.chatRoomService.chatRooms.keys());
     for (const key of this.chatRoomService.chatRooms.keys()) {
@@ -152,9 +151,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
     const index = this.chatrooms.indexOf(teamName);
-    this.chatrooms.splice(index);
+    this.chatrooms.splice(index, 1);
+
     this.teams.push(this.teamService.activeTeams.value.get(teamName)!);
     this.teamService.activeTeams.value.delete(teamName);
+    this.chatRoomService.chatRooms.delete(teamName);
   }
 
   joinChat(roomName: string) {

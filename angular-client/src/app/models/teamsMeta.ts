@@ -1,3 +1,4 @@
+import { DrawingInfosForGallery } from "./DrawingMeta";
 import { TeamVisibilityLevel } from "./VisibilityMeta";
 
 export interface Team{
@@ -8,4 +9,5 @@ export interface Team{
     password?: string;
     nbCollaborators?: number;
     bio?: string;
+    gallery?: DrawingInfosForGallery[];
 }

@@ -28,7 +28,10 @@ import { AuthService } from '@services/authentication/auth.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { ActiveUser } from '@src/app/models/active-user';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ChatHistory } from '@src/app/models/MessageMeta';
+import { Team } from '@src/app/models/teamsMeta';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
@@ -55,7 +58,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private interactionService: InteractionService,
     private teamService: TeamService,
     private errorDialog: MatDialog,
-    private chatRoomService: ChatRoomService
+    private chatRoomService: ChatRoomService,
   ) {}
 
   getAuthenticatedUserID(): string {
@@ -95,6 +98,15 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         this.closeModalForm();
         this.router.navigate(['/draw']);
       });
+
+      this.socketService.socket!.on("teamInformations", (data: any)=>{
+        const teamInformations: {chatHistoryList: ChatHistory[], drawingList: DrawingInfosForGallery[], activeUsers: ActiveUser[]}= JSON.parse(data);
+        const requestedTeam = this.teamService.requestedTeamToJoin.value;
+        let newJoinedTeam: Team = {id: requestedTeam.id, name: requestedTeam.name, ownerId: requestedTeam.ownerId, gallery: teamInformations.drawingList}
+        this.teamService.activeTeams.value.set(requestedTeam.name!, newJoinedTeam);
+        this.chatRoomService.addChatRoom(requestedTeam.name!, teamInformations.chatHistoryList)
+        this.interactionService.emitUpdateChatListSignal();
+      })
 
     // Getting user gallery
     this.authService
