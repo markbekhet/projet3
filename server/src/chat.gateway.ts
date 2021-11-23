@@ -300,6 +300,31 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @SubscribeMessage("getTeamGallery")
+  async getTeamGallery(client: Socket, dto:any){
+    let data: {teamName: string} = JSON.parse(dto);
+    let team = await this.teamRepo.findOne({where:[{name: data.teamName}]});
+    let teamGallery = await this.drawingRepo.find({
+      where:[
+        {ownerId: team.id, visibility: DrawingVisibility.PRIVATE},
+      ],
+      select: ["id", "visibility", "name", "bgColor", "height", "width", "creationDate", 'ownerId'],
+      relations:["contents", "activeUsers"]
+    })
+
+    let galleryRet: DrawingGallery[] = []
+
+    teamGallery.forEach((drawing)=>{
+      drawing.creationDate = new Date(drawing.creationDate.toString()).toLocaleString('en-us', {timeZone:'America/New_York'})
+      const drawingGallery: DrawingGallery = {id: drawing.id, visibility: drawing.visibility, 
+        name: drawing.name, bgColor: drawing.bgColor, height: drawing.height, width: drawing.width, creationDate:drawing.creationDate, 
+        ownerId: drawing.ownerId, authorName: team.name, nbCollaborators: drawing.activeUsers.length, contents: drawing.contents};
+      galleryRet.push(drawingGallery);
+    })
+
+    client.emit("teamGallery", JSON.stringify({drawingList: galleryRet}))
+  }
+
   @SubscribeMessage("leaveTeam")
   async leaveTeam(client: Socket, dto: any){
     let data: LeaveTeamDto = JSON.parse(dto);

@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { DrawingEditionHistory } from "../drawingEditionHistory/drawingEditionHistory.entity";
 import { JoinedDrawing } from "../joined-drawings/joined-drawings.entity";
 import { JoinedTeam } from "../joined-teams/joined-teams.entity";
+import { CreateUserDto } from "./create-user.dto";
 
 @Entity('User')
 export class User extends BaseEntity{
@@ -88,7 +89,7 @@ export class User extends BaseEntity{
         this.password = await bcrypt.hash(this.password, salt)
     }
 
-    public static createUserProfile(UserRegistrationInfo):User{
+    public static createUserProfile(UserRegistrationInfo: CreateUserDto):User{
         let newUserProfile = new User();
         //console.log(newUserProfile.numberAuthoredDrawings, newUserProfile)
         newUserProfile.firstName = UserRegistrationInfo.firstName;
