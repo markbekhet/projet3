@@ -42,7 +42,7 @@
                     android:textColor="@color/black"/>
             </LinearLayout>
             <LinearLayout
-                android:layout_width="200dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginStart="5dp">
@@ -69,7 +69,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center">
 
             <FrameLayout
                 android:id="@+id/fl_drawing_view_gallery"
@@ -85,7 +86,8 @@
             <LinearLayout
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center">
 
                 <ImageView
                     android:id="@+id/delete"
