@@ -133,25 +133,7 @@ class CreateDraw : AppCompatActivity() {
             }
             error.text = ""
         }
-        height.doAfterTextChanged {
-            if (!isNotBlank()) {
-                create.isEnabled = false
-                create.isClickable = false
-            } else {
-                create.isEnabled = true
-                create.isClickable = true
-            }
-        }
 
-        width.doAfterTextChanged {
-            if (!isNotBlank()) {
-                create.isEnabled = false
-                create.isClickable = false
-            } else {
-                create.isEnabled = true
-                create.isClickable = true
-            }
-        }
         create?.setOnClickListener() {
             var canProcessQuery = true
             if (newDrawing.visibility == Visibility.protectedVisibility.int) {
@@ -167,8 +149,8 @@ class CreateDraw : AppCompatActivity() {
                 newDrawing.password = null
             }
 
-            newDrawing.height = height.text.toString().toInt()
-            newDrawing.width = width.text.toString().toInt()
+            newDrawing.height = 900
+            newDrawing.width = 900
             newDrawing.name = drawingName.text.toString()
 
             // in case of an error
@@ -180,8 +162,6 @@ class CreateDraw : AppCompatActivity() {
 
             newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
-            height.text.clear()
-            width.text.clear()
             drawingName.text.clear()
             btnColorSelected.tooltipText = "FFFFFF"
             btnColorSelected.setBackgroundColor(Color.WHITE)
@@ -321,7 +301,7 @@ class CreateDraw : AppCompatActivity() {
     }*/
     }
     private fun isNotBlank(): Boolean{
-        if(height.text.isBlank() || width.text.isBlank() || drawingName.text.isBlank()){
+        if(drawingName.text.isBlank()){
             return false
         }
         return true
