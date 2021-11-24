@@ -152,9 +152,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.socketService.leaveTeam(leaveTeamBodyRequest);
     const index = this.chatrooms.indexOf(teamName);
     this.chatrooms.splice(index, 1);
-
-    this.teams.push(this.teamService.activeTeams.value.get(teamName)!);
-    this.teamService.leftTeamGallery.next(this.teamService.activeTeams.value.get(teamName)!.gallery!);
+    let activeTeam = this.teamService.activeTeams.value.get(teamName)!
+    let team: Team = {id: activeTeam.id, name: activeTeam.name, visibility: activeTeam.visibility, bio: activeTeam.bio, ownerId: activeTeam.ownerId}
+    this.teams.push(team);
+    this.teamService.leftTeamId.next(this.teamService.activeTeams.value.get(teamName)!.id);
     this.teamService.activeTeams.value.delete(teamName);
     this.chatRoomService.chatRooms.delete(teamName);
     this.interactionService.emitUpdateGallerySignal();

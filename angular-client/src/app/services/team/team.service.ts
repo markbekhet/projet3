@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DrawingInfosForGallery } from '@src/app/models/DrawingMeta';
-import { Team } from '@src/app/models/teamsMeta';
+import { Team, TeamCreation, TeamInformations } from '@src/app/models/teamsMeta';
+import { TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
 import { BehaviorSubject } from 'rxjs';
-//import { Observable } from 'rxjs';
 
 const PATH = "http://localhost:3000"
 
@@ -12,13 +11,19 @@ const PATH = "http://localhost:3000"
 })
 export class TeamService {
 
-  activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
-  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({})
-  leftTeamGallery: BehaviorSubject<DrawingInfosForGallery[]> = new BehaviorSubject<DrawingInfosForGallery[]>([]);
+  activeTeams: BehaviorSubject<Map<string, TeamInformations>> = new BehaviorSubject<Map<string, TeamInformations>>(new Map())
+  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({
+    name:"",
+    visibility: TeamVisibilityLevel.PUBLIC,
+    ownerId: "",
+    bio: undefined,
+    id: "",
+  })
+  leftTeamId: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
   constructor(private httpClient: HttpClient) { }
 
-  createTeam(team: Team){
+  createTeam(team: TeamCreation){
     return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team)
   }
 

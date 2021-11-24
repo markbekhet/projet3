@@ -77,7 +77,7 @@ export class NewDrawingComponent implements OnInit {
     this.drawingVisibilityItems = drawingVisibilityItems;
     this.userId = '';
     this.teamService.activeTeams.value.forEach((team) => {
-      this.currentTeams.push({name:team.name!, id: team.id!});
+      this.currentTeams.push(team);
     });
   }
 

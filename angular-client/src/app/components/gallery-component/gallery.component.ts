@@ -31,7 +31,7 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { ActiveUser } from '@src/app/models/active-user';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { ChatHistory } from '@src/app/models/MessageMeta';
-import { Team } from '@src/app/models/teamsMeta';
+import { TeamInformations } from '@src/app/models/teamsMeta';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
@@ -127,8 +127,9 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       this.socketService.socket!.on("teamInformations", (data: any)=>{
         const teamInformations: {chatHistoryList: ChatHistory[], drawingList: DrawingInfosForGallery[], activeUsers: ActiveUser[]}= JSON.parse(data);
         const requestedTeam = this.teamService.requestedTeamToJoin.value;
-        let newJoinedTeam: Team = {id: requestedTeam.id, name: requestedTeam.name, ownerId: requestedTeam.ownerId, gallery: teamInformations.drawingList}
-        this.teamService.activeTeams.value.set(requestedTeam.name!, newJoinedTeam);
+        let newJoinedTeam: TeamInformations = {id: requestedTeam.id, name: requestedTeam.name, visibility: requestedTeam.visibility,
+           ownerId: requestedTeam.ownerId, bio: requestedTeam.bio, gallery: teamInformations.drawingList, activeUsers: teamInformations.activeUsers};
+        this.teamService.activeTeams.value.set(requestedTeam.name, newJoinedTeam);
         this.chatRoomService.addChatRoom(requestedTeam.name!, teamInformations.chatHistoryList)
         this.interactionService.emitUpdateChatListSignal();
         this.teamIds.push(requestedTeam.id!);
@@ -241,13 +242,12 @@ export class GalleryComponent implements OnInit, AfterViewInit {
 
     this.interactionService.$updateGallerySignal.subscribe((sig)=>{
       if(sig){
-        const drawings = this.teamService.leftTeamGallery.value;
-        drawings.forEach((drawing: DrawingInfosForGallery)=>{
-          this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
-            if(drawing.id === shownDrawing.infos.id){
-              this.shownDrawings.splice(this.shownDrawings.indexOf(shownDrawing), 1);
-            }
-          })
+        const teamId = this.teamService.leftTeamId.value;
+        this.teamIds.splice(this.teamIds.indexOf(teamId), 1)
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
+          if(shownDrawing.infos.ownerId === teamId && shownDrawing.infos.visibility === DrawingVisibilityLevel.PRIVATE){
+            this.shownDrawings.splice(this.shownDrawings.indexOf(shownDrawing), 1)
+          }
         })
       }
     })
