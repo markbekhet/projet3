@@ -2,11 +2,16 @@ package com.example.android
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
@@ -39,8 +44,8 @@ class LandingPage : AppCompatActivity(){
         //Initialize chat socket
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
-        //chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-        //chatDialog.dismiss()
+        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        chatDialog.dismiss()
 
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
@@ -217,7 +222,7 @@ class LandingPage : AppCompatActivity(){
 
         disconnect.setOnClickListener {
             disconnect()
-            finish()
+            finishAndRemoveTask()
         }
 
         showChat.setOnClickListener {
@@ -246,17 +251,24 @@ class LandingPage : AppCompatActivity(){
     }
 
     override fun onDestroy() {
+        try{
+            disconnect()
+            ChatRooms.chats.clear()
+            ChatRooms.chatRooNames.clear()
+            ClientInfo.possibleOwners.clear()
+            ClientInfo.gallery.drawingList.clear()
+            ClientInfo.indexPossibleOwners = 0
+        } catch(e: Exception){}
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
         disconnect()
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         ClientInfo.possibleOwners.clear()
         ClientInfo.gallery.drawingList.clear()
         ClientInfo.indexPossibleOwners = 0
-        super.onDestroy()
-    }
-
-    override fun onBackPressed() {
-        disconnect()
         super.onBackPressed()
     }
 
@@ -264,6 +276,27 @@ class LandingPage : AppCompatActivity(){
         galleryDraws.set(ClientInfo.gallery.drawingList)
         super.onResume()
     }
+
+    /*override fun onPause(){
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null) {
+                val data = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(data)
+                try {
+                    val notificationManager = ContextCompat.getSystemService(
+                        this,
+                        NotificationManager::class.java
+                    ) as NotificationManager
+                    notificationManager.sendNotification(
+                        messageFromServer.message!!,
+                        this
+                    )
+                } catch (e: Exception) {
+                }
+            }
+        }
+        super.onPause()
+    }*/
 }
 
 

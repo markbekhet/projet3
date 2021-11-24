@@ -34,7 +34,8 @@
             android:name=".LandingPage"
             android:exported="true"
             android:label="@string/title_activity_landing_page"
-            android:theme="@style/Theme.Android.NoActionBar" />
+            android:theme="@style/Theme.Android.NoActionBar"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".profile.HistoryAndStatistics"
             android:exported="true" />
@@ -44,10 +45,6 @@
         <activity
             android:name=".profile.OwnProfile"
             android:exported="true" />
-        <activity
-            android:name=".chat.Chat"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".RegisterScreen"
             android:exported="true"

@@ -101,13 +101,13 @@ class ModifyDrawingParams : AppCompatActivity(){
         modifyDrawingParams.setOnClickListener {
             var canProcessQuery = true
             if (modifyDrawing.newVisibility == Visibility.protectedVisibility.int) {
-                if (drawingPassword.text.isBlank() || drawingPassword.text.isEmpty()) {
+                if (modifyDrawingPassword.text.isBlank() || modifyDrawingPassword.text.isEmpty()) {
                     canProcessQuery = false
                     Toast.makeText(this, "Le mot de passe est obligatoire et" +
                         " ne peut pas être composé d'espace quand le dessin est protégé",
                         Toast.LENGTH_SHORT).show()
                 } else {
-                    modifyDrawing.password = drawingPassword.text.toString()
+                    modifyDrawing.password = modifyDrawingPassword.text.toString()
                 }
             }
             else{
@@ -115,7 +115,9 @@ class ModifyDrawingParams : AppCompatActivity(){
             }
             modifyDrawing.drawingId = information.id
             modifyDrawing.userId = information.ownerId
-            modifyDrawing.newName = modifyDrawingName.text.toString()
+            if(modifyDrawingName.text.isNotEmpty() && modifyDrawingName.text.isNotBlank()){
+                modifyDrawing.newName = modifyDrawingName.text.toString()
+            }
 
             if(canProcessQuery){
                 var response: Response<ResponseBody>?= null

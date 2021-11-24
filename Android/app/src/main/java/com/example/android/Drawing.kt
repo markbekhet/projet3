@@ -1,6 +1,5 @@
 package com.example.android
 
-import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +11,6 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.google.gson.Gson
-import io.socket.client.Socket
 import kotlinx.android.synthetic.main.dessin.*
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
@@ -54,15 +52,17 @@ class Drawing : AppCompatActivity() {
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
-                val data = args[0] as String
-                val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
-                canvas!!.onReceivedDrawing(dataTransformed)
+                val drawingData = args[0] as String
+                val dataTransformed = Gson().fromJson(drawingData, ContentDrawingSocket::class.java)
+                if(dataTransformed.drawingId == drawingID){
+                    canvas!!.onReceivedDrawing(dataTransformed)
+                }
             }
         }
         socket.on("drawingContentCreated"){ args ->
             if(args[0] != null){
-                val data = args[0] as String
-                canvas!!.receiveContentID(data)
+                val contentID = args[0] as String
+                canvas!!.receiveContentID(contentID)
             }
         }
         pencil.setOnClickListener {
