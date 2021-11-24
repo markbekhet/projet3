@@ -314,7 +314,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
 
   openDrawingPasswordBottomSheet(drawingInfos: DrawingInfosForGallery): void {
     this.bottomSheetService.open(DrawingPasswordBottomSheet, {
-      data: { drawing: drawingInfos },
+      data: { drawingId: drawingInfos.id },
     });
   }
 
@@ -380,9 +380,9 @@ export class DrawingPasswordBottomSheet {
     private drawingService: DrawingService,
     private bottomSheetRef: MatBottomSheetRef<DrawingPasswordBottomSheet>,
     @Inject(MAT_BOTTOM_SHEET_DATA)
-    private infos: { drawing: DrawingInfosForGallery }
+    private infos: { drawingId: number }
   ) {
-    console.log(this.infos.drawing.id);
+    console.log(this.infos.drawingId);
     this.userId = this.authService.token$.value;
   }
 
@@ -397,13 +397,13 @@ export class DrawingPasswordBottomSheet {
 
   submit(event: MouseEvent) {
     const joinDrawingRequest: JoinDrawing = {
-      drawingId: this.infos.drawing.id,
+      drawingId: this.infos.drawingId,
       userId: this.userId,
       password: this.password,
     };
     console.log(joinDrawingRequest);
     this.close(event);
     this.socketService.sendJoinDrawingRequest(joinDrawingRequest);
-    this.drawingService.drawingId$.next(this.infos.drawing.id);
+    this.drawingService.drawingId$.next(this.infos.drawingId);
   }
 }

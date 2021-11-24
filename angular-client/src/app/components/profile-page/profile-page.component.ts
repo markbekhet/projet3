@@ -1,10 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
-import { DrawingState } from '@src/app/models/DrawingMeta';
+import { DrawingState, DrawingVisibility } from '@src/app/models/DrawingMeta';
 import {
   ConnectionHistory,
   DrawingEditionHistory,
@@ -18,6 +19,7 @@ import { InteractionService } from '@src/app/services/interaction/interaction.se
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { DrawingPasswordBottomSheet } from '../gallery-component/gallery.component';
 
 @Component({
   templateUrl: './profile-page.component.html',
@@ -53,7 +55,8 @@ export class ProfilePage implements OnInit {
     private formBuilder: FormBuilder,
     public errorDialog: MatDialog,
     private interactionService: InteractionService,
-    private drawingService: DrawingService
+    private drawingService: DrawingService,
+    private bottomSheetService: MatBottomSheet
   ) {
     this.socketService.getUserProfile({
       userId: this.authService.getUserToken(),
@@ -181,13 +184,20 @@ export class ProfilePage implements OnInit {
   }
 
   public joinDrawing(collaboration: DrawingEditionHistory) {
-    const joinDrawing = {
-      drawingId: collaboration.drawingId,
-      userId: this.authService.getUserToken(),
-      password: undefined,
-    };
-    this.socketService.sendJoinDrawingRequest(joinDrawing);
-    this.drawingService.drawingId$.next(collaboration.drawingId);
+    if(collaboration.drawingVisibility === DrawingVisibility.PROTECTED){
+      this.bottomSheetService.open(DrawingPasswordBottomSheet,{
+        data: {drawingId: collaboration.drawingId}
+      })
+    }
+    else{
+      const joinDrawing = {
+        drawingId: collaboration.drawingId,
+        userId: this.authService.getUserToken(),
+        password: undefined,
+      };
+      this.socketService.sendJoinDrawingRequest(joinDrawing);
+      this.drawingService.drawingId$.next(collaboration.drawingId);
+    } 
     // this.router.navigate(['/home']);
   }
 
