@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import com.example.android.R
 import com.example.android.SocketHandler
+import com.example.android.client.ClientInfo
 import kotlinx.android.synthetic.main.sample_chat_dialog.*
 
 
@@ -96,21 +97,23 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
 
     override fun onDismiss(dialog: DialogInterface) {
         if(content.lifecycle.currentState == Lifecycle.State.RESUMED ||
-            content.lifecycle.currentState == Lifecycle.State.CREATED ||
-            content.lifecycle.currentState == Lifecycle.State.STARTED
+            content.lifecycle.currentState == Lifecycle.State.CREATED
         ){
             SocketHandler.getChatSocket().on("msgToClient"){ args ->
                 if(args[0] != null) {
                     val data = args[0] as String
                     val messageFromServer = ClientMessage().fromJson(data)
-                    val notificationManager = ContextCompat.getSystemService(
-                        content,
-                        NotificationManager::class.java
-                    ) as NotificationManager
-                    notificationManager.sendNotification(
-                        messageFromServer.message!!,
-                        content
-                    )
+                    if(messageFromServer.from != ClientInfo.username){
+                        val notificationManager = ContextCompat.getSystemService(
+                            content,
+                            NotificationManager::class.java
+                        ) as NotificationManager
+                        notificationManager.sendNotification(
+                            "${messageFromServer.from} a envoyé" +
+                                "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
+                            content
+                        )
+                    }
                 }
 
             }

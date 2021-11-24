@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.example.android.LandingPage
 import com.example.android.MainActivity
@@ -11,7 +12,7 @@ import com.example.android.R
 
 var notification_ID = 0
 
-fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context){
+fun NotificationManager.sendNotification(messageBody: String, applicationContext: AppCompatActivity){
     val contentIntent = Intent(applicationContext, LandingPage::class.java)
     val contentPendingIntent = PendingIntent.getActivity(applicationContext,
         notification_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)

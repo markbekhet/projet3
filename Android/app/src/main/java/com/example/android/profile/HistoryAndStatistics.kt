@@ -1,23 +1,21 @@
 package com.example.android.profile
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.Drawing
-import com.example.android.JoinProtected
-import com.example.android.R
-import com.example.android.SocketHandler
+import com.example.android.*
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.*
+import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -50,6 +48,9 @@ class HistoryAndStatistics : AppCompatActivity() {
         showChatStatisticsPage.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
+        val options = arrayOf("Les statistiques",
+            "L'historique de connexion et de déconnexions",
+            "L'historique des éditions de dessin")
 
         val data = intent.extras!!.getString("profileInformation")
         userInfo = UserProfileInformation().fromJson(data)
@@ -68,6 +69,37 @@ class HistoryAndStatistics : AppCompatActivity() {
         recycle_view_collaborations.layoutManager = collaborationLayoutManager
 
         updateUI()
+
+        spinnerOptionsStatisticsPage.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
+        spinnerOptionsStatisticsPage.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                when(p2){
+                    0->{
+                        statistics.visibility = View.VISIBLE
+                        connectionAndDisconnectionHistories.visibility = View.GONE
+                        editionHistories.visibility = View.GONE
+                    }
+                    1->{
+                        statistics.visibility = View.GONE
+                        connectionAndDisconnectionHistories.visibility = View.VISIBLE
+                        editionHistories.visibility = View.GONE
+                    }
+                    else ->{
+                        statistics.visibility = View.GONE
+                        connectionAndDisconnectionHistories.visibility = View.GONE
+                        editionHistories.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                statistics.visibility = View.VISIBLE
+                connectionAndDisconnectionHistories.visibility = View.GONE
+                editionHistories.visibility = View.GONE
+            }
+        }
+
         SocketHandler.getChatSocket().on("msgToClient"){ args ->
             if(args[0] != null){
                 val messageData = args[0] as String
@@ -153,8 +185,7 @@ class HistoryAndStatistics : AppCompatActivity() {
 
     }
 
-    override fun onRestart() {
-        super.onRestart()
+    override fun onResume() {
         //maybe change it back to socket later
         val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
         SocketHandler.getChatSocket().emit("getUserProfileRequest", profileRequest.toJson())
@@ -169,6 +200,7 @@ class HistoryAndStatistics : AppCompatActivity() {
                 i++
             }
         }
+        super.onResume()
     }
 }
 
@@ -217,6 +249,17 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
                             i++
                         }
                     }
+                    SocketHandler.getChatSocket().on("cantJoinTeam"){ args ->
+                        if(args[0]!= null){
+                            val data = args[0] as String
+                            val cantJoin = CantJoin().fromJson(data)
+                            activity.runOnUiThread{
+                                Toast.makeText(activity, cantJoin.message,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
                 }
 
                 else{

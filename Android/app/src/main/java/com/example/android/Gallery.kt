@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
@@ -22,6 +23,7 @@ import com.example.android.chat.UserMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.delete
+import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -53,8 +55,7 @@ class Gallery :  Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
-        val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        val linearLayoutManager = GridLayoutManager(context, 3)
         gallery_drawings?.layoutManager = linearLayoutManager
         buildGallery()
     }
@@ -193,8 +194,20 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                 SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                     if(args[0]!=null && i==0){
                         val data = args[0] as String
-                        fragment.startDrawingActivity(data, drawingID)
+                        fragment.requireActivity().runOnUiThread{
+                            fragment.startDrawingActivity(data, drawingID)
+                        }
                         i++
+                    }
+                }
+                SocketHandler.getChatSocket().on("cantJoinDrawing"){ args ->
+                    if(args[0]!= null){
+                        val data = args[0] as String
+                        val cantJoin = CantJoin().fromJson(data)
+                        fragment.requireActivity().runOnUiThread{
+                            Toast.makeText(fragment.context, cantJoin.message,
+                                Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

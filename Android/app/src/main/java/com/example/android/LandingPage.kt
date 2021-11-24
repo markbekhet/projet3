@@ -244,10 +244,8 @@ class LandingPage : AppCompatActivity(){
     }
 
     fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
-        val bundle = Bundle()
-        bundle.putString("teamInformation", data)
-        bundle.putString("teamGeneralInformation", teamsGeneralInformation.toJson())
-        startActivity(Intent(this, TeamActivity::class.java).putExtras(bundle))
+
+
     }
 
     override fun onDestroy() {
@@ -297,130 +295,6 @@ class LandingPage : AppCompatActivity(){
         }
         super.onPause()
     }*/
-}
-
-
-internal class CreateCollaborationTeamDialog(var context: LandingPage): Dialog(context){
-    private var createTeamDto = CreateTeamDto()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.popup_create_collaboration_team)
-        val option:Spinner = findViewById(R.id.spOptionTeam)
-        val result:TextView = findViewById(R.id.resultTeamVisibility)
-        val clientService = ClientService()
-
-        val options = arrayOf("publique", "protegée")
-        option.adapter = ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, options)
-        option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
-                createTeamDto.visibility = p2
-                if (p2 == 1) {
-                    teamPassword.visibility = View.VISIBLE
-                } else {
-                    teamPassword.visibility = View.INVISIBLE
-                }
-            }
-
-            @SuppressLint("SetTextI18n")
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                resultTeamVisibility.text = options[0]
-                createTeamDto.visibility = 0
-            }
-        }
-
-        teamName.doAfterTextChanged {
-            if (!isNotBlank()) {
-                createTeam.isEnabled = false
-                createTeam.isClickable = false
-            } else {
-                createTeam.isEnabled = true
-                createTeam.isClickable = true
-            }
-            errorTeam.text = ""
-        }
-
-        nbCollaborators.doAfterTextChanged {
-            if (!isNotBlank()) {
-                createTeam.isEnabled = false
-                createTeam.isClickable = false
-            } else {
-                createTeam.isEnabled = true
-                createTeam.isClickable = true
-            }
-            errorTeam.text = ""
-        }
-
-        createTeam?.setOnClickListener() {
-            var canProcessQuery = true
-            if (createTeamDto.visibility == Visibility.protectedVisibility.int) {
-                if (teamPassword.text.isBlank() || teamPassword.text.isEmpty()) {
-                    canProcessQuery = false
-                    errorTeam.text = "Le mot de passe est obligatoire et" +
-                        " ne peut pas être composé seulemwnt d'espaces quand le dessin est protégé"
-                } else {
-                    createTeamDto.password = teamPassword.text.toString()
-                    println(createTeamDto.password)
-                }
-            } else {
-                createTeamDto.password = null
-            }
-
-            createTeamDto.nbCollaborators = nbCollaborators.text.toString().toInt()
-            createTeamDto.name = teamName.text.toString()
-            createTeamDto.ownerId = ClientInfo.userId
-
-            println(createTeamDto.password)
-            teamPassword.text.clear()
-            nbCollaborators.text.clear()
-            teamName.text.clear()
-
-            if (canProcessQuery) {
-                var response: Response<ResponseBody>? = null
-                runBlocking {
-                    async {
-                        launch {
-                            response = clientService.createCollaborationTeam(createTeamDto)
-                        }
-                    }
-                }
-                if (response!!.isSuccessful) {
-                    val data = response!!.body()!!.string()
-                    val teamGeneralInformation = TeamGeneralInformation().fromJson(data)
-                    val joinTeam = JoinTeamDto(
-                        teamName = createTeamDto.name,
-                        userId = createTeamDto.ownerId,
-                        password = createTeamDto.password)
-                    var i = 0
-                    SocketHandler.getChatSocket().emit("joinTeam", joinTeam.toJson())
-                    SocketHandler.getChatSocket().on("teamInformations"){ args ->
-                        if(args[0]!= null && i==0){
-                            //ToComplete: Collect the rest of information concerning
-                                // the team like the gallery and the list of users
-                            val extraData = args[0] as String
-                            context.startTeamActivity(teamGeneralInformation,extraData)
-                            i++
-                            dismiss()
-                        }
-                    }
-
-                } else {
-                    context.runOnUiThread{
-                        Toast.makeText(context, response!!.errorBody()!!.string(),
-                            Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-
-    }
-
-    private fun isNotBlank(): Boolean{
-        if(teamName.text.isBlank() || nbCollaborators.text.isBlank()){
-            return false
-        }
-        return true
-    }
 }
 
 //To add a similar method for the gallery

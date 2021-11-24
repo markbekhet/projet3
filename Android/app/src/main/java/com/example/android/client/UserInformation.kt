@@ -73,7 +73,9 @@ enum class DrawingAvailability(var i: Int){
     DELETED(1)
 }
 
-data class ActiveUser(var userId:String?= null){
+data class ActiveUser(var userId:String?= null,
+                      var teamName:String?=null,
+                      var drawingId:Int?= null){
     fun fromJson(json:String): ActiveUser{
         return Gson().fromJson(json, ActiveUser::class.java)
     }

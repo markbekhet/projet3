@@ -10,16 +10,13 @@ import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
-import com.example.android.client.ActiveUser
-import com.example.android.client.ClientInfo
-import com.example.android.client.User
-import com.example.android.client.UsersArrayList
+import com.example.android.client.*
+import com.example.android.profile.OwnProfile
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
+import kotlinx.android.synthetic.main.content_landing_page.*
 
 class TeamActivity : AppCompatActivity() {
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
     private var teamGeneralInformation: TeamGeneralInformation?= null
     private var manager: FragmentManager?=null
     private var socket: Socket?= null
@@ -38,7 +35,7 @@ class TeamActivity : AppCompatActivity() {
         val teamChatAndActiveUsers = TeamChatAndActiveUsers().fromJson(data!!)
         println(teamChatAndActiveUsers.activeUsers.size)
         for(userId in teamChatAndActiveUsers.activeUsers){
-            for(userInformation in ClientInfo.usersList.userList!!){
+            for(userInformation in ClientInfo.usersList.userList){
                 if(userId.userId == userInformation.id){
                     usersList.add(userInformation)
                     break
@@ -91,22 +88,47 @@ class TeamActivity : AppCompatActivity() {
 
         //A hash map that has all the fragments
 
+        /*==========================================*/
+        /*======Buttons=============================*/
+        createTeamTeamButton.setOnClickListener {
+            val createTeamDialog = CreateCollaborationTeamDialog(this)
+            createTeamDialog.create()
+            createTeamDialog.show()
+        }
+
+        profileButtonTeamPage.setOnClickListener {
+            val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+            socket!!.emit("getUserProfileRequest", profileRequest.toJson())
+            var i = 0
+            socket!!.on("profileToClient"){ args ->
+                if(args[0]!=null && i==0){
+                    val profileData = args[0] as String
+                    val bundle = Bundle()
+
+                    bundle.putString("profileInformation", profileData)
+                    startActivity(Intent(this, OwnProfile::class.java).putExtras(bundle))
+                    i++
+                }
+            }
+        }
+        /*============================================*/
         /*========================socket actions=================================*/
         socket?.on("newJoinToTeam"){ args ->
             if(args[0]!= null){
                 val newActiveUserData = args[0] as String
                 val newActiveUser = ActiveUser().fromJson(newActiveUserData)
-                var newActiveUserInformation = User()
-                for(existingUser in ClientInfo.usersList.userList!!){
-                    if(existingUser.id == newActiveUser.userId){
-                        println("${existingUser.pseudo} has joined ${teamGeneralInformation!!.name}")
-                        newActiveUserInformation = existingUser
-                        break
+                if(newActiveUser.teamName == teamGeneralInformation!!.name){
+                    var newActiveUserInformation = User()
+                    for(existingUser in ClientInfo.usersList.userList){
+                        if(existingUser.id == newActiveUser.userId){
+                            println("${existingUser.pseudo} has joined ${teamGeneralInformation!!.name}")
+                            newActiveUserInformation = existingUser
+                            break
+                        }
                     }
+                    usersList.add(newActiveUserInformation)
+                    usersAndTeamsFragment.setUsersList(usersList)
                 }
-                usersList.add(newActiveUserInformation)
-                usersAndTeamsFragment.setUsersList(usersList)
-
             }
 
         }
@@ -115,16 +137,18 @@ class TeamActivity : AppCompatActivity() {
             if(args[0]!= null){
                 val userLeftData = args[0] as String
                 val userLeft = ActiveUser().fromJson(userLeftData)
-                var i = 0
-                for(existingUsers in usersList){
-                    if(existingUsers.id == userLeft.userId){
-                        println("user ${existingUsers.pseudo} has left the iterator = $i")
-                        break
+                if(userLeft.teamName == teamGeneralInformation!!.name){
+                    var i = 0
+                    for(existingUsers in usersList){
+                        if(existingUsers.id == userLeft.userId){
+                            println("user ${existingUsers.pseudo} has left the iterator = $i")
+                            break
+                        }
+                        i++
                     }
-                    i++
+                    usersList.removeAt(i)
+                    usersAndTeamsFragment.setUsersList(usersList)
                 }
-                usersList.removeAt(i)
-                usersAndTeamsFragment.setUsersList(usersList)
             }
         }
 
