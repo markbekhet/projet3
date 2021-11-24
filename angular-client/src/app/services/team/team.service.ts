@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DrawingInfosForGallery } from '@src/app/models/DrawingMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { BehaviorSubject } from 'rxjs';
 //import { Observable } from 'rxjs';
@@ -13,6 +14,7 @@ export class TeamService {
 
   activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
   requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({})
+  leftTeamGallery: BehaviorSubject<DrawingInfosForGallery[]> = new BehaviorSubject<DrawingInfosForGallery[]>([]);
 
   constructor(private httpClient: HttpClient) { }
 

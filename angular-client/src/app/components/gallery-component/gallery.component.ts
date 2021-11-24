@@ -238,6 +238,19 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       let drawingInfosForGallery: {drawingList: DrawingInfosForGallery[]} = JSON.parse(data);
       this.createShownGalleryDrawingsFromArray(drawingInfosForGallery.drawingList);
     })
+
+    this.interactionService.$updateGallerySignal.subscribe((sig)=>{
+      if(sig){
+        const drawings = this.teamService.leftTeamGallery.value;
+        drawings.forEach((drawing: DrawingInfosForGallery)=>{
+          this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
+            if(drawing.id === shownDrawing.infos.id){
+              this.shownDrawings.splice(this.shownDrawings.indexOf(shownDrawing), 1);
+            }
+          })
+        })
+      }
+    })
   }
 
   createSVG(

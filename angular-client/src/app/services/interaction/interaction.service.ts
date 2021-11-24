@@ -53,6 +53,9 @@ export class InteractionService {
   updateChatListSignal: Subject<boolean> = new Subject<boolean>();
   $updateChatListSignal: Observable<boolean> = this.updateChatListSignal.asObservable()
 
+  updateGallerySignal: Subject<boolean> = new Subject<boolean>();
+  $updateGallerySignal: Observable<boolean> = this.updateGallerySignal.asObservable();
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -93,9 +96,9 @@ export class InteractionService {
     this.wipeDrawing.next(true);
   }
 
-  /* emitDrawingInformations(drawingInformations: DrawingInformations){
-    this.drawingInformations.next(drawingInformations)
-  } */
+  emitUpdateGallerySignal(){
+    this.updateGallerySignal.next(true);
+  }
 
   emitLeaveDrawingSignal() {
     this.leaveDrawingSignal.next(true);

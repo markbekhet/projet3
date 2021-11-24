@@ -154,8 +154,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.chatrooms.splice(index, 1);
 
     this.teams.push(this.teamService.activeTeams.value.get(teamName)!);
+    this.teamService.leftTeamGallery.next(this.teamService.activeTeams.value.get(teamName)!.gallery!);
     this.teamService.activeTeams.value.delete(teamName);
     this.chatRoomService.chatRooms.delete(teamName);
+    this.interactionService.emitUpdateGallerySignal();
   }
 
   joinChat(roomName: string) {

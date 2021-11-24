@@ -77,7 +77,7 @@ export class NewDrawingComponent implements OnInit {
     this.drawingVisibilityItems = drawingVisibilityItems;
     this.userId = '';
     this.teamService.activeTeams.value.forEach((team) => {
-      this.currentTeams.push(team);
+      this.currentTeams.push({name:team.name!, id: team.id!});
     });
   }
 
@@ -109,14 +109,14 @@ export class NewDrawingComponent implements OnInit {
       drawingName: ['', [Validators.required]],
       drawingVisibility: [null, [Validators.required]],
       drawingPassword: ['', []],
-      canvWidth: [
+      /*canvWidth: [
         '',
         [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
       ], // accepts only positive integers
       canvHeight: [
         '',
         [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
-      ],
+      ],*/
       canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
       teamAssignation: [null, []],
     });
@@ -124,8 +124,8 @@ export class NewDrawingComponent implements OnInit {
       drawingName: this.name,
       drawingVisibility: this.visibility,
       drawingPassword: this.password,
-      canvWidth: this.canvasBuilder.getDefWidth(),
-      canvHeight: this.canvasBuilder.getDefHeight(),
+      //canvWidth: this.canvasBuilder.getDefWidth(),
+      //canvHeight: this.canvasBuilder.getDefHeight(),
       canvColor: this.canvasBuilder.getDefColor(),
       teamAssignation: this.assignedTeam,
     });
@@ -159,8 +159,8 @@ export class NewDrawingComponent implements OnInit {
       name: VALUES.drawingName,
       visibility: VALUES.drawingVisibility,
       password: VALUES.drawingPassword,
-      width: VALUES.canvWidth,
-      height: VALUES.canvHeight,
+      width: 900,
+      height: 900,
       color: VALUES.canvColor,
       ownerId: this.userId,
     };
