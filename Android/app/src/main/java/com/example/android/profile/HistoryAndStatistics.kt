@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.Drawing
@@ -18,6 +19,7 @@ import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.*
+import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -217,6 +219,17 @@ class CollaborationEntry(var activity: HistoryAndStatistics) : Item<GroupieViewH
                             i++
                         }
                     }
+                    SocketHandler.getChatSocket().on("cantJoinTeam"){ args ->
+                        if(args[0]!= null){
+                            val data = args[0] as String
+                            val cantJoin = CantJoin().fromJson(data)
+                            activity.runOnUiThread{
+                                Toast.makeText(activity, cantJoin.message,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
                 }
 
                 else{

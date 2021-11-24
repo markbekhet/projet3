@@ -22,6 +22,7 @@ import com.example.android.chat.UserMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.delete
+import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -197,6 +198,16 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                             fragment.startDrawingActivity(data, drawingID)
                         }
                         i++
+                    }
+                }
+                SocketHandler.getChatSocket().on("cantJoinDrawing"){ args ->
+                    if(args[0]!= null){
+                        val data = args[0] as String
+                        val cantJoin = CantJoin().fromJson(data)
+                        fragment.requireActivity().runOnUiThread{
+                            Toast.makeText(fragment.context, cantJoin.message,
+                                Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
