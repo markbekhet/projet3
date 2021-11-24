@@ -289,15 +289,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 else{
                     println(response!!.errorBody()!!.string())
                     passwordErrors.text = ""
-                    if (newPassword.text.isNotEmpty()){
-                        passwordErrors.append("Assurez-vous que l'ancien mot de passe" +
-                            " est correcte et que votre nouveau mot de passe n'est pas" +
-                            " la même que l'ancienne. " )
-                    }
-                    if(newNickname.text.isNotEmpty()){
-                        passwordErrors.append("Un autre utilisateur utilise le même pseudonyme." +
-                            " Veuillez saisir un autre pseudonyme.")
-                    }
+                    passwordErrors.append(response!!.errorBody()!!.string())
                 }
             }
         }
