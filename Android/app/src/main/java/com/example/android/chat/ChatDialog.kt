@@ -109,7 +109,7 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
                             NotificationManager::class.java
                         ) as NotificationManager
                         notificationManager.sendNotification(
-                            "${messageFromServer.from} a envoyé" +
+                            "${messageFromServer.from} a envoyé " +
                                 "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
                             content
                         )
