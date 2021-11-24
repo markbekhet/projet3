@@ -10,12 +10,11 @@ import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
-import com.example.android.client.ActiveUser
-import com.example.android.client.ClientInfo
-import com.example.android.client.User
-import com.example.android.client.UsersArrayList
+import com.example.android.client.*
+import com.example.android.profile.OwnProfile
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
+import kotlinx.android.synthetic.main.content_landing_page.*
 
 class TeamActivity : AppCompatActivity() {
     private var teamGeneralInformation: TeamGeneralInformation?= null
@@ -89,6 +88,30 @@ class TeamActivity : AppCompatActivity() {
 
         //A hash map that has all the fragments
 
+        /*==========================================*/
+        /*======Buttons=============================*/
+        createTeamTeamButton.setOnClickListener {
+            val createTeamDialog = CreateCollaborationTeamDialog(this)
+            createTeamDialog.create()
+            createTeamDialog.show()
+        }
+
+        profileButtonTeamPage.setOnClickListener {
+            val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+            socket!!.emit("getUserProfileRequest", profileRequest.toJson())
+            var i = 0
+            socket!!.on("profileToClient"){ args ->
+                if(args[0]!=null && i==0){
+                    val profileData = args[0] as String
+                    val bundle = Bundle()
+
+                    bundle.putString("profileInformation", profileData)
+                    startActivity(Intent(this, OwnProfile::class.java).putExtras(bundle))
+                    i++
+                }
+            }
+        }
+        /*============================================*/
         /*========================socket actions=================================*/
         socket?.on("newJoinToTeam"){ args ->
             if(args[0]!= null){

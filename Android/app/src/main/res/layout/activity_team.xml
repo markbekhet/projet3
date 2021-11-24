@@ -30,12 +30,27 @@
                 android:textStyle="bold"
             />
             <Button
+                android:id="@+id/createTeamTeamButton"
+                android:layout_width="200sp"
+                android:layout_height="match_parent"
+                android:text="Créer un Salon"
+                android:textColor="@color/main_color"
+                android:textSize="20sp"
+                app:backgroundTint="@color/white" />
+            <Button
                 android:id="@+id/createDrawingTeamButton"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
                 android:text="Créer un dessin"
                 android:textColor="@color/main_color"
                 android:textSize="20sp"
+                app:backgroundTint="@color/white" />
+            <Button
+                android:id="@+id/profileButtonTeamPage"
+                android:layout_width="150sp"
+                android:layout_height="match_parent"
+                android:text="profil"
+                android:textColor="@color/main_color"
                 app:backgroundTint="@color/white" />
             <Button
                 android:id="@+id/showChatTeamPage"
