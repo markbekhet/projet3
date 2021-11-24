@@ -6,98 +6,91 @@
     android:layout_height="match_parent"
     tools:context=".team.TeamActivity">
 
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
+            android:orientation="horizontal"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/teamNameTeamActivity"
-                android:layout_width="200sp"
-                android:layout_height="wrap_content"
-                android:text="Nom de l'équipe"
-                android:textSize="30sp"
-                android:textStyle="bold"
+        <TextView
+            android:id="@+id/teamNameTeamActivity"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:text="Nom de l'équipe"
+            android:textSize="30sp"
+            android:textStyle="bold"
+        />
+        <Button
+            android:id="@+id/createTeamTeamButton"
+            android:layout_width="200sp"
+            android:layout_height="match_parent"
+            android:text="Créer un Salon"
+            android:textColor="@color/main_color"
+            android:textSize="20sp"
+            app:backgroundTint="@color/white" />
+        <Button
+            android:id="@+id/createDrawingTeamButton"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:text="Créer un dessin"
+            android:textColor="@color/main_color"
+            android:textSize="20sp"
+            app:backgroundTint="@color/white" />
+        <Button
+            android:id="@+id/profileButtonTeamPage"
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:text="profil"
+            android:textColor="@color/main_color"
+            app:backgroundTint="@color/white" />
+        <Button
+            android:id="@+id/showChatTeamPage"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:text="Afficher le clavardage"
+            android:textColor="@color/main_color"
+            android:textSize="20sp"
+            app:backgroundTint="@color/white"
             />
-            <Button
-                android:id="@+id/createTeamTeamButton"
-                android:layout_width="200sp"
-                android:layout_height="match_parent"
-                android:text="Créer un Salon"
-                android:textColor="@color/main_color"
-                android:textSize="20sp"
-                app:backgroundTint="@color/white" />
-            <Button
-                android:id="@+id/createDrawingTeamButton"
-                android:layout_width="200sp"
-                android:layout_height="wrap_content"
-                android:text="Créer un dessin"
-                android:textColor="@color/main_color"
-                android:textSize="20sp"
-                app:backgroundTint="@color/white" />
-            <Button
-                android:id="@+id/profileButtonTeamPage"
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:text="profil"
-                android:textColor="@color/main_color"
-                app:backgroundTint="@color/white" />
-            <Button
-                android:id="@+id/showChatTeamPage"
-                android:layout_width="200sp"
-                android:layout_height="wrap_content"
-                android:text="Afficher le clavardage"
-                android:textColor="@color/main_color"
-                android:textSize="20sp"
-                app:backgroundTint="@color/white"
-                />
-            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="300dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/rectangle_background"
-                    android:orientation="vertical"
-                    android:backgroundTint="@color/white">
-                    <FrameLayout
-                        android:id="@+id/usersAndTeamsFrameTeamPage"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-
-                <LinearLayout
+                android:background="@drawable/rectangle_background"
+                android:orientation="vertical"
+                android:backgroundTint="@color/white">
+                <FrameLayout
+                    android:id="@+id/galleryFrameTeamPage"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/rectangle_background"
-                    android:orientation="vertical"
-                    android:backgroundTint="@color/white">
-                    <FrameLayout
-                        android:id="@+id/galleryFrameTeamPage"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                    android:layout_height="match_parent">
 
-                    </FrameLayout>
+                </FrameLayout>
 
-                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-    </ScrollView>
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/rectangle_background"
+                android:orientation="vertical"
+                android:backgroundTint="@color/white">
+                <FrameLayout
+                    android:id="@+id/usersAndTeamsFrameTeamPage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

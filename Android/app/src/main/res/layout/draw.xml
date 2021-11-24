@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/rectangle_background">
@@ -17,44 +17,12 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/black"
             android:textSize="20sp" />
-
         <LinearLayout
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:orientation="horizontal">
-
-            <FrameLayout
-                android:id="@+id/fl_drawing_view_gallery"
-                android:background="@drawable/rectangle_background"
-                android:layout_width="300px"
-                android:layout_height="300px">
-
-                <!-- In FrameLayout the component which are
-               added below are in foreground and added above are in Background.-->
-
-            </FrameLayout>
-
             <LinearLayout
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/delete"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/trash" />
-
-                <ImageView
-                    android:id="@+id/modify"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/modify" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <TextView
@@ -74,9 +42,10 @@
                     android:textColor="@color/black"/>
             </LinearLayout>
             <LinearLayout
-                android:layout_width="100dp"
+                android:layout_width="200dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginStart="5dp">
                 <TextView
                     android:id="@+id/drawingsAuthorName"
                     android:layout_width="wrap_content"
@@ -95,6 +64,42 @@
                     android:layout_height="wrap_content"
                     android:text="Date de création"
                     android:textColor="@color/black"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/fl_drawing_view_gallery"
+                android:background="@drawable/rectangle_background"
+                android:layout_width="300px"
+                android:layout_height="300px">
+
+                <!-- In FrameLayout the component which are
+               added below are in foreground and added above are in Background.-->
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/delete"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/trash" />
+
+                <ImageView
+                    android:id="@+id/modify"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/modify" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
