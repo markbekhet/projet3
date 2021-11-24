@@ -25,6 +25,9 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   templateUrl: './new-drawing.component.html',
@@ -65,7 +68,7 @@ export class NewDrawingComponent implements OnInit {
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
-    //private router: Router,
+    private errorDialog: MatDialog,
     private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
@@ -109,14 +112,6 @@ export class NewDrawingComponent implements OnInit {
       drawingName: ['', [Validators.required]],
       drawingVisibility: [null, [Validators.required]],
       drawingPassword: ['', []],
-      /*canvWidth: [
-        '',
-        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
-      ], // accepts only positive integers
-      canvHeight: [
-        '',
-        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
-      ],*/
       canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
       teamAssignation: [null, []],
     });
@@ -124,8 +119,6 @@ export class NewDrawingComponent implements OnInit {
       drawingName: this.name,
       drawingVisibility: this.visibility,
       drawingPassword: this.password,
-      //canvWidth: this.canvasBuilder.getDefWidth(),
-      //canvHeight: this.canvasBuilder.getDefHeight(),
       canvColor: this.canvasBuilder.getDefColor(),
       teamAssignation: this.assignedTeam,
     });
@@ -198,6 +191,10 @@ export class NewDrawingComponent implements OnInit {
           setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
           }, LOAD_TIME);
+        },
+        (error)=>{
+          const errorMessage = JSON.parse((error as HttpErrorResponse).error).message;
+          this.errorDialog.open(ErrorDialogComponent, {data: errorMessage});
         });
     } catch (err: any) {
       this.showPasswordRequired = true;

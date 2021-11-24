@@ -15,6 +15,9 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 // import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
@@ -41,7 +44,8 @@ export class NewTeamDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private socketService: SocketService,
     private teamService: TeamService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private errorDialog: MatDialog,
   ) {
     this.userId = '';
     this.teamVisibilityItems = teamVisibilityItems;
@@ -66,7 +70,7 @@ export class NewTeamDialogComponent implements OnInit {
       teamName: ['', [Validators.required]],
       teamVisibility: [TeamVisibilityLevel.PUBLIC, [Validators.required]],
       teamPassword: ['', []],
-      maxCollaborators: [2, [Validators.required, Validators.min(4)]],
+      maxCollaborators: [2, [Validators.required, Validators.min(2)]],
       teamBio: ['', []],
     });
   }
@@ -110,6 +114,10 @@ export class NewTeamDialogComponent implements OnInit {
         userId: this.userId,
         password: this.newTeam.password,
       });
+    },
+    (error)=>{
+      const errorCode = JSON.parse((error as HttpErrorResponse).error).message;
+      this.errorDialog.open(ErrorDialogComponent, {data: errorCode});
     });
     console.log(this.newTeam);
     this.closeModal();
