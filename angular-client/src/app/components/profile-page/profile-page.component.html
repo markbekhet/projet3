@@ -1,6 +1,8 @@
 <div class="profile-page">
     <div class="sidebar">
-        <img src="../../../assets/thumbnails/avatar_placeholder.png" alt="Avatar thumbnail" class="avatar">
+        <img src={{decodeAvatar()}} alt="Avatar thumbnail" class="avatar">
+        <button (click)="decodeAvatar()">TEST</button>
+        {{ avatar.length }}
         <span></span>
         <div class="information">
             <button mat-icon-button (click)="goLaunchingPage()">Disconnect</button>
@@ -43,8 +45,10 @@
 
             <mat-tab label="Statistiques">
                 <br>
-                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime! * 60000 | date:'mm:ss'}} mins.</div>
-                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime! * 60000 | date:'mm:ss'}} mins.</div>
+                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime! * 60000 |
+                    date:'mm:ss'}} mins.</div>
+                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime! * 60000 |
+                    date:'mm:ss'}} mins.</div>
                 <br>
                 <div class="info-field">Nombre d'équipes de collaboration: {{user.numberCollaborationTeams}}</div>
                 <div class="info-field">Nombre de dessins: {{user.numberAuthoredDrawings}}</div>
