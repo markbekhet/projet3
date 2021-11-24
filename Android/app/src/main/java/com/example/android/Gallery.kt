@@ -107,8 +107,15 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        println(information!!.name)
-        if(ClientInfo.userId == information!!.ownerId){
+        var canModify = false
+        for(entry in ClientInfo.possibleOwners){
+            val value = entry.value
+            if(value.first == information!!.ownerId){
+                canModify = true
+                break
+            }
+        }
+        if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
             viewHolder.itemView.modify.setOnClickListener {
@@ -117,7 +124,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
 
             viewHolder.itemView.delete.setOnClickListener{
                 var response: Response<ResponseBody>?= null
-                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)
+                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, information!!.ownerId!!)
                 runBlocking {
                     async {
                         launch {
@@ -138,6 +145,32 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.modify.isVisible= false
             viewHolder.itemView.delete.isVisible= false
         }
+
+        var authorName = ""
+        var foundInUsers = false
+        for(user in ClientInfo.usersList.userList){
+            if(user.id == information!!.ownerId){
+                authorName = user.pseudo!!
+                foundInUsers = true
+                break
+            }
+        }
+        if(!foundInUsers){
+            for(team in ClientInfo.teamsList.teamList){
+                if(team.id == information!!.ownerId){
+                    authorName = team.name!!
+                    break
+                }
+            }
+        }
+
+        viewHolder.itemView.drawingsAuthorName.text = authorName
+        println(authorName)
+        viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()
+        viewHolder.itemView.creationDate.text = information!!.creationDate
+
+        println("nombre de collaborateurs ${information!!.nbCollaborators}")
+        println("date de cr/ation du dessin ${information!!.creationDate}")
         viewHolder.itemView.name.text = information!!.name
         val canvas = GalleryCanvasView(information!!.width!!, information!!.height!!,information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)

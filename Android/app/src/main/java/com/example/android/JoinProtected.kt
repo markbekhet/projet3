@@ -8,6 +8,8 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.team.CantJoin
 import com.example.android.team.JoinTeamDto
@@ -26,6 +28,18 @@ class JoinProtected : AppCompatActivity() {
         val chatDialog = ChatDialog(this)
         chatJoinProtected.setOnClickListener {
             chatDialog.show(manager, ChatDialog.TAG)
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
         }
 
         if(drawingData != null){

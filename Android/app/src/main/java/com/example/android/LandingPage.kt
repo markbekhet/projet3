@@ -8,27 +8,21 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.android.canvas.GalleryDrawing
+import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.*
-import com.example.android.Gallery
 import com.example.android.profile.OwnProfile
 import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
-import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_landing_page.*
-import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.android.synthetic.main.popup_create_collaboration_team.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.JSON.Companion.context
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -36,10 +30,8 @@ class LandingPage : AppCompatActivity(){
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
 
-    var gallery  = GalleryDrawing()
     var response: Response<ResponseBody>?=null
     private val galleryDraws = Gallery()
-    private var displayDrawingGallery : RecyclerView?= null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
@@ -47,8 +39,9 @@ class LandingPage : AppCompatActivity(){
         //Initialize chat socket
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
-        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-        chatDialog.dismiss()
+        //chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        //chatDialog.dismiss()
+
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         val galleryFragmentTransaction = manager.beginTransaction()
@@ -64,9 +57,9 @@ class LandingPage : AppCompatActivity(){
         }
         if(response!!.isSuccessful){
             val data = response!!.body()!!.string()
-            gallery = GalleryDrawing().fromJson(data)
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
 
-            galleryDraws.set(gallery.drawingList!!)
+            galleryDraws.set(ClientInfo.gallery.drawingList)
         }
         chatSocket = SocketHandler.getChatSocket()
         val usersFragmentTransaction = manager.beginTransaction()
@@ -99,21 +92,46 @@ class LandingPage : AppCompatActivity(){
             if(args[0] != null){
                 val data = args[0] as String
                 val deletedDrawing = ReceiveDrawingInformation().fromJson(data)
-                var i = 0
-                if(gallery.drawingList != null){
-                    for(drawing in gallery.drawingList!!){
-                        if(deletedDrawing.id == drawing.id){
-                            break
-                        }
-                        i++
-                    }
-                    gallery.drawingList!!.removeAt(i)
-                    galleryDraws.set(gallery.drawingList!!)
-                }
-
+                ClientInfo.gallery.deleteExistingDrawing(deletedDrawing)
+                galleryDraws.set(ClientInfo.gallery.drawingList)
             }
         }
 
+        chatSocket?.on("drawingModified"){ args->
+            if(args[0] != null){
+                val data = args[0] as String
+                val drawingModified = ReceiveDrawingInformation().fromJson(data)
+                ClientInfo.gallery.modifyDrawing(drawingModified, ClientInfo.userId)
+                galleryDraws.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        chatSocket?.on("newDrawingCreated"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val drawingAdded = ReceiveDrawingInformation().fromJson(data)
+                ClientInfo.gallery.addNewCreatedDrawing(drawingAdded, ClientInfo.userId)
+                galleryDraws.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        chatSocket?.on("nbCollaboratorsDrawingIncreased"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val drawing = ModifyDrawingDto().fromJson(data)
+                ClientInfo.gallery.increaseNbCollaborator(drawing)
+                galleryDraws.set(ClientInfo.gallery.drawingList)
+            }
+        }
+
+        chatSocket?.on("nbCollaboratorsDrawingReduced"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val drawing = ModifyDrawingDto().fromJson(data)
+                ClientInfo.gallery.decreaseNbCollaborator(drawing)
+                galleryDraws.set(ClientInfo.gallery.drawingList)
+            }
+        }
         chatSocket?.on("RoomChatHistories"){ args ->
             if(args[0] != null){
                 val data = args[0] as String
@@ -122,6 +140,21 @@ class LandingPage : AppCompatActivity(){
                 try{
                     chatDialog.setPreviousMessages("General")
                 } catch(e: Exception){}
+            }
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val data = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(data)
+                val roomName = messageFromServer.roomName
+                try{
+                    // This must be the only place where the add is called in order
+                        // for the message to be unique in the array list
+                    ChatRooms.chats[roomName]!!.add(messageFromServer)
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
             }
         }
 
@@ -216,6 +249,9 @@ class LandingPage : AppCompatActivity(){
         disconnect()
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
+        ClientInfo.possibleOwners.clear()
+        ClientInfo.gallery.drawingList.clear()
+        ClientInfo.indexPossibleOwners = 0
         super.onDestroy()
     }
 
@@ -224,21 +260,9 @@ class LandingPage : AppCompatActivity(){
         super.onBackPressed()
     }
 
-    override fun onRestart() {
-        runBlocking {
-            async{
-                launch {
-                    response = clientService.getUserGallery()
-                }
-            }
-        }
-        if(response!!.isSuccessful){
-            val data = response!!.body()!!.string()
-            gallery = GalleryDrawing().fromJson(data)
-
-            galleryDraws.set(gallery.drawingList!!)
-        }
-        super.onRestart()
+    override fun onResume() {
+        galleryDraws.set(ClientInfo.gallery.drawingList)
+        super.onResume()
     }
 }
 

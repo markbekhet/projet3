@@ -43,6 +43,18 @@ class ModifyDrawingParams : AppCompatActivity(){
         showChatModifyDrawingPage.setOnClickListener {
             chatDialog.show(manager, ChatDialog.TAG)
         }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
         /*=====================================================*/
 
         /*=================Buttons interactions and UI=================*/

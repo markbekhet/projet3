@@ -16,6 +16,8 @@ import android.widget.*
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import kotlinx.android.synthetic.main.chatfragment.view.*
@@ -27,6 +29,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
+import kotlin.collections.ArrayList
 
 var newDrawing = DrawingInformation(color="FFFFFF")
 class CreateDraw : AppCompatActivity() {
@@ -42,6 +45,39 @@ class CreateDraw : AppCompatActivity() {
         val chatDialog = ChatDialog(this)
         chatCreateDrawing.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
+        val ownerPossible = ArrayList<String>()
+        for(item in ClientInfo.possibleOwners){
+            val itemValue = item.value
+            ownerPossible.add(itemValue.second)
+        }
+
+        var ownerPositionSelected = 0
+        ownerOptions.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
+            ownerPossible)
+
+        ownerOptions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                ownerPositionSelected = p2
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
         }
 
         //switch=findViewById(R.id.visible) as Switch
@@ -134,7 +170,14 @@ class CreateDraw : AppCompatActivity() {
             newDrawing.height = height.text.toString().toInt()
             newDrawing.width = width.text.toString().toInt()
             newDrawing.name = drawingName.text.toString()
-            newDrawing.ownerId = ClientInfo.userId
+
+            // in case of an error
+            try{
+                newDrawing.ownerId = ClientInfo.possibleOwners[ownerPositionSelected]!!.first
+            } catch(e: Exception){
+                newDrawing.ownerId = ClientInfo.userId
+            }
+
             newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
             height.text.clear()

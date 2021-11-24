@@ -94,7 +94,9 @@ class Chat(var name:String) : Fragment() {
         try{
             requireActivity().runOnUiThread {
                 messageListView?.adapter = messageDisplay
-                messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
+                if(serverMessagesArray.size > 0){
+                    messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
+                }
             }
         }catch(e: Exception){
             println("cannot show the information right now")

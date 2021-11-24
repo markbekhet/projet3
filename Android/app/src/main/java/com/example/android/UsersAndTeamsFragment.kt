@@ -109,7 +109,7 @@ class UsersAndTeamsFragment() : Fragment() {
 
         var exist = false
         var i = 0
-        for(existingUser in usersList!!){
+        for(existingUser in usersList){
             if(existingUser.id == user.id){
                 exist = true
                 break
@@ -117,9 +117,9 @@ class UsersAndTeamsFragment() : Fragment() {
             i++
         }
         if(exist){
-            usersList!!.removeAt(i)
+            usersList.removeAt(i)
         }
-        usersList!!.add(user)
+        usersList.add(user)
         updateUsersRecycleView()
     }
 
@@ -191,6 +191,8 @@ class UsersAndTeamsFragment() : Fragment() {
             else{
                 if(ClientInfo.username == null){
                     ClientInfo.username = user.pseudo
+                    val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
+                    ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
                 }
             }
         }
