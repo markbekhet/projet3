@@ -75,4 +75,10 @@ class CantJoin(
     }
 }
 
+class GetGalleryTeam(var teamName: String){
+    fun toJson(): String{
+        return Gson().toJson(this)
+    }
+}
+
 

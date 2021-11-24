@@ -271,7 +271,19 @@ class LandingPage : AppCompatActivity(){
     }
 
     override fun onResume() {
-        galleryDraws.set(ClientInfo.gallery.drawingList)
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(ClientInfo.gallery.drawingList)
+        }
         super.onResume()
     }
 

@@ -208,10 +208,9 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
                 usersAdapter?.add(newUserItem)
             }
             else{
-
                 ClientInfo.username = user.pseudo
                 val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
-                ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
+                ClientInfo.possibleOwners[0]= firstPair
 
             }
         }

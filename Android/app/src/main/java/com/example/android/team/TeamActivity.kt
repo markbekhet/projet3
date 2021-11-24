@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.android.*
+import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
@@ -15,6 +16,11 @@ import com.example.android.profile.OwnProfile
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
 import kotlinx.android.synthetic.main.content_landing_page.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 class TeamActivity : AppCompatActivity() {
     private var teamGeneralInformation: TeamGeneralInformation?= null
@@ -250,7 +256,6 @@ class TeamActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(!chatRoomExists){
-            ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
             ChatRooms.chats.remove(teamGeneralInformation!!.name)
             var i = 0
             for(room in ChatRooms.chatRooNames){
@@ -270,7 +275,45 @@ class TeamActivity : AppCompatActivity() {
     }
 
     override fun onResume(){
-        galleryDrawings.set(ClientInfo.gallery.drawingList)
+        var response: Response<ResponseBody>? = null
+        runBlocking {
+            async{
+                launch {
+                    response = ClientService().getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
+
+            for(entry in ClientInfo.possibleOwners){
+                // The user is the first entry
+                if(entry.key != 0){
+                    val pairValue = entry.value
+                    val getGalleryRequest = GetGalleryTeam(pairValue.second)
+                    SocketHandler.getChatSocket().emit("getTeamGallery",
+                        getGalleryRequest.toJson())
+                    var i = 0
+                    SocketHandler.getChatSocket().on("teamGallery"){ args ->
+                        if(args[0] != null && i==0){
+                            val additionalDrawingsData = args[0] as String
+                            val additionalGallery = GalleryDrawing().
+                            fromJson(additionalDrawingsData)
+                            println(additionalGallery.drawingList.size)
+                            ClientInfo.gallery.addDrawingsToList(additionalGallery.drawingList)
+                            println("adding drawings")
+                            galleryDrawings.set(ClientInfo.gallery.drawingList)
+                            i++
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            galleryDrawings.set(ClientInfo.gallery.drawingList)
+        }
+
         super.onResume()
     }
 }
