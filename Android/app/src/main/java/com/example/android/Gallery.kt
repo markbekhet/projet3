@@ -1,9 +1,7 @@
 package com.example.android
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.*
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,30 +10,20 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.Drawing
-import com.example.android.R
-import com.example.android.SocketHandler
 import com.example.android.canvas.*
-import com.example.android.chat.ServerMessage
-import com.example.android.chat.UserMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import com.example.android.delete
 import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.activity_login_screen.*
-import kotlinx.android.synthetic.main.dessin.*
 import kotlinx.android.synthetic.main.draw.view.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Response
 
 class Gallery :  Fragment() {

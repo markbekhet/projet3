@@ -4,13 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.colorpicker.*
-import kotlinx.android.synthetic.main.colorpicker.colorA
-import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
@@ -20,8 +15,6 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import kotlinx.android.synthetic.main.chatfragment.view.*
-import kotlinx.android.synthetic.main.dessin.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -36,9 +29,7 @@ class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option: Spinner
         lateinit var result: TextView
-        lateinit var switch: Switch
         val clientService = ClientService()
-        var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
 

@@ -45,7 +45,7 @@ class JoinProtected : AppCompatActivity() {
         if(drawingData != null){
             val receiveDrawingInformation = ReceiveDrawingInformation().fromJson(drawingData)
             joinProtectedLabel.text = "Joindre le dessin" +
-                " protégé ${receiveDrawingInformation!!.name}"
+                " protégé ${receiveDrawingInformation.name}"
 
             val joinDrawingDto = JoinDrawingDto(drawingId = receiveDrawingInformation.id!!,
             userId= ClientInfo.userId)
