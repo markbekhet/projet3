@@ -61,7 +61,7 @@ export class DatabaseService {
         const savedUser = await this.userRepo.save(user)
         connection.user = user
         await this.connectionRepo.save(connection)
-        let returnedUser = {id: savedUser.id, status:Status.ONLINE, pseudo: registrationInfo.pseudo};
+        let returnedUser = {id: savedUser.id, status:Status.ONLINE, pseudo: registrationInfo.pseudo, avatar: savedUser.avatar};
         console.log(connection.date)
         let date = connection.date.toString();
         console.log(date);
@@ -104,7 +104,7 @@ export class DatabaseService {
                 {emailAddress: userCredentials.username},
                 {pseudo: userCredentials.username}
             ],
-            select: ["id","password", "status", "pseudo"],
+            select: ["id","password", "status", "pseudo", 'avatar'],
         })
         if(user === undefined){
             throw new HttpException("Aucun compte existe avec un tel courriel ou nom d'utilisateur", HttpStatus.BAD_REQUEST);
@@ -125,7 +125,7 @@ export class DatabaseService {
             let newConnection = new ConnectionHistory();
             newConnection.user = user;
             this.connectionRepo.save(newConnection);
-            let userRet = {id: user.id, status: Status.ONLINE, pseudo: user.pseudo};
+            let userRet = {id: user.id, status: Status.ONLINE, pseudo: user.pseudo, avatar: user.avatar};
             return userRet;
         }
     }
@@ -135,7 +135,7 @@ export class DatabaseService {
             where: [
                 {id: userId}
             ],
-            select: ["id","pseudo","status"]
+            select: ["id","pseudo","status", 'avatar']
         })
         if(user === undefined){
             throw new HttpException("Il n'existe aucun utilisateur avec cet identifiant", HttpStatus.BAD_REQUEST);
@@ -145,87 +145,104 @@ export class DatabaseService {
             newDisconnection.user = user
             this.userRepo.update(userId, {status: Status.OFFLINE})
             this.disconnectionRepo.save(newDisconnection)
-            let userRet = {id: user.id, pseudo: user.pseudo, status: Status.OFFLINE}
+            let userRet = {id: user.id, pseudo: user.pseudo, status: Status.OFFLINE, avatar: user.avatar}
             return userRet;
         }
     }
+
+    async passwordVerification(currentPassword: string, oldPassword: string , newPassword: string){
+        if(oldPassword === undefined || oldPassword === null){
+            throw new HttpException("L'ancien mot de passe est requis", HttpStatus.BAD_REQUEST);
+        }
+        const validOldPassword = await bcrypt.compare(oldPassword, currentPassword)
+        if(!validOldPassword){
+            throw new HttpException("Impossible de changer le mot de passe car l'ancien mot de passe est invalide", HttpStatus.BAD_REQUEST);
+        }
+        const samePassword = await bcrypt.compare(newPassword, currentPassword)
+        if(samePassword){
+            throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
+        }
+        if(!this.IsPasswordValide(newPassword)){
+            throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
+             un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
+        }
+
+        else{
+            return await bcrypt.hash(newPassword, 10)
+        }
+    }
+
     async modifyUserProfile(userId: string, newParameters: UpdateUserDto) {
         console.log(newParameters.newPassword, newParameters.newPseudo)
-        const user = await this.userRepo.findOne(userId, {
-            select:["pseudo","password", 'status', 'id']
+        let user = await this.userRepo.findOne(userId, {
+            select:["pseudo","password", 'status', 'id', 'avatar']
         });
         if(user === undefined){
             throw new HttpException("Il n'existe aucun utilisateur avec cet identifiant", HttpStatus.BAD_REQUEST);
         }
-        if(newParameters.newPseudo!==undefined){
-            const otherUser = await this.userRepo.findOne({where:[{pseudo: newParameters.newPseudo}]});
-            if(otherUser!== undefined){
-                throw new HttpException("Impossible de modifier les paramètres de l'utilisateur, le nouveau pseudonyme est déjà utilisé", HttpStatus.BAD_REQUEST)
-            }
-        }
         else{
             let updatePassword: Boolean = newParameters.newPassword !== undefined&& newParameters.newPassword !== null
             let updatePseudo: boolean = newParameters.newPseudo !== undefined && newParameters.newPseudo!== null
-            if(!updatePassword&& updatePseudo){
-                await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
-                user.pseudo = newParameters.newPseudo;
-            }
-            else if(updatePassword && !updatePseudo){
-                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
-                    throw new HttpException("L'ancien mot de passe est requis", HttpStatus.BAD_REQUEST);
+            let updateAvatar: boolean = newParameters.newAvatar !== undefined && newParameters.newAvatar!== null
+            if(!updateAvatar){
+                if(!updatePassword && !updatePassword){
+                    throw new HttpException("Impossible de mettre a jour les informations de l'utilisateur", HttpStatus.BAD_REQUEST);
                 }
-                const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
-                if(!validOldPassword){
-                    throw new HttpException("Impossible de changer le mot de passe car l'ancien mot de passe est invalide", HttpStatus.BAD_REQUEST);
+                if(updatePseudo){
+                    const otherUser = await this.userRepo.findOne({where:[{pseudo: newParameters.newPseudo}]});
+                    if(otherUser!== undefined){
+                        throw new HttpException("Impossible de modifier les paramètres de l'utilisateur, le nouveau pseudonyme est déjà utilisé", HttpStatus.BAD_REQUEST)
+                    }
                 }
-                const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
-                if(samePassword){
-                    throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
+                if(!updatePassword&& updatePseudo){
+                    console.log("before update")
+                    await this.userRepo.update(userId,{pseudo: newParameters.newPseudo})
+                    console.log("after update")
+                    user.pseudo = newParameters.newPseudo;
                 }
-                if(!this.IsPasswordValide(newParameters.newPassword)){
-                    throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
-                     un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
+                else if(updatePassword && !updatePseudo){
+                    const hashedPassword = await this.passwordVerification(user.password, newParameters.oldPassword, newParameters.newPassword);
+                    await this.userRepo.update(userId, {password: hashedPassword});
                 }
 
-                else{
-                    const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
-                    await this.userRepo.update(userId,{password: hashedPassword})
-                }
-            }
-            else if(updatePseudo && updatePassword){
-                if(newParameters.oldPassword === undefined || newParameters.oldPassword === null){
-                    throw new HttpException("L'ancien mot de passe est requis", HttpStatus.BAD_REQUEST);
-                }
-                const validOldPassword = await bcrypt.compare(newParameters.oldPassword, user.password)
-                if(!validOldPassword){
-                    throw new HttpException("Impossible de changer le mot de passe car l'ancien mot de passe est invalide", HttpStatus.BAD_REQUEST);
-                }
-                const samePassword = await bcrypt.compare(newParameters.newPassword, user.password)
-                if(samePassword){
-                    throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
-                }
-                if(!this.IsPasswordValide(newParameters.newPassword)){
-                    throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
-                     un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
-                }
-                else{
-                    const hashedPassword = await bcrypt.hash(newParameters.newPassword, 10)
+                else if(updatePseudo && updatePassword){
+                    const hashedPassword = await this.passwordVerification(user.password, newParameters.oldPassword, newParameters.newPassword);
                     await this.userRepo.update(userId,{
                         password: hashedPassword,
                         pseudo: newParameters.newPseudo
                     })
+                    user.pseudo = newParameters.newPseudo;
                 }
-                user.pseudo = newParameters.newPseudo;
-            }
-            let retUser: {id: string, pseudo:string, status: Status};
-            if(newParameters.newPseudo!== undefined){
-                retUser = {id: user.id, pseudo: user.pseudo, status: user.status}
             }
             else{
-                retUser = {id: user.id, pseudo: user.pseudo, status: user.status};
+                if(!updatePassword && !updatePseudo){
+                    await this.userRepo.update(userId, {avatar: newParameters.newAvatar})
+                }
+                if(!updatePassword&& updatePseudo){
+                    await this.userRepo.update(userId,{pseudo: newParameters.newPseudo, avatar: newParameters.newAvatar})
+                    console.log("after update")
+                    user.pseudo = newParameters.newPseudo;
+                }
+                else if(updatePassword && !updatePseudo){
+                    const hashedPassword = await this.passwordVerification(user.password, newParameters.oldPassword, newParameters.newPassword);
+                    await this.userRepo.update(userId, {password: hashedPassword, avatar: newParameters.newAvatar});
+                }
+    
+                else if(updatePseudo && updatePassword){
+                    const hashedPassword = await this.passwordVerification(user.password, newParameters.oldPassword, newParameters.newPassword);
+                    await this.userRepo.update(userId,{
+                        password: hashedPassword,
+                        pseudo: newParameters.newPseudo,
+                        avatar: newParameters.newAvatar,
+                    })
+                    user.pseudo = newParameters.newPseudo;
+                }
+                user.avatar = newParameters.newAvatar
             }
+            let retUser: {id: string, pseudo:string, status: Status, avatar: string};
+            retUser = {id: user.id, pseudo: user.pseudo, status: user.status, avatar: user.avatar}
+            console.log("user information were successfully updated");
             return retUser;
-
         }
     }
     async getUserDrawings(userId: string){

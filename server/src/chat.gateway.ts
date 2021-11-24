@@ -176,7 +176,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         let drawingRet = {bgColor: drawing.bgColor, name: drawing.name, width: drawing.width, height: drawing.height,
                         contents: drawing.contents, visibility: drawing.visibility};
         
-        let userRet = {id: user.id, status: Status.BUSY, pseudo: user.pseudo}
+        let userRet = {id: user.id, status: Status.BUSY, pseudo: user.pseudo, avatar: user.avatar}
         this.notifyUserUpdate(userRet);
         let chatRoom = await this.chatRoomRepo.findOne({
           where: [{name: drawingRet.name}],
@@ -361,7 +361,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
   //-------------------------------------- notifications section-------------------------------------------------
-  notifyUserUpdate(user: {id: string, status: Status, pseudo: string}){
+  notifyUserUpdate(user: {id: string, status: Status, pseudo: string, avatar: string}){
     let userString = JSON.stringify(user);
     this.wss.emit("userUpdate", userString);
   }
