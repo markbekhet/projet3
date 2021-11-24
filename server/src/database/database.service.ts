@@ -433,7 +433,7 @@ export class DatabaseService {
         }
         const newTeam = Team.createTeam(dto);
         const createdTeam = await this.teamRepo.save(newTeam)
-        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name, ownerId: dto.ownerId};
+        let returnedTeam = {id:createdTeam.id, visibility: dto.visibility, name: dto.name, ownerId: dto.ownerId, bio: dto.bio};
         return returnedTeam;
     }
 
