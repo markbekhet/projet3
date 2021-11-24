@@ -123,6 +123,7 @@ export class RegisterPage implements OnInit {
         this.selectAvatar();
         break;
       case 'uploadAvatar':
+        this.uploadAvatar();
         break;
     }
   }
@@ -139,6 +140,7 @@ export class RegisterPage implements OnInit {
         reader.readAsDataURL(data);
         reader.onloadend = () => {
           let base64data = reader.result as string;
+          base64data = this.avatarService.removeHeader(base64data);
           this.registerForm.controls.avatar.setValue(base64data);
           this.selectedAvatar.encoding = base64data;
         }
@@ -146,10 +148,10 @@ export class RegisterPage implements OnInit {
       }, error => {
         console.log(error);
       })
+    });
+  }
 
-
-    })
-
+  private uploadAvatar() {
 
   }
 

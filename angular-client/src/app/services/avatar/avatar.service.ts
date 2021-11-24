@@ -12,4 +12,10 @@ export class AvatarService {
   encodeImageFileAsURL(avatar: Avatar) {
     return this.http.get(avatar.url, { responseType: 'blob' });
   }
+
+  removeHeader(base64: string) {
+    const base64NoHeader = base64.split(";");
+    console.log(base64NoHeader);
+    return base64NoHeader[1].slice(7);
+  }
 }
