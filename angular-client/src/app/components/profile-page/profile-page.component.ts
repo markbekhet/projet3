@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingState } from '@src/app/models/DrawingMeta';
 import {
+  Avatar,
   DrawingEditionHistory,
   Status,
   UpdateUserInformation,
@@ -17,6 +18,8 @@ import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ValidationService } from '@src/app/services/validation/validation.service';
+import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
@@ -47,6 +50,10 @@ export class ProfilePage implements OnInit {
   };
 
   updateForm: FormGroup;
+  selectedAvatar!: Avatar;
+  @ViewChild('file') file!: ElementRef;
+  selected: boolean = true;
+  avatarSizeTooBig!: boolean;
 
   constructor(
     private router: Router,
@@ -57,6 +64,7 @@ export class ProfilePage implements OnInit {
     private interactionService: InteractionService,
     private drawingService: DrawingService,
     private avatarService: AvatarService,
+    private windowService: ModalWindowService,
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.token$.value,
@@ -73,6 +81,7 @@ export class ProfilePage implements OnInit {
       newPassword: formBuilder.control('', [
         Validators.pattern(ValidationService.PASSWORD_REGEX),
       ]),
+      avatar: formBuilder.control('', []),
     });
   }
 
@@ -99,11 +108,12 @@ export class ProfilePage implements OnInit {
 
   onSubmit(formPseudo: FormGroup) {
     const updates: UpdateUserInformation = {
-      newPseudo: this.verifyPseudo(this.updateForm.controls.pseudo.value),
+      newPseudo: this.verifyPseudo(formPseudo.controls.pseudo.value),
       newPassword: this.verifyPassword(
-        this.updateForm.controls.newPassword.value
+        formPseudo.controls.newPassword.value
       ),
-      oldPassword: this.updateForm.controls.oldPassword.value,
+      oldPassword: formPseudo.controls.oldPassword.value,
+      newAvatar: formPseudo.controls.avatar.value,
     };
 
     this.auth.updateUserProfile(updates).subscribe(
@@ -146,6 +156,10 @@ export class ProfilePage implements OnInit {
     return this.avatarService.decodeAvatar(this.user.avatar!);
   }
 
+  decodeNewAvatar() {
+    return this.avatarService.decodeAvatar(this.updateForm.controls.avatar.value);
+  }
+
   goLaunchingPage() {
     this.router.navigate(['/home']);
   }
@@ -155,13 +169,13 @@ export class ProfilePage implements OnInit {
       const NEW_PSEUDO = form.controls.newPseudo.value;
       const NEW_PASSWORD = form.controls.newPassword.value;
       const OLD_PASSWORD = form.controls.oldPassword.value;
+      const NEW_AVATAR = form.controls.avatar.value;
       // pseudo & passwords both empty
-      const PSEUDO_PASSWORD_BOTH_EMPTY =
-        NEW_PSEUDO === '' && NEW_PASSWORD === '' && OLD_PASSWORD === '';
-      return PSEUDO_PASSWORD_BOTH_EMPTY;
+      const ALL_CONTROLS_EMPTY =
+        NEW_PSEUDO === '' && NEW_PASSWORD === '' && OLD_PASSWORD === '' && NEW_AVATAR === '';
+      return ALL_CONTROLS_EMPTY;
     }
 
-    //
     return false; // this.updateForm.controls.newPseudo.value === ''
   }
 
@@ -195,5 +209,64 @@ export class ProfilePage implements OnInit {
       }
     }
     return false;
+  }
+
+  selectAvatarOption(option: string, event?: Event) {
+    switch(option) {
+      case 'selectAvatar':
+        this.selected = true;
+        this.selectAvatar();
+        break;
+      case 'uploadAvatar':
+        this.selected = false;
+        this.uploadAvatar(event);
+        break;
+    }
+  }
+
+  private selectAvatar() {
+    const ref = this.windowService.openDialog(AvatarDialogComponent);
+    ref!.afterClosed().subscribe(result => {
+      const avatar: Avatar = result;
+      this.selectedAvatar = avatar;
+      console.log(this.selectedAvatar.url);
+      this.avatarService.encodeImageFileAsURL(this.selectedAvatar)
+      .subscribe(data => {
+        const reader = new FileReader();
+        reader.readAsDataURL(data);
+        reader.onloadend = () => {
+          let base64data = reader.result as string;
+          base64data = this.avatarService.removeHeader(base64data);
+          this.updateForm.controls.avatar.setValue(base64data);
+          this.selectedAvatar.encoding = base64data;
+        }
+
+      }, error => {
+        console.log(error);
+      })
+    });
+  }
+
+  handleClick() {
+    this.file.nativeElement.click();
+  }
+
+  private uploadAvatar(event: any) {
+    const targetFile: File = event.target.files[0];
+    this.avatarSizeTooBig = targetFile.size >= 55000;
+    if (!this.avatarSizeTooBig) {
+      const reader = new FileReader();
+    reader.readAsDataURL(targetFile);
+    reader.onload = () => {
+      let base64data = reader.result as string;
+      base64data = this.avatarService.removeHeader(base64data);
+      this.updateForm.controls.avatar.setValue(base64data);
+      this.selectedAvatar = {
+        url: base64data,
+        filename: targetFile.name,
+        encoding: base64data,
+      };
+    };
+    }
   }
 }

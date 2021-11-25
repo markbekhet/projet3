@@ -39,6 +39,27 @@
                     <br>
                     <button mat-icon-button>Soumettre</button>
                 </form>
+
+                <div class="avatar">
+                    <button mat-raised-button color="primary" value="selectAvatar"
+                            (click)="selectAvatarOption('selectAvatar')">Choisir un avatar
+                        prédéfini</button>
+                    <input type="file" id="upload-file" multiple="false" accept="image/*" ngf-max-size="55000" #file
+                           (change)="selectAvatarOption('uploadAvatar', $event)" class="hidden" />
+                    <button mat-raised-button color="primary" value="uploadAvatar" (click)="handleClick()">Téléverser
+                        son
+                        avatar</button>
+                    <mat-error *ngIf="avatarSizeTooBig">
+                        Ce fichier est trop gros !</mat-error>
+
+                    <h3>Votre avatar</h3>
+                    <div *ngIf="selected && selectedAvatar">
+                        <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
+                    </div>
+                    <div *ngIf="!selected && selectedAvatar">
+                        <img mat-card-sm-image [src]="decodeNewAvatar()" alt="Avatar image">
+                    </div>
+                </div>
             </mat-tab>
 
             <mat-tab label="Statistiques">

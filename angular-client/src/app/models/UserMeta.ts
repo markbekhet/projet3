@@ -56,6 +56,7 @@ export interface UpdateUserInformation {
   newPassword?: string | null;
   newPseudo?: string | null;
   oldPassword?: string | null;
+  newAvatar?: string | null;
 }
 
 export interface Avatar {

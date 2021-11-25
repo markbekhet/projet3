@@ -23,6 +23,7 @@ export class RegisterPage implements OnInit {
   selectedAvatar!: Avatar;
   @ViewChild('file') file!: ElementRef;
   selected: boolean = true;
+  avatarSizeTooBig!: boolean;
 
   constructor(
     private auth: AuthService,
@@ -161,18 +162,21 @@ export class RegisterPage implements OnInit {
 
   private uploadAvatar(event: any) {
     const targetFile: File = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(targetFile);
-    reader.onload = () => {
-      let base64data = reader.result as string;
-      base64data = this.avatarService.removeHeader(base64data);
-      this.registerForm.controls.avatar.setValue(base64data);
-      this.selectedAvatar = {
-        url: base64data,
-        filename: targetFile.name,
-        encoding: base64data,
+    this.avatarSizeTooBig = targetFile.size >= 55000;
+    if (!this.avatarSizeTooBig) {
+      const reader = new FileReader();
+      reader.readAsDataURL(targetFile);
+      reader.onload = () => {
+        let base64data = reader.result as string;
+        base64data = this.avatarService.removeHeader(base64data);
+        this.registerForm.controls.avatar.setValue(base64data);
+        this.selectedAvatar = {
+          url: base64data,
+          filename: targetFile.name,
+          encoding: base64data,
+        };
       };
-    };
+    }
   }
 
   decodeAvatar() {
