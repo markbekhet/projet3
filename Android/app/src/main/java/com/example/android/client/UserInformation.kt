@@ -60,6 +60,7 @@ data class ConnectionDisconnectionHistories(
 
 data class DrawingEditionHistories(
     var id: Int? = null,
+    var drawingStae: Int? = null,
     var action: String? = null,
     var drawingName: String?= null,
     var drawingId: Int?= null,
@@ -67,7 +68,14 @@ data class DrawingEditionHistories(
     var date: String? = null
 )
 
-data class ActiveUser(var userId:String?= null){
+enum class DrawingAvailability(var i: Int){
+    AVAILABLE(0),
+    DELETED(1)
+}
+
+data class ActiveUser(var userId:String?= null,
+                      var teamName:String?=null,
+                      var drawingId:Int?= null){
     fun fromJson(json:String): ActiveUser{
         return Gson().fromJson(json, ActiveUser::class.java)
     }

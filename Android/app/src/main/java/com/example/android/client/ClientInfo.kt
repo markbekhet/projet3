@@ -1,5 +1,6 @@
 package com.example.android.client
 
+import com.example.android.canvas.GalleryDrawing
 import com.example.android.team.TeamGeneralInformation
 import com.google.gson.Gson
 
@@ -8,6 +9,10 @@ object ClientInfo {
     var userId = ""
     var usersList = UsersArrayList()
     var teamsList = TeamsArrayList()
+    var gallery = GalleryDrawing()
+    var indexPossibleOwners = 0
+    //La liste des potentielles propriétaires de dessins
+    var possibleOwners = HashMap<Int, Pair<String,String>>()
 }
 
 class User(val id: String? = null,
@@ -18,6 +23,6 @@ class User(val id: String? = null,
     }
 }
 
-class UsersArrayList(val userList: ArrayList<User>? = null){}
+class UsersArrayList(val userList: ArrayList<User> = ArrayList()){}
 
 class TeamsArrayList(val teamList: ArrayList<TeamGeneralInformation> = ArrayList()){}
