@@ -68,6 +68,7 @@ export class HeaderViewComponent implements OnInit {
     });
     this.chatRoomService.chatRooms.delete(this.drawingService.drawingName$.value);
     this.interactionService.emitUpdateChatListSignal();
+    this.drawingService.drawingName$.next("");
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method

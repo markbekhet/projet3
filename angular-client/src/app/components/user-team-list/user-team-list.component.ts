@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
+  Inject,
   OnInit,
   Output,
 } from '@angular/core';
@@ -19,6 +20,11 @@ import { SocketService } from '@services/socket/socket.service';
 import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-user-team-list',
@@ -41,7 +47,9 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     private router: Router,
     private socketService: SocketService,
     private teamService: TeamService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private bottomSheetService: MatBottomSheet,
+    private errorDialog: MatDialog,
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
   }
@@ -128,20 +136,38 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     for (const key of this.chatRoomService.chatRooms.keys()) {
       this.chatrooms.push(key);
     }
+
+    this.socketService.socket!.on("cantJoinTeam", (data: any)=>{
+      let error: {message: string} = JSON.parse(data);
+      this.errorDialog.open(ErrorDialogComponent, {data: error.message});
+    })
   }
 
   joinTeam(team: Team) {
-    const joinTeamBody: JoinTeam = {
-      teamName: team.name!,
-      userId: this.authenticatedUserId,
-    };
-    this.socketService.sendRequestJoinTeam(joinTeamBody);
-    this.teamService.requestedTeamToJoin.next(team);
+    if(team.visibility === TeamVisibilityLevel.PROTECTED){
+      this.bottomSheetService.open(TeamPasswordBottomSheet, {
+        data:{team: team}
+      })
+    }
+    else{
+      const joinTeamBody: JoinTeam = {
+        teamName: team.name!,
+        userId: this.authenticatedUserId,
+      };
+      this.socketService.sendRequestJoinTeam(joinTeamBody);
+      this.teamService.requestedTeamToJoin.next(team);
+    }
   }
 
   deleteTeam(team: Team) {
     const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
-    this.teamService.deleteTeam(deleteTeamBody);
+    this.teamService.deleteTeam(deleteTeamBody).subscribe((resp)=>{
+      this.teams.splice(this.teams.indexOf(team), 1)
+    },
+    (error)=>{
+      const errorCode = JSON.parse((error as HttpErrorResponse).error).message;
+      this.errorDialog.open(ErrorDialogComponent, {data: errorCode});
+    });
   }
 
   leaveTeam(teamName: string) {
@@ -169,5 +195,42 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
+  }
+}
+
+@Component({
+  selector: 'app-drawing-password-bottom-sheet',
+  templateUrl: './team-password/team-password.component.html',
+  styleUrls: ['./team-password/team-password.component.scss'],
+})
+export class TeamPasswordBottomSheet {
+  password: string = "";
+  userId: string;
+  constructor(
+    private socketService: SocketService,
+    private authService: AuthService,
+    private teamService: TeamService,
+    private bottomSheetRef: MatBottomSheetRef<TeamPasswordBottomSheet>,
+    @Inject(MAT_BOTTOM_SHEET_DATA)
+    private infos:{team: Team}
+  ){
+    this.userId = this.authService.token$.value;
+  }
+
+  close(event: MouseEvent) {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+  }
+
+  submit(event: MouseEvent) {
+    const joinTeamRequest: JoinTeam = {
+      teamName: this.infos.team.name,
+      userId: this.userId,
+      password: this.password,
+    };
+    console.log(joinTeamRequest);
+    this.close(event);
+    this.socketService.sendRequestJoinTeam(joinTeamRequest);
+    this.teamService.requestedTeamToJoin.next(this.infos.team);
   }
 }

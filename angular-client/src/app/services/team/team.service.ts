@@ -33,12 +33,6 @@ export class TeamService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       body: data
     }
-    this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions).subscribe((res)=>{
-      console.log(res);
-    },
-    (error)=>{
-      console.log(`error: ${error.message}`)
-    }
-    )
+    return this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions);
   }
 }

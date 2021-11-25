@@ -62,6 +62,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   mode: string = '';
   totalScaling: Point = new Point(0.0, 0.0);
   mouseIsDown: boolean = false;
+  activeUsers: string[];
 
   constructor(
     private interactionService: InteractionService,
@@ -75,6 +76,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
     console.log(this.currentToolName);
     this.getDrawingId();
+    this.activeUsers = []
+    //this.drawingService
   }
 
   getUserId() {
@@ -108,18 +111,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
     });
     this.draw();
-    /* .subscribe((drawingInformations: DrawingInformations) => {
-        this.backColor = `#${drawingInformations.drawing.bgColor}`;
-        this.width = drawingInformations.drawing.width;
-        this.height = drawingInformations.drawing.height;
-        this.drawingService.drawingName$.next(drawingInformations.drawing.name);
-        drawingInformations.drawing.contents.forEach((content) => {
-          if (content.content !== null && content.content !== undefined) {
-            this.manipulateReceivedDrawing(content);
-          }
-        });
-        this.draw();
-      }); */
   }
 
   @HostListener('window:resize')
@@ -272,7 +263,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
 
     this.interactionService.$leaveDrawingSignal.subscribe((sig)=>{
-      if(sig) this.currentTool.unselect();
+      if(sig && this.currentTool!== undefined) this.currentTool.unselect();
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.interactionService.$wipeDrawing.subscribe((signal) => {

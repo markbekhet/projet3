@@ -50,7 +50,7 @@ import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.co
 import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
-import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +79,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
     ToolboxViewComponent,
     UserProfileDialogComponent,
     UserTeamListComponent,
+    TeamPasswordBottomSheet,
   ],
   imports: [
     BrowserModule,
