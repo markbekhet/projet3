@@ -1,5 +1,6 @@
 package com.example.android.team
 
+import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.chat.ClientMessage
 import com.example.android.client.ActiveUser
 import com.google.gson.Gson
@@ -33,7 +34,8 @@ class TeamGeneralInformation(
 
 class TeamChatAndActiveUsers(
     var activeUsers: ArrayList<ActiveUser> = ArrayList(),
-    var chatHistoryList: ArrayList<ClientMessage> = ArrayList()
+    var chatHistoryList: ArrayList<ClientMessage> = ArrayList(),
+    var drawingList: ArrayList<ReceiveDrawingInformation> = ArrayList()
 ){
     fun fromJson(json:String): TeamChatAndActiveUsers{
         return Gson().fromJson(json, TeamChatAndActiveUsers::class.java)
@@ -62,6 +64,14 @@ class JoinTeamDto(
     var password: String?= null){
     fun toJson(): String{
         return Gson().toJson(this)
+    }
+}
+
+class CantJoin(
+    var message: String = ""
+){
+    fun fromJson(json: String): CantJoin{
+        return Gson().fromJson(json, CantJoin::class.java)
     }
 }
 

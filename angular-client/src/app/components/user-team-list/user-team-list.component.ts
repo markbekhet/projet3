@@ -80,6 +80,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         if (user.id === dataMod.id) {
           user.pseudo = dataMod.pseudo;
           user.status = dataMod.status;
+          user.avatar = dataMod.avatar;
           found = true;
         }
       });

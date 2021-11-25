@@ -28,7 +28,7 @@ import java.lang.RuntimeException
 private const val STROKE_WIDTH = 12f // has to be float
 val svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI
 
-class CanvasView(context: Context): View(context) {
+class CanvasView(private var drawingId: Int,context: Context): View(context) {
     private var selectedTools = ArrayList<Tool>()
     private var width: String = "100"
     private var height: String = "100"
@@ -39,7 +39,6 @@ class CanvasView(context: Context): View(context) {
     private var impl = SVGDOMImplementation.getDOMImplementation()
     private val doc: Document= impl.createDocument(svgNS, "svg", null)
     private var svgRoot = doc.createElementNS(svgNS, "g")
-    private var drawingId = DrawingUtils.currentDrawingId
     //Action attributes
     var mode = ""
     var scalingPoint : MutableMap.MutableEntry<Point, Point>? = null
@@ -60,7 +59,7 @@ class CanvasView(context: Context): View(context) {
                     mode = "translation"
                 }
                 else{
-                    unSelectAllChildren()
+                    unselectAllChildren()
                     when(DrawingUtils.currentTool){
                         selectionString -> tool = Selection(drawingId, doc as AbstractDocument)
                         ellipseString -> tool = Ellipse(drawingId,
@@ -176,7 +175,7 @@ class CanvasView(context: Context): View(context) {
         return false
     }
 
-    private fun unSelectAllChildren(){
+    fun unselectAllChildren(){
         if(tool != null){
             tool!!.unselect()
         }

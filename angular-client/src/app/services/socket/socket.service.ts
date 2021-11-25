@@ -117,6 +117,9 @@ export class SocketService {
     if (updates.newPassword) {
       this.profile$.value.password = updates.newPassword;
     }
+    if (updates.newAvatar) {
+      this.profile$.value.avatar = updates.newAvatar;
+    }
     this.profile$.next(this.profile$.value);
   }
 

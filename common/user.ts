@@ -5,6 +5,7 @@ export interface UserRegistrationInfo
     pseudo: string;
     emailAddress: string;
     password: string;
+    avatar: string;
 }
 
 export enum Status{

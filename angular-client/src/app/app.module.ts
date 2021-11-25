@@ -51,6 +51,8 @@ import { ThumbnailComponent } from './components/gallery-component/thumbnail/thu
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
 import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -80,6 +82,7 @@ import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/use
     UserProfileDialogComponent,
     UserTeamListComponent,
     TeamPasswordBottomSheet,
+    AvatarDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -114,6 +117,7 @@ import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/use
     ModifyDrawingComponent,
     GalleryComponent,
     UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

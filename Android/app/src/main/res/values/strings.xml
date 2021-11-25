@@ -28,6 +28,8 @@
     <string name="title_activity_createdraw">createdraw</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="color_image_notification_id"> ColorImage_channel</string>
+    <string name="notification_title">Color Image</string>
 
 
 </resources>
