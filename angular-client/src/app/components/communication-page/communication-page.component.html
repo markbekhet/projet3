@@ -4,7 +4,7 @@
 
     <div class="chat">
         <div *ngFor="let msg of messages">
-            <div [ngStyle]="{'float':self(msg.from) ? 'right' : 'left' }" class="message-bubble">
+            <div [ngStyle]="{'float':self(msg.from!) ? 'right' : 'left' }" class="message-bubble">
                 <h2 class="username">[{{ msg.from }}]</h2>
                 <h2 class="date">[{{ msg.date }}]</h2>
                 <div class="message-div">

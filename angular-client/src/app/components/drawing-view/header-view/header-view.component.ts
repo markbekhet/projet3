@@ -11,6 +11,7 @@ import { GalleryComponent } from '@components/gallery-component/gallery.componen
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import { DrawingService } from '@src/app/services/drawing/drawing.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
   selector: 'app-header-view',
@@ -26,7 +27,8 @@ export class HeaderViewComponent implements OnInit {
     private dialogService: ModalWindowService, // private interaction: InteractionService
     private authService: AuthService,
     private drawingService: DrawingService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private interactionService: InteractionService
   ) {
     this.menuItems = drawingHeaderItems;
   }
@@ -48,6 +50,7 @@ export class HeaderViewComponent implements OnInit {
   }
 
   leaveDrawing() {
+    this.interactionService.emitLeaveDrawingSignal()
     this.socketService.leaveDrawing({
       drawingId: this.drawingService.$drawingId.value,
       userId: this.authService.token$.value,

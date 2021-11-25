@@ -1,7 +1,8 @@
 import { ElementRef, Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DrawingContent } from '@models/DrawingMeta';
 import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
+import { CanvasDetails} from '@src/app/models/drawing-informations';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -29,11 +30,20 @@ export class InteractionService {
   $updateToolSignal: Observable<boolean> = this.updateToolSignal.asObservable();
 
   updateColorSignal: Subject<boolean> = new Subject<boolean>();
-  $updateColorSignal: Observable<boolean> =
-    this.updateColorSignal.asObservable();
+  $updateColorSignal: Observable<boolean> = this.updateColorSignal.asObservable();
 
+  chatRoomName: Subject<string> = new Subject<string>()
+  $chatRoomName: Observable<string> = this.chatRoomName.asObservable();
+
+  generalRoomNameSignal: Subject<boolean> =  new Subject<boolean>();
+  $generalRoomNameSignal: Observable<boolean> = this.generalRoomNameSignal.asObservable();
+  drawingInformations =  new BehaviorSubject<CanvasDetails>({});
+  //$drawingInformations = this.drawingInformations.asObservable()
   wipeDrawing: Subject<boolean> = new Subject<boolean>();
   $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
+
+  leaveDrawingSignal: Subject<boolean> = new Subject<boolean>();
+  $leaveDrawingSignal: Observable<boolean> = this.leaveDrawingSignal.asObservable()
 
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
@@ -62,8 +72,20 @@ export class InteractionService {
   emitUpdateColorSignal() {
     this.updateColorSignal.next(true);
   }
+  emitGetGeneralChatRoom(){
+    this.generalRoomNameSignal.next(true);
+  }
 
+  emitFetchChatHistory(roomName: string){
+    this.chatRoomName.next(roomName)
+  }
   emitWipeSignal() {
     this.wipeDrawing.next(true);
+  }
+  /*emitDrawingInformations(drawingInformations: DrawingInformations){
+    this.drawingInformations.next(drawingInformations)
+  }*/
+  emitLeaveDrawingSignal(){
+    this.leaveDrawingSignal.next(true);
   }
 }

@@ -6,7 +6,9 @@ import { DeleteDrawingComponent } from '@components/gallery-component/delete-dra
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
 import { ModifyDrawingComponent } from '@components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
+import { UserProfileDialogComponent } from '@src/app/components/user-profile-dialog/user-profile-dialog.component';
 import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
+import { AvatarDialogComponent } from '@src/app/components/avatar-dialog/avatar-dialog.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
@@ -14,6 +16,8 @@ type Component = ComponentType<
   | DeleteDrawingComponent
   | ModifyDrawingComponent
   | NewTeamDialogComponent
+  | UserProfileDialogComponent
+  | AvatarDialogComponent
 >;
 
 @Injectable({
@@ -25,6 +29,8 @@ export class ModalWindowService {
   deleteDrawingConfig = new MatDialogConfig();
   modifyDrawingConfig = new MatDialogConfig();
   galleryConfig = new MatDialogConfig();
+  userProfileConfig = new MatDialogConfig();
+  avatarConfig = new MatDialogConfig();
 
   constructor(private dialog: MatDialog) {
     this.initNewDrawingDialogConfig();
@@ -32,6 +38,8 @@ export class ModalWindowService {
     this.initModifyDrawingDialogConfig();
     this.initGalleryDialogConfig();
     this.initNewTeamDialogConfig();
+    this.initUserProfileDialogConfig();
+    this.initAvatarDialogConfig();
   }
 
   initNewDrawingDialogConfig() {
@@ -90,6 +98,27 @@ export class ModalWindowService {
     this.galleryConfig.restoreFocus = false;
   }
 
+  initUserProfileDialogConfig() {
+    this.userProfileConfig.id = 'userProfileDialog';
+    this.userProfileConfig.height = '50vh';
+    this.userProfileConfig.width = '50vw';
+    this.userProfileConfig.minWidth = '600px';
+    this.userProfileConfig.disableClose = false;
+    this.userProfileConfig.hasBackdrop = true;
+    this.userProfileConfig.restoreFocus = false;
+    this.userProfileConfig.data = undefined;
+  }
+
+  initAvatarDialogConfig() {
+    this.avatarConfig.id = 'avatarDialog';
+    this.avatarConfig.height = '52vh';
+    this.avatarConfig.width = '44vw';
+    this.avatarConfig.minWidth = '700px';
+    this.avatarConfig.disableClose = false;
+    this.avatarConfig.hasBackdrop = true;
+    this.avatarConfig.restoreFocus = false;
+  }
+
   openDialog(component: Component, data?: any) {
     switch (component) {
       case NewDrawingComponent:
@@ -112,9 +141,20 @@ export class ModalWindowService {
         this.closeDialogs();
         this.dialog.open(GalleryComponent, this.galleryConfig);
         break;
-      default:
+      case UserProfileDialogComponent:
+        this.closeDialogs();
+        this.userProfileConfig.data = data;
+        this.dialog.open(UserProfileDialogComponent, this.userProfileConfig);
+        break;
+      case AvatarDialogComponent:
+        this.closeDialogs();
+        const ref = this.dialog.open(AvatarDialogComponent, this.avatarConfig);
+        return ref;
+        break;
+       default:
         break;
     }
+    return null;
   }
 
   closeDialogs() {

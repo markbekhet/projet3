@@ -48,6 +48,10 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
 import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
 import { TeamService } from './services/team/team.service';
+import { ChatRoomService } from './services/chat-room/chat-room.service';
+import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
+import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -74,6 +78,8 @@ import { TeamService } from './services/team/team.service';
     ToolboxViewComponent,
     UserTeamListComponent,
     NewTeamDialogComponent,
+    UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -98,6 +104,7 @@ import { TeamService } from './services/team/team.service';
     SocketService,
     ValidationService,
     TeamService,
+    ChatRoomService,
   ],
   entryComponents: [
     ErrorDialogComponent,
@@ -105,6 +112,8 @@ import { TeamService } from './services/team/team.service';
     DeleteDrawingComponent,
     ModifyDrawingComponent,
     GalleryComponent,
+    UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

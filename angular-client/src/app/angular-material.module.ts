@@ -17,6 +17,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatRadioModule } from '@angular/material/radio';
+import {  } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -40,6 +42,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatRadioModule,
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
@@ -60,9 +63,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatRadioModule,
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatCheckboxModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

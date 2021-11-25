@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import {TeamVisibility } from "src/enumerators/visibility";
 
 export class CreateTeamDto
@@ -15,7 +15,10 @@ export class CreateTeamDto
     @IsOptional()
     password: string;
 
-    @IsOptional()
+    @IsNumber({},{message:"Le nombre de collabrateur doit être un nombre plus grand ou égale à 2"})
     nbCollaborators: number;
+
+    @IsOptional()
+    bio: string;
 
 }

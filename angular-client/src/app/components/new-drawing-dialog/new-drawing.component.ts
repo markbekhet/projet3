@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
+//import { Router } from '@angular/router';
 
 import { Drawing, JoinDrawing } from '@models/DrawingMeta';
 import { Team } from '@models/teamsMeta';
@@ -65,7 +65,7 @@ export class NewDrawingComponent implements OnInit {
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    //private router: Router,
     private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
@@ -187,12 +187,12 @@ export class NewDrawingComponent implements OnInit {
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
             userId: this.userId,
-            password: this.password,
+            password: VALUES.drawingPassword,
           };
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
           this.interactionService.emitWipeSignal();
-          this.router.navigate(['/draw']);
+          //this.router.navigate(['/draw']);
 
           const LOAD_TIME = 15;
           setTimeout(() => {
@@ -233,8 +233,8 @@ export class NewDrawingComponent implements OnInit {
     }
   }
 
-  assignationStatusChange(event: Event) {
-    if ((event as unknown as MatCheckboxChange).checked) {
+  assignationStatusChange(event: MatCheckboxChange) {
+    if (event.checked) {
       this.assignedToTeam = true;
     } else {
       this.assignedToTeam = false;

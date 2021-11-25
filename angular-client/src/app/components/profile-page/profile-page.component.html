@@ -1,6 +1,6 @@
 <div class="profile-page">
     <div class="sidebar">
-        <img src="../../../assets/thumbnails/avatar_placeholder.png" alt="Avatar thumbnail" class="avatar">
+        <img [src]="decodeAvatar()" alt="User avatar" class="avatar">
         <span></span>
         <div class="information">
             <button mat-icon-button (click)="goLaunchingPage()">Disconnect</button>
@@ -39,12 +39,35 @@
                     <br>
                     <button mat-icon-button>Soumettre</button>
                 </form>
+
+                <div class="avatar">
+                    <button mat-raised-button color="primary" value="selectAvatar"
+                            (click)="selectAvatarOption('selectAvatar')">Choisir un avatar
+                        prédéfini</button>
+                    <input type="file" id="upload-file" multiple="false" accept="image/*" ngf-max-size="55000" #file
+                           (change)="selectAvatarOption('uploadAvatar', $event)" class="hidden" />
+                    <button mat-raised-button color="primary" value="uploadAvatar" (click)="handleClick()">Téléverser
+                        son
+                        avatar</button>
+                    <mat-error *ngIf="avatarSizeTooBig">
+                        Ce fichier est trop gros !</mat-error>
+
+                    <h3>Votre avatar</h3>
+                    <div *ngIf="selected && selectedAvatar">
+                        <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
+                    </div>
+                    <div *ngIf="!selected && selectedAvatar">
+                        <img mat-card-sm-image [src]="decodeNewAvatar()" alt="Avatar image">
+                    </div>
+                </div>
             </mat-tab>
 
             <mat-tab label="Statistiques">
                 <br>
-                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime}} mins.</div>
-                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime}} mins.</div>
+                <div class="info-field">Temps moyen de collaboration: {{user.averageCollaborationTime! * 60000 |
+                    date:'mm:ss'}} mins.</div>
+                <div class="info-field">Temps total de collaboration: {{user.totalCollaborationTime! * 60000 |
+                    date:'mm:ss'}} mins.</div>
                 <br>
                 <div class="info-field">Nombre d'équipes de collaboration: {{user.numberCollaborationTeams}}</div>
                 <div class="info-field">Nombre de dessins: {{user.numberAuthoredDrawings}}</div>
@@ -74,7 +97,7 @@
                         <div *ngIf="mostRecentVersionDrawing(collaboration)">
                             {{ collaboration.drawingName }} - {{ collaboration.date }}
                             <button (click)="joinDrawing(collaboration)"
-                                    [disabled]="drawingEnabled(collaboration)">Joindre</button>
+                                    [disabled]="!drawingEnabled(collaboration)">Joindre</button>
                             <br>
                             <br>
                         </div>

@@ -1,5 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
@@ -8,13 +7,16 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { SocketService } from '@services/socket/socket.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
-import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
+import { NewTeamDialogComponent } from '../new-team-dialog/new-team-dialog.component';
+import { ChatHistory } from '@src/app/models/MessageMeta';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
-export class LandingPage implements OnInit {
+export class LandingPage implements OnInit, AfterViewInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
   isLoggedIn = false;
@@ -24,7 +26,8 @@ export class LandingPage implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
+    private readonly chatRoomService: ChatRoomService,
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
@@ -38,10 +41,17 @@ export class LandingPage implements OnInit {
     }
   }
 
-  @HostListener('window:beforeunload')
-  disconnectX() {
-    if (this.authService.token$.value !== '') {
-      this.authService.disconnect();
+  ngAfterViewInit(){
+    this.socketService.socket!.on("RoomChatHistories", (data: string)=>{
+      let chatHistories: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
+      console.log(chatHistories);
+      this.chatRoomService.addChatRoom('General', chatHistories.chatHistoryList)
+    })
+  }
+  @HostListener("window:beforeunload")
+  disconnectX(){
+    if(this.authService.token$.value !== ""){
+      this.authService.disconnect()
     }
   }
   showWelcomeMsg(): void {
