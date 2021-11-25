@@ -1,8 +1,6 @@
 <div class="profile-page">
     <div class="sidebar">
-        <img src={{decodeAvatar()}} alt="Avatar thumbnail" class="avatar">
-        <button (click)="decodeAvatar()">TEST</button>
-        {{ avatar.length }}
+        <img [src]="decodeAvatar()" alt="User avatar" class="avatar">
         <span></span>
         <div class="information">
             <button mat-icon-button (click)="goLaunchingPage()">Disconnect</button>

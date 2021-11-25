@@ -21,34 +21,15 @@ export class AvatarService {
   }
 
   decodeAvatar(base64: string) {
-    var byteCharacters = atob(base64);
-    var byteArrays = [];
+    const byteCharacters = atob(base64);
 
-    for (var offset = 0; offset < byteCharacters.length; offset += 512) {
-      var slice = byteCharacters.slice(offset, offset + 512);
-
-      var byteNumbers = new Array(slice.length);
-      for (var i = 0; i < slice.length; i++) {
-         byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      var byteArray = new Uint8Array(byteNumbers);
-
-      byteArrays.push(byteArray);
-   }
-
-    var blob = new Blob(byteArrays, {
-      type: 'image/png'
-    });
-    console.log(blob);
-
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-
-    const sanitizer = this.sanitizer;
-    reader.onloadend = function() {
-      const base64data = reader.result;
-      return sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + base64data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {type: 'image/png'});
+    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
   }
 }

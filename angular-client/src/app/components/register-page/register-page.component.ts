@@ -140,6 +140,7 @@ export class RegisterPage implements OnInit {
         reader.readAsDataURL(data);
         reader.onloadend = () => {
           let base64data = reader.result as string;
+          //console.log(base64data);
           base64data = this.avatarService.removeHeader(base64data);
           this.registerForm.controls.avatar.setValue(base64data);
           this.selectedAvatar.encoding = base64data;
