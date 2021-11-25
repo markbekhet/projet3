@@ -8,6 +8,7 @@ export interface User {
   password?: string;
   status?: Status;
   pseudo?: string;
+  avatar?: string;
 
   averageCollaborationTime?: number;
   totalCollaborationTime?: number;

@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
 import { DrawingState } from '@src/app/models/DrawingMeta';
 import {
-  ConnectionHistory,
   DrawingEditionHistory,
   Status,
   UpdateUserInformation,
@@ -34,6 +33,7 @@ export class ProfilePage implements OnInit {
     password: '',
     status: Status.OFFLINE,
     pseudo: '',
+    avatar: '',
 
     averageCollaborationTime: 0,
     totalCollaborationTime: 0,
@@ -91,8 +91,6 @@ export class ProfilePage implements OnInit {
       console.log(`user loaded : ${profile.pseudo}`);
     });
 
-    console.log((this.user.connectionHistories as ConnectionHistory[]).length);
-
     this.socketService
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations)=>{
@@ -147,7 +145,7 @@ export class ProfilePage implements OnInit {
   }
 
   decodeAvatar() {
-    return this.avatarService.decodeAvatar(this.avatar);
+    return this.avatarService.decodeAvatar(this.user.avatar!);
   }
 
   goLaunchingPage() {
