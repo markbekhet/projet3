@@ -7,7 +7,7 @@ import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { /* Drawing, */ DrawingInfosForGallery } from '@models/DrawingMeta';
 import { UpdateUserInformation } from '@models/UserMeta';
 import { SocketService } from '@services/socket/socket.service';
-import { DrawingService } from '../drawing/drawing.service';
+//import { DrawingService } from '../drawing/drawing.service';
 import { TeamService } from '../team/team.service';
 import { TeamInformations } from '@src/app/models/teamsMeta';
 
@@ -45,7 +45,7 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private socketService: SocketService,
-    private drawingService: DrawingService,
+    //private drawingService: DrawingService,
     private teamService: TeamService,
   ) {}
 
@@ -84,9 +84,9 @@ export class AuthService {
       })
       .pipe(
         tap(() => {
-          if(this.drawingService.drawingName$.value !== ""){
+          /*if(this.drawingService.drawingName$.value !== ""){
             this.socketService.leaveDrawing({drawingId: this.drawingService.drawingId$.value, userId: this.token$.value})
-          }
+          }*/
           this.teamService.activeTeams.value.forEach((team: TeamInformations)=>{
             this.socketService.leaveTeam({teamName: team.name, userId: this.token$.value})
             this.teamService.activeTeams.value.delete(team.name);

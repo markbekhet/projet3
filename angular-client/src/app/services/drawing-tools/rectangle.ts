@@ -4,6 +4,7 @@ import { ColorPickingService } from '@services/color-picker/color-picking.servic
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
 import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
+import { DrawingService } from '../drawing/drawing.service';
 //import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
 import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
@@ -55,6 +56,7 @@ export class Rectangle implements  DrawingTool{
     userId: string,
     private renderer: Renderer2,
     private canvas: ElementRef,
+    private drawingService: DrawingService
   ) {
     this.element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
     this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
@@ -283,6 +285,14 @@ export class Rectangle implements  DrawingTool{
   }
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');
+    let color: string = "";
+    let mapEntries = this.drawingService.userColorMap.value.entries();
+    for(const entry of mapEntries){
+      if(entry[1]!==undefined && entry[1] === this.userId){
+        color = "#" + entry[0];
+        break;
+      }
+    }
     this.calculateScalingPositions()
     for(let item of this.scalingPositions){
       console.log(item)
@@ -291,7 +301,7 @@ export class Rectangle implements  DrawingTool{
       let y = position.y- RADUIS;
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=#CBCB28 fill=#CBCB28></rect>\n`;
+      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=${color} fill=${color}></rect>\n`;
     }
   }
 

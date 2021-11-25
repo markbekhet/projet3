@@ -7,6 +7,7 @@ import { SocketService } from '../socket/socket.service';
 import { Pencil } from './pencil';
 import { Rectangle } from './rectangle';
 import { Ellipse } from './ellipse';
+import { DrawingService } from '../drawing/drawing.service';
 
 //const INIT_VALUE = -1;
 
@@ -36,7 +37,8 @@ export class Selection implements DrawingTool {
     private interactionService: InteractionService,
     drawingId: number,
     //private drawingId: number,
-    userId: string
+    userId: string,
+    private drawingService: DrawingService,
     ) {
         this.drawingId = drawingId;
         this.userId = userId;
@@ -46,13 +48,13 @@ export class Selection implements DrawingTool {
             if(!this.toolFound && tool.inTranslationZone(event)){
                 if(tool.userId === null || !(tool.selected && tool.userId !== this.userId)){
                     if(tool instanceof Pencil){
-                        this.selectedTool = new Pencil(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
+                        this.selectedTool = new Pencil(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas, this.drawingService);
                     }
                     else if(tool instanceof Rectangle){
-                        this.selectedTool = new Rectangle(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas);
+                        this.selectedTool = new Rectangle(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas, this.drawingService);
                     }
                     else{
-                        this.selectedTool = new Ellipse(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas)
+                        this.selectedTool = new Ellipse(this.interactionService, this.colorPick, this.socketSerice, this.userId, this.renderer, this.canvas, this.drawingService)
                     }
                     this.selectedTool.drawingId = this.drawingId;
                     this.selectedTool.parse(tool.getOriginalString())
