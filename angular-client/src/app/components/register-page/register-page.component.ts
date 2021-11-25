@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,6 +21,8 @@ export class RegisterPage implements OnInit {
   registerForm: FormGroup;
   avatarList: Avatar[];
   selectedAvatar!: Avatar;
+  @ViewChild('file') file!: ElementRef;
+  selected: boolean = true;
 
   constructor(
     private auth: AuthService,
@@ -117,13 +119,15 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  selectAvatarOption(option: string) {
+  selectAvatarOption(option: string, event?: Event) {
     switch(option) {
       case 'selectAvatar':
+        this.selected = true;
         this.selectAvatar();
         break;
       case 'uploadAvatar':
-        this.uploadAvatar();
+        this.selected = false;
+        this.uploadAvatar(event);
         break;
     }
   }
@@ -140,7 +144,6 @@ export class RegisterPage implements OnInit {
         reader.readAsDataURL(data);
         reader.onloadend = () => {
           let base64data = reader.result as string;
-          //console.log(base64data);
           base64data = this.avatarService.removeHeader(base64data);
           this.registerForm.controls.avatar.setValue(base64data);
           this.selectedAvatar.encoding = base64data;
@@ -152,8 +155,28 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  private uploadAvatar() {
+  handleClick() {
+    this.file.nativeElement.click();
+  }
 
+  private uploadAvatar(event: any) {
+    const targetFile: File = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(targetFile);
+    reader.onload = () => {
+      let base64data = reader.result as string;
+      base64data = this.avatarService.removeHeader(base64data);
+      this.registerForm.controls.avatar.setValue(base64data);
+      this.selectedAvatar = {
+        url: base64data,
+        filename: targetFile.name,
+        encoding: base64data,
+      };
+    };
+  }
+
+  decodeAvatar() {
+    return this.avatarService.decodeAvatar(this.selectedAvatar.encoding!);
   }
 
 }

@@ -52,6 +52,11 @@
         padding-right: 20px;
       }
     }
+
+    .hidden {
+      visibility: hidden;
+      width: 0px;
+    }
   }
 
   .link-wrapper {

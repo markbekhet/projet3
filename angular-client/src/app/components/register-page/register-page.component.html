@@ -63,14 +63,17 @@
             <button mat-raised-button color="primary" value="selectAvatar"
                     (click)="selectAvatarOption('selectAvatar')">Choisir un avatar
                 prédéfini</button>
-            <button mat-raised-button color="primary" value="uploadAvatar"
-                    (click)="selectAvatarOption('uploadAvatar')">Téléverser son avatar</button>
+            <input type="file" id="upload-file" accept=".png,.jpg" ngf-max-size="2MB" #file
+                   (change)="selectAvatarOption('uploadAvatar', $event)" class="hidden" />
+            <button mat-raised-button color="primary" value="uploadAvatar" (click)="handleClick()">Téléverser son
+                avatar</button>
 
-
-            <div *ngIf="selectedAvatar">
-                <h3>Votre avatar</h3>
+            <h3>Votre avatar</h3>
+            <div *ngIf="selected && selectedAvatar">
                 <img mat-card-sm-image src={{selectedAvatar.url}} alt="Avatar image">
-                <p> {{selectedAvatar.encoding}} </p>
+            </div>
+            <div *ngIf="!selected && selectedAvatar">
+                <img mat-card-sm-image [src]="decodeAvatar()" alt="Avatar image">
             </div>
         </div>
 
