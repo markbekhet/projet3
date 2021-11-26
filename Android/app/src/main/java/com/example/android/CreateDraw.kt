@@ -15,6 +15,7 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
+import com.example.android.team.CantJoin
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -186,7 +187,8 @@ class CreateDraw : AppCompatActivity() {
                         }
                     }
                 } else {
-                    error.text = response!!.errorBody()!!.string()
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    error.text = errorMessage.message
                 }
 
             }

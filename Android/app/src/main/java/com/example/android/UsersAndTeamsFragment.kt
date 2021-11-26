@@ -323,9 +323,9 @@ class TeamItem(var clientService: ClientService,
                     }
                 }
                 else{
-                    val error = response!!.errorBody()!!.string()
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
                     fragment.requireActivity().runOnUiThread{
-                        Toast.makeText(fragment.context, error,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(fragment.context, error.message,Toast.LENGTH_SHORT).show()
                     }
                 }
             }

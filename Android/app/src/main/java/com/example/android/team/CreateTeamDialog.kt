@@ -87,6 +87,9 @@ internal class CreateCollaborationTeamDialog(var content: AppCompatActivity): Di
             } else {
                 createTeamDto.password = null
             }
+            if(bioFieldEntry.text.isNotEmpty() && bioFieldEntry.text.isNotBlank()){
+                createTeamDto.bio = bioFieldEntry.text.toString()
+            }
 
             createTeamDto.nbCollaborators = nbCollaborators.text.toString().toInt()
             createTeamDto.name = teamName.text.toString()
@@ -131,8 +134,9 @@ internal class CreateCollaborationTeamDialog(var content: AppCompatActivity): Di
                     }
 
                 } else {
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
                     content.runOnUiThread{
-                        Toast.makeText(context, response!!.errorBody()!!.string(),
+                        Toast.makeText(context, errorMessage.message,
                             Toast.LENGTH_SHORT).show()
                     }
                 }

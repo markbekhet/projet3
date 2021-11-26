@@ -127,6 +127,13 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                             Toast.LENGTH_SHORT).show()
                     }
                 }
+                else{
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, error.message,
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         }

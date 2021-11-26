@@ -1,8 +1,11 @@
 package com.example.android.team
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import com.example.android.*
 import com.example.android.canvas.GalleryDrawing
@@ -44,9 +47,13 @@ class TeamActivity : AppCompatActivity() {
                 }
             }
         }
-
         val generalData = intent.extras!!.getString("teamGeneralInformation")
         teamGeneralInformation = TeamGeneralInformation().fromJson(generalData!!)
+
+        showBio.setOnClickListener {
+            showBio(teamGeneralInformation!!.bio)
+        }
+
         ChatRooms.chats[teamGeneralInformation!!.name!!] = teamChatAndActiveUsers.chatHistoryList
 
         chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
@@ -270,7 +277,20 @@ class TeamActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    override fun onResume(){
+    fun showBio(bio: String){
+        val bioDialog = Dialog(this)
+        bioDialog.setContentView(R.layout.popuploginerror)
+        val okButton: Button = bioDialog.findViewById(R.id.popup)
+        okButton.isEnabled = true
+        val errorMessage: TextView = bioDialog.findViewById(R.id.errorLogin)
+        errorMessage.text = bio
+        okButton.setOnClickListener {
+            bioDialog.hide()
+        }
+        bioDialog.show()
+    }
+
+    override fun onRestart(){
         var response: Response<ResponseBody>? = null
         runBlocking {
             async{
@@ -310,6 +330,6 @@ class TeamActivity : AppCompatActivity() {
             galleryDrawings.set(ClientInfo.gallery.drawingList)
         }
 
-        super.onResume()
+        super.onRestart()
     }
 }

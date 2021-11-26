@@ -250,7 +250,7 @@ class LandingPage : AppCompatActivity(){
         super.onBackPressed()
     }
 
-    override fun onResume() {
+    override fun onRestart() {
         runBlocking {
             async{
                 launch {
@@ -264,29 +264,8 @@ class LandingPage : AppCompatActivity(){
 
             galleryDraws.set(ClientInfo.gallery.drawingList)
         }
-        super.onResume()
+        super.onRestart()
     }
-
-    /*override fun onPause(){
-        SocketHandler.getChatSocket().on("msgToClient"){ args ->
-            if(args[0] != null) {
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                try {
-                    val notificationManager = ContextCompat.getSystemService(
-                        this,
-                        NotificationManager::class.java
-                    ) as NotificationManager
-                    notificationManager.sendNotification(
-                        messageFromServer.message!!,
-                        this
-                    )
-                } catch (e: Exception) {
-                }
-            }
-        }
-        super.onPause()
-    }*/
 }
 
 //To add a similar method for the gallery
