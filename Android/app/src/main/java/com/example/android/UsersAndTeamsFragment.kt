@@ -208,10 +208,9 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
                 usersAdapter?.add(newUserItem)
             }
             else{
-
                 ClientInfo.username = user.pseudo
                 val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
-                ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
+                ClientInfo.possibleOwners[0]= firstPair
 
             }
         }
@@ -324,9 +323,9 @@ class TeamItem(var clientService: ClientService,
                     }
                 }
                 else{
-                    val error = response!!.errorBody()!!.string()
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
                     fragment.requireActivity().runOnUiThread{
-                        Toast.makeText(fragment.context, error,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(fragment.context, error.message,Toast.LENGTH_SHORT).show()
                     }
                 }
             }

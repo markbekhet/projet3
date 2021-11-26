@@ -1,19 +1,8 @@
 package com.example.android
 
-import android.annotation.SuppressLint
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
-import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ModifyDrawingDto
@@ -24,7 +13,6 @@ import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
-import kotlinx.android.synthetic.main.popup_create_collaboration_team.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -81,7 +69,7 @@ class LandingPage : AppCompatActivity(){
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.usersList = Gson().fromJson(data, UsersArrayList::class.java)
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
             }
         }
 
@@ -167,26 +155,23 @@ class LandingPage : AppCompatActivity(){
         chatSocket?.on("userUpdate"){ args ->
             if(args[0]!= null){
                 val userUpdated = User().fromJson(args[0] as String)
-                if(ClientInfo.usersList.userList != null){
-                    var exist = false
-                    var i = 0
-                    for(existingUser in ClientInfo.usersList.userList!!){
-                        if(existingUser.id == userUpdated.id){
-                            exist = true
-                            break
-                        }
-                        i++
+                var exist = false
+                var i = 0
+                for(existingUser in ClientInfo.usersList.userList){
+                    if(existingUser.id == userUpdated.id){
+                        exist = true
+                        break
                     }
-                    if(exist){
-                        ClientInfo.usersList.userList!!.removeAt(i)
-                    }
-                    ClientInfo.usersList.userList!!.add(userUpdated)
+                    i++
                 }
-                try{
-                    usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
-                }catch(e: Exception){}
+                if(exist){
+                    ClientInfo.usersList.userList.removeAt(i)
+                }
+                ClientInfo.usersList.userList.add(userUpdated)
             }
-
+            try{
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
+            }catch(e: Exception){}
         }
 
 
@@ -243,11 +228,6 @@ class LandingPage : AppCompatActivity(){
         chatSocket?.disconnect()
     }
 
-    fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
-
-
-    }
-
     override fun onDestroy() {
         try{
             disconnect()
@@ -270,31 +250,22 @@ class LandingPage : AppCompatActivity(){
         super.onBackPressed()
     }
 
-    override fun onResume() {
-        galleryDraws.set(ClientInfo.gallery.drawingList)
-        super.onResume()
-    }
-
-    /*override fun onPause(){
-        SocketHandler.getChatSocket().on("msgToClient"){ args ->
-            if(args[0] != null) {
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                try {
-                    val notificationManager = ContextCompat.getSystemService(
-                        this,
-                        NotificationManager::class.java
-                    ) as NotificationManager
-                    notificationManager.sendNotification(
-                        messageFromServer.message!!,
-                        this
-                    )
-                } catch (e: Exception) {
+    override fun onRestart() {
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
                 }
             }
         }
-        super.onPause()
-    }*/
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(ClientInfo.gallery.drawingList)
+        }
+        super.onRestart()
+    }
 }
 
 //To add a similar method for the gallery

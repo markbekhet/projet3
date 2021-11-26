@@ -8,15 +8,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.client.ClientService
+import com.example.android.team.CantJoin
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_modify_drawing_params.*
-import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -25,8 +24,6 @@ import retrofit2.Response
 
 class ModifyDrawingParams : AppCompatActivity(){
 
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
     private var socket: Socket?=null
     private var modifyDrawing = ModifyDrawingDto()
     private var information = ReceiveDrawingInformation()
@@ -135,7 +132,8 @@ class ModifyDrawingParams : AppCompatActivity(){
                     finish()
                 }
                 else{
-                    Toast.makeText(this, response!!.errorBody()!!.string(),
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    Toast.makeText(this, errorMessage.message,
                         Toast.LENGTH_SHORT).show()
                 }
             }
@@ -154,7 +152,7 @@ class ModifyDrawingParams : AppCompatActivity(){
             (modifyDrawing.newVisibility == information.visibility
                 || modifyDrawing.newVisibility == null)
             ){
-           return true;
+           return true
         }
 
         return false
