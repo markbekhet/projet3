@@ -25,30 +25,26 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
     let activeUsers = this.interactionService.currentDrawingActiveUsers.value;
     activeUsers.forEach((activeUser)=>{
       let user = this.socketService.users$.value.get(activeUser.userId);
-      if(user!== undefined){
-        let mapEntries = userColorMap.entries();
-          for(let entry of mapEntries){
-            if(entry[1] === undefined){
-              this.users.push({color: entry[0], info:user})
-              entry[1] = activeUser.userId
-              break;
-            }
-          }
+      console.log(user)
+      for(let entry of userColorMap){
+        if(entry[1] === undefined){
+          this.users.push({color: entry[0], info:user!})
+          userColorMap.set(entry[0], activeUser.userId);
+          break;
+        }
       }
     })
   }
   ngAfterViewInit():void{
     this.socketService.socket!.on("newJoinToDrawing", (data: any)=>{
       let dataMod: {drawingId: number, userId: string} = JSON.parse(data);
-      let mapEntries = userColorMap.entries();
+      //let mapEntries = userColorMap.entries();
       let user = this.socketService.users$.value.get(dataMod.userId);
-      if(user!== undefined){
-        for(let entry of mapEntries){
-          if(entry[1]=== undefined){
-            //userColorMap.set(entry[0], dataMod.userId)
-            entry[1] = dataMod.userId;
-            this.users.push({color:entry[0], info: user})
-          }
+      console.log(user);
+      for(let entry of userColorMap){
+        if(entry[1] === undefined){
+          this.users.push({color: entry[0], info:user!})
+          userColorMap.set(entry[0], dataMod.userId);
           break;
         }
       }
