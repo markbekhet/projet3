@@ -4,7 +4,7 @@ import { ColorPickingService } from '@services/color-picker/color-picking.servic
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
 import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
-import { DrawingService } from '../drawing/drawing.service';
+import { userColorMap } from '../drawing/drawing.service';
 //import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
 import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
@@ -56,7 +56,6 @@ export class Rectangle implements  DrawingTool{
     userId: string,
     private renderer: Renderer2,
     private canvas: ElementRef,
-    private drawingService: DrawingService
   ) {
     this.element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
     this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
@@ -286,10 +285,10 @@ export class Rectangle implements  DrawingTool{
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');
     let color: string = "";
-    let mapEntries = this.drawingService.userColorMap.value.entries();
+    let mapEntries = userColorMap.entries();
     for(const entry of mapEntries){
       if(entry[1]!==undefined && entry[1] === this.userId){
-        color = "#" + entry[0];
+        color = entry[0];
         break;
       }
     }

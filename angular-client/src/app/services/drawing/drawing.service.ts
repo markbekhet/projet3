@@ -6,28 +6,25 @@ import { Drawing /* , DrawingInfosForGallery */ } from '@models/DrawingMeta';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { DrawingVisibilityLevel } from '@src/app/models/VisibilityMeta';
-import { AuthService } from '../authentication/auth.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
 
+export var userColorMap: Map<string, string| undefined> = new Map<string, string| undefined>([
+  ["#CBCB28", undefined],
+  ["#0000FF", undefined],
+  ["#00FF00", undefined],
+  ["#0000FF", undefined],
+])
 @Injectable({
   providedIn: 'root',
 })
 export class DrawingService {
-  constructor(private httpClient: HttpClient, private authService: AuthService) {
-    this.userColorMap = new BehaviorSubject<Map<string, string | undefined>>(new Map([
-      ["CBCB28", this.authService.token$.value],
-      ["0000FF", undefined],
-      ["00FF00", undefined],
-      ["0000FF", undefined],
-    ]))
+  constructor(private httpClient: HttpClient) {
   }
 
   drawingId$ = new BehaviorSubject<number>(0);
   drawingName$ = new BehaviorSubject<string>('');
-
-  userColorMap: BehaviorSubject<Map<string, string| undefined>>;
 
   getActiveDrawingID() {
     return this.drawingId$.value;

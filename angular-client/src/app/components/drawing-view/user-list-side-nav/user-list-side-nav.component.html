@@ -1,0 +1,13 @@
+<div class="component-wrapper">
+    <mat-list class="userList">
+        <h2>Utilisateurs dans le dessin</h2>
+        <mat-list-item *ngFor="let user of users">
+            <div *ngIf="user.info.id !== authenticatedUserId">
+                <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="5" [attr.height]="5">
+                    <rect [style.fill]="user.color"/>
+                </svg>
+                <span>{{user.info.pseudo}}</span>
+            </div>
+        </mat-list-item>
+    </mat-list>
+</div>

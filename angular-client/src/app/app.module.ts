@@ -52,6 +52,7 @@ import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/too
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
 import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/user-team-list/user-team-list.component';
 import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
+import { UserListSideNavComponent } from './components/drawing-view/user-list-side-nav/user-list-side-nav.component';
 
 
 @NgModule({
@@ -83,6 +84,7 @@ import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.
     UserTeamListComponent,
     TeamPasswordBottomSheet,
     AvatarDialogComponent,
+    UserListSideNavComponent,
   ],
   imports: [
     BrowserModule,

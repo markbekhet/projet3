@@ -119,6 +119,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         this.drawingService.drawingName$.next(drawingInformations.drawing.name!)
         this.chatRoomService.addChatRoom(drawingInformations.drawing.name!, drawingInformations.chatHistoryList)
         this.interactionService.drawingInformations.next(drawingInformations.drawing);
+        this.interactionService.currentDrawingActiveUsers.next(drawingInformations.activeUsers);
         this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
         this.router.navigate(['/draw']);

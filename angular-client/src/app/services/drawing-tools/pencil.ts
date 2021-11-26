@@ -3,7 +3,7 @@ import {  DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
-import { DrawingService } from '../drawing/drawing.service';
+import { userColorMap } from '../drawing/drawing.service';
 import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
@@ -54,7 +54,6 @@ export class Pencil implements DrawingTool {
     userId: string,
     private rendrer: Renderer2,
     private canvas:ElementRef,
-    private drawingService: DrawingService,
   ) {
     this.startTransformPoint = new Point(0,0)
     this.pointsArray = []
@@ -285,13 +284,14 @@ export class Pencil implements DrawingTool {
   }
   getScalingPositionsString(): void {
     let color: string = "";
-    let mapEntries = this.drawingService.userColorMap.value.entries();
+    let mapEntries = userColorMap.entries();
     for(const entry of mapEntries){
       if(entry[1]!==undefined && entry[1] === this.userId){
-        color = "#" + entry[0];
+        color = entry[0];
         break;
       }
     }
+    console.log(color)
     this.calculateScalingPositions()
     for(let item of this.scalingPositions){
       let position = item[0];

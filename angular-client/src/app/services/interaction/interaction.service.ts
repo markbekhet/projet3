@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DrawingContent } from '@models/DrawingMeta';
 import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
 import { CanvasDetails } from '@src/app/models/drawing-informations';
+import { ActiveUser } from '@src/app/models/active-user';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -41,6 +42,7 @@ export class InteractionService {
     this.generalRoomNameSignal.asObservable();
 
   drawingInformations = new BehaviorSubject<CanvasDetails>({});
+  currentDrawingActiveUsers = new BehaviorSubject<ActiveUser[]>([])
   // $drawingInformations = this.drawingInformations.asObservable()
 
   wipeDrawing: Subject<boolean> = new Subject<boolean>();

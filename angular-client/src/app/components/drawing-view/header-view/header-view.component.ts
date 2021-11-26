@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { drawingHeaderItems, FeatureItem } from '@models/FeatureMeta';
+//import { drawingHeaderItems, FeatureItem } from '@models/FeatureMeta';
 import { Canvas } from '@models/CanvasInfo';
 // import { InteractionService } from '@services/interaction-service/interaction.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
@@ -20,7 +20,7 @@ import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
   styleUrls: ['./header-view.component.scss'],
 })
 export class HeaderViewComponent implements OnInit {
-  menuItems: FeatureItem[];
+  //menuItems: FeatureItem[];
   canvasSub!: Subscription;
   currentCanvas!: Canvas;
 
@@ -32,7 +32,7 @@ export class HeaderViewComponent implements OnInit {
     private interactionService: InteractionService,
     private chatRoomService: ChatRoomService,
   ) {
-    this.menuItems = drawingHeaderItems;
+    //this.menuItems = drawingHeaderItems;
   }
 
   openNewDrawingForm() {
