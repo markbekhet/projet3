@@ -27,7 +27,7 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".profile.Gallery"
+            android:name=".profile.GalleryAvatar"
             android:exported="true"/>
         <activity
             android:name=".JoinProtected"

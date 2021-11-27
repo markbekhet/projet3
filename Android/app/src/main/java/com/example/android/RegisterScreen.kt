@@ -45,7 +45,6 @@ import android.graphics.BitmapFactory
 import android.R.attr.data
 import android.content.res.Resources
 import android.util.Base64
-import com.example.android.profile.Gallery
 import java.io.ByteArrayOutputStream
 import android.R.attr.data
 import android.graphics.Color
@@ -84,32 +83,13 @@ class RegisterScreen : AppCompatActivity() {
 //                img_save.setImageBitmap(imageBitmap)
 //            }
 //        }
-fun CreateImageStringFromBitmap(): String {
 
-    val bitmap:Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
-
-    val resized = Bitmap.createScaledBitmap(
-        bitmap, (300).toInt(),
-        (300).toInt(), true
-    )
-    //CONVERT IN image
-//    val decodedString: ByteArray = Base64.decode(encodedImage, Base64.DEFAULT)
-//    val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-    val stream = ByteArrayOutputStream()
-    resized.compress(Bitmap.CompressFormat.PNG, 75, stream)
-    val byteArray: ByteArray = stream.toByteArray()
-
-    return Base64.encodeToString(byteArray, Base64.DEFAULT)
-}
-
-
-
-        val encodedImage :String= CreateImageStringFromBitmap()
+        val encodedImage :String= createImageStringFromBitmap()
         val decodedString = Base64.decode(encodedImage, Base64.DEFAULT)
         val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
         Glide.with(this).load(decodedByte).fitCenter().into(img_save);
 
-            println(avatarClientInfo.avatarClient)
+        println(avatarClientInfo.avatarClient)
 //            img_save.apply {if(avatarClientInfo.avatarSelection) {
 //                Glide.with(this)
 //                    .load(avatarClientInfo.avatarClient)
@@ -127,7 +107,7 @@ fun CreateImageStringFromBitmap(): String {
         }
         //handle result of picked image
         fun pickImageFromGallery(){
-            startActivity(Intent(this, Gallery::class.java))
+            startActivity(Intent(this, GalleryAvatar::class.java))
 //            if (galerie == null) {
 //                galerie = Dialog(this)
 //                galerie!!.setContentView(R.layout.galleryavatar)
@@ -164,212 +144,239 @@ fun CreateImageStringFromBitmap(): String {
         }
 
 
-            firstName.doAfterTextChanged {
-                (validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
-                ))
+        firstName.doAfterTextChanged {
+            (validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            ))
 
+        }
+
+        lastName.doAfterTextChanged {
+            (validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            ))
+        }
+
+        pseudo.doAfterTextChanged {
+            validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            )
+            errorPassword.text = ""
+        }
+
+        password.doAfterTextChanged {
+            (validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            ))
+            errorPassword.text = ""
+        }
+
+        confirmPassword.doAfterTextChanged {
+            (validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            ))
+            errorPassword.text = ""
+        }
+
+
+        email.doAfterTextChanged {
+            (validater(
+                firstName.text.toString(), lastName.text.toString(),
+                pseudo.text.toString(), password.text.toString(),
+                confirmPassword.text.toString(), email.text.toString()
+            ))
+            errorPassword.text = ""
+        }
+
+
+        button.setOnClickListener {
+            val user = UserRegistrationInfo(
+                firstName.text.toString(),
+                lastName.text.toString(), pseudo.text.toString(),
+                email.text.toString(), password.text.toString(),avatar = encodedImage)
+
+            var response: Response<ResponseBody>? = null
+            var canProcessQuery = true
+
+            if (password.text.length < 8) {
+                errorPassword.append("Le mot de passe doit avoir au moins 8 caractères")
+                canProcessQuery = false
             }
-
-            lastName.doAfterTextChanged {
-                (validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
-                ))
-            }
-
-            pseudo.doAfterTextChanged {
-                validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
+            val regex = Regex(
+                """((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"""
+            )
+            if (!regex.matches(password.text.toString())) {
+                errorPassword.append(
+                    "Le mot de passe ne doit pas avoir d'espace " +
+                            "et doit contenir au moins: " +
+                            "* Un caractèere en majuscule " +
+                            "* Un caractère en miniscule " +
+                            "* Un caractère spécial " +
+                            "* Un chiffre"
                 )
-                errorPassword.text = ""
+                canProcessQuery = false
             }
 
-            password.doAfterTextChanged {
-                (validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
-                ))
-                errorPassword.text = ""
-            }
+            if (canProcessQuery) {
 
-            confirmPassword.doAfterTextChanged {
-                (validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
-                ))
-                errorPassword.text = ""
-            }
-
-
-            email.doAfterTextChanged {
-                (validater(
-                    firstName.text.toString(), lastName.text.toString(),
-                    pseudo.text.toString(), password.text.toString(),
-                    confirmPassword.text.toString(), email.text.toString()
-                ))
-                errorPassword.text = ""
-            }
-
-
-            button.setOnClickListener {
-                val user = UserRegistrationInfo(
-                    firstName.text.toString(),
-                    lastName.text.toString(), pseudo.text.toString(),
-                    email.text.toString(), password.text.toString(),avatar = encodedImage)
-
-                var response: Response<ResponseBody>? = null
-                var canProcessQuery = true
-
-                if (password.text.length < 8) {
-                    errorPassword.append("Le mot de passe doit avoir au moins 8 caractères")
-                    canProcessQuery = false
+                runBlocking {
+                    async {
+                        launch {
+                            response = clientService.createUser(user)
+                        }
+                    }
                 }
-                val regex = Regex(
-                    """((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"""
-                )
-                if (!regex.matches(password.text.toString())) {
-                    errorPassword.append(
-                        "Le mot de passe ne doit pas avoir d'espace " +
-                                "et doit contenir au moins: " +
-                                "* Un caractèere en majuscule " +
-                                "* Un caractère en miniscule " +
-                                "* Un caractère spécial " +
-                                "* Un chiffre"
-                    )
-                    canProcessQuery = false
-                }
-
-                if (canProcessQuery) {
-
+                if (response?.isSuccessful == true) {
+                    ClientInfo.userId = response?.body()?.string().toString()
                     runBlocking {
                         async {
                             launch {
-                                response = clientService.createUser(user)
+                                viewKonfetti.build()
+                                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                    .setDirection(0.0, 359.0)
+                                    .setSpeed(1f, 5f)
+                                    .setFadeOutEnabled(true)
+                                    .setTimeToLive(2000L)
+                                    .addShapes(Shape.RECT, Shape.CIRCLE)
+                                    .addSizes(Size(12, 5F)).setPosition(
+                                        -50f,
+                                        viewKonfetti.getWidth() + 50f,
+                                        -50f,
+                                        -50f
+                                    )
+                                    .streamFor(300, 5000L)
+
+                                viewKonfetti2.build()
+                                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                    .setDirection(0.0, 359.0)
+                                    .setSpeed(1f, 5f)
+                                    .setFadeOutEnabled(true)
+                                    .setTimeToLive(2000L)
+                                    .addShapes(Shape.RECT, Shape.CIRCLE)
+                                    .addSizes(Size(12, 5F)).setPosition(
+                                        500F,
+                                        viewKonfetti.getWidth() + 500F,
+                                        -50f,
+                                        -50f
+                                    )
+                                    .streamFor(300, 5000L)
+
+                                viewKonfetti3.build()
+                                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                    .setDirection(0.0, 359.0)
+                                    .setSpeed(1f, 5f)
+                                    .setFadeOutEnabled(true)
+                                    .setTimeToLive(2000L)
+                                    .addShapes(Shape.RECT, Shape.CIRCLE)
+                                    .addSizes(Size(12, 5F)).setPosition(
+                                        1000f,
+                                        viewKonfetti.getWidth() + 1000f,
+                                        -50f,
+                                        -50f
+                                    )
+                                    .streamFor(300, 5000L)
+
+                                viewKonfetti4.build()
+                                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                    .setDirection(0.0, 359.0)
+                                    .setSpeed(1f, 5f)
+                                    .setFadeOutEnabled(true)
+                                    .setTimeToLive(2000L)
+                                    .addShapes(Shape.RECT, Shape.CIRCLE)
+                                    .addSizes(Size(12, 5F)).setPosition(
+                                        1500f,
+                                        viewKonfetti.getWidth() + 1500f,
+                                        -50f,
+                                        -50f
+                                    )
+                                    .streamFor(300, 5000L)
+
                             }
                         }
                     }
-                    if (response?.isSuccessful == true) {
-                        ClientInfo.userId = response?.body()?.string().toString()
-                        runBlocking {
-                            async {
-                                launch {
-                                    viewKonfetti.build()
-                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-                                        .setDirection(0.0, 359.0)
-                                        .setSpeed(1f, 5f)
-                                        .setFadeOutEnabled(true)
-                                        .setTimeToLive(2000L)
-                                        .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(
-                                            -50f,
-                                            viewKonfetti.getWidth() + 50f,
-                                            -50f,
-                                            -50f
-                                        )
-                                        .streamFor(300, 5000L)
-
-                                    viewKonfetti2.build()
-                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-                                        .setDirection(0.0, 359.0)
-                                        .setSpeed(1f, 5f)
-                                        .setFadeOutEnabled(true)
-                                        .setTimeToLive(2000L)
-                                        .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(
-                                            500F,
-                                            viewKonfetti.getWidth() + 500F,
-                                            -50f,
-                                            -50f
-                                        )
-                                        .streamFor(300, 5000L)
-
-                                    viewKonfetti3.build()
-                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-                                        .setDirection(0.0, 359.0)
-                                        .setSpeed(1f, 5f)
-                                        .setFadeOutEnabled(true)
-                                        .setTimeToLive(2000L)
-                                        .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(
-                                            1000f,
-                                            viewKonfetti.getWidth() + 1000f,
-                                            -50f,
-                                            -50f
-                                        )
-                                        .streamFor(300, 5000L)
-
-                                    viewKonfetti4.build()
-                                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-                                        .setDirection(0.0, 359.0)
-                                        .setSpeed(1f, 5f)
-                                        .setFadeOutEnabled(true)
-                                        .setTimeToLive(2000L)
-                                        .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(
-                                            1500f,
-                                            viewKonfetti.getWidth() + 1500f,
-                                            -50f,
-                                            -50f
-                                        )
-                                        .streamFor(300, 5000L)
-
-                                }
-                            }
-                        }
 
 
 
-                        startActivity(Intent(this, LandingPage::class.java))
-                        finish()
-                    } else {
-                        val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
-                        errorPassword.text = errorMessage.message
-                    }
+                    startActivity(Intent(this, LandingPage::class.java))
+                    finish()
+                } else {
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    errorPassword.text = errorMessage.message
                 }
             }
-
-            login.setOnClickListener() {
-                startActivity(Intent(this, LoginScreen::class.java))
-            }
         }
 
-        private fun validater(
-            firstName: String,
-            lastName: String,
-            pseudo: String,
-            password: String,
-            confirmPassword: String,
-            email: String
-        ): Boolean {
-            if (((firstName.isNotEmpty() &&
-                        lastName.isNotEmpty() && pseudo.isNotEmpty()
-                        && password.isNotEmpty() && confirmPassword.isNotEmpty()
-                        && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword))
-            ) {
-                button.isEnabled = true
-                button.isClickable = true
-                return true
-            } else {
-                button.isEnabled = false
-                button.isClickable = false
-                return false
-            }
-        }
-
-        fun isValidEmail(target: CharSequence?): Boolean {
-            return if (TextUtils.isEmpty(target)) {
-                false
-            } else {
-                Patterns.EMAIL_ADDRESS.matcher(target).matches()
-            }
+        login.setOnClickListener() {
+            startActivity(Intent(this, LoginScreen::class.java))
         }
     }
+
+    fun createImageStringFromBitmap(): String {
+
+        val bitmap:Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
+
+        val resized = Bitmap.createScaledBitmap(
+            bitmap, (300).toInt(),
+            (300).toInt(), true
+        )
+        //CONVERT IN image
+        //    val decodedString: ByteArray = Base64.decode(encodedImage, Base64.DEFAULT)
+        //    val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        val stream = ByteArrayOutputStream()
+        resized.compress(Bitmap.CompressFormat.PNG, 75, stream)
+        val byteArray: ByteArray = stream.toByteArray()
+
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    private fun validater(
+        firstName: String,
+        lastName: String,
+        pseudo: String,
+        password: String,
+        confirmPassword: String,
+        email: String
+    ): Boolean {
+        if (((firstName.isNotEmpty() &&
+                    lastName.isNotEmpty() && pseudo.isNotEmpty()
+                    && password.isNotEmpty() && confirmPassword.isNotEmpty()
+                    && email.isNotEmpty()) && isValidEmail(email) && (password == confirmPassword))
+        ) {
+            button.isEnabled = true
+            button.isClickable = true
+            return true
+        } else {
+            button.isEnabled = false
+            button.isClickable = false
+            return false
+        }
+    }
+
+    override fun onRestart(){
+        val encodedImage :String= createImageStringFromBitmap()
+        val decodedString = Base64.decode(encodedImage, Base64.DEFAULT)
+        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        Glide.with(this).load(decodedByte).fitCenter().into(img_save);
+        super.onRestart()
+    }
+
+
+    fun isValidEmail(target: CharSequence?): Boolean {
+        return if (TextUtils.isEmpty(target)) {
+            false
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        }
+    }
+}
 

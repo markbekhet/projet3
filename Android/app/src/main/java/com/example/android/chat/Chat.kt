@@ -39,7 +39,7 @@ class Chat(var name:String) : Fragment() {
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         messageListView?.layoutManager = linearLayoutManager
 
-//        showMessages()
+        showMessages()
         textField.doAfterTextChanged {
             if(textField.text.isNotEmpty() && textField.text.isNotBlank()){
                 button.isEnabled = true

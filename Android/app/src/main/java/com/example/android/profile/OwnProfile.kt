@@ -67,13 +67,13 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
-        val avatar : ImageView = findViewById(R.id.avatarOwner)
 
 
         val chatDialog= ChatDialog(this)
         showChatOwnerProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
+
         SocketHandler.getChatSocket().on("msgToClient"){ args ->
             if(args[0] != null){
                 val messageData = args[0] as String
@@ -105,6 +105,13 @@ class OwnProfile : AppCompatActivity() {
             }
 
         }
+        gallery.setOnClickListener() {
+            val bundle = Bundle()
+            bundle.putString("request", "true")
+            val intent = Intent (this, GalleryAvatar::class.java)
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }
 
         //Nous allons avoir besoin de mettre a jour les
         //informations de l'utilisateur suite à la fermeture de la modale
@@ -124,14 +131,31 @@ class OwnProfile : AppCompatActivity() {
     fun updateUI(userInformation: UserProfileInformation) {
 
         //getProfile()
-        emailValue.text = userInformation.emailAddress
-        lastNameValue.text = userInformation.lastName
-        nicknameValue.text = userInformation.pseudo
-        firstNameValue.text = userInformation.firstName
-        val decodedString: ByteArray = Base64.decode(userInformation.avatar, Base64.DEFAULT)
-        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-        Glide.with(this).load(decodedByte).fitCenter().into(avatarOwner);
-        avatarClientInfo.avatarClient = userInformation!!.avatar!!.toInt()
+        runOnUiThread {
+            emailValue.text = userInformation.emailAddress
+            lastNameValue.text = userInformation.lastName
+            nicknameValue.text = userInformation.pseudo
+            firstNameValue.text = userInformation.firstName
+            val decodedString: ByteArray = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            Glide.with(this).load(decodedByte).fitCenter().into(img_save)
+        }
+        //avatarClientInfo.avatarClient = userInformation!!.avatar!!.toInt()
+    }
+
+    override fun onRestart(){
+        val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+        SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+        var i = 0
+        SocketHandler.getChatSocket().on("profileToClient"){ args ->
+            if(args[0]!=null && i==0){
+                val data = args[0] as String
+                val userInformation = UserProfileInformation().fromJson(data)
+                updateUI(userInformation)
+                i++
+            }
+        }
+        super.onRestart()
     }
 }
 
@@ -148,17 +172,9 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
         val confirmNewPassword: EditText = findViewById(R.id.confirmNewPassword)
         val newNickname: EditText = findViewById(R.id.newNickname)
         val passwordErrors: TextView = findViewById(R.id.passwordErrors)
-        val newAvatar : ImageView = findViewById(R.id.avatarOwnerModify)
-
-        Glide.with(this.context).load(avatarClientInfo.avatarClient).fitCenter().into(newAvatar);
         val clientService = ClientService()
 
-        gallery.setOnClickListener() {
 
-            val intent = Intent (this.context, GalleryAvatar::class.java)
-            this.context.startActivity(intent)
-
-        }
         newPassword.doAfterTextChanged {
             passwordErrors.text = ""
 
@@ -259,7 +275,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             var modification = ProfileModification()
 
             if(newNickname.text.isNotEmpty()){
-                modification.avatar = avatarClientInfo.avatarClient.toString()
+                modification.newPseudo = newNickname.text.toString()
             }
             if(newPassword.text.isNotEmpty()){
                 passwordErrors.text = ""
@@ -284,13 +300,11 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                     canProcessQuery = false
                 }
                 if(canProcessQuery){
-                    modification.avatar = avatarClientInfo.avatarClient.toString()
                     modification.newPassword = newPassword.text.toString()
                     modification.oldPassword = oldPassword.text.toString()
                 }
             }
             if(canProcessQuery){
-                modification.avatar = avatarClientInfo.avatarClient.toString()
                 var response: Response<ResponseBody>? = null
                 runBlocking {
                     launch{

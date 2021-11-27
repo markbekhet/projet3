@@ -106,7 +106,7 @@ data class LoginInfo(var username: String? = null, var password: String? = null)
 data class ProfileModification(
     var newPassword: String? = null,
     var newPseudo: String? = null,
-    var avatar : String? = null,
+    var newAvatar : String? = null,
     var oldPassword: String? = null
 ){
     fun toJson(): String{

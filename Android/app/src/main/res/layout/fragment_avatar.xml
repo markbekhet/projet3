@@ -45,15 +45,7 @@
 
 
         </FrameLayout>
-
-        <TextView
-            android:id="@+id/selectionne"
-            android:layout_width="91dp"
-            android:layout_height="35dp"
-            android:textSize="20dp"
-            android:layout_margin="20dp"
-            android:text="selectionnée"
-            android:visibility="gone"/>
+        
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
