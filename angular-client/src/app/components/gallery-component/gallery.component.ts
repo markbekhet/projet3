@@ -29,6 +29,7 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
@@ -53,7 +54,8 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private windowService: ModalWindowService,
     private interactionService: InteractionService,
     private teamService: TeamService,
-    private errorDialog: MatDialog
+    private errorDialog: MatDialog,
+    private chatRoomService: ChatRoomService
   ) {}
 
   getAuthenticatedUserID(): string {
@@ -87,9 +89,14 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     this.socketService
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations) => {
+        this.chatRoomService.addChatRoom(
+          drawingInformations.drawing.name!,
+          drawingInformations.chatHistoryList
+        );
         this.interactionService.drawingInformations.next(
           drawingInformations.drawing
         );
+        this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
         this.router.navigate(['/draw']);
       });
@@ -310,14 +317,40 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // sortDrawings() {
-  //   for (let i = 0; i < this.drawings.length; i++) {
-  //     if (
-  //       this.drawings[i].ownerId === this.authService.getAuthenticatedUserID()
-  //     ) {
-  //     }
-  //   }
-  // }
+  displayVisibilityIcon(visibilityLevel: DrawingVisibilityLevel): string {
+    switch (visibilityLevel) {
+      case 0:
+        return 'public';
+      case 1:
+        return 'lock';
+      case 2:
+        return 'person'; // visibility, person, not_interested, remove_circle, portrait
+      default:
+        return '';
+    }
+  }
+
+  // Note(Paul) : WIP - goal is to return same date that comes from server but format the hour in 24-hour format so that
+  // it takes less space in the UI
+  // https://www.w3schools.com/js/js_string_methods.asp
+  // https://www.w3schools.com/js/js_dates.asp
+  // https://www.w3schools.com/js/js_date_formats.asp
+  // https://stackoverflow.com/questions/1788705/convert-time-to-24-hours-format-in-javascript
+  /* formatHour(creationDate: string): string {
+    const dateInArrayForm = creationDate.split(',');
+    const date = dateInArrayForm[0];
+    const hour = dateInArrayForm[1];
+    return;
+  } */
+
+  /* sortDrawings() {
+    for (let i = 0; i < this.drawings.length; i++) {
+      if (
+        this.drawings[i].ownerId === this.authService.getAuthenticatedUserID()
+      ) {
+      }
+    }
+  } */
 
   closeModalForm(): void {
     this.windowService.closeDialogs();

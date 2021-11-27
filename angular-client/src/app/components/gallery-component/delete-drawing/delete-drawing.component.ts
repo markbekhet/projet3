@@ -24,7 +24,7 @@ export class DeleteDrawingComponent implements OnInit {
         userId: this.drawingToDelete.ownerId!,
       })
       .subscribe(
-        (respomse) => {},
+        (response) => {},
         (error) => {
           this.errorDialog.open(ErrorDialogComponent, { data: error.message });
         }

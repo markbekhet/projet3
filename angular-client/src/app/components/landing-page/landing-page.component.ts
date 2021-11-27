@@ -11,6 +11,7 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { SocketService } from '@services/socket/socket.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
   templateUrl: './landing-page.component.html',
@@ -22,6 +23,7 @@ export class LandingPage implements OnInit, AfterViewInit {
   isLoggedIn = false;
 
   constructor(
+    private interactionService: InteractionService,
     private authService: AuthService,
     private chatRoomService: ChatRoomService,
     private dialog: MatDialog,
@@ -45,6 +47,7 @@ export class LandingPage implements OnInit, AfterViewInit {
     this.socketService.socket!.on('RoomChatHistories', (data: string) => {
       const chatHistories: { chatHistoryList: ChatHistory[] } =
         JSON.parse(data);
+      this.interactionService.emitUpdateChatListSignal();
       console.log(chatHistories);
       this.chatRoomService.addChatRoom(
         'General',

@@ -1,37 +1,39 @@
-import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Team } from '@src/app/models/teamsMeta';
 import { BehaviorSubject } from 'rxjs';
-//import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 
-const PATH = "http://localhost:3000"
+const PATH = 'http://localhost:3000';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TeamService {
+  activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<
+    Map<string, Team>
+  >(new Map());
+  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({});
 
-  activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
-  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({})
+  constructor(private httpClient: HttpClient) {}
 
-  constructor(private httpClient: HttpClient) { }
-
-  createTeam(team: Team){
-    return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team)
+  createTeam(team: Team) {
+    return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team);
   }
 
-  //TODO
-  deleteTeam(data: {teamId: string, userId: string}){
+  // TODO
+  deleteTeam(data: { teamId: string; userId: string }) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      body: data
-    }
-    this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions).subscribe((res)=>{
-      console.log(res);
-    },
-    (error)=>{
-      console.log(`error: ${error.message}`)
-    }
-    )
+      body: data,
+    };
+    this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions).subscribe(
+      (res) => {
+        console.log(res);
+      },
+      (error) => {
+        console.log(`error: ${error.message}`);
+      }
+    );
   }
 }

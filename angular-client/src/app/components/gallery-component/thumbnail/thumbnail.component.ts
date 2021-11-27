@@ -29,7 +29,7 @@ export class ThumbnailComponent implements OnInit, AfterViewInit {
   constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    const SCALE = 8;
+    const SCALE = 6.2;
     this.scaleSVG(SCALE);
   }
 
@@ -45,9 +45,7 @@ export class ThumbnailComponent implements OnInit, AfterViewInit {
     const VIEWBOX_H = this.svgHeight;
     this.viewBoxStr = `0 0 ${VIEWBOX_W} ${VIEWBOX_H}`; // Viewing the whole svg...
 
-    while (this.svgHeight > H_LIMIT) {
-      this.svgHeight -= 1;
-    }
+    this.svgHeight = H_LIMIT + 1;
 
     while (this.svgWidth / this.svgHeight > W_LIMIT / H_LIMIT) {
       this.svgWidth -= 1;

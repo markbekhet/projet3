@@ -50,6 +50,10 @@ export class InteractionService {
   $leaveDrawingSignal: Observable<boolean> =
     this.leaveDrawingSignal.asObservable();
 
+  updateChatListSignal: Subject<boolean> = new Subject<boolean>();
+  $updateChatListSignal: Observable<boolean> =
+    this.updateChatListSignal.asObservable();
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -96,5 +100,9 @@ export class InteractionService {
 
   emitLeaveDrawingSignal() {
     this.leaveDrawingSignal.next(true);
+  }
+
+  emitUpdateChatListSignal() {
+    this.updateChatListSignal.next(true);
   }
 }

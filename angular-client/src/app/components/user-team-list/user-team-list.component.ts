@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 
 import { JoinTeam, LeaveTeam } from '@models/joinTeam';
 import { ChatHistory } from '@models/MessageMeta';
@@ -36,9 +36,9 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private authService: AuthService,
-    private readonly chatRoomService: ChatRoomService,
+    private chatRoomService: ChatRoomService,
     private interactionService: InteractionService,
-    private router: Router,
+    // private router: Router,
     private socketService: SocketService,
     private teamService: TeamService,
     private windowService: ModalWindowService
@@ -160,7 +160,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   joinChat(roomName: string) {
     console.log(roomName);
     this.interactionService.chatRoomName.next(roomName);
-    this.router.navigate(['/chat']);
+    // this.router.navigate(['/chat']);
   }
 
   viewUserProfile(user: User) {

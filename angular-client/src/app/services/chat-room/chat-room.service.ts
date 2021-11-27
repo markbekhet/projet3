@@ -1,43 +1,52 @@
 import { Injectable } from '@angular/core';
 import { ChatHistory, ClientMessage } from '@src/app/models/MessageMeta';
-//import { BehaviorSubject } from 'rxjs';
+// import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatRoomService {
-  chatRooms:Map<string, ChatHistory[]> = new Map<string, ChatHistory[]>()
-  
-  addChatRoom(roomName: string, chatHistories: ChatHistory[]){
-    let temp: ChatHistory[] = []
-    chatHistories.forEach((chatHistory: ChatHistory) =>{
-      temp.unshift(chatHistory)
-    })
+  chatRooms: Map<string, ChatHistory[]> = new Map<string, ChatHistory[]>();
+
+  addChatRoom(roomName: string, chatHistories: ChatHistory[]) {
+    const temp: ChatHistory[] = [];
+    chatHistories.forEach((chatHistory: ChatHistory) => {
+      temp.unshift(chatHistory);
+    });
     this.chatRooms.set(roomName, temp);
-    console.log(this.chatRooms)
+    console.log(this.chatRooms);
   }
 
-  addChatHistory(message: ClientMessage){
-    console.log('here adding history')
-    let chatHistories = this.chatRooms.get(message.roomName)
-    if(chatHistories !== undefined){
-      let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message};
-      chatHistories.forEach((chatHistory: ChatHistory)=>{
-        if(!(chatHistory.from === newChatHistory.from && chatHistory.date === newChatHistory.date)){
-          chatHistories!.push(newChatHistory)
+  addChatHistory(message: ClientMessage) {
+    console.log('here adding history');
+    const chatHistories = this.chatRooms.get(message.roomName);
+    if (chatHistories !== undefined) {
+      const newChatHistory: ChatHistory = {
+        from: message.from,
+        date: message.date,
+        message: message.message,
+      };
+      chatHistories.forEach((chatHistory: ChatHistory) => {
+        if (
+          !(
+            chatHistory.from === newChatHistory.from &&
+            chatHistory.date === newChatHistory.date
+          )
+        ) {
+          chatHistories!.push(newChatHistory);
         }
-      })
-      /*if(chatHistories.indexOf(newChatHistory) === -1)
-        chatHistories.push(newChatHistory);*/
+      });
+      /* if(chatHistories.indexOf(newChatHistory) === -1)
+        chatHistories.push(newChatHistory); */
     }
     console.log(chatHistories!.length);
   }
 
-  deleteChatRoom(roomName: string){
+  deleteChatRoom(roomName: string) {
     this.chatRooms.delete(roomName);
   }
 
-  getChatHistoryList(roomName: string){
+  getChatHistoryList(roomName: string) {
     return this.chatRooms.get(roomName);
   }
 }
