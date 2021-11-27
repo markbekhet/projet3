@@ -268,7 +268,12 @@ fun CreateImageStringFromBitmap(): String {
                                         .setFadeOutEnabled(true)
                                         .setTimeToLive(2000L)
                                         .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(-50f, viewKonfetti.getWidth() + 50f, -50f, -50f)
+                                        .addSizes(Size(12, 5F)).setPosition(
+                                            -50f,
+                                            viewKonfetti.getWidth() + 50f,
+                                            -50f,
+                                            -50f
+                                        )
                                         .streamFor(300, 5000L)
 
                                     viewKonfetti2.build()
@@ -278,7 +283,12 @@ fun CreateImageStringFromBitmap(): String {
                                         .setFadeOutEnabled(true)
                                         .setTimeToLive(2000L)
                                         .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(500F, viewKonfetti.getWidth() + 500F, -50f, -50f)
+                                        .addSizes(Size(12, 5F)).setPosition(
+                                            500F,
+                                            viewKonfetti.getWidth() + 500F,
+                                            -50f,
+                                            -50f
+                                        )
                                         .streamFor(300, 5000L)
 
                                     viewKonfetti3.build()
@@ -288,7 +298,12 @@ fun CreateImageStringFromBitmap(): String {
                                         .setFadeOutEnabled(true)
                                         .setTimeToLive(2000L)
                                         .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(1000f, viewKonfetti.getWidth() + 1000f, -50f, -50f)
+                                        .addSizes(Size(12, 5F)).setPosition(
+                                            1000f,
+                                            viewKonfetti.getWidth() + 1000f,
+                                            -50f,
+                                            -50f
+                                        )
                                         .streamFor(300, 5000L)
 
                                     viewKonfetti4.build()
@@ -298,22 +313,26 @@ fun CreateImageStringFromBitmap(): String {
                                         .setFadeOutEnabled(true)
                                         .setTimeToLive(2000L)
                                         .addShapes(Shape.RECT, Shape.CIRCLE)
-                                        .addSizes(Size(12, 5F)).setPosition(1500f, viewKonfetti.getWidth() + 1500f, -50f, -50f)
+                                        .addSizes(Size(12, 5F)).setPosition(
+                                            1500f,
+                                            viewKonfetti.getWidth() + 1500f,
+                                            -50f,
+                                            -50f
+                                        )
                                         .streamFor(300, 5000L)
 
-                            }}}
+                                }
+                            }
+                        }
 
 
 
                         startActivity(Intent(this, LandingPage::class.java))
                         finish()
                     } else {
-                        errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
-                                " adresse courriel ou le même pseudonyme."
+                        val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                        errorPassword.text = errorMessage.message
                     }
-                else{
-                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
-                    errorPassword.text = errorMessage.message
                 }
             }
 
