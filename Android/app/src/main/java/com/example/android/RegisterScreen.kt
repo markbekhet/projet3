@@ -31,6 +31,7 @@ import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.avatar.view.*
 import kotlinx.android.synthetic.main.fragment_avatar.*
 import kotlinx.android.synthetic.main.fragment_avatar.view.*
+import com.example.android.team.CantJoin
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import androidx.activity.result.ActivityResultLauncher
 
@@ -310,6 +311,9 @@ fun CreateImageStringFromBitmap(): String {
                         errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
                                 " adresse courriel ou le même pseudonyme."
                     }
+                else{
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    errorPassword.text = errorMessage.message
                 }
             }
 

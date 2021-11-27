@@ -18,7 +18,7 @@ export class UserController {
 
     
     @Post(DISCONNECT_URL+"/:userId")
-    async disconnectUser(@Param("userId") userId: number){
+    async disconnectUser(@Param("userId") userId: string){
         let user = await this.databaseService.disconnect(userId);
         this.chatGateway.notifyUserUpdate(user);
         return HttpStatus.OK
@@ -26,15 +26,11 @@ export class UserController {
 
     @Put(PROFILE_URL+ "/:userId")
     async modifyProfile(@Param("userId") userId: string, @Body() newParameters: UpdateUserDto){
-        try{
-            let user = await this.databaseService.modifyUserProfile(userId, newParameters);
-            this.chatGateway.notifyUserUpdate(user);
-            return HttpStatus.OK
-        }
-        catch(e: any){
-            throw new HttpException("Username already used", HttpStatus.BAD_REQUEST);
-        }
+        let user = await this.databaseService.modifyUserProfile(userId, newParameters);
+        this.chatGateway.notifyUserUpdate(user);
+        return HttpStatus.OK
     }
+    
     @Get("/gallery/:userId")
     async getUserGallery(@Param("userId") userId: string){
         return await this.databaseService.getUserDrawings(userId);

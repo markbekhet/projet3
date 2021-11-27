@@ -1,6 +1,5 @@
 package com.example.android
 
-import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,13 +8,17 @@ import android.view.ViewGroup
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
+import com.example.android.client.ActiveUser
 import com.example.android.client.ClientInfo
+import com.example.android.client.User
 import com.google.gson.Gson
-import io.socket.client.Socket
 import kotlinx.android.synthetic.main.dessin.*
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
+import kotlin.collections.HashMap
 
+var selectionColors:HashMap<String, String?> = HashMap()
 class Drawing : AppCompatActivity() {
     private var socket = SocketHandler.getChatSocket()
     private var drawingRelatedInformation: ReceiveDrawingInformation?= null
@@ -28,14 +31,118 @@ class Drawing : AppCompatActivity() {
         DrawingUtils.currentTool = pencilString
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"
+        selectionColors.clear()
+        selectionColors["CBCB28"] = ClientInfo.userId
+        selectionColors["0000FF"] = null
+        selectionColors["00FF00"] = null
+        selectionColors["0000FF"] = null
         DrawingUtils.primaryColor = black
         DrawingUtils.secondaryColor = none
+        val usersList = ArrayList<User>()
+
 
         val data = intent.extras!!.getString("drawingInformation")
         drawingID = intent.extras!!.getInt("drawingID")
         val allDrawingInformation = AllDrawingInformation().fromJson(data!!)
         //primaryColor.setBackgroundColor(Color.parseColor("#000000"))
         //secondaryColor.setBackgroundColor(Color.parseColor("#FFFFFF"))
+        /*=======Users and teams fragment=======*/
+        for(userId in allDrawingInformation.activeUsers){
+            for(userInformation in ClientInfo.usersList.userList){
+                if(userId.userId == userInformation.id){
+                    usersList.add(userInformation)
+                    break
+                }
+            }
+            for(color in selectionColors){
+                if(color.value == null){
+                    color.setValue(userId.userId)
+                    break
+                }
+            }
+        }
+
+        val usersFragmentTransaction = supportFragmentManager.beginTransaction()
+        //don't build
+        val usersAndTeamsFragment = UsersAndTeamsFragment(false)
+        usersAndTeamsFragment.setColorsMap(selectionColors)
+        usersAndTeamsFragment.setUsersList(usersList)
+        usersFragmentTransaction.replace(R.id.usersAndTeamsFrameDrawingPage,
+            usersAndTeamsFragment).commit()
+
+
+        socket.on("newJoinToDrawing"){ args->
+            if(args[0]!= null){
+                val newJoinData = args[0] as String
+                val newJoinUser = ActiveUser().fromJson(newJoinData)
+                if(newJoinUser.drawingId == drawingID){
+                    var newJoinUserInformation = User()
+                    for(existingUser in ClientInfo.usersList.userList){
+                        if(existingUser.id == newJoinUser.userId){
+                             newJoinUserInformation = existingUser
+                             break
+                        }
+                    }
+                    for(color in selectionColors){
+                        if(color.value == null){
+                            color.setValue(newJoinUser.userId)
+                            break
+                        }
+                    }
+                    usersAndTeamsFragment.setColorsMap(selectionColors)
+                    usersList.add(newJoinUserInformation)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        socket.on("userLeftDrawing"){args ->
+            if(args[0] != null){
+                val userLeftData = args[0] as String
+                val userLeft = ActiveUser().fromJson(userLeftData)
+                if(userLeft.drawingId == drawingID){
+                    var i = 0
+                    for(existingUsers in usersList){
+                        if(existingUsers.id == userLeft.userId){
+                            break
+                        }
+                        i++
+                    }
+                    for(color in selectionColors){
+                        if(color.value == userLeft.userId){
+                            color.setValue(null)
+                            break
+                        }
+                    }
+                    usersList.removeAt(i)
+                    usersAndTeamsFragment.setColorsMap(selectionColors)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        socket.on("userUpdate"){ args ->
+            if(args[0]!= null){
+                val userUpdated = User().fromJson(args[0] as String)
+                var exist = false
+                var i = 0
+                for(existingUser in usersList){
+                    println(usersList.size)
+                    if(existingUser.id == userUpdated.id){
+                        exist = true
+                        break
+                    }
+                    i++
+                }
+                if(exist){
+                    usersList.removeAt(i)
+                    usersList.add(userUpdated)
+                    usersAndTeamsFragment.setUsersList(usersList)
+                }
+            }
+        }
+
+        /*=======================================*/
         val params: ViewGroup.LayoutParams = fl_drawing_view_container.getLayoutParams()
         //Button new width
         //Button new width
@@ -53,15 +160,17 @@ class Drawing : AppCompatActivity() {
         fl_drawing_view_container.addView(canvas)
         socket.on("drawingToClient"){ args ->
             if(args[0] != null){
-                val data = args[0] as String
-                val dataTransformed = Gson().fromJson(data, ContentDrawingSocket::class.java)
-                canvas!!.onReceivedDrawing(dataTransformed)
+                val drawingData = args[0] as String
+                val dataTransformed = Gson().fromJson(drawingData, ContentDrawingSocket::class.java)
+                if(dataTransformed.drawingId == drawingID){
+                    canvas!!.onReceivedDrawing(dataTransformed)
+                }
             }
         }
         socket.on("drawingContentCreated"){ args ->
             if(args[0] != null){
-                val data = args[0] as String
-                canvas!!.receiveContentID(data)
+                val contentID = args[0] as String
+                canvas!!.receiveContentID(contentID)
             }
         }
         pencil.setOnClickListener {
@@ -144,15 +253,31 @@ class Drawing : AppCompatActivity() {
         val chatDialog = ChatDialog(this, drawingRelatedInformation!!.name!!)
         ChatRooms.chats[drawingRelatedInformation!!.name!!] =
             allDrawingInformation.chatHistoryList!!
-        chatDialog.show(supportFragmentManager, ChatDialog.TAG)
-        chatDialog.dismiss()
+        //chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        //chatDialog.dismiss()
         chatDrawing.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
 
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
     }
 
     override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
         if(canvas != null){
             canvas!!.unselectAllChildren()
         }
@@ -170,14 +295,9 @@ class Drawing : AppCompatActivity() {
         }
 
         leaveDrawing()
-        super.onDestroy()
-    }
-
-    /*override fun onBackPressed() {
-        leaveDrawing()
         super.onBackPressed()
 
-    }*/
+    }
     override fun onPause(){
         if(canvas != null){
             canvas!!.unselectAllChildren()

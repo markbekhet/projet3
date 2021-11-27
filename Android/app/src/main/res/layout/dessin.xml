@@ -29,7 +29,6 @@
                         android:id="@+id/nom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:text="nom du dessin"
                         android:textColor="@color/main_color"
                         android:textSize="32dp"
@@ -48,12 +47,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="left">
                     <LinearLayout
                         android:id="@+id/ll_action_buttons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:orientation="vertical">
 
                         <ImageButton
@@ -173,38 +173,41 @@
                             android:text="Fond transparent"
                             android:checked="true"/>
                     </LinearLayout>
-                    <ScrollView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
 
-                        <LinearLayout
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:id="@+id/fl_drawing_view_container"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:layout_margin="5dp"
+                            android:background="@drawable/background"
+                            android:padding="1dp">
 
-                            <FrameLayout
-                                android:id="@+id/fl_drawing_view_container"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/background"
-                                android:padding="1dp">
-
-                                <!-- In FrameLayout the component which are
-                               added below are in foreground and added above are in Background.-->
-                                <ImageView
-                                    android:id="@+id/background"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@drawable/rectangle_background"
-                                    android:contentDescription="image"
-                                    android:scaleType="centerCrop" />
+                            <!-- In FrameLayout the component which are
+                           added below are in foreground and added above are in Background.-->
+                            <ImageView
+                                android:id="@+id/background"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/rectangle_background"
+                                android:contentDescription="image"
+                                android:scaleType="centerCrop" />
 
 
-                            </FrameLayout>
+                        </FrameLayout>
                         </LinearLayout>
-                    </ScrollView>
+                    <FrameLayout
+                        android:id="@+id/usersAndTeamsFrameDrawingPage"
+                        android:layout_width="300dp"
+                        android:layout_height="match_parent">
+
+                    </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

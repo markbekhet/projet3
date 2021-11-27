@@ -8,6 +8,8 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.team.CantJoin
 import com.example.android.team.JoinTeamDto
@@ -28,10 +30,22 @@ class JoinProtected : AppCompatActivity() {
             chatDialog.show(manager, ChatDialog.TAG)
         }
 
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
         if(drawingData != null){
             val receiveDrawingInformation = ReceiveDrawingInformation().fromJson(drawingData)
             joinProtectedLabel.text = "Joindre le dessin" +
-                " protégé ${receiveDrawingInformation!!.name}"
+                " protégé ${receiveDrawingInformation.name}"
 
             val joinDrawingDto = JoinDrawingDto(drawingId = receiveDrawingInformation.id!!,
             userId= ClientInfo.userId)
@@ -45,10 +59,10 @@ class JoinProtected : AppCompatActivity() {
                     joinProtected.isEnabled = false
                     joinProtected.isClickable = false
                 }
-                joinDrawingDto.password = joinProtectedTextPassword.text.toString()
             }
 
             joinProtected.setOnClickListener {
+                joinDrawingDto.password = joinProtectedTextPassword.text.toString()
                 joinProtectedTextPassword.text.clear()
                 var i = 0
                 SocketHandler.getChatSocket().emit("joinDrawing", joinDrawingDto.toJson())

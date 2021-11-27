@@ -9,11 +9,9 @@ import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
-import com.example.android.chat.Chat
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.client.LoginInfo
-import com.example.android.profile.OwnProfile
 import kotlinx.android.synthetic.main.message.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -34,13 +32,15 @@ class LoginScreen : AppCompatActivity() {
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
         }
-        fun showError() {
+        fun showError(message: String) {
             if (ErrorLogIn == null) {
                 ErrorLogIn = Dialog(this)
                 ErrorLogIn!!.setContentView(R.layout.popuploginerror)
                 ErrorLogIn!!.show()
                 texte = ErrorLogIn!!.findViewById(R.id.popup) as Button?
                 texte?.isEnabled = true
+                val errorMessage: TextView = ErrorLogIn!!.findViewById(R.id.errorLogin)
+                errorMessage.text = message
                 texte?.setOnClickListener {
                     ErrorLogIn!!.hide()
                     ErrorLogIn = null
@@ -98,16 +98,11 @@ class LoginScreen : AppCompatActivity() {
                 print(username.toString())
 
             } else {
-                showError()
+                showError(response!!.errorBody()!!.string())
             }
             password.text.clear()
             username.text.clear()
         }
-    }
-    fun verifyAuth(integer : Int): Boolean {
-        if (integer >= 400)
-            return true
-        return false
     }
 }
 

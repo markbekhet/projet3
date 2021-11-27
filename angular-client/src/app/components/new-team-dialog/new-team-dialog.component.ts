@@ -15,6 +15,7 @@ import { AuthService } from '@src/app/services/authentication/auth.service';
 import { TeamService } from '@src/app/services/team/team.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
+//import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
   selector: 'app-new-team-dialog',

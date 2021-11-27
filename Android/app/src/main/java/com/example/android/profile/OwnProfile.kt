@@ -20,6 +20,8 @@ import com.bumptech.glide.Glide
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
@@ -72,6 +74,18 @@ class OwnProfile : AppCompatActivity() {
         showChatOwnerProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
         val dataForm = UserProfileInformation().fromJson(data)
         updateUI(dataForm)
 
@@ -302,15 +316,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 else{
                     println(response!!.errorBody()!!.string())
                     passwordErrors.text = ""
-                    if (newPassword.text.isNotEmpty()){
-                        passwordErrors.append("Assurez-vous que l'ancien mot de passe" +
-                            " est correcte et que votre nouveau mot de passe n'est pas" +
-                            " la même que l'ancienne. " )
-                    }
-                    if(newNickname.text.isNotEmpty()){
-                        passwordErrors.append("Un autre utilisateur utilise le même pseudonyme." +
-                            " Veuillez saisir un autre pseudonyme.")
-                    }
+                    passwordErrors.append(response!!.errorBody()!!.string())
                 }
             }
         }

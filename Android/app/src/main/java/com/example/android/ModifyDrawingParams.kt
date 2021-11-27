@@ -8,25 +8,22 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.client.ClientService
+import com.example.android.team.CantJoin
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_modify_drawing_params.*
-import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class modModifyDrawingParams : AppCompatActivity(){
+class ModifyDrawingParams : AppCompatActivity(){
 
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
     private var socket: Socket?=null
     private var modifyDrawing = ModifyDrawingDto()
     private var information = ReceiveDrawingInformation()
@@ -42,6 +39,18 @@ class modModifyDrawingParams : AppCompatActivity(){
         val chatDialog = ChatDialog(this)
         showChatModifyDrawingPage.setOnClickListener {
             chatDialog.show(manager, ChatDialog.TAG)
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
         }
         /*=====================================================*/
 
@@ -89,13 +98,13 @@ class modModifyDrawingParams : AppCompatActivity(){
         modifyDrawingParams.setOnClickListener {
             var canProcessQuery = true
             if (modifyDrawing.newVisibility == Visibility.protectedVisibility.int) {
-                if (drawingPassword.text.isBlank() || drawingPassword.text.isEmpty()) {
+                if (modifyDrawingPassword.text.isBlank() || modifyDrawingPassword.text.isEmpty()) {
                     canProcessQuery = false
                     Toast.makeText(this, "Le mot de passe est obligatoire et" +
                         " ne peut pas être composé d'espace quand le dessin est protégé",
                         Toast.LENGTH_SHORT).show()
                 } else {
-                    modifyDrawing.password = drawingPassword.text.toString()
+                    modifyDrawing.password = modifyDrawingPassword.text.toString()
                 }
             }
             else{
@@ -103,7 +112,9 @@ class modModifyDrawingParams : AppCompatActivity(){
             }
             modifyDrawing.drawingId = information.id
             modifyDrawing.userId = information.ownerId
-            modifyDrawing.newName = modifyDrawingName.text.toString()
+            if(modifyDrawingName.text.isNotEmpty() && modifyDrawingName.text.isNotBlank()){
+                modifyDrawing.newName = modifyDrawingName.text.toString()
+            }
 
             if(canProcessQuery){
                 var response: Response<ResponseBody>?= null
@@ -121,7 +132,8 @@ class modModifyDrawingParams : AppCompatActivity(){
                     finish()
                 }
                 else{
-                    Toast.makeText(this, response!!.errorBody()!!.string(),
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    Toast.makeText(this, errorMessage.message,
                         Toast.LENGTH_SHORT).show()
                 }
             }
@@ -140,7 +152,7 @@ class modModifyDrawingParams : AppCompatActivity(){
             (modifyDrawing.newVisibility == information.visibility
                 || modifyDrawing.newVisibility == null)
             ){
-           return true;
+           return true
         }
 
         return false

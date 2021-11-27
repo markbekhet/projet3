@@ -1,9 +1,7 @@
 package com.example.android
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.*
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,29 +9,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.Drawing
-import com.example.android.R
-import com.example.android.SocketHandler
 import com.example.android.canvas.*
-import com.example.android.chat.ServerMessage
-import com.example.android.chat.UserMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import com.example.android.delete
+import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.activity_login_screen.*
-import kotlinx.android.synthetic.main.dessin.*
 import kotlinx.android.synthetic.main.draw.view.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Response
 
 class Gallery :  Fragment() {
@@ -53,8 +43,7 @@ class Gallery :  Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
-        val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        val linearLayoutManager = GridLayoutManager(context, 3)
         gallery_drawings?.layoutManager = linearLayoutManager
         buildGallery()
     }
@@ -107,8 +96,15 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        println(information!!.name)
-        if(ClientInfo.userId == information!!.ownerId){
+        var canModify = false
+        for(entry in ClientInfo.possibleOwners){
+            val value = entry.value
+            if(value.first == information!!.ownerId){
+                canModify = true
+                break
+            }
+        }
+        if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
             viewHolder.itemView.modify.setOnClickListener {
@@ -117,7 +113,7 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
 
             viewHolder.itemView.delete.setOnClickListener{
                 var response: Response<ResponseBody>?= null
-                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, ClientInfo.userId)
+                val deleteDrawingDto = DeleteDrawingDt(information!!.id!!, information!!.ownerId!!)
                 runBlocking {
                     async {
                         launch {
@@ -131,6 +127,13 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                             Toast.LENGTH_SHORT).show()
                     }
                 }
+                else{
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, error.message,
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         }
@@ -138,6 +141,32 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.modify.isVisible= false
             viewHolder.itemView.delete.isVisible= false
         }
+
+        var authorName = ""
+        var foundInUsers = false
+        for(user in ClientInfo.usersList.userList){
+            if(user.id == information!!.ownerId){
+                authorName = user.pseudo!!
+                foundInUsers = true
+                break
+            }
+        }
+        if(!foundInUsers){
+            for(team in ClientInfo.teamsList.teamList){
+                if(team.id == information!!.ownerId){
+                    authorName = team.name!!
+                    break
+                }
+            }
+        }
+
+        viewHolder.itemView.drawingsAuthorName.text = authorName
+        println(authorName)
+        viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()
+        viewHolder.itemView.creationDate.text = information!!.creationDate
+
+        println("nombre de collaborateurs ${information!!.nbCollaborators}")
+        println("date de cr/ation du dessin ${information!!.creationDate}")
         viewHolder.itemView.name.text = information!!.name
         val canvas = GalleryCanvasView(information!!.width!!, information!!.height!!,information!!.id!!, fragment.requireContext())
         canvas.parseExistingDrawings(information!!.contents)
@@ -150,18 +179,30 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         viewHolder.itemView.fl_drawing_view_gallery.setLayoutParams(params)
         viewHolder.itemView.fl_drawing_view_gallery.addView(canvas)
         viewHolder.itemView.fl_drawing_view_gallery.setOnClickListener {
+            var i = 0
             if(information!!.visibility != Visibility.protectedVisibility.int){
                 val drawingID = information!!.id!!
                 val joinRequest = JoinDrawingDto(drawingID,
                     ClientInfo.userId)
 
                 SocketHandler.getChatSocket().emit("joinDrawing", joinRequest.toJson())
-                var i = 0
                 SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                     if(args[0]!=null && i==0){
                         val data = args[0] as String
-                        fragment.startDrawingActivity(data, drawingID)
+                        fragment.requireActivity().runOnUiThread{
+                            fragment.startDrawingActivity(data, drawingID)
+                        }
                         i++
+                    }
+                }
+                SocketHandler.getChatSocket().on("cantJoinDrawing"){ args ->
+                    if(args[0]!= null){
+                        val data = args[0] as String
+                        val cantJoin = CantJoin().fromJson(data)
+                        fragment.requireActivity().runOnUiThread{
+                            Toast.makeText(fragment.context, cantJoin.message,
+                                Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

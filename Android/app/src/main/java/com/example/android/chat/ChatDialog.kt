@@ -1,44 +1,50 @@
 package com.example.android.chat
 
-import android.app.Dialog
-import android.content.Context
-import android.graphics.Canvas
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
-import android.text.TextPaint
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Lifecycle
 import com.example.android.R
 import com.example.android.SocketHandler
-import kotlinx.android.synthetic.main.sample_chat_dialog.*
+import com.example.android.client.ClientInfo
 
 
 class ChatDialog(var content: AppCompatActivity, var room: String = "General") : DialogFragment(), ChatRoomSwitcher {
 
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
+    val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null
+    init{
+        val exist = ChatRooms.chatRooNames.contains(room)
+        if(!exist){
+            ChatRooms.chatRooNames.add(room)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        createChannel(
+            getString(R.string.color_image_notification_id),
+            room
+        )
         return inflater.inflate(R.layout.sample_chat_dialog, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val exist = ChatRooms.chatRooNames.contains(room)
-        if(!exist){
-            ChatRooms.chatRooNames.add(room)
-        }
         val manager = childFragmentManager
         val chatSwitchFragmentTransaction = manager.beginTransaction()
         val chatSwitchFragment = ChatSwitchFragment(this)
@@ -61,33 +67,50 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         chatFragmentTransaction!!.replace(R.id.chatsFrame,
             chatRoomsFragmentMap[room]!!).commit()
 
+    }
 
+    private fun createChannel(channelId: String, channelName: String) {
+        // TODO: Step 1.6 START create a channel
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Time for breakfast"
+            val notificationManager = requireActivity().getSystemService(
+                NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        // TODO: Step 1.6 END create a channel
 
-        SocketHandler.getChatSocket().on("msgToClient"){ args ->
-            if(args[0] != null){
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                val roomName = messageFromServer.roomName
-                val arrayListOfMessages = ChatRooms.chats[roomName]
-                var messageAlreadyExists = false
-                if (arrayListOfMessages != null) {
-                    for(message in arrayListOfMessages){
-                        if(message.from == messageFromServer.from &&
-                            message.date == messageFromServer.date){
-                            messageAlreadyExists = true
-                        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        if(content.lifecycle.currentState == Lifecycle.State.RESUMED ||
+            content.lifecycle.currentState == Lifecycle.State.CREATED
+        ){
+            SocketHandler.getChatSocket().on("msgToClient"){ args ->
+                if(args[0] != null) {
+                    val data = args[0] as String
+                    val messageFromServer = ClientMessage().fromJson(data)
+                    if(messageFromServer.from != ClientInfo.username){
+                        val notificationManager = ContextCompat.getSystemService(
+                            content,
+                            NotificationManager::class.java
+                        ) as NotificationManager
+                        notificationManager.sendNotification(
+                            "${messageFromServer.from} a envoyé " +
+                                "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
+                            content
+                        )
                     }
                 }
-                if(!messageAlreadyExists){
-                    ChatRooms.chats[roomName]!!.add(messageFromServer)
-                }
-                try{
-                    chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
-                }
-                catch(e: Exception){}
+
             }
         }
-
+        super.onDismiss(dialog)
     }
 
     companion object {

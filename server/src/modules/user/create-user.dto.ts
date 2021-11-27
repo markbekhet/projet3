@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, Length, Matches } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class CreateUserDto
 {
@@ -13,12 +13,15 @@ export class CreateUserDto
     @IsNotEmpty({message: `Le nom d'utilisateur ne peut pas etre vide`})
     pseudo: string;
 
-    @IsEmail()
+    @IsEmail({},{message: `Le courriel doit être valide`})
     emailAddress: string;
 
     @IsNotEmpty({message:"Le mot de passe ne peut pas etre vide et il doit avoir une longueur minimal de 8 caractère"})
     @Length(8)
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: `Le mot de passe est faible, un mot de passe doit avoir au moins un nombre, une lettre majuscule, une lettre miniscule et un caractère spéciale`})
     password: string;
+
+    @IsOptional()
+    avatar: string;
 
 }

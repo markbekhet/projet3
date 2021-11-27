@@ -15,6 +15,7 @@ import {
 } from '@models/UserMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+//import { ChatRoomService } from '../chat-room/chat-room.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -88,6 +89,7 @@ export class SocketService {
     this.socket!.on('msgToClient', (messageString: any) => {
       const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
+      //this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
     });
 
@@ -114,6 +116,9 @@ export class SocketService {
     }
     if (updates.newPassword) {
       this.profile$.value.password = updates.newPassword;
+    }
+    if (updates.newAvatar) {
+      this.profile$.value.avatar = updates.newAvatar;
     }
     this.profile$.next(this.profile$.value);
   }
