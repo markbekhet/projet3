@@ -39,7 +39,7 @@ class Chat(var name:String) : Fragment() {
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         messageListView?.layoutManager = linearLayoutManager
 
-        showMessages()
+//        showMessages()
         textField.doAfterTextChanged {
             if(textField.text.isNotEmpty() && textField.text.isNotBlank()){
                 button.isEnabled = true
@@ -79,27 +79,27 @@ class Chat(var name:String) : Fragment() {
     }
     fun setMessage(messages: ArrayList<ClientMessage>){
         serverMessagesArray = messages
-        showMessages()
+//        showMessages()
     }
-    fun showMessages(){
-        messageDisplay = GroupAdapter<GroupieViewHolder>()
-        for(serverMessage in serverMessagesArray){
-            val userMessage = UserMessage()
-            serverMessage.message?.let { serverMessage.from?.let { it1 ->
-                userMessage.set(it,
-                    it1, serverMessage.date.toString())
-            } }
-            messageDisplay?.add(userMessage)
-        }
-        try{
-            requireActivity().runOnUiThread {
-                messageListView?.adapter = messageDisplay
-                messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
-            }
-        }catch(e: Exception){
-            println("cannot show the information right now")
-        }
-    }
+//    fun showMessages(){
+//        messageDisplay = GroupAdapter<GroupieViewHolder>()
+//        for(serverMessage in serverMessagesArray){
+//            val userMessage = UserMessage()
+//            serverMessage.message?.let { serverMessage.from?.let { it1 ->
+//                userMessage.set(it,
+//                    it1, serverMessage.date.toString())
+//            } }
+//            messageDisplay?.add(userMessage)
+//        }
+//        try{
+//            requireActivity().runOnUiThread {
+//                messageListView?.adapter = messageDisplay
+//                messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
+//            }
+//        }catch(e: Exception){
+//            println("cannot show the information right now")
+//        }
+//    }
 
 }
 class UserMessage : Item<GroupieViewHolder>() {

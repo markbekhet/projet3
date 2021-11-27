@@ -23,7 +23,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class ModifyDrawingParams : AppCompatActivity(){
+class modModifyDrawingParams : AppCompatActivity(){
 
     private val chatRoomsFragmentMap = HashMap<String, Chat>()
     private var chatFragmentTransaction: FragmentTransaction? = null

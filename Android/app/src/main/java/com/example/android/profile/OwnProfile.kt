@@ -2,11 +2,10 @@ package com.example.android.profile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
+import android.app.PendingIntent.getActivity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
@@ -14,6 +13,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.example.android.R
@@ -25,10 +26,13 @@ import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.json.JSON.Companion.context
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
+import androidx.core.content.ContextCompat.startActivity
+
+
+
 
 
 //val clientService = ClientService()
@@ -61,6 +65,7 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
+        val avatar : ImageView = findViewById(R.id.avatarOwner)
 
 
         val chatDialog= ChatDialog(this)
@@ -109,6 +114,10 @@ class OwnProfile : AppCompatActivity() {
         lastNameValue.text = userInformation.lastName
         nicknameValue.text = userInformation.pseudo
         firstNameValue.text = userInformation.firstName
+        val decodedString: ByteArray = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        Glide.with(this).load(decodedByte).fitCenter().into(avatarOwner);
+        avatarClientInfo.avatarClient = userInformation!!.avatar!!.toInt()
     }
 }
 
@@ -125,9 +134,17 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
         val confirmNewPassword: EditText = findViewById(R.id.confirmNewPassword)
         val newNickname: EditText = findViewById(R.id.newNickname)
         val passwordErrors: TextView = findViewById(R.id.passwordErrors)
+        val newAvatar : ImageView = findViewById(R.id.avatarOwnerModify)
 
+        Glide.with(this.context).load(avatarClientInfo.avatarClient).fitCenter().into(newAvatar);
         val clientService = ClientService()
 
+        gallery.setOnClickListener() {
+
+            val intent = Intent (this.context, GalleryAvatar::class.java)
+            this.context.startActivity(intent)
+
+        }
         newPassword.doAfterTextChanged {
             passwordErrors.text = ""
 
@@ -228,7 +245,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             var modification = ProfileModification()
 
             if(newNickname.text.isNotEmpty()){
-                modification.newPseudo = newNickname.text.toString()
+                modification.avatar = avatarClientInfo.avatarClient.toString()
             }
             if(newPassword.text.isNotEmpty()){
                 passwordErrors.text = ""
@@ -253,11 +270,13 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                     canProcessQuery = false
                 }
                 if(canProcessQuery){
+                    modification.avatar = avatarClientInfo.avatarClient.toString()
                     modification.newPassword = newPassword.text.toString()
                     modification.oldPassword = oldPassword.text.toString()
                 }
             }
             if(canProcessQuery){
+                modification.avatar = avatarClientInfo.avatarClient.toString()
                 var response: Response<ResponseBody>? = null
                 runBlocking {
                     launch{
