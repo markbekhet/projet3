@@ -17,8 +17,15 @@ import java.util.concurrent.Executors
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import com.example.android.client.AvatarClientInfo
+import com.example.android.client.ClientService
+import com.example.android.client.ProfileModification
 import kotlinx.android.synthetic.main.activity_camera.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.ByteBuffer
@@ -32,10 +39,13 @@ class CameraActivity : AppCompatActivity() {
 
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
+    private var request: String?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+
+        request = intent.extras!!.getString("request")
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -94,7 +104,31 @@ class CameraActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
                     //request to be added latter
-                    finish()
+                    if(request!= null){
+                        val modification = ProfileModification()
+                        val clientService = ClientService()
+                        modification.newAvatar = AvatarClientInfo.avatarClientString
+                        var response: Response<ResponseBody>?= null
+                        runBlocking {
+                            async{
+                                launch{
+                                    response = clientService.modifyProfile(modification)
+                                }
+                            }
+                        }
+                        if(response!!.isSuccessful){
+                            finish()
+                        }
+                        else{
+                            runOnUiThread{
+                                Toast.makeText(baseContext, "L'avatar ne peut pas se mettre à jour",
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                    else{
+                        finish()
+                    }
                 }
             }
         )

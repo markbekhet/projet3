@@ -2,19 +2,14 @@ package com.example.android.profile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.app.PendingIntent.getActivity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.example.android.R
@@ -24,36 +19,11 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
-import kotlinx.android.synthetic.main.activity_vistor_profile_view.*
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
 import okhttp3.ResponseBody
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
-import androidx.core.content.ContextCompat.startActivity
-
-
-
-
-
-//val clientService = ClientService()
-
-/*fun getProfile(){
-    var response: Response<ResponseBody>?= null
-    runBlocking {
-        async{
-            launch {
-                response = clientService.getUserProfileInformation(ClientInfo.userId)
-            }
-        }
-
-    }
-    if(response!!.isSuccessful){
-        val data = response?.body()!!.string()
-        ClientInfo.userProfile = UserProfileInformation().fromJson(data)
-    }
-}*/
 
 class OwnProfile : AppCompatActivity() {
 
@@ -63,11 +33,6 @@ class OwnProfile : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
         val data = intent.extras?.getString("profileInformation")
-        val email: TextView = findViewById(R.id.emailValue)
-        val lastName: TextView = findViewById(R.id.lastNameValue)
-        val firstName: TextView = findViewById(R.id.firstNameValue)
-        val nickname: TextView = findViewById(R.id.nicknameValue)
-
 
         val chatDialog= ChatDialog(this)
         showChatOwnerProfile.setOnClickListener {
@@ -105,7 +70,7 @@ class OwnProfile : AppCompatActivity() {
             }
 
         }
-        gallery.setOnClickListener() {
+        gallery.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("request", "true")
             val intent = Intent (this, GalleryAvatar::class.java)
@@ -113,10 +78,13 @@ class OwnProfile : AppCompatActivity() {
             startActivity(intent)
         }
 
-        //Nous allons avoir besoin de mettre a jour les
-        //informations de l'utilisateur suite à la fermeture de la modale
-
-
+        camera.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("request", "true")
+            val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }
 
         val viewHistory: Button = findViewById(R.id.viewHistory)
 
