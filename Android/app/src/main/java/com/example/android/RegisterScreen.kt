@@ -43,8 +43,10 @@ import android.content.res.Resources
 import android.util.Base64
 import java.io.ByteArrayOutputStream
 import android.R.attr.data
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.SystemClock.sleep
+import android.util.Log
 import com.example.android.client.*
 import com.example.android.profile.CameraActivity
 import nl.dionsegijn.konfetti.models.Shape
@@ -116,9 +118,15 @@ class RegisterScreen : AppCompatActivity() {
 
 
         gallery.setOnClickListener() {
-
-                pickImageFromGallery();
-
+            val gallery = GalleryAvatar(this, false)
+            gallery.show()
+            gallery.setOnDismissListener {
+                val decodedModifiedString = Base64.decode(
+                    AvatarClientInfo.avatarClientString, Base64.DEFAULT)
+                val decodedModifiedByte = BitmapFactory.decodeByteArray(
+                    decodedModifiedString,0, decodedModifiedString.size)
+                Glide.with(this).load(decodedModifiedByte).fitCenter().into(img_save)
+            }
         }
         camera.setOnClickListener() {
             startActivity(Intent(this, CameraActivity::class.java))
@@ -348,7 +356,7 @@ class RegisterScreen : AppCompatActivity() {
     override fun onRestart(){
         val decodedString = Base64.decode(AvatarClientInfo.avatarClientString, Base64.DEFAULT)
         val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-        Glide.with(this).load(decodedByte).fitCenter().into(img_save);
+        Glide.with(this).load(decodedByte).fitCenter().into(img_save)
         super.onRestart()
     }
 

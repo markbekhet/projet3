@@ -35,9 +35,6 @@
             android:name=".profile.CameraActivity"
             android:exported="true" />
         <activity
-            android:name=".profile.GalleryAvatar"
-            android:exported="true" />
-        <activity
             android:name=".JoinProtected"
             android:exported="true" />
         <activity

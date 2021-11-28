@@ -71,11 +71,21 @@ class OwnProfile : AppCompatActivity() {
 
         }
         gallery.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("request", "true")
-            val intent = Intent (this, GalleryAvatar::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            val gallery = GalleryAvatar(this, true)
+            gallery.show()
+            gallery.setOnDismissListener {
+                val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+                SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("profileToClient"){ args ->
+                    if(args[0]!=null && i==0){
+                        val dataAfterUpdate = args[0] as String
+                        val userInformation = UserProfileInformation().fromJson(dataAfterUpdate)
+                        updateUI(userInformation)
+                        i++
+                    }
+                }
+            }
         }
 
         camera.setOnClickListener {
@@ -149,8 +159,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(confirmNewPassword.text.isEmpty()) {
@@ -164,8 +174,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -175,8 +185,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(newPassword.text.isEmpty()) {
@@ -189,8 +199,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -200,8 +210,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(newPassword.text.isEmpty()) {
@@ -215,15 +225,15 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
         newNickname.doAfterTextChanged {
             if(newNickname.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
 
@@ -231,8 +241,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -240,7 +250,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
         okButton.setOnClickListener {
             //The request to update the information will be sent before hiding the pop up
             var canProcessQuery = true
-            var modification = ProfileModification()
+            val modification = ProfileModification()
 
             if(newNickname.text.isNotEmpty()){
                 modification.newPseudo = newNickname.text.toString()
@@ -309,10 +319,4 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
 
         setCanceledOnTouchOutside(true)
     }
-
-    fun isPasswordEqual(newPass: String, confirmPass: String): Boolean {
-        return newPass == confirmPass
-
-    }
-
 }

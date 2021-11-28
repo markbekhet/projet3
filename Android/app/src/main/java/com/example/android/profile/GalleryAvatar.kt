@@ -1,14 +1,21 @@
 package com.example.android.profile
 
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,22 +37,18 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
-class GalleryAvatar : AppCompatActivity() {
+class GalleryAvatar(var content: AppCompatActivity, var request: Boolean) : Dialog(content) {
     private var galleryDisplay : GroupAdapter<GroupieViewHolder>?= null
-    var bundleValue: String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.galleryavatar)
-        bundleValue = intent.extras!!.getString("request")
+        displayAvatarGallery?.layoutManager = GridLayoutManager(content, 3)
 
-        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        linearLayoutManager.stackFromEnd = true
-        val displayGallery : RecyclerView? = findViewById<RecyclerView>(R.id.displayviewgallery)
-//        var image : ImageView? = findViewById<ImageView>()
-        displayGallery?.layoutManager = linearLayoutManager
-
-        val gallery_image = arrayOf(R.drawable.avataaars,R.drawable.avataaars1,R.drawable.avataaars3,R.drawable.avataaars4,R.drawable.avataaars4,R.drawable.avataaars5,
-            R.drawable.avataaars6,R.drawable.avataaars7,R.drawable.avataaars8,R.drawable.avataaars9);
+        val gallery_image = arrayOf(R.drawable.avataaars,
+            R.drawable.avataaars1,R.drawable.avataaars3,
+            R.drawable.avataaars4,R.drawable.avataaars5,
+            R.drawable.avataaars6,R.drawable.avataaars7,
+            R.drawable.avataaars8,R.drawable.avataaars9);
         print(gallery_image)
         fun setAvatarGallery(){
             galleryDisplay = GroupAdapter<GroupieViewHolder>()
@@ -55,15 +58,16 @@ class GalleryAvatar : AppCompatActivity() {
                 galleryDisplay?.add(avatar)
             }
 
-            displayGallery?.adapter = galleryDisplay
+            displayAvatarGallery?.adapter = galleryDisplay
 
         }
         setAvatarGallery()
     }
+
     fun close(){
         //include necessary logic in case of profile
         AvatarClientInfo.avatarClientString = createImageStringFromBitmap()
-        if(bundleValue!= null){
+        if(request){
             val modification = ProfileModification()
             val clientService = ClientService()
             modification.newAvatar = AvatarClientInfo.avatarClientString
@@ -76,23 +80,23 @@ class GalleryAvatar : AppCompatActivity() {
                 }
             }
             if(response!!.isSuccessful){
-                finish()
+                dismiss()
             }
             else{
-                runOnUiThread{
-                    Toast.makeText(this, "L'avatar ne peut pas se mettre à jour",
+                content.runOnUiThread{
+                    Toast.makeText(context, "L'avatar ne peut pas se mettre à jour",
                         Toast.LENGTH_SHORT).show()
                 }
             }
         }
         else{
-            finish()
+            dismiss()
         }
     }
 
     fun createImageStringFromBitmap(): String {
 
-        val bitmap: Bitmap = BitmapFactory.decodeResource(resources, AvatarClientInfo.avatarClient!!)
+        val bitmap: Bitmap = BitmapFactory.decodeResource(content.resources, AvatarClientInfo.avatarClient!!)
 
         val resized = Bitmap.createScaledBitmap(
             bitmap, (300).toInt(),
