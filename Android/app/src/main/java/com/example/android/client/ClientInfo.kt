@@ -17,8 +17,9 @@ object ClientInfo {
     var possibleOwners = HashMap<Int, Pair<String,String>>()
 }
 
-object avatarClientInfo{
+object AvatarClientInfo{
     var avatarClient : Int = R.drawable.avatar
+    var avatarClientString: String?=null
 }
 class User(val id: String? = null,
            val status: Int?= null,

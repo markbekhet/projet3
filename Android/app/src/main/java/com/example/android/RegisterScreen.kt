@@ -14,9 +14,6 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
-import com.example.android.client.ClientInfo
-import com.example.android.client.ClientService
-import com.example.android.client.UserRegistrationInfo
 import kotlinx.android.synthetic.main.activity_register_screen.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -39,7 +36,6 @@ import android.R.attr.data
 import android.annotation.SuppressLint
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
-import com.example.android.client.avatarClientInfo
 import android.graphics.BitmapFactory
 
 import android.R.attr.data
@@ -49,6 +45,8 @@ import java.io.ByteArrayOutputStream
 import android.R.attr.data
 import android.graphics.Color
 import android.os.SystemClock.sleep
+import com.example.android.client.*
+import com.example.android.profile.CameraActivity
 import nl.dionsegijn.konfetti.models.Shape
 import nl.dionsegijn.konfetti.models.Size
 import okhttp3.internal.wait
@@ -75,21 +73,12 @@ class RegisterScreen : AppCompatActivity() {
         val REQUEST_IMAGE_CAPTURE = 1
         val r: Resources = this.resources
 
-//        var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK ) {
-//                // There are no request codes
-//                val data: Intent? = result.data
-//                val imageBitmap = data!!.extras!!.get("data") as Bitmap
-//                img_save.setImageBitmap(imageBitmap)
-//            }
-//        }
-
-        val encodedImage :String= createImageStringFromBitmap()
-        val decodedString = Base64.decode(encodedImage, Base64.DEFAULT)
+        AvatarClientInfo.avatarClientString = createImageStringFromBitmap()
+        val decodedString = Base64.decode(AvatarClientInfo.avatarClientString, Base64.DEFAULT)
         val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
         Glide.with(this).load(decodedByte).fitCenter().into(img_save);
 
-        println(avatarClientInfo.avatarClient)
+        println(AvatarClientInfo.avatarClient)
 //            img_save.apply {if(avatarClientInfo.avatarSelection) {
 //                Glide.with(this)
 //                    .load(avatarClientInfo.avatarClient)
@@ -132,14 +121,7 @@ class RegisterScreen : AppCompatActivity() {
 
         }
         camera.setOnClickListener() {
-
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            try {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                finish()
-            } catch (e: ActivityNotFoundException) {
-                // display error state to the user
-            }
+            startActivity(Intent(this, CameraActivity::class.java))
 
         }
 
@@ -203,7 +185,8 @@ class RegisterScreen : AppCompatActivity() {
             val user = UserRegistrationInfo(
                 firstName.text.toString(),
                 lastName.text.toString(), pseudo.text.toString(),
-                email.text.toString(), password.text.toString(),avatar = encodedImage)
+                email.text.toString(), password.text.toString(),
+                avatar = AvatarClientInfo.avatarClientString)
 
             var response: Response<ResponseBody>? = null
             var canProcessQuery = true
@@ -321,9 +304,9 @@ class RegisterScreen : AppCompatActivity() {
         }
     }
 
-    fun createImageStringFromBitmap(): String {
+    private fun createImageStringFromBitmap(): String {
 
-        val bitmap:Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
+        val bitmap:Bitmap = BitmapFactory.decodeResource(resources, AvatarClientInfo!!.avatarClient!!)
 
         val resized = Bitmap.createScaledBitmap(
             bitmap, (300).toInt(),
@@ -363,8 +346,7 @@ class RegisterScreen : AppCompatActivity() {
     }
 
     override fun onRestart(){
-        val encodedImage :String= createImageStringFromBitmap()
-        val decodedString = Base64.decode(encodedImage, Base64.DEFAULT)
+        val decodedString = Base64.decode(AvatarClientInfo.avatarClientString, Base64.DEFAULT)
         val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
         Glide.with(this).load(decodedByte).fitCenter().into(img_save);
         super.onRestart()

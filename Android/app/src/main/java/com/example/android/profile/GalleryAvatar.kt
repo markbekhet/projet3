@@ -16,7 +16,7 @@ import com.example.android.R
 import com.example.android.RegisterScreen
 import com.example.android.client.ClientService
 import com.example.android.client.ProfileModification
-import com.example.android.client.avatarClientInfo
+import com.example.android.client.AvatarClientInfo
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -62,11 +62,11 @@ class GalleryAvatar : AppCompatActivity() {
     }
     fun close(){
         //include necessary logic in case of profile
+        AvatarClientInfo.avatarClientString = createImageStringFromBitmap()
         if(bundleValue!= null){
             val modification = ProfileModification()
-            val avatarString = createImageStringFromBitmap()
             val clientService = ClientService()
-            modification.newAvatar = avatarString
+            modification.newAvatar = AvatarClientInfo.avatarClientString
             var response: Response<ResponseBody>?= null
             runBlocking {
                 async{
@@ -92,7 +92,7 @@ class GalleryAvatar : AppCompatActivity() {
 
     fun createImageStringFromBitmap(): String {
 
-        val bitmap: Bitmap = BitmapFactory.decodeResource(resources, avatarClientInfo!!.avatarClient!!)
+        val bitmap: Bitmap = BitmapFactory.decodeResource(resources, AvatarClientInfo.avatarClient!!)
 
         val resized = Bitmap.createScaledBitmap(
             bitmap, (300).toInt(),
@@ -125,7 +125,7 @@ class AvatarItem(val context: GalleryAvatar,val image: Int) : Item<GroupieViewHo
 
         }
         viewHolder.itemView.avatarImage.setOnClickListener(){
-            avatarClientInfo.avatarClient = image
+            AvatarClientInfo.avatarClient = image
             print(viewHolder.itemView.avatarImage)
             print("ok")
             context.close()

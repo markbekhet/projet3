@@ -3,14 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.android">
 
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-feature android:name="android.hardware.camera"
 
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -27,8 +32,11 @@
         android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".profile.CameraActivity"
+            android:exported="true" />
+        <activity
             android:name=".profile.GalleryAvatar"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".JoinProtected"
             android:exported="true" />
@@ -50,8 +58,8 @@
             android:name=".LandingPage"
             android:exported="true"
             android:label="@string/title_activity_landing_page"
-            android:theme="@style/Theme.Android.NoActionBar"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Android.NoActionBar" />
         <activity
             android:name=".profile.HistoryAndStatistics"
             android:exported="true" />
