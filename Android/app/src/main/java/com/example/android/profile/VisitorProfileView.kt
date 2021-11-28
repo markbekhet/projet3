@@ -26,6 +26,10 @@ class VisitorProfileView : AppCompatActivity() {
         nicknameForeignValue.text = dataForm.pseudo
         foreignStatusValue.text = clientStatusFroInt(dataForm.status!!).string
 
+        val decodedString: ByteArray = Base64.decode(dataForm.avatar, Base64.DEFAULT)
+        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        Glide.with(this).load(decodedByte).fitCenter().into(avatarVisitor)
+
         val chatDialog = ChatDialog(this)
         showChatVisitorProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
