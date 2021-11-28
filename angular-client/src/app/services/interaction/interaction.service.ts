@@ -1,8 +1,9 @@
 import { ElementRef, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { DrawingContent } from '@models/DrawingMeta';
 import { ToolsAttributes } from '@services/drawing-tools/tools-attributes';
 import { CanvasDetails } from '@src/app/models/drawing-informations';
+import { ActiveUser } from '@src/app/models/active-user';
 
 // this service can be used to communicate tool selection between components and color change to the tools.
 // It will be used to test the tools without connecting to socket so we can immulate the server but with one client.
@@ -10,49 +11,49 @@ import { CanvasDetails } from '@src/app/models/drawing-informations';
   providedIn: 'root',
 })
 export class InteractionService {
-  drawing: Subject<DrawingContent> = new Subject<DrawingContent>();
-  $drawing: Observable<DrawingContent> = this.drawing.asObservable();
+  drawing = new Subject<DrawingContent>();
+  $drawing = this.drawing.asObservable();
 
-  ref: Subject<ElementRef> = new Subject<ElementRef>();
-  $refObs: Observable<ElementRef> = this.ref.asObservable();
+  ref = new Subject<ElementRef>();
+  $refObs = this.ref.asObservable();
 
-  selectedTool: Subject<string> = new Subject<string>();
-  $selectedTool: Observable<string> = this.selectedTool.asObservable();
+  selectedTool = new Subject<string>();
+  $selectedTool = this.selectedTool.asObservable();
 
-  toolsAttributes: Subject<ToolsAttributes> = new Subject<ToolsAttributes>();
-  $toolsAttributes: Observable<ToolsAttributes> =
-    this.toolsAttributes.asObservable();
+  toolsAttributes = new Subject<ToolsAttributes>();
+  $toolsAttributes = this.toolsAttributes.asObservable();
 
-  deleteDrawing: Subject<boolean> = new Subject<boolean>();
-  $deleteDrawing: Observable<boolean> = this.deleteDrawing.asObservable();
+  deleteDrawing = new Subject<boolean>();
+  $deleteDrawing = this.deleteDrawing.asObservable();
 
-  updateToolSignal: Subject<boolean> = new Subject<boolean>();
-  $updateToolSignal: Observable<boolean> = this.updateToolSignal.asObservable();
+  updateToolSignal = new Subject<boolean>();
+  $updateToolSignal = this.updateToolSignal.asObservable();
 
-  updateColorSignal: Subject<boolean> = new Subject<boolean>();
-  $updateColorSignal: Observable<boolean> =
-    this.updateColorSignal.asObservable();
+  updateColorSignal = new Subject<boolean>();
+  $updateColorSignal = this.updateColorSignal.asObservable();
 
-  chatRoomName: Subject<string> = new Subject<string>();
-  $chatRoomName: Observable<string> = this.chatRoomName.asObservable();
+  chatRoomName = new Subject<string>();
+  $chatRoomName = this.chatRoomName.asObservable();
 
-  generalRoomNameSignal: Subject<boolean> = new Subject<boolean>();
-  $generalRoomNameSignal: Observable<boolean> =
-    this.generalRoomNameSignal.asObservable();
+  generalRoomNameSignal = new Subject<boolean>();
+  $generalRoomNameSignal = this.generalRoomNameSignal.asObservable();
 
   drawingInformations = new BehaviorSubject<CanvasDetails>({});
   // $drawingInformations = this.drawingInformations.asObservable()
 
-  wipeDrawing: Subject<boolean> = new Subject<boolean>();
-  $wipeDrawing: Observable<boolean> = this.wipeDrawing.asObservable();
+  currentDrawingActiveUsers = new BehaviorSubject<ActiveUser[]>([]);
 
-  leaveDrawingSignal: Subject<boolean> = new Subject<boolean>();
-  $leaveDrawingSignal: Observable<boolean> =
-    this.leaveDrawingSignal.asObservable();
+  wipeDrawing = new Subject<boolean>();
+  $wipeDrawing = this.wipeDrawing.asObservable();
 
-  updateChatListSignal: Subject<boolean> = new Subject<boolean>();
-  $updateChatListSignal: Observable<boolean> =
-    this.updateChatListSignal.asObservable();
+  leaveDrawingSignal = new Subject<boolean>();
+  $leaveDrawingSignal = this.leaveDrawingSignal.asObservable();
+
+  updateChatListSignal = new Subject<boolean>();
+  $updateChatListSignal = this.updateChatListSignal.asObservable();
+
+  updateGallerySignal = new Subject<boolean>();
+  $updateGallerySignal = this.updateGallerySignal.asObservable();
 
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
@@ -94,9 +95,9 @@ export class InteractionService {
     this.wipeDrawing.next(true);
   }
 
-  /* emitDrawingInformations(drawingInformations: DrawingInformations){
-    this.drawingInformations.next(drawingInformations)
-  } */
+  emitUpdateGallerySignal() {
+    this.updateGallerySignal.next(true);
+  }
 
   emitLeaveDrawingSignal() {
     this.leaveDrawingSignal.next(true);

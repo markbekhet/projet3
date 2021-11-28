@@ -28,7 +28,10 @@ import { AuthService } from '@services/authentication/auth.service';
 import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { ActiveUser } from '@src/app/models/active-user';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
+import { ChatHistory } from '@src/app/models/MessageMeta';
+import { TeamInformations } from '@src/app/models/teamsMeta';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { TeamService } from '@src/app/services/team/team.service';
@@ -44,6 +47,8 @@ import { ModifyDrawingComponent } from './modify-drawing/modify-drawing.componen
 export class GalleryComponent implements OnInit, AfterViewInit {
   shownDrawings: DrawingShownInGallery[] = [];
 
+  teamIds: string[];
+
   constructor(
     private authService: AuthService,
     private bottomSheetService: MatBottomSheet,
@@ -56,7 +61,14 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private teamService: TeamService,
     private errorDialog: MatDialog,
     private chatRoomService: ChatRoomService
-  ) {}
+  ) {
+    this.teamIds = [];
+    this.teamService.activeTeams.value.forEach((team) => {
+      this.teamIds.push(team.id!);
+      // TODO:
+      this.socketService.getTeamGallery({ teamName: team.name! });
+    });
+  }
 
   getAuthenticatedUserID(): string {
     return this.authService.getUserToken();
@@ -67,13 +79,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       return true;
     }
 
-    let teamFound = false;
-    this.teamService.activeTeams.value.forEach((team) => {
-      if (team.id! === ownerId) {
-        teamFound = true;
-      }
-    });
-    if (teamFound) {
+    if (this.teamIds.includes(ownerId)) {
       return true;
     }
 
@@ -84,11 +90,34 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     // sortDrawings();
   }
 
+  // prevent code duplication
+  createShownGalleryDrawing(drawingInfos: DrawingInfosForGallery) {
+    const svg = this.createSVG(
+      drawingInfos.contents,
+      drawingInfos.width,
+      drawingInfos.height,
+      drawingInfos.bgColor
+    );
+    this.shownDrawings.push({
+      infos: drawingInfos,
+      thumbnail: svg,
+    });
+  }
+
+  createShownGalleryDrawingsFromArray(drawings: DrawingInfosForGallery[]) {
+    drawings.forEach((drawing: DrawingInfosForGallery) => {
+      this.createShownGalleryDrawing(drawing);
+    });
+  }
+
   ngAfterViewInit(): void {
     // to receive the drawing informations after join
     this.socketService
       .getDrawingInformations()
       .subscribe((drawingInformations: DrawingInformations) => {
+        this.drawingService.drawingName$.next(
+          drawingInformations.drawing.name!
+        );
         this.chatRoomService.addChatRoom(
           drawingInformations.drawing.name!,
           drawingInformations.chatHistoryList
@@ -96,28 +125,45 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         this.interactionService.drawingInformations.next(
           drawingInformations.drawing
         );
+        this.interactionService.currentDrawingActiveUsers.next(
+          drawingInformations.activeUsers
+        );
         this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
         this.router.navigate(['/draw']);
       });
 
+    this.socketService.socket!.on('teamInformations', (data: any) => {
+      const teamInformations: {
+        chatHistoryList: ChatHistory[];
+        drawingList: DrawingInfosForGallery[];
+        activeUsers: ActiveUser[];
+      } = JSON.parse(data);
+      const requestedTeam = this.teamService.requestedTeamToJoin.value;
+      const newJoinedTeam: TeamInformations = {
+        id: requestedTeam.id,
+        name: requestedTeam.name,
+        visibility: requestedTeam.visibility,
+        ownerId: requestedTeam.ownerId,
+        bio: requestedTeam.bio,
+        gallery: teamInformations.drawingList,
+        activeUsers: teamInformations.activeUsers,
+      };
+      this.teamService.activeTeams.value.set(requestedTeam.name, newJoinedTeam);
+      this.chatRoomService.addChatRoom(
+        requestedTeam.name!,
+        teamInformations.chatHistoryList
+      );
+      this.interactionService.emitUpdateChatListSignal();
+      this.teamIds.push(requestedTeam.id!);
+      this.createShownGalleryDrawingsFromArray(teamInformations.drawingList);
+    });
+
     // Getting user gallery
     this.authService
       .getPersonalGallery()
       .subscribe((data: { drawingList: DrawingInfosForGallery[] }) => {
-        data.drawingList.forEach((value: DrawingInfosForGallery) => {
-          const svg = this.createSVG(
-            value.contents,
-            value.width,
-            value.height,
-            value.bgColor
-          );
-          this.shownDrawings.push({
-            infos: value,
-            thumbnail: svg,
-          });
-        });
-
+        this.createShownGalleryDrawingsFromArray(data.drawingList);
         console.log(
           'TURBO 🚀 - GalleryComponent - this.shownDrawings',
           this.shownDrawings
@@ -171,18 +217,9 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       if (
         drawing.visibility !== DrawingVisibilityLevel.PRIVATE ||
         (drawing.visibility === DrawingVisibilityLevel.PRIVATE &&
-          drawing.ownerId! === this.getAuthenticatedUserID())
+          this.isAuthorized(drawing.ownerId!))
       ) {
-        const svg = this.createSVG(
-          drawing.contents,
-          drawing.width,
-          drawing.height,
-          drawing.bgColor
-        );
-        this.shownDrawings.push({
-          infos: drawing,
-          thumbnail: svg,
-        });
+        this.createShownGalleryDrawing(drawing);
       }
       // Add else statement if the drawing is private but associated to a team that we have joined
     });
@@ -191,7 +228,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       const drawingInfosForGallery: DrawingInfosForGallery = JSON.parse(data);
       const isUserGallery =
         drawingInfosForGallery.visibility !== DrawingVisibilityLevel.PRIVATE ||
-        (drawingInfosForGallery.ownerId! === this.getAuthenticatedUserID() &&
+        (this.isAuthorized(drawingInfosForGallery.ownerId!) &&
           drawingInfosForGallery.visibility === DrawingVisibilityLevel.PRIVATE);
       let found = false;
       this.shownDrawings.forEach((drawing: DrawingShownInGallery) => {
@@ -210,16 +247,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         }
       });
       if (!found && isUserGallery) {
-        const svg = this.createSVG(
-          drawingInfosForGallery.contents,
-          drawingInfosForGallery.width,
-          drawingInfosForGallery.height,
-          drawingInfosForGallery.bgColor
-        );
-        this.shownDrawings.push({
-          infos: drawingInfosForGallery,
-          thumbnail: svg,
-        });
+        this.createShownGalleryDrawing(drawingInfosForGallery);
       }
     });
 
@@ -228,6 +256,32 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       this.errorDialog.open(ErrorDialogComponent, {
         data: errorMessage.message,
       });
+    });
+
+    this.socketService.socket!.on('teamGallery', (data: any) => {
+      const drawingInfosForGallery: { drawingList: DrawingInfosForGallery[] } =
+        JSON.parse(data);
+      this.createShownGalleryDrawingsFromArray(
+        drawingInfosForGallery.drawingList
+      );
+    });
+
+    this.interactionService.$updateGallerySignal.subscribe((sig) => {
+      if (sig) {
+        const teamId = this.teamService.leftTeamId.value;
+        this.teamIds.splice(this.teamIds.indexOf(teamId), 1);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery) => {
+          if (
+            shownDrawing.infos.ownerId === teamId &&
+            shownDrawing.infos.visibility === DrawingVisibilityLevel.PRIVATE
+          ) {
+            this.shownDrawings.splice(
+              this.shownDrawings.indexOf(shownDrawing),
+              1
+            );
+          }
+        });
+      }
     });
   }
 
@@ -292,7 +346,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
 
   openDrawingPasswordBottomSheet(drawingInfos: DrawingInfosForGallery): void {
     this.bottomSheetService.open(DrawingPasswordBottomSheet, {
-      data: { drawing: drawingInfos },
+      data: { drawingId: drawingInfos.id },
     });
   }
 
@@ -384,9 +438,9 @@ export class DrawingPasswordBottomSheet {
     private drawingService: DrawingService,
     private bottomSheetRef: MatBottomSheetRef<DrawingPasswordBottomSheet>,
     @Inject(MAT_BOTTOM_SHEET_DATA)
-    private infos: { drawing: DrawingInfosForGallery }
+    private infos: { drawingId: number }
   ) {
-    console.log(this.infos.drawing.id);
+    console.log(this.infos.drawingId);
     this.userId = this.authService.token$.value;
   }
 
@@ -401,13 +455,13 @@ export class DrawingPasswordBottomSheet {
 
   submit(event: MouseEvent) {
     const joinDrawingRequest: JoinDrawing = {
-      drawingId: this.infos.drawing.id,
+      drawingId: this.infos.drawingId,
       userId: this.userId,
       password: this.password,
     };
     console.log(joinDrawingRequest);
     this.close(event);
     this.socketService.sendJoinDrawingRequest(joinDrawingRequest);
-    this.drawingService.drawingId$.next(this.infos.drawing.id);
+    this.drawingService.drawingId$.next(this.infos.drawingId);
   }
 }

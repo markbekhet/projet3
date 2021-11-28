@@ -13,6 +13,9 @@ import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.R
 import com.example.android.SocketHandler
+import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
@@ -52,6 +55,24 @@ class OwnProfile : AppCompatActivity() {
         val lastName: TextView = findViewById(R.id.lastNameValue)
         val firstName: TextView = findViewById(R.id.firstNameValue)
         val nickname: TextView = findViewById(R.id.nicknameValue)
+
+
+        val chatDialog= ChatDialog(this)
+        showChatOwnerProfile.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
         val dataForm = UserProfileInformation().fromJson(data)
         updateUI(dataForm)
 
@@ -64,8 +85,10 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.show()
             modifyParamsDialog!!.setOnDismissListener {
                 val newData = intent.extras!!.getString("newProfileInformation")
-                val dataForm = UserProfileInformation().fromJson(newData)
-                updateUI(dataForm)
+                if(newData != null){
+                    val newDataForm = UserProfileInformation().fromJson(newData)
+                    updateUI(newDataForm)
+                }
             }
 
         }
@@ -266,15 +289,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 else{
                     println(response!!.errorBody()!!.string())
                     passwordErrors.text = ""
-                    if (newPassword.text.isNotEmpty()){
-                        passwordErrors.append("Assurez-vous que l'ancien mot de passe" +
-                            " est correcte et que votre nouveau mot de passe n'est pas" +
-                            " la même que l'ancienne. " )
-                    }
-                    if(newNickname.text.isNotEmpty()){
-                        passwordErrors.append("Un autre utilisateur utilise le même pseudonyme." +
-                            " Veuillez saisir un autre pseudonyme.")
-                    }
+                    passwordErrors.append(response!!.errorBody()!!.string())
                 }
             }
         }

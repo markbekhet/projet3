@@ -40,4 +40,7 @@ interface RestAPI {
     @HTTP(method = "DELETE",path="$drawingNamespace", hasBody = true)
     suspend fun deleteDrawing(@Body requestBody: RequestBody): Response<ResponseBody>
 
+    @PUT(drawingNamespace)
+    suspend fun modifyDrawingParameters(@Body requestBody: RequestBody): Response<ResponseBody>
+
 }

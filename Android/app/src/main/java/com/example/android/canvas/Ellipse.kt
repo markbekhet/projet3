@@ -2,8 +2,10 @@ package com.example.android.canvas
 
 import android.content.Context
 import android.view.View
+import com.example.android.Drawing
 import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
+import com.example.android.selectionColors
 import org.apache.batik.anim.dom.SVGOMEllipseElement
 import org.apache.batik.dom.AbstractDocument
 import org.w3c.dom.Element
@@ -260,6 +262,14 @@ class Ellipse(private var drawingId:Int? ,
 
     override fun getScalingPositionsString(){
         calculateScalingPositions()
+        var value = ""
+        for(aColor in selectionColors){
+            if(aColor.value == userId){
+                value = aColor.key
+            }
+        }
+        val color = "#$value"
+
         for(item in scalingPositions){
             val position = item.key
             val x = position.x - radius
@@ -267,7 +277,7 @@ class Ellipse(private var drawingId:Int? ,
             val width = (position.x + radius) - x
             val height = (position.y + radius) - y
             str += "<rect x=\"$x\" y=\"$y\" width=\"$width\"" +
-                " height=\"$height\" stroke=\"#CBCB28\" fill=\"#CBCB28\"/>\n"
+                " height=\"$height\" stroke=\"$color\" fill=\"$color\"/>\n"
         }
     }
 
@@ -311,7 +321,7 @@ class Ellipse(private var drawingId:Int? ,
             id = contentID, content= getOriginalString(),
             status = status, toolName = ellipseString)
         val socket = SocketHandler.getChatSocket()
-        socket!!.emit("drawingToServer", drawingContent.toJson())
+        socket.emit("drawingToServer", drawingContent.toJson())
     }
 
     private fun requestCreation(){

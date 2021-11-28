@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.chatfragment.*
 import kotlinx.android.synthetic.main.message.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class Chat(var name:String) : Fragment() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
@@ -93,6 +94,9 @@ class Chat(var name:String) : Fragment() {
         try{
             requireActivity().runOnUiThread {
                 messageListView?.adapter = messageDisplay
+                if(serverMessagesArray.size > 0 && messageListView!= null){
+                    messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
+                }
             }
         }catch(e: Exception){
             println("cannot show the information right now")

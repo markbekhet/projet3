@@ -3,6 +3,7 @@ import {  DrawingContent, DrawingStatus } from '@models/DrawingMeta';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
+import { userColorMap } from '../drawing/drawing.service';
 import { SocketService } from '../socket/socket.service';
 import { DrawingTool } from './drawing-tool';
 import { Point } from './point';
@@ -52,7 +53,7 @@ export class Pencil implements DrawingTool {
     private socketService: SocketService,
     userId: string,
     private rendrer: Renderer2,
-    private canvas:ElementRef
+    private canvas:ElementRef,
   ) {
     this.startTransformPoint = new Point(0,0)
     this.pointsArray = []
@@ -205,6 +206,7 @@ export class Pencil implements DrawingTool {
   }
   getSelectionString(): void {
     //this.stringToPointsArray();
+    
     this.setCriticalValues();
     this.str += "<rect "
     let x = this.minPoint.x
@@ -221,7 +223,7 @@ export class Pencil implements DrawingTool {
     }
     this.str += " stroke=\"#0000FF\""
     this.str += " stroke-width=\"3\""
-    this.str += " fill=\"none\""
+    this.str += ` fill=none`
     this.str += " stroke-dasharray=\"4\""
     this.str += "/>\n"
   }
@@ -281,6 +283,15 @@ export class Pencil implements DrawingTool {
     return null
   }
   getScalingPositionsString(): void {
+    let color: string = "";
+    let mapEntries = userColorMap.entries();
+    for(const entry of mapEntries){
+      if(entry[1]!==undefined && entry[1] === this.userId){
+        color = entry[0];
+        break;
+      }
+    }
+    console.log(color)
     this.calculateScalingPositions()
     for(let item of this.scalingPositions){
       let position = item[0];
@@ -288,7 +299,7 @@ export class Pencil implements DrawingTool {
       let y = position.y- RADUIS;
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=#CBCB28 fill=#CBCB28></rect>\n`;
+      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=${color} fill=${color}></rect>\n`;
     }
   }
   parse(parceableString: string): void {

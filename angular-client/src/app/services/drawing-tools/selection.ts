@@ -36,7 +36,7 @@ export class Selection implements DrawingTool {
     private interactionService: InteractionService,
     drawingId: number,
     //private drawingId: number,
-    userId: string
+    userId: string,
     ) {
         this.drawingId = drawingId;
         this.userId = userId;

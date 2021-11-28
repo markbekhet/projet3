@@ -3,13 +3,14 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
+  Inject,
   OnInit,
   Output,
 } from '@angular/core';
 // import { Router } from '@angular/router';
 
 import { JoinTeam, LeaveTeam } from '@models/joinTeam';
-import { ChatHistory } from '@models/MessageMeta';
+// import { ChatHistory } from '@models/MessageMeta';
 import { Team } from '@models/teamsMeta';
 import { User } from '@models/UserMeta';
 import { AuthService } from '@services/authentication/auth.service';
@@ -19,6 +20,15 @@ import { SocketService } from '@services/socket/socket.service';
 import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import {
+  MatBottomSheet,
+  MatBottomSheetRef,
+  MAT_BOTTOM_SHEET_DATA,
+} from '@angular/material/bottom-sheet';
+import { TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-user-team-list',
@@ -41,7 +51,9 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     // private router: Router,
     private socketService: SocketService,
     private teamService: TeamService,
-    private windowService: ModalWindowService
+    private windowService: ModalWindowService,
+    private bottomSheetService: MatBottomSheet,
+    private errorDialog: MatDialog
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
   }
@@ -72,6 +84,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         if (user.id === dataMod.id) {
           user.pseudo = dataMod.pseudo;
           user.status = dataMod.status;
+          user.avatar = dataMod.avatar;
           found = true;
         }
       });
@@ -106,22 +119,21 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     });
 
     // teamJoined
-    this.socketService.socket!.on('teamInformations', (data: any) => {
-      const teamInformations: { chatHistoryList: ChatHistory[] } =
-        JSON.parse(data);
-      const requestedTeam = this.teamService.requestedTeamToJoin.value;
-      this.teamService.activeTeams.value.set(
-        requestedTeam.name!,
-        requestedTeam
-      );
-      this.chatRoomService.addChatRoom(
-        requestedTeam.name!,
-        teamInformations.chatHistoryList
-      );
-      this.chatrooms.push(requestedTeam.name!);
-      const index = this.teams.indexOf(requestedTeam);
-      if (index !== -1) {
-        this.teams.splice(index, 1);
+    this.interactionService.$updateChatListSignal.subscribe((sig: boolean) => {
+      if (sig) {
+        this.chatrooms = [];
+        const roomNames = this.chatRoomService.chatRooms.keys();
+        for (const roomName of roomNames) {
+          this.chatrooms.push(roomName);
+        }
+        // let teamFound = false;
+        this.chatrooms.forEach((room: string) => {
+          this.teams.forEach((team: Team) => {
+            if (team.name! === room) {
+              this.teams.splice(this.teams.indexOf(team), 1);
+            }
+          });
+        });
       }
     });
 
@@ -129,20 +141,41 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     for (const key of this.chatRoomService.chatRooms.keys()) {
       this.chatrooms.push(key);
     }
+
+    this.socketService.socket!.on('cantJoinTeam', (data: any) => {
+      const error: { message: string } = JSON.parse(data);
+      this.errorDialog.open(ErrorDialogComponent, { data: error.message });
+    });
   }
 
   joinTeam(team: Team) {
-    const joinTeamBody: JoinTeam = {
-      teamName: team.name!,
-      userId: this.authenticatedUserId,
-    };
-    this.socketService.sendRequestJoinTeam(joinTeamBody);
-    this.teamService.requestedTeamToJoin.next(team);
+    if (team.visibility === TeamVisibilityLevel.PROTECTED) {
+      this.bottomSheetService.open(TeamPasswordBottomSheet, {
+        data: { team },
+      });
+    } else {
+      const joinTeamBody: JoinTeam = {
+        teamName: team.name!,
+        userId: this.authenticatedUserId,
+      };
+      this.socketService.sendRequestJoinTeam(joinTeamBody);
+      this.teamService.requestedTeamToJoin.next(team);
+    }
   }
 
   deleteTeam(team: Team) {
     const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
-    this.teamService.deleteTeam(deleteTeamBody);
+    this.teamService.deleteTeam(deleteTeamBody).subscribe(
+      (resp) => {
+        this.teams.splice(this.teams.indexOf(team), 1);
+      },
+      (error) => {
+        const errorCode = JSON.parse(
+          (error as HttpErrorResponse).error
+        ).message;
+        this.errorDialog.open(ErrorDialogComponent, { data: errorCode });
+      }
+    );
   }
 
   leaveTeam(teamName: string) {
@@ -152,9 +185,22 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
     const index = this.chatrooms.indexOf(teamName);
-    this.chatrooms.splice(index);
-    this.teams.push(this.teamService.activeTeams.value.get(teamName)!);
+    this.chatrooms.splice(index, 1);
+    const activeTeam = this.teamService.activeTeams.value.get(teamName)!;
+    const team: Team = {
+      id: activeTeam.id,
+      name: activeTeam.name,
+      visibility: activeTeam.visibility,
+      bio: activeTeam.bio,
+      ownerId: activeTeam.ownerId,
+    };
+    this.teams.push(team);
+    this.teamService.leftTeamId.next(
+      this.teamService.activeTeams.value.get(teamName)!.id
+    );
     this.teamService.activeTeams.value.delete(teamName);
+    this.chatRoomService.chatRooms.delete(teamName);
+    this.interactionService.emitUpdateGallerySignal();
   }
 
   joinChat(roomName: string) {
@@ -165,5 +211,42 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
+  }
+}
+
+@Component({
+  selector: 'app-drawing-password-bottom-sheet',
+  templateUrl: './team-password/team-password.component.html',
+  styleUrls: ['./team-password/team-password.component.scss'],
+})
+export class TeamPasswordBottomSheet {
+  password: string = '';
+  userId: string;
+  constructor(
+    private socketService: SocketService,
+    private authService: AuthService,
+    private teamService: TeamService,
+    private bottomSheetRef: MatBottomSheetRef<TeamPasswordBottomSheet>,
+    @Inject(MAT_BOTTOM_SHEET_DATA)
+    private infos: { team: Team }
+  ) {
+    this.userId = this.authService.token$.value;
+  }
+
+  close(event: MouseEvent) {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+  }
+
+  submit(event: MouseEvent) {
+    const joinTeamRequest: JoinTeam = {
+      teamName: this.infos.team.name,
+      userId: this.userId,
+      password: this.password,
+    };
+    console.log(joinTeamRequest);
+    this.close(event);
+    this.socketService.sendRequestJoinTeam(joinTeamRequest);
+    this.teamService.requestedTeamToJoin.next(this.infos.team);
   }
 }

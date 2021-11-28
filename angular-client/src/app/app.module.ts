@@ -50,7 +50,10 @@ import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.co
 import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
-import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { TeamPasswordBottomSheet, UserTeamListComponent } from './components/user-team-list/user-team-list.component';
+import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
+import { UserListSideNavComponent } from './components/drawing-view/user-list-side-nav/user-list-side-nav.component';
+
 
 @NgModule({
   declarations: [
@@ -79,6 +82,9 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
     ToolboxViewComponent,
     UserProfileDialogComponent,
     UserTeamListComponent,
+    TeamPasswordBottomSheet,
+    AvatarDialogComponent,
+    UserListSideNavComponent,
   ],
   imports: [
     BrowserModule,
@@ -113,6 +119,7 @@ import { UserTeamListComponent } from './components/user-team-list/user-team-lis
     ModifyDrawingComponent,
     GalleryComponent,
     UserProfileDialogComponent,
+    AvatarDialogComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

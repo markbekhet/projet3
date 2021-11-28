@@ -12,6 +12,7 @@ import { SocketService } from '@services/socket/socket.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
+import { userColorMap } from '@src/app/services/drawing/drawing.service';
 
 @Component({
   templateUrl: './landing-page.component.html',
@@ -34,6 +35,7 @@ export class LandingPage implements OnInit, AfterViewInit {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
     this.isLoggedIn = true;
+    userColorMap.set('#CBCB28', this.authService.token$.value);
   }
 
   ngOnInit(): void {
@@ -47,12 +49,12 @@ export class LandingPage implements OnInit, AfterViewInit {
     this.socketService.socket!.on('RoomChatHistories', (data: string) => {
       const chatHistories: { chatHistoryList: ChatHistory[] } =
         JSON.parse(data);
-      this.interactionService.emitUpdateChatListSignal();
       console.log(chatHistories);
       this.chatRoomService.addChatRoom(
         'General',
         chatHistories.chatHistoryList
       );
+      this.interactionService.emitUpdateChatListSignal();
     });
   }
 

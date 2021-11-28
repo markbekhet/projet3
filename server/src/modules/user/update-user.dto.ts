@@ -9,4 +9,7 @@ export class UpdateUserDto{
 
     @IsOptional()
     oldPassword: string;
+
+    @IsOptional()
+    newAvatar: string;
 }

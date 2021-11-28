@@ -1,5 +1,5 @@
 <div class='profile-wrapper'>
-    <img src="../../../assets/thumbnails/avatar_placeholder.png" alt="Avatar thumbnail" class="avatar">
+    <img [src]="decodeAvatar()" alt="User avatar" class="avatar">
     <br>
     <h1> {{ visitedUser.pseudo }}</h1>
     <h1 *ngIf="visitedUser.status === 0">En ligne</h1>

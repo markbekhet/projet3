@@ -1,3 +1,6 @@
+
+
+
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
@@ -62,6 +65,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   mode: string = '';
   totalScaling: Point = new Point(0.0, 0.0);
   mouseIsDown: boolean = false;
+  activeUsers: string[];
 
   constructor(
     private interactionService: InteractionService,
@@ -75,6 +79,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
     console.log(this.currentToolName);
     this.getDrawingId();
+    this.activeUsers = []
+    //this.drawingService
   }
 
   getUserId() {
@@ -108,18 +114,6 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       }
     });
     this.draw();
-    /* .subscribe((drawingInformations: DrawingInformations) => {
-        this.backColor = `#${drawingInformations.drawing.bgColor}`;
-        this.width = drawingInformations.drawing.width;
-        this.height = drawingInformations.drawing.height;
-        this.drawingService.drawingName$.next(drawingInformations.drawing.name);
-        drawingInformations.drawing.contents.forEach((content) => {
-          if (content.content !== null && content.content !== undefined) {
-            this.manipulateReceivedDrawing(content);
-          }
-        });
-        this.draw();
-      }); */
   }
 
   @HostListener('window:resize')
@@ -159,7 +153,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas
+          this.canvas,
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()) {
@@ -169,7 +163,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas
+          this.canvas,
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()) {
@@ -179,7 +173,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas
+          this.canvas,
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === SELECT_COMP_TOOL_NAME) {
@@ -192,7 +186,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.canvas,
           this.interactionService,
           this.drawingId,
-          this.userId
+          this.userId,
         );
       }
       this.currentTool.onMouseDown(e);
@@ -272,7 +266,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
 
     this.interactionService.$leaveDrawingSignal.subscribe((sig)=>{
-      if(sig) this.currentTool.unselect();
+      if(sig && this.currentTool!== undefined) this.currentTool.unselect();
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.interactionService.$wipeDrawing.subscribe((signal) => {
@@ -360,7 +354,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
               this.canvas,
               this.interactionService,
               this.drawingId,
-              this.userId
+              drawingContent.userId!,
             );
           }
         }
@@ -373,9 +367,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.interactionService,
                 this.colorPick,
                 this.socketService,
-                this.userId,
+                drawingContent.userId!,
                 this.renderer,
-                this.canvas
+                this.canvas,
               );
               break;
 
@@ -385,9 +379,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.interactionService,
                 this.colorPick,
                 this.socketService,
-                this.userId,
+                drawingContent.userId!,
                 this.renderer,
-                this.canvas
+                this.canvas,
               );
               break;
             case ELLIPSE_TOOL_NAME:
@@ -396,9 +390,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.interactionService,
                 this.colorPick,
                 this.socketService,
-                this.userId,
+                drawingContent.userId!,
                 this.renderer,
-                this.canvas
+                this.canvas,
               );
               break;
             default:

@@ -8,6 +8,7 @@ export interface User {
   password?: string;
   status?: Status;
   pseudo?: string;
+  avatar?: string;
 
   averageCollaborationTime?: number;
   totalCollaborationTime?: number;
@@ -55,4 +56,54 @@ export interface UpdateUserInformation {
   newPassword?: string | null;
   newPseudo?: string | null;
   oldPassword?: string | null;
+  newAvatar?: string | null;
 }
+
+export interface Avatar {
+  filename: string;
+  url: string;
+  encoding?: string;
+}
+
+export const avatarList: Avatar[] = [
+  {
+    filename: 'avatar1',
+    url: '../../../assets/avatars/avatar1.png',
+  },
+  {
+    filename: 'avatar2',
+    url: '../../../assets/avatars/avatar2.png',
+  },
+  {
+    filename: 'avatar3',
+    url: '../../../assets/avatars/avatar3.png',
+  },
+  {
+    filename: 'avatar4',
+    url: '../../../assets/avatars/avatar4.png',
+  },
+  {
+    filename: 'avatar5',
+    url: '../../../assets/avatars/avatar5.png',
+  },
+  {
+    filename: 'avatar6',
+    url: '../../../assets/avatars/avatar6.png',
+  },
+  {
+    filename: 'avatar7',
+    url: '../../../assets/avatars/avatar7.png',
+  },
+  {
+    filename: 'avatar8',
+    url: '../../../assets/avatars/avatar8.png',
+  },
+  {
+    filename: 'avatar9',
+    url: '../../../assets/avatars/avatar9.png',
+  },
+  {
+    filename: 'avatar10',
+    url: '../../../assets/avatars/avatar10.png',
+  },
+];

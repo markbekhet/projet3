@@ -52,24 +52,8 @@ export class LoginPage implements OnInit {
           const errorCode = JSON.parse(
             (error as HttpErrorResponse).error
           ).message;
-          let interfaceErrorCode;
-          switch (errorCode) {
-            case this.auth.USER_LOGGED_IN:
-              interfaceErrorCode =
-                'Cet utilisateur est déjà connecté au serveur.';
-              break;
-            case this.auth.NO_USER_FOUND:
-              interfaceErrorCode =
-                "Ce nom d'utilisateur ou adresse courriel n'existe pas.";
-              break;
-            case this.auth.INCORRECT_PASSWORD:
-              interfaceErrorCode = 'Le mot de passe est incorrect.';
-              break;
-            default:
-              break;
-          }
           this.errorDialog.open(ErrorDialogComponent, {
-            data: interfaceErrorCode,
+            data: errorCode,
           });
           this.resetForm();
         }
