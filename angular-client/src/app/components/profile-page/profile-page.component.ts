@@ -1,10 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { DrawingInformations } from '@src/app/models/drawing-informations';
-import { DrawingState } from '@src/app/models/DrawingMeta';
+import { DrawingState, DrawingVisibility } from '@src/app/models/DrawingMeta';
 import {
   Avatar,
   DrawingEditionHistory,
@@ -21,6 +22,7 @@ import { ValidationService } from '@src/app/services/validation/validation.servi
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { DrawingPasswordBottomSheet } from '../gallery-component/gallery.component';
 
 @Component({
   templateUrl: './profile-page.component.html',
@@ -57,18 +59,19 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private router: Router,
-    private auth: AuthService,
+    private authService: AuthService,
     private socketService: SocketService,
     private formBuilder: FormBuilder,
     public errorDialog: MatDialog,
     private interactionService: InteractionService,
     private drawingService: DrawingService,
+    private bottomSheetService: MatBottomSheet,
     private avatarService: AvatarService,
     private windowService: ModalWindowService,
   ) {
     this.socketService.getUserProfile({
-      userId: this.auth.token$.value,
-      visitedId: this.auth.token$.value,
+      userId: this.authService.getUserToken(),
+      visitedId: this.authService.getUserToken(),
     });
 
     this.updateForm = this.formBuilder.group({
@@ -87,8 +90,8 @@ export class ProfilePage implements OnInit {
 
   @HostListener('window:beforeunload')
   disconnect() {
-    if (this.auth.token$.value !== '') {
-      this.auth.disconnect();
+    if (this.authService.getUserToken() !== '') {
+      this.authService.disconnect();
     }
   }
 
@@ -100,10 +103,12 @@ export class ProfilePage implements OnInit {
 
     this.socketService
       .getDrawingInformations()
-      .subscribe((drawingInformations: DrawingInformations)=>{
-        this.interactionService.drawingInformations.next(drawingInformations.drawing);
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.interactionService.drawingInformations.next(
+          drawingInformations.drawing
+        );
         this.router.navigate(['/draw']);
-      })
+      });
   }
 
   onSubmit(formPseudo: FormGroup) {
@@ -116,7 +121,7 @@ export class ProfilePage implements OnInit {
       newAvatar: formPseudo.controls.avatar.value,
     };
 
-    this.auth.updateUserProfile(updates).subscribe(
+    this.authService.updateUserProfile(updates).subscribe(
       (response) => {
         // success
         this.socketService.updateUserProfile(updates);
@@ -190,14 +195,21 @@ export class ProfilePage implements OnInit {
   }
 
   public joinDrawing(collaboration: DrawingEditionHistory) {
-    const joinDrawing = {
-      drawingId: collaboration.drawingId,
-      userId: this.auth.token$.value,
-      password: undefined,
-    };
-    this.socketService.sendJoinDrawingRequest(joinDrawing);
-    this.drawingService.$drawingId.next(collaboration.drawingId);
-    //this.router.navigate(['/home']);
+    if(collaboration.drawingVisibility === DrawingVisibility.PROTECTED){
+      this.bottomSheetService.open(DrawingPasswordBottomSheet,{
+        data: {drawingId: collaboration.drawingId}
+      })
+    }
+    else{
+      const joinDrawing = {
+        drawingId: collaboration.drawingId,
+        userId: this.authService.getUserToken(),
+        password: undefined,
+      };
+      this.socketService.sendJoinDrawingRequest(joinDrawing);
+      this.drawingService.drawingId$.next(collaboration.drawingId);
+    } 
+    // this.router.navigate(['/home']);
   }
 
   public mostRecentVersionDrawing(collaboration: DrawingEditionHistory) {

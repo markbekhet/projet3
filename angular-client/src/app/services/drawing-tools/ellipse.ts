@@ -4,6 +4,7 @@ import { ColorPickingService } from '@services/color-picker/color-picking.servic
 import { InteractionService } from '@services/interaction/interaction.service';
 import { ChosenColors } from '@src/app/models/ChosenColors';
 import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
+import { userColorMap } from '../drawing/drawing.service';
 //import { DrawingContent, DrawingStatus } from '@src/app/models/DrawingMeta';
 //import { AuthService } from '../authentication/auth.service';
 //import { DrawingService } from '../drawing/drawing.service';
@@ -298,6 +299,15 @@ export class Ellipse implements DrawingTool {
   }
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');
+    let color: string = "";
+    let mapEntries = userColorMap.entries();
+    console.log(mapEntries);
+    for(const entry of mapEntries){
+      if(entry[1]!==undefined && entry[1] === this.userId){
+        color = entry[0];
+        break;
+      }
+    }
     this.calculateScalingPositions();
     for(let item of this.scalingPositions){
       console.log(item)
@@ -306,7 +316,7 @@ export class Ellipse implements DrawingTool {
       let y = position.y- RADUIS;
       let width = (position.x + RADUIS) - x
       let height = (position.y + RADUIS) - y
-      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=#CBCB28 fill=#CBCB28></rect>\n`;
+      this.str += `<rect x=${x} y=${y} width=${width} height=${height} stroke=${color} fill=${color}></rect>\n`;
     }
   }
   parse(parceableString: string): void {
@@ -391,6 +401,18 @@ export class Ellipse implements DrawingTool {
       (attr: ToolsAttributes) => {
         if (attr) {
           this.attr = { shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType };
+          if(attr.shapeType === ShapeTypes.OUTLINE){
+            this.renderer.setAttribute(this.element, "fill", DEFSEC);
+            this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+          }
+          else if(attr.shapeType === ShapeTypes.FULL){
+            this.renderer.setAttribute(this.element, "stroke", DEFSEC);
+            this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+          }
+          else{
+            this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+            this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+          }
           this.renderer.setAttribute(this.element, "stroke-width", attr.shapeLineThickness!.toString())
         }
         else{
@@ -403,14 +425,20 @@ export class Ellipse implements DrawingTool {
   updatePrimaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
-      if(color){
+      if(color!== undefined){
         this.primaryColor = color.primColor;
-        if(this.attr.shapeType!== undefined && this.attr.shapeType!== ShapeTypes.FULL){
-          this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+        if(this.attr.shapeType!== undefined){
+          if(this.attr.shapeType === ShapeTypes.FULL){
+            this.renderer.setAttribute(this.element, "stroke", DEFSEC)
+          }
+          else{
+            this.renderer.setAttribute(this.element, "stroke", this.primaryColor)
+          }
         }
       }
       else{
         this.primaryColor = DEFPRIM;
+        this.renderer.setAttribute(this.element, "stroke", this.primaryColor)
       }
     })
     this.sendProgressToServer(DrawingStatus.Selected);
@@ -418,14 +446,20 @@ export class Ellipse implements DrawingTool {
   updateSecondaryColor(): void {
     //throw new Error('Method not implemented.');
     this.colorPick.colorSubject.subscribe((color: ChosenColors)=>{
-      if(color){
+      if(color !== undefined){
         this.secondaryColor = color.secColor;
-        if(this.attr.shapeType!== undefined && this.attr.shapeType !== ShapeTypes.OUTLINE){
-          this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+        if(this.attr.shapeType !== undefined){
+          if(this.attr.shapeType === ShapeTypes.OUTLINE){
+            this.renderer.setAttribute(this.element, "fill", DEFSEC)      
+          }
+          else{
+            this.renderer.setAttribute(this.element, "fill", this.secondaryColor)
+          }
         }
       }
       else{
-        this.secondaryColor = DEFPRIM;
+        this.secondaryColor = DEFSEC;
+        this.renderer.setAttribute(this.element, "fill", this.secondaryColor)
       }
     })
     this.sendProgressToServer(DrawingStatus.Selected);

@@ -1,25 +1,37 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+/* eslint-disable no-console */
+import {
+  Component,
+  HostListener,
+  Input,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ServerMessage, ClientMessage, ChatHistory } from '@models/MessageMeta';
+import { ChatHistory, ClientMessage, ServerMessage } from '@models/MessageMeta';
+import { Status, User } from '@models/UserMeta';
+
 import { AuthService } from '@services/authentication/auth.service';
+import { ChatRoomService } from '@services/chat-room/chat-room.service';
+// import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '@services/socket/socket.service';
-import { Status } from '@common/user';
-import { User } from '@src/app/models/UserMeta';
-import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
-import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
-  selector: 'app-communication-page',
-  templateUrl: './communication-page.component.html',
-  styleUrls: ['./communication-page.component.scss'],
+  selector: 'app-chat',
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.scss'],
 })
-export class CommunicationPageComponent implements OnInit, OnDestroy {
-  roomName: string = '';
-  username: string = '';
+export class ChatComponent implements OnInit, OnDestroy {
+  @Input()
+  chatroomName!: string;
+
   messages: ChatHistory[] = [];
-  messageForm: FormGroup;
+  messageForm!: FormGroup;
+
+  isExpanded: boolean = false;
+
+  readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
+
   user: User = {
     id: '',
     firstName: '',
@@ -40,16 +52,11 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     drawingEditionHistories: [],
   };
 
-  readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
-
   constructor(
-    private activeRoute: ActivatedRoute,
     private auth: AuthService,
     private formBuilder: FormBuilder,
-    private router: Router,
     private socketService: SocketService,
-    private chatRoomService: ChatRoomService,
-    private interactionService: InteractionService
+    private chatRoomService: ChatRoomService // private interactionService: InteractionService
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.getUserToken(),
@@ -65,8 +72,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.messages = this.chatRoomService.getChatHistoryList(this.roomName)!;
-    this.username = this.activeRoute.snapshot.params.username;
+    this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
 
     this.socketService.socket!.on('msgToClient', (data: any) => {
       const message: ClientMessage = JSON.parse(data);
@@ -78,8 +84,9 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
         };
         const index = this.messages.indexOf(newChatHistory);
         if (index === -1)
-          // this.chatRoomService.addChatHistory(message);
-          this.messages.unshift(newChatHistory);
+          if(this.chatroomName === message.roomName){
+            this.messages.unshift(newChatHistory);
+          }
       }
       console.log(this.messages);
       console.log(`client received: ${message.message}`);
@@ -89,9 +96,14 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
       this.user = profile;
       console.log(`user loaded : ${profile.pseudo}`);
     });
-    this.interactionService.$chatRoomName.subscribe((name: string) => {
-      this.roomName = name;
-    });
+  }
+
+  toggleExpansion() {
+    this.isExpanded = !this.isExpanded;
+
+    // this.interactionService.$chatRoomName.subscribe((name: string) => {
+    //   this.roomName = name;
+    // });
   }
 
   onSubmit() {
@@ -99,7 +111,7 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     const messageToSend: ServerMessage = {
       from: this.user.pseudo!,
       message: MESSAGE,
-      roomName: this.roomName,
+      roomName: this.chatroomName,
     };
 
     this.socketService.sendMessage(messageToSend);
@@ -112,16 +124,17 @@ export class CommunicationPageComponent implements OnInit, OnDestroy {
     return this.user.pseudo === clientName;
   }
 
+  // might remove if not needed
   @HostListener('window:beforeunload')
   ngOnDestroy() {
     // this.chatRoomService.chatRooms.set("General", this.messages);
     console.log('destroyed');
     this.messages = [];
     // this.socketService.disconnect();
-    this.disconnect();
+    // this.disconnect();
   }
 
-  disconnect(): void {
-    this.router.navigate(['/home']);
-  }
+  // disconnect(): void {
+  //   this.router.navigate(['/home']);
+  // }
 }

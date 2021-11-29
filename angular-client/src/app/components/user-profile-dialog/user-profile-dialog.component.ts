@@ -8,7 +8,7 @@ import { SocketService } from '@src/app/services/socket/socket.service';
 @Component({
   selector: 'app-user-profile-dialog',
   templateUrl: './user-profile-dialog.component.html',
-  styleUrls: ['./user-profile-dialog.component.scss']
+  styleUrls: ['./user-profile-dialog.component.scss'],
 })
 export class UserProfileDialogComponent implements OnInit {
   visitedUser: User = {
@@ -17,22 +17,19 @@ export class UserProfileDialogComponent implements OnInit {
     avatar: '',
   };
 
-
   constructor(
     private auth: AuthService,
     private socketService: SocketService,
     private avatarService: AvatarService,
     @Inject(MAT_DIALOG_DATA) public data: string
-    ) {
-      const visitedUserData = data as User;
-      console.log(visitedUserData.id);
-      this.socketService.getUserProfile({
-        userId: this.auth.token$.value,
-        visitedId: visitedUserData.id!,
-      });
-
-
-    }
+  ) {
+    const visitedUserData = data as User;
+    console.log(visitedUserData.id);
+    this.socketService.getUserProfile({
+      userId: this.auth.getUserToken(),
+      visitedId: visitedUserData.id!,
+    });
+  }
 
   ngOnInit(): void {
     this.socketService.receiveUserProfile().subscribe((profile: User) => {

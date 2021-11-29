@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -11,6 +11,7 @@ import { AngularMaterialModule } from './angular-material.module';
 
 import { AuthService } from './services/authentication/auth.service';
 import { CanvasBuilderService } from './services/canvas-builder/canvas-builder.service';
+import { ChatRoomService } from './services/chat-room/chat-room.service';
 import { ColorConvertingService } from './services/color-picker/color-converting.service';
 import { ColorPickingService } from './services/color-picker/color-picking.service';
 import { DrawingService } from './services/drawing/drawing.service';
@@ -18,9 +19,11 @@ import { IconsService } from './services/icons/icons.service';
 import { InteractionService } from './services/interaction/interaction.service';
 import { ModalWindowService } from './services/window-handler/modal-window.service';
 import { SocketService } from './services/socket/socket.service';
+import { TeamService } from './services/team/team.service';
 import { ValidationService } from './services/validation/validation.service';
 
 import { AppComponent } from './components/app-component/app.component';
+import { ChatComponent } from './components/chat-component/chat.component';
 import { ColorPickerComponent } from './components/color-picker-component/color-picker.component';
 import { CommunicationPageComponent } from './components/communication-page/communication-page.component';
 import { DeleteDrawingComponent } from './components/gallery-component/delete-drawing/delete-drawing.component';
@@ -36,6 +39,7 @@ import { LoginPage } from './components/login-page/login-page.component';
 import { MiniColorPickerComponent } from './components/color-picker-component/mini-color-picker/mini-color-picker.component';
 import { ModifyDrawingComponent } from './components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from './components/new-drawing-dialog/new-drawing.component';
+import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
 import {
   OptionViewComponent,
   ShapeTypePipe,
@@ -45,17 +49,18 @@ import { RegisterPage } from './components/register-page/register-page.component
 import { SvgViewComponent } from './components/drawing-view/svg-view/svg-view.component';
 import { ThumbnailComponent } from './components/gallery-component/thumbnail/thumbnail.component';
 import { ToolboxViewComponent } from './components/drawing-view/toolbox-view/toolbox-view.component';
-import { UserTeamListComponent } from './components/user-team-list/user-team-list.component';
-import { NewTeamDialogComponent } from './components/new-team-dialog/new-team-dialog.component';
-import { TeamService } from './services/team/team.service';
-import { ChatRoomService } from './services/chat-room/chat-room.service';
 import { UserProfileDialogComponent } from './components/user-profile-dialog/user-profile-dialog.component';
+import {
+  TeamPasswordBottomSheet,
+  UserTeamListComponent,
+} from './components/user-team-list/user-team-list.component';
 import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
-
+import { UserListSideNavComponent } from './components/drawing-view/user-list-side-nav/user-list-side-nav.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    ChatComponent,
     ColorPickerComponent,
     CommunicationPageComponent,
     DeleteDrawingComponent,
@@ -69,17 +74,19 @@ import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.
     MiniColorPickerComponent,
     ModifyDrawingComponent,
     NewDrawingComponent,
+    NewTeamDialogComponent,
     OptionViewComponent,
+    ShapeTypePipe,
     ProfilePage,
     RegisterPage,
-    ShapeTypePipe,
     SvgViewComponent,
     ThumbnailComponent,
     ToolboxViewComponent,
-    UserTeamListComponent,
-    NewTeamDialogComponent,
     UserProfileDialogComponent,
+    UserTeamListComponent,
+    TeamPasswordBottomSheet,
     AvatarDialogComponent,
+    UserListSideNavComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,6 +102,7 @@ import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.
   providers: [
     AuthService,
     CanvasBuilderService,
+    ChatRoomService,
     ColorConvertingService,
     ColorPickingService,
     DrawingService,
@@ -102,18 +110,19 @@ import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.
     InteractionService,
     ModalWindowService,
     SocketService,
-    ValidationService,
     TeamService,
-    ChatRoomService,
+    ValidationService,
   ],
   entryComponents: [
     ErrorDialogComponent,
     NewDrawingComponent,
-    DeleteDrawingComponent,
-    ModifyDrawingComponent,
     GalleryComponent,
+    ModifyDrawingComponent,
+    DeleteDrawingComponent,
+    NewTeamDialogComponent,
     UserProfileDialogComponent,
     AvatarDialogComponent,
+    ChatComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

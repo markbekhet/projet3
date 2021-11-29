@@ -15,7 +15,8 @@ import {
 } from '@models/UserMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
-//import { ChatRoomService } from '../chat-room/chat-room.service';
+// import { userColorMap } from '../drawing/drawing.service';
+// import { ChatRoomService } from '../chat-room/chat-room.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -41,7 +42,7 @@ export class SocketService {
     roomName: '',
   });
 
-  profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
+  profile$ = new BehaviorSubject<User>({
     id: '',
     firstName: '',
     lastName: '',
@@ -89,7 +90,7 @@ export class SocketService {
     this.socket!.on('msgToClient', (messageString: any) => {
       const message: ClientMessage = JSON.parse(messageString);
       console.log(`chat service received: ${message.message}`);
-      //this.chatRoomService.addChatHistory(message);
+      // this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
     });
 
@@ -207,4 +208,16 @@ export class SocketService {
     const leaveTeamString = JSON.stringify(leaveTeam);
     this.socket!.emit('leaveTeam', leaveTeamString);
   }
+
+  getTeamGallery(data: { teamName: string }) {
+    this.socket!.emit('getTeamGallery', JSON.stringify(data));
+  }
+
+  getUserUpdate = () => {
+    this.socket!.on('userUpdate', (data: any) => {
+      const dataMod: User = JSON.parse(data);
+      this.users$.value.set(dataMod.id!, dataMod);
+    });
+    return this.users$;
+  };
 }

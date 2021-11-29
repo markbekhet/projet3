@@ -1,8 +1,64 @@
-.userList {
-    width: auto;
-    height: 250px;
-    border: thick;
-    float: left;
-    padding-bottom: 1vh;
-    margin-left: 0;
+$base-color-dark: #403d39;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.component-grid {
+  display: grid;
+  position: relative;
+  grid-template-rows: 30vh 31vh 30vh;
+  grid-template-areas:
+    "usersList"
+    "teamsList"
+    "chat";
+
+  mat-list {
+    padding: 1em;
+    border-left: 2px solid $base-color-dark;
+    border-bottom: 2px solid $base-color-dark;
+    overflow: auto;
+
+    mat-list-item {
+      display: block;
+      margin-bottom: 1em;
+      // span {
+      //   vertical-align: baseline;
+      // }
+
+      // .buttons-wrapper {
+      //   display: flex; inline-flex ??????
+      //   flex-direction: row;
+      //   justify-content: flex-end;
+      //   align-items: center;
+
+      button {
+        margin: 0 0.5em;
+      }
+      // }
+    }
+    .avatar {
+      width: 40px;
+    }
+  }
+
+  .chatroomsList {
+    border-bottom: 0px;
+  }
+
+  .chatrooms-selected {
+    position: absolute;
+    bottom: 0;
+    right: 20vw;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    gap: 1em;
+
+    // & > :first-child {
+    //   margin-right: 3px;
+    // }
+  }
 }

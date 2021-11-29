@@ -4,18 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AvatarService {
-
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer) { }
+  constructor(private http: HttpClient, private sanitizer: DomSanitizer) {}
 
   encodeImageFileAsURL(avatar: Avatar) {
     return this.http.get(avatar.url, { responseType: 'blob' });
   }
 
   removeHeader(base64: string) {
-    const base64NoHeader = base64.split(";");
+    const base64NoHeader = base64.split(';');
     console.log(base64NoHeader);
     return base64NoHeader[1].slice(7);
   }
@@ -29,7 +28,7 @@ export class AvatarService {
     }
 
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {type: 'image/png'});
+    const blob = new Blob([byteArray], { type: 'image/png' });
     return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
   }
 }

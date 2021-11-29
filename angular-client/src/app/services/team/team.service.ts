@@ -1,37 +1,39 @@
-import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Team } from '@src/app/models/teamsMeta';
+import { Team, TeamCreation, TeamInformations } from '@models/teamsMeta';
+import { TeamVisibilityLevel } from '@models/VisibilityMeta';
 import { BehaviorSubject } from 'rxjs';
-//import { Observable } from 'rxjs';
 
-const PATH = "http://localhost:3000"
+const PATH = 'http://localhost:3000';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TeamService {
+  activeTeams = new BehaviorSubject<Map<string, TeamInformations>>(new Map());
 
-  activeTeams: BehaviorSubject<Map<string, Team>> = new BehaviorSubject<Map<string, Team>>(new Map())
-  requestedTeamToJoin: BehaviorSubject<Team> = new BehaviorSubject<Team>({})
+  requestedTeamToJoin = new BehaviorSubject<Team>({
+    name: '',
+    visibility: TeamVisibilityLevel.PUBLIC,
+    ownerId: '',
+    bio: undefined,
+    id: '',
+  });
 
-  constructor(private httpClient: HttpClient) { }
+  leftTeamId = new BehaviorSubject<string>('');
 
-  createTeam(team: Team){
-    return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team)
+  constructor(private httpClient: HttpClient) {}
+
+  createTeam(team: TeamCreation) {
+    return this.httpClient.post<Team>(`${PATH}/collaborationTeam`, team);
   }
 
-  //TODO
-  deleteTeam(data: {teamId: string, userId: string}){
+  // TODO
+  deleteTeam(data: { teamId: string; userId: string }) {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      body: data
-    }
-    this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions).subscribe((res)=>{
-      console.log(res);
-    },
-    (error)=>{
-      console.log(`error: ${error.message}`)
-    }
-    )
+      body: data,
+    };
+    return this.httpClient.delete(`${PATH}/collaborationTeam`, httpOptions);
   }
 }

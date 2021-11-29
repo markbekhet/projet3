@@ -1,5 +1,5 @@
 <mat-toolbar class="topToolBar">
-    <div>
+    <!--<div>
         <button class="topBtn" mat-mini-fab color="primary" matTooltip="{{ menuItems[0].name }}"
                 (click)="openNewDrawingForm()">
             <mat-icon class="topIcon"> {{ menuItems[0].icon }}</mat-icon>
@@ -8,9 +8,12 @@
                 (click)="openGallery()">
             <mat-icon class="topIcon"> {{ menuItems[1].icon }}</mat-icon>
         </button>
-    </div>
+        <button class="topBtn" mat-mini-fab color="primary" matTooltip="{{ menuItems[2].name }}" (click)="disconnect()">
+            <mat-icon class="topIcon"> {{ menuItems[2].icon }}</mat-icon>
+        </button>
+    </div>-->
     <div fxLayout='row' fxLayoutGap='20px' id='roots-container'>
-        <a routerLink='/profile'>Profil</a>
-        <a href (click)='leaveDrawing()' routerLink='/home'>Quitter dessin</a>
+        <!--<a routerLink='/profile'>Profil</a> -->
+        <a routerLink='/home' (click)='leaveDrawing()'>Quitter dessin</a>
     </div>
 </mat-toolbar>

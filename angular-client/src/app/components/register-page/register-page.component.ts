@@ -10,8 +10,8 @@ import { ValidationService } from '@services/validation/validation.service';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { Avatar, avatarList } from '@src/app/models/UserMeta';
 import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
-import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
 import { AvatarService } from '@src/app/services/avatar/avatar.service';
+import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component';
 
 @Component({
   templateUrl: './register-page.component.html',
@@ -49,9 +49,7 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
-      avatar: formBuilder.control('', [
-        Validators.required,
-      ]),
+      avatar: formBuilder.control('', [Validators.required]),
     });
   }
 
@@ -114,14 +112,12 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
-      avatar: this.formBuilder.control('', [
-        Validators.required,
-      ]),
+      avatar: this.formBuilder.control('', [Validators.required]),
     });
   }
 
   selectAvatarOption(option: string, event?: Event) {
-    switch(option) {
+    switch (option) {
       case 'selectAvatar':
         this.selected = true;
         this.selectAvatar();
@@ -130,29 +126,32 @@ export class RegisterPage implements OnInit {
         this.selected = false;
         this.uploadAvatar(event);
         break;
+      default:
+        break;
     }
   }
 
   private selectAvatar() {
     const ref = this.windowService.openDialog(AvatarDialogComponent);
-    ref!.afterClosed().subscribe(result => {
+    ref!.afterClosed().subscribe((result) => {
       const avatar: Avatar = result;
       this.selectedAvatar = avatar;
       console.log(this.selectedAvatar.url);
-      this.avatarService.encodeImageFileAsURL(this.selectedAvatar)
-      .subscribe(data => {
-        const reader = new FileReader();
-        reader.readAsDataURL(data);
-        reader.onloadend = () => {
-          let base64data = reader.result as string;
-          base64data = this.avatarService.removeHeader(base64data);
-          this.registerForm.controls.avatar.setValue(base64data);
-          this.selectedAvatar.encoding = base64data;
+      this.avatarService.encodeImageFileAsURL(this.selectedAvatar).subscribe(
+        (data) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(data);
+          reader.onloadend = () => {
+            let base64data = reader.result as string;
+            base64data = this.avatarService.removeHeader(base64data);
+            this.registerForm.controls.avatar.setValue(base64data);
+            this.selectedAvatar.encoding = base64data;
+          };
+        },
+        (error) => {
+          console.log(error);
         }
-
-      }, error => {
-        console.log(error);
-      })
+      );
     });
   }
 
@@ -182,5 +181,4 @@ export class RegisterPage implements OnInit {
   decodeAvatar() {
     return this.avatarService.decodeAvatar(this.selectedAvatar.encoding!);
   }
-
 }
