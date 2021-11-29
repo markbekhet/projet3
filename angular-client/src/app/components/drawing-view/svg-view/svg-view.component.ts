@@ -101,7 +101,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   initDrawing() {
     this.doneDrawing.nativeElement.innerHTML = '';
-    this.toolsList.clear();
+    this.toolsList = new Map()
     const drawingInformations =
       this.interactionService.drawingInformations.value;
     this.backColor = `#${drawingInformations.bgColor!}`;
@@ -346,16 +346,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.toolsList.delete(drawingContent.id);
           if (this.currentTool instanceof Selection) {
             console.log('here deleting');
-            this.currentTool = new Selection(
-              this.toolsList,
-              this.socketService,
-              this.colorPick,
-              this.renderer,
-              this.canvas,
-              this.interactionService,
-              this.drawingId,
-              drawingContent.userId!,
-            );
+            (this.currentTool as Selection).toolsArray = this.toolsList
           }
         }
       } else {
