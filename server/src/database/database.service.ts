@@ -185,7 +185,7 @@ export class DatabaseService {
             let updatePseudo: boolean = newParameters.newPseudo !== undefined && newParameters.newPseudo!== null
             let updateAvatar: boolean = newParameters.newAvatar !== undefined && newParameters.newAvatar!== null
             if(!updateAvatar){
-                if(!updatePassword && !updatePassword){
+                if(!updatePseudo && !updatePassword){
                     throw new HttpException("Impossible de mettre a jour les informations de l'utilisateur", HttpStatus.BAD_REQUEST);
                 }
                 if(updatePseudo){
