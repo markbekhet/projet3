@@ -1,6 +1,6 @@
 <div class="component-wrapper">
     <mat-list class="usersList">
-        <h2>Utilisateurs connectés</h2>
+        <h2>Liste des utilisateurs</h2>
         <mat-list-item *ngFor="let user of users">
             <div *ngIf="user.id !== authenticatedUserId">
                 <img matListAvatar [src]="decodeAvatar(user.avatar!)" alt="User avatar" class="avatar">
