@@ -84,8 +84,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         };
         const index = this.messages.indexOf(newChatHistory);
         if (index === -1)
-          // this.chatRoomService.addChatHistory(message);
-          this.messages.unshift(newChatHistory);
+          if(this.chatroomName === message.roomName){
+            this.messages.unshift(newChatHistory);
+          }
       }
       console.log(this.messages);
       console.log(`client received: ${message.message}`);
