@@ -1,6 +1,8 @@
 package com.example.android.chat
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.android.*
 import com.example.android.client.ClientInfo
 import com.xwray.groupie.GroupAdapter
@@ -16,9 +19,9 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.chatfragment.*
 import kotlinx.android.synthetic.main.message.view.*
+import kotlinx.android.synthetic.main.user_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 class Chat(var name:String) : Fragment() {
     private var messageDisplay : GroupAdapter<GroupieViewHolder>?= null
@@ -84,7 +87,7 @@ class Chat(var name:String) : Fragment() {
     fun showMessages(){
         messageDisplay = GroupAdapter<GroupieViewHolder>()
         for(serverMessage in serverMessagesArray){
-            val userMessage = UserMessage()
+            val userMessage = UserMessage(this)
             serverMessage.message?.let { serverMessage.from?.let { it1 ->
                 userMessage.set(it,
                     it1, serverMessage.date.toString())
@@ -104,15 +107,28 @@ class Chat(var name:String) : Fragment() {
     }
 }
 
-class UserMessage : Item<GroupieViewHolder>() {
+class UserMessage(var fragment: Chat) : Item<GroupieViewHolder>() {
     private var message = "bonjour"
     private var author = "auteur"
     private var date = "date"
+    private var avatar = ""
     override fun getLayout(): Int {
         return R.layout.message
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        for(user in ClientInfo.usersList.userList){
+            if(user.pseudo == author){
+                avatar = user.avatar
+                break
+            }
+        }
+        val decodedModifiedString = Base64.decode(
+            avatar, Base64.DEFAULT)
+        val decodedModifiedByte = BitmapFactory.decodeByteArray(
+            decodedModifiedString,0, decodedModifiedString.size)
+        Glide.with(fragment.requireActivity()).load(decodedModifiedByte)
+            .fitCenter().into(viewHolder.itemView.avatarChatFragment)
         viewHolder.itemView.message.text = message
         viewHolder.itemView.date.text = date
         viewHolder.itemView.user.text = author
