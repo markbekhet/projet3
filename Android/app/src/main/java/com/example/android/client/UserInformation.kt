@@ -32,6 +32,7 @@ data class UserProfileInformation(
     var numberCollaborationTeams: Int? = null,
     var numberCollaboratedDrawings: Int? = null,
     var numberAuthoredDrawings: Int? = null,
+    var avatar : String? = null,
     private var connectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
     private var disconnectionHistories: ArrayList<ConnectionDisconnectionHistories> ?= null,
     private var drawingEditionHistories: ArrayList<DrawingEditionHistories> ?= null
@@ -87,6 +88,7 @@ data class UserRegistrationInfo(
     var pseudo: String? = null,
     var emailAddress: String? = null,
     var password: String? = null,
+    var avatar : String? = null
 ){
     fun toJson(): String{
         return Gson().toJson(this)
@@ -104,6 +106,7 @@ data class LoginInfo(var username: String? = null, var password: String? = null)
 data class ProfileModification(
     var newPassword: String? = null,
     var newPseudo: String? = null,
+    var newAvatar : String? = null,
     var oldPassword: String? = null
 ){
     fun toJson(): String{

@@ -1,8 +1,13 @@
 package com.example.android.profile
 
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
+import com.bumptech.glide.Glide
 import com.example.android.R
+import kotlinx.android.synthetic.main.avatar.*
+import kotlinx.android.synthetic.main.avatar.img_save
 import com.example.android.SocketHandler
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
@@ -18,8 +23,12 @@ class VisitorProfileView : AppCompatActivity() {
         val bundle = intent.extras
         val data = bundle!!.getString("profileInformation")
         val dataForm = UserProfileInformation().fromJson(data)
-        nicknameValue.text = dataForm.pseudo
+        nicknameForeignValue.text = dataForm.pseudo
         foreignStatusValue.text = clientStatusFroInt(dataForm.status!!).string
+
+        val decodedString: ByteArray = Base64.decode(dataForm.avatar, Base64.DEFAULT)
+        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+        Glide.with(this).load(decodedByte).fitCenter().into(avatarVisitor)
 
         val chatDialog = ChatDialog(this)
         showChatVisitorProfile.setOnClickListener {

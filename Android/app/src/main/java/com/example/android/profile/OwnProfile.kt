@@ -2,15 +2,16 @@ package com.example.android.profile
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
+import com.bumptech.glide.Glide
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.chat.ChatDialog
@@ -18,30 +19,11 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.*
 import kotlinx.android.synthetic.main.activity_own_profile.*
+import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 import kotlinx.coroutines.*
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Response
-
-
-//val clientService = ClientService()
-
-/*fun getProfile(){
-    var response: Response<ResponseBody>?= null
-    runBlocking {
-        async{
-            launch {
-                response = clientService.getUserProfileInformation(ClientInfo.userId)
-            }
-        }
-
-    }
-    if(response!!.isSuccessful){
-        val data = response?.body()!!.string()
-        ClientInfo.userProfile = UserProfileInformation().fromJson(data)
-    }
-}*/
 
 class OwnProfile : AppCompatActivity() {
 
@@ -51,16 +33,12 @@ class OwnProfile : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_own_profile)
         val data = intent.extras?.getString("profileInformation")
-        val email: TextView = findViewById(R.id.emailValue)
-        val lastName: TextView = findViewById(R.id.lastNameValue)
-        val firstName: TextView = findViewById(R.id.firstNameValue)
-        val nickname: TextView = findViewById(R.id.nicknameValue)
-
 
         val chatDialog= ChatDialog(this)
         showChatOwnerProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }
+
         SocketHandler.getChatSocket().on("msgToClient"){ args ->
             if(args[0] != null){
                 val messageData = args[0] as String
@@ -84,19 +62,45 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
             modifyParamsDialog!!.setOnDismissListener {
-                val newData = intent.extras!!.getString("newProfileInformation")
-                if(newData != null){
-                    val newDataForm = UserProfileInformation().fromJson(newData)
-                    updateUI(newDataForm)
+                val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+                SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("profileToClient"){ args ->
+                    if(args[0]!=null && i==0){
+                        val dataAfterUpdate = args[0] as String
+                        val userInformation = UserProfileInformation().fromJson(dataAfterUpdate)
+                        updateUI(userInformation)
+                        i++
+                    }
                 }
             }
 
         }
+        gallery.setOnClickListener {
+            val gallery = GalleryAvatar(this, true)
+            gallery.show()
+            gallery.setOnDismissListener {
+                val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+                SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("profileToClient"){ args ->
+                    if(args[0]!=null && i==0){
+                        val dataAfterUpdate = args[0] as String
+                        val userInformation = UserProfileInformation().fromJson(dataAfterUpdate)
+                        updateUI(userInformation)
+                        i++
+                    }
+                }
+            }
+        }
 
-        //Nous allons avoir besoin de mettre a jour les
-        //informations de l'utilisateur suite à la fermeture de la modale
-
-
+        camera.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("request", "true")
+            val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }
 
         val viewHistory: Button = findViewById(R.id.viewHistory)
 
@@ -111,10 +115,31 @@ class OwnProfile : AppCompatActivity() {
     fun updateUI(userInformation: UserProfileInformation) {
 
         //getProfile()
-        emailValue.text = userInformation.emailAddress
-        lastNameValue.text = userInformation.lastName
-        nicknameValue.text = userInformation.pseudo
-        firstNameValue.text = userInformation.firstName
+        runOnUiThread {
+            emailValue.text = userInformation.emailAddress
+            lastNameValue.text = userInformation.lastName
+            nicknameValue.text = userInformation.pseudo
+            firstNameValue.text = userInformation.firstName
+            val decodedString: ByteArray = Base64.decode(userInformation.avatar, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            Glide.with(this).load(decodedByte).fitCenter().into(img_save)
+        }
+        //avatarClientInfo.avatarClient = userInformation!!.avatar!!.toInt()
+    }
+
+    override fun onRestart(){
+        val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+        SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+        var i = 0
+        SocketHandler.getChatSocket().on("profileToClient"){ args ->
+            if(args[0]!=null && i==0){
+                val data = args[0] as String
+                val userInformation = UserProfileInformation().fromJson(data)
+                updateUI(userInformation)
+                i++
+            }
+        }
+        super.onRestart()
     }
 }
 
@@ -131,8 +156,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
         val confirmNewPassword: EditText = findViewById(R.id.confirmNewPassword)
         val newNickname: EditText = findViewById(R.id.newNickname)
         val passwordErrors: TextView = findViewById(R.id.passwordErrors)
-
         val clientService = ClientService()
+
 
         newPassword.doAfterTextChanged {
             passwordErrors.text = ""
@@ -140,8 +165,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(confirmNewPassword.text.isEmpty()) {
@@ -155,8 +180,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -166,8 +191,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(newPassword.text.isEmpty()) {
@@ -180,8 +205,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -191,8 +216,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(newPassword.text.isNotEmpty() &&
                 confirmNewPassword.text.isNotEmpty() &&
                 oldPassword.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
             if(newPassword.text.isEmpty()) {
@@ -206,15 +231,15 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
         newNickname.doAfterTextChanged {
             if(newNickname.text.isNotEmpty()){
-                okButton.isClickable = true;
-                okButton.isEnabled = true;
+                okButton.isClickable = true
+                okButton.isEnabled = true
                 passwordErrors.text = ""
             }
 
@@ -222,8 +247,8 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
                 passwordErrors.text = ""
-                okButton.isClickable = false;
-                okButton.isEnabled = false;
+                okButton.isClickable = false
+                okButton.isEnabled = false
             }
         }
 
@@ -231,7 +256,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
         okButton.setOnClickListener {
             //The request to update the information will be sent before hiding the pop up
             var canProcessQuery = true
-            var modification = ProfileModification()
+            val modification = ProfileModification()
 
             if(newNickname.text.isNotEmpty()){
                 modification.newPseudo = newNickname.text.toString()
@@ -272,19 +297,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                     }
                 }
                 if(response!!.isSuccessful){
-                    val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
-                    SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
-                    var i = 0
-                    SocketHandler.getChatSocket().on("profileToClient"){ args ->
-                        if(args[0]!=null && i==0){
-                            val data = args[0] as String
-                            val newBundle = Bundle()
-                            newBundle.putString("newProfileInformation", data)
-                            context.intent.replaceExtras(newBundle)
-                            dismiss()
-                            i++
-                        }
-                    }
+                    dismiss()
                 }
                 else{
                     println(response!!.errorBody()!!.string())
@@ -300,10 +313,4 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
 
         setCanceledOnTouchOutside(true)
     }
-
-    fun isPasswordEqual(newPass: String, confirmPass: String): Boolean {
-        return newPass == confirmPass
-
-    }
-
 }

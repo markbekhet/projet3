@@ -1,6 +1,7 @@
 package com.example.android
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android.chat.*
@@ -22,7 +23,6 @@ import retrofit2.Response
 class LandingPage : AppCompatActivity(){
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
-
     var response: Response<ResponseBody>?=null
     private val galleryDraws = Gallery()
     override fun onCreate(savedInstanceState: Bundle?) {
