@@ -52,8 +52,8 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
 
     this.socketService.socket!.on("userLeftDrawing", (data: any)=>{
       let dataMod: {drawingId: number, userId: string} = JSON.parse(data);
-      let mapEntries = userColorMap.entries();
-      for(let entry of mapEntries){
+      //let mapEntries = userColorMap.entries();
+      for(let entry of userColorMap){
         if(entry[1] === dataMod.userId){
           userColorMap.set(entry[0], undefined)
           break;
