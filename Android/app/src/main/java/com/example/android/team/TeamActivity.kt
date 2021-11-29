@@ -1,12 +1,14 @@
 package com.example.android.team
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import com.example.android.*
-import com.example.android.canvas.ModifyDrawingDto
+import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
@@ -14,19 +16,22 @@ import com.example.android.client.*
 import com.example.android.profile.OwnProfile
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_team.*
-import kotlinx.android.synthetic.main.content_landing_page.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 class TeamActivity : AppCompatActivity() {
     private var teamGeneralInformation: TeamGeneralInformation?= null
     private var manager: FragmentManager?=null
-    private var socket: Socket?= null
+    private var socket: Socket= SocketHandler.getChatSocket()
     private var chatRoomExists = false
     val galleryDrawings = Gallery()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_team)
-        socket = SocketHandler.getChatSocket()
         val usersList =  ArrayList<User>()
         //The extra data will be needed for the gallery and for the chat
 
@@ -42,9 +47,13 @@ class TeamActivity : AppCompatActivity() {
                 }
             }
         }
-
         val generalData = intent.extras!!.getString("teamGeneralInformation")
         teamGeneralInformation = TeamGeneralInformation().fromJson(generalData!!)
+
+        showBio.setOnClickListener {
+            showBio(teamGeneralInformation!!.bio)
+        }
+
         ChatRooms.chats[teamGeneralInformation!!.name!!] = teamChatAndActiveUsers.chatHistoryList
 
         chatRoomExists = ChatRooms.chatRooNames.contains(teamGeneralInformation!!.name!!)
@@ -98,9 +107,9 @@ class TeamActivity : AppCompatActivity() {
 
         profileButtonTeamPage.setOnClickListener {
             val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
-            socket!!.emit("getUserProfileRequest", profileRequest.toJson())
+            socket.emit("getUserProfileRequest", profileRequest.toJson())
             var i = 0
-            socket!!.on("profileToClient"){ args ->
+            socket.on("profileToClient"){ args ->
                 if(args[0]!=null && i==0){
                     val profileData = args[0] as String
                     val bundle = Bundle()
@@ -113,7 +122,7 @@ class TeamActivity : AppCompatActivity() {
         }
         /*============================================*/
         /*========================socket actions=================================*/
-        socket?.on("newJoinToTeam"){ args ->
+        socket.on("newJoinToTeam"){ args ->
             if(args[0]!= null){
                 val newActiveUserData = args[0] as String
                 val newActiveUser = ActiveUser().fromJson(newActiveUserData)
@@ -133,7 +142,7 @@ class TeamActivity : AppCompatActivity() {
 
         }
 
-        socket?.on("userLeftTeam"){ args ->
+        socket.on("userLeftTeam"){ args ->
             if(args[0]!= null){
                 val userLeftData = args[0] as String
                 val userLeft = ActiveUser().fromJson(userLeftData)
@@ -165,7 +174,7 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        socket?.on("userUpdate"){ args ->
+        socket.on("userUpdate"){ args ->
             if(args[0]!= null){
                 val userUpdated = User().fromJson(args[0] as String)
                 var exist = false
@@ -186,26 +195,26 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        socket?.on("teamDeleted"){ args ->
+        socket.on("teamDeleted"){ args ->
             if(args[0] != null){
                 usersAndTeamsFragment.updateTeamsRecycleView()
             }
         }
 
-        socket?.on("newTeamCreated"){ args ->
+        socket.on("newTeamCreated"){ args ->
             if(args[0] != null){
                 usersAndTeamsFragment.updateTeamsRecycleView()
             }
         }
 
         /*============Gallery related socket interaction================*/
-        socket?.on("drawingDeleted"){ args->
+        socket.on("drawingDeleted"){ args->
             if(args[0] != null){
                 galleryDrawings.set(ClientInfo.gallery.drawingList)
             }
         }
 
-        socket?.on("drawingModified"){ args->
+        socket.on("drawingModified"){ args->
             if(args[0] != null){
                 val drawingModData = args[0] as String
                 val drawingModified = ReceiveDrawingInformation().fromJson(drawingModData)
@@ -216,7 +225,7 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        socket?.on("newDrawingCreated"){ args ->
+        socket.on("newDrawingCreated"){ args ->
             if(args[0] != null){
                 val newDrawing = args[0] as String
                 val drawingAdded = ReceiveDrawingInformation().fromJson(newDrawing)
@@ -227,13 +236,13 @@ class TeamActivity : AppCompatActivity() {
             }
         }
 
-        socket?.on("nbCollaboratorsDrawingIncreased"){ args ->
+        socket.on("nbCollaboratorsDrawingIncreased"){ args ->
             if(args[0] != null){
                 galleryDrawings.set(ClientInfo.gallery.drawingList)
             }
         }
 
-        socket?.on("nbCollaboratorsDrawingReduced"){ args ->
+        socket.on("nbCollaboratorsDrawingReduced"){ args ->
             if(args[0] != null){
                 galleryDrawings.set(ClientInfo.gallery.drawingList)
             }
@@ -250,7 +259,6 @@ class TeamActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(!chatRoomExists){
-            ClientInfo.gallery.removeDrawingsTeam(teamGeneralInformation!!.id!!)
             ChatRooms.chats.remove(teamGeneralInformation!!.name)
             var i = 0
             for(room in ChatRooms.chatRooNames){
@@ -269,8 +277,59 @@ class TeamActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    override fun onResume(){
-        galleryDrawings.set(ClientInfo.gallery.drawingList)
-        super.onResume()
+    fun showBio(bio: String){
+        val bioDialog = Dialog(this)
+        bioDialog.setContentView(R.layout.popuploginerror)
+        val okButton: Button = bioDialog.findViewById(R.id.popup)
+        okButton.isEnabled = true
+        val errorMessage: TextView = bioDialog.findViewById(R.id.errorLogin)
+        errorMessage.text = bio
+        okButton.setOnClickListener {
+            bioDialog.hide()
+        }
+        bioDialog.show()
+    }
+
+    override fun onRestart(){
+        var response: Response<ResponseBody>? = null
+        runBlocking {
+            async{
+                launch {
+                    response = ClientService().getUserGallery()
+                }
+            }
+        }
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
+
+            for(entry in ClientInfo.possibleOwners){
+                // The user is the first entry
+                if(entry.key != 0){
+                    val pairValue = entry.value
+                    val getGalleryRequest = GetGalleryTeam(pairValue.second)
+                    SocketHandler.getChatSocket().emit("getTeamGallery",
+                        getGalleryRequest.toJson())
+                    var i = 0
+                    SocketHandler.getChatSocket().on("teamGallery"){ args ->
+                        if(args[0] != null && i==0){
+                            val additionalDrawingsData = args[0] as String
+                            val additionalGallery = GalleryDrawing().
+                            fromJson(additionalDrawingsData)
+                            println(additionalGallery.drawingList.size)
+                            ClientInfo.gallery.addDrawingsToList(additionalGallery.drawingList)
+                            println("adding drawings")
+                            galleryDrawings.set(ClientInfo.gallery.drawingList)
+                            i++
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            galleryDrawings.set(ClientInfo.gallery.drawingList)
+        }
+
+        super.onRestart()
     }
 }

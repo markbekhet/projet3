@@ -1,18 +1,11 @@
 package com.example.android.chat
 
-import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.text.TextPaint
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +17,6 @@ import androidx.lifecycle.Lifecycle
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
-import kotlinx.android.synthetic.main.sample_chat_dialog.*
 
 
 class ChatDialog(var content: AppCompatActivity, var room: String = "General") : DialogFragment(), ChatRoomSwitcher {
@@ -109,7 +101,7 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
                             NotificationManager::class.java
                         ) as NotificationManager
                         notificationManager.sendNotification(
-                            "${messageFromServer.from} a envoyé" +
+                            "${messageFromServer.from} a envoyé " +
                                 "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
                             content
                         )

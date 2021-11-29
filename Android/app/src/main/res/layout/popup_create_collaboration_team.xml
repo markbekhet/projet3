@@ -53,6 +53,14 @@
             android:textColor="#808080"
             android:textSize="20sp" />
 
+        <EditText
+            android:id="@+id/bioFieldEntry"
+            android:layout_width="229dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:hint="bio de l'équipe"/>
+
         <LinearLayout
             android:orientation="vertical"
             android:gravity="center"

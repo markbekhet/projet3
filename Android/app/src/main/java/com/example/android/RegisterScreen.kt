@@ -18,6 +18,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import android.text.TextUtils
 import android.util.Patterns
+import com.example.android.team.CantJoin
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
 
 
@@ -117,8 +118,8 @@ class RegisterScreen : AppCompatActivity() {
                     finish()
                 }
                 else{
-                    errorPassword.text = "Il semble qu'un autre utilisateur a le même" +
-                        " adresse courriel ou le même pseudonyme."
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    errorPassword.text = errorMessage.message
                 }
             }
         }
