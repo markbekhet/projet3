@@ -23,7 +23,8 @@ object AvatarClientInfo{
 }
 class User(val id: String? = null,
            val status: Int?= null,
-           val pseudo: String?= null){
+           val pseudo: String?= null,
+           val avatar: String = ""){
     fun fromJson(json: String): User{
         return Gson().fromJson(json, User::class.java)
     }

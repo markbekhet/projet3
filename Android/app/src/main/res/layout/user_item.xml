@@ -10,30 +10,40 @@
         android:id="@+id/userColor"
         android:layout_width="5dp"
         android:layout_height="match_parent"/>
-    <TextView
-        android:id="@+id/foreignUserName"
+    <ImageView
+        android:id="@+id/avatarUserFragment"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/avatar" />
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="nom"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:paddingStart="5dp"
-        />
-    <TextView
-        android:id="@+id/foreignUserStatus"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="status"
-        android:textSize="18sp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/black"
-        android:paddingEnd="5dp"
+        android:layout_width="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/foreignUserName"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="nom"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:paddingStart="5dp"
+            />
+        <TextView
+            android:id="@+id/foreignUserStatus"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="status"
+            android:textSize="18sp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/black"
+            android:paddingEnd="5dp"
 
-        />
-
+            />
+    </LinearLayout>
 
 </LinearLayout>
