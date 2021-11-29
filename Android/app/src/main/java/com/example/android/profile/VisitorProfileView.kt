@@ -20,6 +20,11 @@ class VisitorProfileView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vistor_profile_view)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         val bundle = intent.extras
         val data = bundle!!.getString("profileInformation")
         val dataForm = UserProfileInformation().fromJson(data)

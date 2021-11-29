@@ -34,6 +34,10 @@ class OwnProfile : AppCompatActivity() {
         setContentView(R.layout.activity_own_profile)
         val data = intent.extras?.getString("profileInformation")
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         val chatDialog= ChatDialog(this)
         showChatOwnerProfile.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)

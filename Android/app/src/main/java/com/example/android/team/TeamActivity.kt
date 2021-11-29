@@ -35,6 +35,10 @@ class TeamActivity : AppCompatActivity() {
         val usersList =  ArrayList<User>()
         //The extra data will be needed for the gallery and for the chat
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         /*===============Get the team information from the bundle==================*/
         val data = intent.extras!!.getString("teamInformation")
         val teamChatAndActiveUsers = TeamChatAndActiveUsers().fromJson(data!!)

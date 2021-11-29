@@ -24,12 +24,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher_foreground"
+        android:label="ColorImage"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:logo="@mipmap/ic_launcher_foreground"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Android"
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".profile.CameraActivity"
@@ -45,18 +46,14 @@
             android:exported="true" />
         <activity
             android:name=".CreateDraw"
-            android:exported="true"
-            android:label="@string/title_activity_createdraw"
-            android:theme="@style/Theme.Android.NoActionBar" />
+            android:exported="true" />
         <activity
             android:name=".Drawing"
             android:exported="true" />
         <activity
             android:name=".LandingPage"
             android:exported="true"
-            android:label="@string/title_activity_landing_page"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.Android.NoActionBar" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".profile.HistoryAndStatistics"
             android:exported="true" />

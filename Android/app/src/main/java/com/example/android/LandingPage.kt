@@ -30,6 +30,10 @@ class LandingPage : AppCompatActivity(){
         setContentView(R.layout.content_landing_page)
         val clientService = ClientService()
         //Initialize chat socket
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)

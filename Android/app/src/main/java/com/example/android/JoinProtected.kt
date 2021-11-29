@@ -21,6 +21,10 @@ class JoinProtected : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_protected)
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         val drawingData = intent.extras!!.getString("drawingInformation")
         val teamData = intent.extras!!.getString("teamInformation")
 

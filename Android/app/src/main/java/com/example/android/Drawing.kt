@@ -28,6 +28,10 @@ class Drawing : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dessin)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
         DrawingUtils.currentTool = pencilString
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"
