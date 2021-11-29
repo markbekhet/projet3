@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
@@ -59,7 +60,7 @@ class OwnProfile : AppCompatActivity() {
         updateUI(dataForm)
 
 
-        val modifyParams: Button = findViewById(R.id.modifyParams)
+        val modifyParams: ImageButton = findViewById(R.id.modifyParams)
 
         modifyParams.setOnClickListener{
             modifyParamsDialog = ModifyParams(this)
@@ -106,7 +107,7 @@ class OwnProfile : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val viewHistory: Button = findViewById(R.id.viewHistory)
+        val viewHistory: ImageButton = findViewById(R.id.viewHistory)
 
         viewHistory.setOnClickListener {
             val bundle = Bundle()

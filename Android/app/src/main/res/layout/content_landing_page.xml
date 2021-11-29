@@ -11,52 +11,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:gravity="fill"
+        android:gravity="right"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="16dp">
 
-        <Button
+        <ImageButton
             android:id="@+id/createTeamHomeButton"
-            android:layout_width="200sp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="Créer un Salon"
+            android:src="@drawable/add_group"
+            android:scaleType="fitXY"
+            android:visibility="visible"
             android:textColor="@color/main_color"
             android:textSize="20sp"
             app:backgroundTint="@color/white" />
 
-        <Button
+        <ImageButton
             android:id="@+id/createDrawingHomeButton"
-            android:layout_width="200sp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="Créer un dessin"
+            android:src="@drawable/add"
+            android:scaleType="fitXY"
+            android:visibility="visible"
             android:textColor="@color/main_color"
-            android:textSize="20sp"
             app:backgroundTint="@color/white" />
-        <Button
+        <ImageButton
             android:id="@+id/profileButton"
-            android:layout_width="150sp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="profil"
+            android:src="@drawable/profile"
+            android:scaleType="fitXY"
+            android:visibility="visible"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white" />
 
-        <Button
-            android:id="@+id/disconnect"
-            android:layout_width="150sp"
-            android:layout_height="match_parent"
-            android:text="Deconnexion"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
-        <Button
+        <ImageButton
             android:id="@+id/showChat"
-            android:layout_width="150sp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="Afficher le clavardage"
+            android:src="@drawable/chat"
+            android:scaleType="fitXY"
+            android:visibility="visible"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white"/>
 
+        <ImageButton
+            android:id="@+id/disconnect"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/exit"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            android:textColor="@color/main_color"
+            app:backgroundTint="@color/white" />
 
     </LinearLayout>
 <LinearLayout

@@ -34,6 +34,7 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".profile.CameraActivity"
+            android:screenOrientation="landscape"
             android:exported="true" />
         <activity
             android:name=".JoinProtected"

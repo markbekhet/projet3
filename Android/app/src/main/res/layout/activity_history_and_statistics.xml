@@ -23,11 +23,13 @@
                 android:text="Statistques"
                 android:textSize="36sp"
                 android:textStyle="bold"/>
-            <Button
+            <ImageButton
                 android:id="@+id/showChatStatisticsPage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Afficher le clavardage"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:src="@drawable/chat"
+                android:scaleType="fitXY"
+                android:visibility="visible"
                 android:layout_marginStart="10dp"/>
         </LinearLayout>
 
