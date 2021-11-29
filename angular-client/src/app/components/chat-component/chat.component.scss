@@ -1,0 +1,73 @@
+// #FFBE36
+// #3FB0AB
+// #E5007D
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.chat {
+  position: relative;
+  width: 15vw;
+  padding: 0.8em;
+  background-color: rgba(#3fb0ab, 1);
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+
+  &__name {
+    font-size: 1.2em;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+      // background-color: rgba(#3fb0ab, 0.8);
+    }
+  }
+
+  &__expanded {
+    position: absolute;
+    top: -35vh;
+    left: 0;
+    width: inherit;
+    height: 35vh;
+    max-height: 350px;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+
+    &__messages {
+      display: flex;
+      flex-direction: column-reverse;
+      overflow: auto;
+      width: 80%;
+      // border: solid black;
+      // margin: auto auto;
+      // vertical-align: middle;
+
+      .message-bubble {
+        border: solid rgb(136, 205, 218);
+        border-radius: 20px;
+        background-color: rgb(192, 235, 243);
+        padding: 5px;
+        font-size: 0.8rem;
+        display: inline-flex;
+      }
+    }
+
+    &__content {
+      .form-container {
+        position: absolute;
+        bottom: 0;
+      }
+      .message-input {
+        width: 75%;
+        margin: auto auto;
+      }
+    }
+  }
+}

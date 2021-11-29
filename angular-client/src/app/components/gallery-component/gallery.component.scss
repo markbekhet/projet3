@@ -11,8 +11,6 @@
 
 .gallery-component {
   width: 100%;
-  // overflow: hidden;
-  // padding-top: 0;
 
   h1 {
     text-align: center;
@@ -20,10 +18,10 @@
     top: 0;
     z-index: 1;
     margin-bottom: 0;
-    padding: 1em 0 1em;
+    padding: 0.7em 0 1em;
     font-family: "Calistoga", cursive;
     font-weight: 400;
-    font-size: 2.5em;
+    font-size: 2.2em;
     color: rgba(36, 36, 36, 0.85);
     // color: #273039e0;
     text-shadow: 1px 1px 3px rgba(51, 51, 51, 0.206);
@@ -32,7 +30,7 @@
 
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     grid-gap: 2em;
     padding: 0.5em 1em 2em 1em;
 
@@ -44,9 +42,15 @@
       transition: transform 500ms ease;
 
       mat-card-header {
-        margin-bottom: 0.5em;
+        .mat-card-avatar {
+          width: 32px;
+          height: 32px;
+          font-size: 32px;
+          margin: 0 0.1em 0 0.3em;
+        }
+
         mat-card-title {
-          font-size: 0.8rem;
+          font-size: 1em;
           font-weight: 400;
           margin: 0;
           font-style: italic;
@@ -55,22 +59,28 @@
             font-weight: 300;
           }
         }
+
         mat-card-subtitle {
-          font-size: 0.8rem;
+          font-size: 1em;
           margin: 0;
+          span {
+            text-decoration: underline;
+          }
+          // mat-icon {
+          //   font-size: 0.9em;
+          // }
         }
       }
 
       app-thumbnail {
-        width: 100%;
-        object-fit: contain;
-        object-position: center;
-        margin: 0;
+        display: grid;
+        place-items: center;
+        margin: 1.2em 0;
+        // width: 100%;
+        // object-fit: scale-down;
+        // object-position: center;
+        // margin: 0;
       }
-
-      // .mat-card-image {
-
-      // }
 
       mat-card-actions {
         display: flex;

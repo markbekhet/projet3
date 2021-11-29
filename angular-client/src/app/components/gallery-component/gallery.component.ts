@@ -60,14 +60,14 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     private interactionService: InteractionService,
     private teamService: TeamService,
     private errorDialog: MatDialog,
-    private chatRoomService: ChatRoomService,
+    private chatRoomService: ChatRoomService
   ) {
-    this.teamIds = []
-    this.teamService.activeTeams.value.forEach((team)=>{
+    this.teamIds = [];
+    this.teamService.activeTeams.value.forEach((team) => {
       this.teamIds.push(team.id!);
-      //TODO: 
-      this.socketService.getTeamGallery({teamName: team.name!})
-    })
+      // TODO:
+      this.socketService.getTeamGallery({ teamName: team.name! });
+    });
   }
 
   getAuthenticatedUserID(): string {
@@ -79,7 +79,6 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       return true;
     }
 
-    
     if (this.teamIds.includes(ownerId)) {
       return true;
     }
@@ -92,7 +91,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
   }
 
   // prevent code duplication
-  createShownGalleryDrawing(drawingInfos: DrawingInfosForGallery){
+  createShownGalleryDrawing(drawingInfos: DrawingInfosForGallery) {
     const svg = this.createSVG(
       drawingInfos.contents,
       drawingInfos.width,
@@ -105,37 +104,60 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     });
   }
 
-  createShownGalleryDrawingsFromArray(drawings: DrawingInfosForGallery[]){
-    drawings.forEach((drawing:DrawingInfosForGallery)=>{
+  createShownGalleryDrawingsFromArray(drawings: DrawingInfosForGallery[]) {
+    drawings.forEach((drawing: DrawingInfosForGallery) => {
       this.createShownGalleryDrawing(drawing);
-    })
+    });
   }
 
   ngAfterViewInit(): void {
     // to receive the drawing informations after join
     this.socketService
       .getDrawingInformations()
-      .subscribe((drawingInformations: DrawingInformations)=>{
-        this.drawingService.drawingName$.next(drawingInformations.drawing.name!)
-        this.chatRoomService.addChatRoom(drawingInformations.drawing.name!, drawingInformations.chatHistoryList)
-        this.interactionService.drawingInformations.next(drawingInformations.drawing);
-        this.interactionService.currentDrawingActiveUsers.next(drawingInformations.activeUsers);
+      .subscribe((drawingInformations: DrawingInformations) => {
+        this.drawingService.drawingName$.next(
+          drawingInformations.drawing.name!
+        );
+        this.chatRoomService.addChatRoom(
+          drawingInformations.drawing.name!,
+          drawingInformations.chatHistoryList
+        );
+        this.interactionService.drawingInformations.next(
+          drawingInformations.drawing
+        );
+        this.interactionService.currentDrawingActiveUsers.next(
+          drawingInformations.activeUsers
+        );
         this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
         this.router.navigate(['/draw']);
       });
 
-      this.socketService.socket!.on("teamInformations", (data: any)=>{
-        const teamInformations: {chatHistoryList: ChatHistory[], drawingList: DrawingInfosForGallery[], activeUsers: ActiveUser[]}= JSON.parse(data);
-        const requestedTeam = this.teamService.requestedTeamToJoin.value;
-        let newJoinedTeam: TeamInformations = {id: requestedTeam.id, name: requestedTeam.name, visibility: requestedTeam.visibility,
-           ownerId: requestedTeam.ownerId, bio: requestedTeam.bio, gallery: teamInformations.drawingList, activeUsers: teamInformations.activeUsers};
-        this.teamService.activeTeams.value.set(requestedTeam.name, newJoinedTeam);
-        this.chatRoomService.addChatRoom(requestedTeam.name!, teamInformations.chatHistoryList)
-        this.interactionService.emitUpdateChatListSignal();
-        this.teamIds.push(requestedTeam.id!);
-        this.createShownGalleryDrawingsFromArray(teamInformations.drawingList);
-      })
+    this.socketService.socket!.on('teamInformations', (data: any) => {
+      const teamInformations: {
+        chatHistoryList: ChatHistory[];
+        drawingList: DrawingInfosForGallery[];
+        activeUsers: ActiveUser[];
+      } = JSON.parse(data);
+      const requestedTeam = this.teamService.requestedTeamToJoin.value;
+      const newJoinedTeam: TeamInformations = {
+        id: requestedTeam.id,
+        name: requestedTeam.name,
+        visibility: requestedTeam.visibility,
+        ownerId: requestedTeam.ownerId,
+        bio: requestedTeam.bio,
+        gallery: teamInformations.drawingList,
+        activeUsers: teamInformations.activeUsers,
+      };
+      this.teamService.activeTeams.value.set(requestedTeam.name, newJoinedTeam);
+      this.chatRoomService.addChatRoom(
+        requestedTeam.name!,
+        teamInformations.chatHistoryList
+      );
+      this.interactionService.emitUpdateChatListSignal();
+      this.teamIds.push(requestedTeam.id!);
+      this.createShownGalleryDrawingsFromArray(teamInformations.drawingList);
+    });
 
     // Getting user gallery
     this.authService
@@ -225,7 +247,7 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         }
       });
       if (!found && isUserGallery) {
-        this.createShownGalleryDrawing(drawingInfosForGallery)
+        this.createShownGalleryDrawing(drawingInfosForGallery);
       }
     });
 
@@ -236,22 +258,31 @@ export class GalleryComponent implements OnInit, AfterViewInit {
       });
     });
 
-    this.socketService.socket!.on("teamGallery", (data: any)=>{
-      let drawingInfosForGallery: {drawingList: DrawingInfosForGallery[]} = JSON.parse(data);
-      this.createShownGalleryDrawingsFromArray(drawingInfosForGallery.drawingList);
-    })
+    this.socketService.socket!.on('teamGallery', (data: any) => {
+      const drawingInfosForGallery: { drawingList: DrawingInfosForGallery[] } =
+        JSON.parse(data);
+      this.createShownGalleryDrawingsFromArray(
+        drawingInfosForGallery.drawingList
+      );
+    });
 
-    this.interactionService.$updateGallerySignal.subscribe((sig)=>{
-      if(sig){
+    this.interactionService.$updateGallerySignal.subscribe((sig) => {
+      if (sig) {
         const teamId = this.teamService.leftTeamId.value;
-        this.teamIds.splice(this.teamIds.indexOf(teamId), 1)
-        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery)=>{
-          if(shownDrawing.infos.ownerId === teamId && shownDrawing.infos.visibility === DrawingVisibilityLevel.PRIVATE){
-            this.shownDrawings.splice(this.shownDrawings.indexOf(shownDrawing), 1)
+        this.teamIds.splice(this.teamIds.indexOf(teamId), 1);
+        this.shownDrawings.forEach((shownDrawing: DrawingShownInGallery) => {
+          if (
+            shownDrawing.infos.ownerId === teamId &&
+            shownDrawing.infos.visibility === DrawingVisibilityLevel.PRIVATE
+          ) {
+            this.shownDrawings.splice(
+              this.shownDrawings.indexOf(shownDrawing),
+              1
+            );
           }
-        })
+        });
       }
-    })
+    });
   }
 
   createSVG(
@@ -340,14 +371,40 @@ export class GalleryComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // sortDrawings() {
-  //   for (let i = 0; i < this.drawings.length; i++) {
-  //     if (
-  //       this.drawings[i].ownerId === this.authService.getAuthenticatedUserID()
-  //     ) {
-  //     }
-  //   }
-  // }
+  displayVisibilityIcon(visibilityLevel: DrawingVisibilityLevel): string {
+    switch (visibilityLevel) {
+      case 0:
+        return 'public';
+      case 1:
+        return 'lock';
+      case 2:
+        return 'person'; // visibility, person, not_interested, remove_circle, portrait
+      default:
+        return '';
+    }
+  }
+
+  // Note(Paul) : WIP - goal is to return same date that comes from server but format the hour in 24-hour format so that
+  // it takes less space in the UI
+  // https://www.w3schools.com/js/js_string_methods.asp
+  // https://www.w3schools.com/js/js_dates.asp
+  // https://www.w3schools.com/js/js_date_formats.asp
+  // https://stackoverflow.com/questions/1788705/convert-time-to-24-hours-format-in-javascript
+  /* formatHour(creationDate: string): string {
+    const dateInArrayForm = creationDate.split(',');
+    const date = dateInArrayForm[0];
+    const hour = dateInArrayForm[1];
+    return;
+  } */
+
+  /* sortDrawings() {
+    for (let i = 0; i < this.drawings.length; i++) {
+      if (
+        this.drawings[i].ownerId === this.authService.getAuthenticatedUserID()
+      ) {
+      }
+    }
+  } */
 
   closeModalForm(): void {
     this.windowService.closeDialogs();

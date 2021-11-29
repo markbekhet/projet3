@@ -1,4 +1,4 @@
-<div class="component-wrapper">
+<div class="component-grid">
     <mat-list class="usersList">
         <h2>Liste des utilisateurs</h2>
         <mat-list-item *ngFor="let user of users">
@@ -27,10 +27,24 @@
 
     <mat-list class="chatroomsList">
         <h2>Canaux de discussion</h2>
-        <mat-list-item *ngFor="let room of chatrooms">
-            <span>{{room}}</span>
-            <button (click)="joinChat(room)">Joindre le canal de discussion</button>
-            <button *ngIf="room !== 'General'" (click)="leaveTeam(room)">Quitter l'équipe</button>
-        </mat-list-item>
+
+        <mat-chip-list aria-label="Liste des canaux de clavardage">
+            <mat-chip color="primary" selected matTooltip="Joindre le canal" (click)="joinChat('General')">
+                {{'General'}}
+            </mat-chip>
+
+            <!-- Teams chatrooms -->
+            <div *ngFor="let room of chatrooms">
+                <mat-chip color="accent" selected matTooltip="Joindre le canal" (click)="joinChat(room)">
+                    {{room}}
+                </mat-chip>
+                <button (click)="leaveTeam(room)">Quitter l'équipe</button>
+            </div>
+        </mat-chip-list>
     </mat-list>
+
+    <div class="chatrooms-selected">
+        <ng-template #chatInsert>
+        </ng-template>
+    </div>
 </div>

@@ -35,7 +35,7 @@ export class LandingPage implements OnInit, AfterViewInit {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
     this.isLoggedIn = true;
-    userColorMap.set("#CBCB28", this.authService.token$.value);
+    userColorMap.set('#CBCB28', this.authService.token$.value);
   }
 
   ngOnInit(): void {
@@ -45,15 +45,16 @@ export class LandingPage implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(){
-    this.socketService.socket!.on("RoomChatHistories", (data: string)=>{
-      let chatHistories: {chatHistoryList: ChatHistory[]} = JSON.parse(data);
+  ngAfterViewInit() {
+    this.socketService.socket!.on('RoomChatHistories', (data: string) => {
+      const chatHistories: { chatHistoryList: ChatHistory[] } =
+        JSON.parse(data);
       console.log(chatHistories);
       this.chatRoomService.addChatRoom(
         'General',
         chatHistories.chatHistoryList
       );
-      this.interactionService.emitUpdateChatListSignal()
+      this.interactionService.emitUpdateChatListSignal();
     });
   }
 

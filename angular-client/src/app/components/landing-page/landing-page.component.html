@@ -1,11 +1,11 @@
 <div class="landing-page">
     <div class=header>
-        <img src="../../../assets/logos/colorimage_logo1_curved.png" alt="Logo ColorImage" class="logo">
+        <img src="../../../assets/logos/header_logo_white_text.png" alt="Logo ColorImage" class="logo">
     </div>
 
     <div class="header-buttons">
-        <div *ngFor="let item of menuItems" class="btn">
-            <button mat-fab (click)="execute(item.shortcutName)" matTooltip={{item.name}} color="primary">
+        <div *ngFor="let item of menuItems" class="button-container">
+            <button mat-mini-fab (click)="execute(item.shortcutName)" matTooltip={{item.name}} color="primary">
                 <mat-icon>{{item.icon}}</mat-icon>
             </button>
         </div>

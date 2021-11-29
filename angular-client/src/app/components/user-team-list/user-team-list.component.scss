@@ -6,9 +6,10 @@ $base-color-dark: #403d39;
   box-sizing: border-box;
 }
 
-.component-wrapper {
+.component-grid {
   display: grid;
-  grid-template-rows: 30vh 30vh 28vh;
+  position: relative;
+  grid-template-rows: 30vh 31vh 30vh;
   grid-template-areas:
     "usersList"
     "teamsList"
@@ -19,10 +20,6 @@ $base-color-dark: #403d39;
     border-left: 2px solid $base-color-dark;
     border-bottom: 2px solid $base-color-dark;
     overflow: auto;
-
-    &:last-child {
-      border-bottom: 0px;
-    }
 
     mat-list-item {
       display: block;
@@ -47,8 +44,21 @@ $base-color-dark: #403d39;
     }
   }
 
+  .chatroomsList {
+    border-bottom: 0px;
+  }
 
+  .chatrooms-selected {
+    position: absolute;
+    bottom: 0;
+    right: 20vw;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    gap: 1em;
 
-  // .usersList {
-  // }
+    // & > :first-child {
+    //   margin-right: 3px;
+    // }
+  }
 }
