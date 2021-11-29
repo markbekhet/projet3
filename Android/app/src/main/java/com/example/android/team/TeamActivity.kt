@@ -193,7 +193,7 @@ class TeamActivity : AppCompatActivity() {
                 }
                 if(exist){
                     usersList.removeAt(i)
-                    usersList.add(userUpdated)
+                    usersList.add(i, userUpdated)
                     usersAndTeamsFragment.setUsersList(usersList)
                 }
             }
