@@ -62,10 +62,16 @@ class OwnProfile : AppCompatActivity() {
             modifyParamsDialog!!.create()
             modifyParamsDialog!!.show()
             modifyParamsDialog!!.setOnDismissListener {
-                val newData = intent.extras!!.getString("newProfileInformation")
-                if(newData != null){
-                    val newDataForm = UserProfileInformation().fromJson(newData)
-                    updateUI(newDataForm)
+                val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
+                SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
+                var i = 0
+                SocketHandler.getChatSocket().on("profileToClient"){ args ->
+                    if(args[0]!=null && i==0){
+                        val dataAfterUpdate = args[0] as String
+                        val userInformation = UserProfileInformation().fromJson(dataAfterUpdate)
+                        updateUI(userInformation)
+                        i++
+                    }
                 }
             }
 
@@ -291,19 +297,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                     }
                 }
                 if(response!!.isSuccessful){
-                    val joinRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
-                    SocketHandler.getChatSocket().emit("getUserProfileRequest", joinRequest.toJson())
-                    var i = 0
-                    SocketHandler.getChatSocket().on("profileToClient"){ args ->
-                        if(args[0]!=null && i==0){
-                            val data = args[0] as String
-                            val newBundle = Bundle()
-                            newBundle.putString("newProfileInformation", data)
-                            context.intent.replaceExtras(newBundle)
-                            dismiss()
-                            i++
-                        }
-                    }
+                    dismiss()
                 }
                 else{
                     println(response!!.errorBody()!!.string())
