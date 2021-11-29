@@ -33,14 +33,16 @@
                         android:textColor="@color/main_color"
                         android:textSize="32dp"
                         android:textStyle="bold" />
-                    <Button
+                    <ImageButton
                         android:id="@+id/chatDrawing"
-                        android:layout_width="200sp"
-                        android:layout_height="wrap_content"
-                        android:text="Afficher le clavardage"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/chat"
+                        android:scaleType="fitXY"
+                        android:visibility="visible"
+                        android:layout_gravity="right"
                         android:textColor="@color/main_color"
                         android:layout_marginStart="5dp"
-                        android:textSize="10sp"
                         app:backgroundTint="@color/white" />
                 </LinearLayout>
 

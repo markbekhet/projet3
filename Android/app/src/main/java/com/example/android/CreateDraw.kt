@@ -34,6 +34,10 @@ class CreateDraw : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         val chatDialog = ChatDialog(this)
         chatCreateDrawing.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)

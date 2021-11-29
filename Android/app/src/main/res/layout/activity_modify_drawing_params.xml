@@ -15,13 +15,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center">
-            <Button
+            <ImageButton
                 android:id="@+id/showChatModifyDrawingPage"
-                android:layout_width="200sp"
-                android:layout_height="wrap_content"
-                android:text="Afficher le clavardage"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:src="@drawable/chat"
+                android:scaleType="fitXY"
+                android:visibility="visible"
                 android:textColor="@color/main_color"
-                android:textSize="20sp"
                 app:backgroundTint="@color/white"
                 />
             <EditText

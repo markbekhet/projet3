@@ -30,6 +30,11 @@ class ModifyDrawingParams : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_modify_drawing_params)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         socket = SocketHandler.getChatSocket()
         val data = intent.extras!!.getString("drawingInformation")
         information = ReceiveDrawingInformation().fromJson(data!!)

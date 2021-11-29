@@ -45,6 +45,11 @@ class HistoryAndStatistics : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
         val chatDialog = ChatDialog(this)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
+        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
         showChatStatisticsPage.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }

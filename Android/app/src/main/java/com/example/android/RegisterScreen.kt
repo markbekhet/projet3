@@ -62,6 +62,10 @@ class RegisterScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true);
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
+        supportActionBar!!.setDisplayUseLogoEnabled(true);
+
         val firstName: EditText = findViewById(R.id.longueur)
         val lastName: EditText = findViewById(R.id.largeur)
         val pseudo: EditText = findViewById(R.id.pseudonyme)

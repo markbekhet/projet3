@@ -20,11 +20,13 @@
             android:textStyle="bold"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/showChatVisitorProfile"
-            android:layout_width="150sp"
-            android:layout_height="wrap_content"
-            android:text="Afficher le clavardage"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:src="@drawable/chat"
+            android:scaleType="fitXY"
+            android:visibility="visible"
             android:textColor="@color/main_color"
             app:backgroundTint="@color/white"/>
 

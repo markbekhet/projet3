@@ -11,6 +11,15 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <ImageButton
+            android:id="@+id/chatJoinProtected"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/chat"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            android:layout_width="100dp"
+            android:layout_height="50dp" />
+
         <TextView
             android:id="@+id/joinProtectedLabel"
             android:layout_width="wrap_content"
@@ -18,13 +27,6 @@
             android:textSize="20sp"
             android:text="Joindre une équipe protégé" />
 
-
-        <Button
-            android:id="@+id/chatJoinProtected"
-            android:layout_marginTop="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Afficher le chat" />
 
         <EditText
             android:id="@+id/joinProtectedTextPassword"

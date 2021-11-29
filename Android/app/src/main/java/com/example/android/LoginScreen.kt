@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
 import com.example.android.client.LoginInfo
+import com.example.android.team.CantJoin
 import kotlinx.android.synthetic.main.message.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -24,10 +25,15 @@ class LoginScreen : AppCompatActivity() {
     private var clientService: ClientService? = null
     private var texte: Button? = null
     var userdata : LoginInfo ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
         clientService = ClientService()
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true);
+        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
+        supportActionBar!!.setDisplayUseLogoEnabled(true);
 
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
@@ -98,7 +104,8 @@ class LoginScreen : AppCompatActivity() {
                 print(username.toString())
 
             } else {
-                showError(response!!.errorBody()!!.string())
+                val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
+                showError(cantJoin.message)
             }
             password.text.clear()
             username.text.clear()
