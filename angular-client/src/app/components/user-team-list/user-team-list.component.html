@@ -2,8 +2,12 @@
     <mat-list class="usersList">
         <h2>Utilisateurs connectés</h2>
         <mat-list-item *ngFor="let user of users">
-            <div *ngIf="user.id !== authenticatedUserId && user.status !== 2">
+            <div *ngIf="user.id !== authenticatedUserId">
+                <img matListAvatar [src]="decodeAvatar(user.avatar!)" alt="User avatar" class="avatar">
                 <span>{{user.pseudo}}</span>
+                <span *ngIf="user.status === 1"> Occupe</span>
+                <span *ngIf="user.status === 2"> hors ligne</span>
+                <span *ngIf="user.status === 0"> En ligne</span>
                 <button (click)="viewUserProfile(user)">Consulter son profil</button>
             </div>
         </mat-list-item>

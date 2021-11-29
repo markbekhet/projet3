@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { AvatarService } from '@src/app/services/avatar/avatar.service';
 import {userColorMap } from '@src/app/services/drawing/drawing.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
@@ -16,7 +17,7 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
 
   authenticatedUserId: string;
 
-  constructor(private socketService: SocketService, private authService: AuthService, private interactionService:InteractionService) {
+  constructor(private socketService: SocketService, private authService: AuthService, private interactionService:InteractionService, private avatarService: AvatarService) {
     this.authenticatedUserId = this.authService.token$.value
     this.users = [];
   }
@@ -67,4 +68,11 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
     })
   }
 
+  decodeAvatar(avatarEncoded: string){
+    console.log(avatarEncoded)
+    if(avatarEncoded === undefined){
+      return "";
+    }
+    return this.avatarService.decodeAvatar(avatarEncoded);
+  }
 }

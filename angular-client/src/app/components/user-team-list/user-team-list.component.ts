@@ -25,6 +25,7 @@ import { TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AvatarService } from '@src/app/services/avatar/avatar.service';
 
 @Component({
   selector: 'app-user-team-list',
@@ -50,6 +51,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     private windowService: ModalWindowService,
     private bottomSheetService: MatBottomSheet,
     private errorDialog: MatDialog,
+    private avatarService: AvatarService
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
   }
@@ -188,6 +190,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
+  decodeAvatar(avatarEncoded: string){
+    if(avatarEncoded === undefined){
+      return "";
+    }
+    return this.avatarService.decodeAvatar(avatarEncoded);
+  }
 }
 
 @Component({
@@ -213,7 +221,6 @@ export class TeamPasswordBottomSheet {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
   }
-
   submit(event: MouseEvent) {
     const joinTeamRequest: JoinTeam = {
       teamName: this.infos.team.name,
@@ -225,4 +232,5 @@ export class TeamPasswordBottomSheet {
     this.socketService.sendRequestJoinTeam(joinTeamRequest);
     this.teamService.requestedTeamToJoin.next(this.infos.team);
   }
+
 }
