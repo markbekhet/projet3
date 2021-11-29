@@ -143,7 +143,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     }
     else{
       const joinTeamBody: JoinTeam = {
-        teamName: team.name!,
+        teamName: team.name,
         userId: this.authenticatedUserId,
       };
       this.socketService.sendRequestJoinTeam(joinTeamBody);
