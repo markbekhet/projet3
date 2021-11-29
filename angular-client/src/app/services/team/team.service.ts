@@ -1,11 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  Team,
-  TeamCreation,
-  TeamInformations,
-} from '@src/app/models/teamsMeta';
-import { TeamVisibilityLevel } from '@src/app/models/VisibilityMeta';
+import { Team, TeamCreation, TeamInformations } from '@models/teamsMeta';
+import { TeamVisibilityLevel } from '@models/VisibilityMeta';
 import { BehaviorSubject } from 'rxjs';
 
 const PATH = 'http://localhost:3000';

@@ -5,19 +5,20 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Team, TeamCreation } from '@src/app/models/teamsMeta';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+
+import { Team, TeamCreation } from '@models/teamsMeta';
 import {
   TeamVisibilityItem,
   teamVisibilityItems,
   TeamVisibilityLevel,
-} from '@src/app/models/VisibilityMeta';
-import { AuthService } from '@src/app/services/authentication/auth.service';
-import { TeamService } from '@src/app/services/team/team.service';
-import { SocketService } from '@src/app/services/socket/socket.service';
-import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
-import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+} from '@models/VisibilityMeta';
+import { AuthService } from '@services/authentication/auth.service';
+import { TeamService } from '@services/team/team.service';
+import { SocketService } from '@services/socket/socket.service';
+import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 // import { ModalWindowService } from '@src/app/services/window-handler/modal-window.service';
 
 @Component({
@@ -39,24 +40,25 @@ export class NewTeamDialogComponent implements OnInit {
   newTeam: TeamCreation;
   bio: string = '';
   inputEntered: boolean = false;
+
   constructor(
     private authService: AuthService,
+    private errorDialog: MatDialog,
     private formBuilder: FormBuilder,
     private socketService: SocketService,
     private teamService: TeamService,
-    private windowService: ModalWindowService,
-    private errorDialog: MatDialog,
+    private windowService: ModalWindowService
   ) {
     this.userId = '';
     this.teamVisibilityItems = teamVisibilityItems;
     this.newTeam = {
-      name:"",
+      name: '',
       password: undefined,
       visibility: TeamVisibilityLevel.PUBLIC,
-      ownerId: this.authService.token$.value,
+      ownerId: this.authService.getUserToken(),
       bio: undefined,
-      nbCollaborators: 2,
-    }
+      nbCollaborators: 4,
+    };
   }
 
   ngOnInit(): void {
@@ -70,7 +72,7 @@ export class NewTeamDialogComponent implements OnInit {
       teamName: ['', [Validators.required]],
       teamVisibility: [TeamVisibilityLevel.PUBLIC, [Validators.required]],
       teamPassword: ['', []],
-      maxCollaborators: [2, [Validators.required, Validators.min(2)]],
+      maxCollaborators: [4, [Validators.required, Validators.min(2)]],
       teamBio: ['', []],
     });
   }
@@ -106,19 +108,29 @@ export class NewTeamDialogComponent implements OnInit {
       nbCollaborators: values.maxCollaborators,
       bio: values.teamBio,
     };
-    this.teamService.createTeam(this.newTeam).subscribe((team: Team) => {
-      let requestJoinTeam: Team = {id: team.id, name: team.name, visibility: this.newTeam.visibility, ownerId: this.newTeam.ownerId, bio: this.newTeam.bio}
-      this.teamService.requestedTeamToJoin.next(requestJoinTeam);
-      this.socketService.sendRequestJoinTeam({
-        teamName: this.newTeam.name!,
-        userId: this.userId,
-        password: this.newTeam.password,
-      });
-    },
-    (error)=>{
-      const errorCode = JSON.parse((error as HttpErrorResponse).error).message;
-      this.errorDialog.open(ErrorDialogComponent, {data: errorCode});
-    });
+    this.teamService.createTeam(this.newTeam).subscribe(
+      (team: Team) => {
+        const requestJoinTeam: Team = {
+          id: team.id,
+          name: team.name,
+          visibility: this.newTeam.visibility,
+          ownerId: this.newTeam.ownerId,
+          bio: this.newTeam.bio,
+        };
+        this.teamService.requestedTeamToJoin.next(requestJoinTeam);
+        this.socketService.sendRequestJoinTeam({
+          teamName: this.newTeam.name!,
+          userId: this.userId,
+          password: this.newTeam.password,
+        });
+      },
+      (error) => {
+        const errorCode = JSON.parse(
+          (error as HttpErrorResponse).error
+        ).message;
+        this.errorDialog.open(ErrorDialogComponent, { data: errorCode });
+      }
+    );
     console.log(this.newTeam);
     this.closeModal();
   }

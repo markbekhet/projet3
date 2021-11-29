@@ -1,12 +1,13 @@
+/* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { ChatHistory, ClientMessage } from '@src/app/models/MessageMeta';
+import { ChatHistory, ClientMessage } from '@models/MessageMeta';
 // import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatRoomService {
-  chatRooms: Map<string, ChatHistory[]> = new Map<string, ChatHistory[]>();
+  chatRooms = new Map<string, ChatHistory[]>();
 
   addChatRoom(roomName: string, chatHistories: ChatHistory[]) {
     const temp: ChatHistory[] = [];
