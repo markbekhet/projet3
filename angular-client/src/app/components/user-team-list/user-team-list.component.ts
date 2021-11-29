@@ -100,7 +100,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       this.teams.forEach((team) => {
         if (team.id === deletedTeam.id) {
           const index = this.teams.indexOf(team);
-          this.teams.splice(index);
+          this.teams.splice(index, 1);
         }
       });
     });
@@ -152,9 +152,9 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   }
 
   deleteTeam(team: Team) {
-    const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
+    const deleteTeamBody = { teamId: team.id, userId: team.ownerId! };
     this.teamService.deleteTeam(deleteTeamBody).subscribe((resp)=>{
-      this.teams.splice(this.teams.indexOf(team), 1)
+      //this.teams.splice(this.teams.indexOf(team), 1)
     },
     (error)=>{
       const errorCode = JSON.parse((error as HttpErrorResponse).error).message;
