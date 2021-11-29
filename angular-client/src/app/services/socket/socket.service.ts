@@ -15,6 +15,7 @@ import {
 } from '@models/UserMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+// import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
@@ -211,4 +212,12 @@ export class SocketService {
   getTeamGallery(data: { teamName: string }) {
     this.socket!.emit('getTeamGallery', JSON.stringify(data));
   }
+
+  getUserUpdate = () => {
+    this.socket!.on('userUpdate', (data: any) => {
+      const dataMod: User = JSON.parse(data);
+      this.users$.value.set(dataMod.id!, dataMod);
+    });
+    return this.users$;
+  };
 }

@@ -31,6 +31,7 @@ import {
 import { TeamVisibilityLevel } from '@models/VisibilityMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
+import { AvatarService } from '@services/avatar/avatar.service';
 import { ChatRoomService } from '@services/chat-room/chat-room.service';
 import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '@services/socket/socket.service';
@@ -66,6 +67,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private authService: AuthService,
+    private avatarService: AvatarService,
     private bottomSheetService: MatBottomSheet,
     private chatRoomService: ChatRoomService,
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -96,20 +98,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // user update
-    this.socketService.socket!.on('userUpdate', (data: any) => {
-      const dataMod: User = JSON.parse(data);
-      let found = false;
-      this.users.forEach((user) => {
-        if (user.id === dataMod.id) {
-          user.pseudo = dataMod.pseudo;
-          user.status = dataMod.status;
-          user.avatar = dataMod.avatar;
-          found = true;
-        }
+    this.socketService.getUserUpdate().subscribe((userMap) => {
+      this.users = [];
+      userMap.forEach((user: User) => {
+        this.users.push(user);
       });
-      if (!found) {
-        this.users.push(dataMod);
-      }
     });
 
     // newTeamCreated
@@ -133,7 +126,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       this.teams.forEach((team) => {
         if (team.id === deletedTeam.id) {
           const index = this.teams.indexOf(team);
-          this.teams.splice(index);
+          this.teams.splice(index, 1);
         }
       });
     });
@@ -192,7 +185,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       });
     } else {
       const joinTeamBody: JoinTeam = {
-        teamName: team.name!,
+        teamName: team.name,
         userId: this.authenticatedUserId,
       };
       this.socketService.sendRequestJoinTeam(joinTeamBody);
@@ -201,10 +194,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   }
 
   deleteTeam(team: Team) {
-    const deleteTeamBody = { teamId: team.id!, userId: team.ownerId! };
+    const deleteTeamBody = { teamId: team.id, userId: team.ownerId! };
     this.teamService.deleteTeam(deleteTeamBody).subscribe(
       (res) => {
-        this.teams.splice(this.teams.indexOf(team), 1);
+        // this.teams.splice(this.teams.indexOf(team), 1)
       },
       (error) => {
         const errorCode = JSON.parse(
@@ -262,6 +255,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
+  decodeAvatar(avatarEncoded: string) {
+    if (avatarEncoded === undefined) {
+      return '';
+    }
+    return this.avatarService.decodeAvatar(avatarEncoded);
+  }
 }
 
 @Component({
@@ -287,7 +286,6 @@ export class TeamPasswordBottomSheet {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
   }
-
   submit(event: MouseEvent) {
     const joinTeamRequest: JoinTeam = {
       teamName: this.infos.team.name,

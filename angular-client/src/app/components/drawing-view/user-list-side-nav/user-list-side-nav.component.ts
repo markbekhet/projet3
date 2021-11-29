@@ -1,6 +1,8 @@
+/* eslint-disable no-restricted-syntax */
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { User } from '@src/app/models/UserMeta';
 import { AuthService } from '@src/app/services/authentication/auth.service';
+import { AvatarService } from '@src/app/services/avatar/avatar.service';
 import { userColorMap } from '@src/app/services/drawing/drawing.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
@@ -18,7 +20,8 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
   constructor(
     private socketService: SocketService,
     private authService: AuthService,
-    private interactionService: InteractionService
+    private interactionService: InteractionService,
+    private avatarService: AvatarService
   ) {
     this.authenticatedUserId = this.authService.token$.value;
     this.users = [];
@@ -55,8 +58,8 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
 
     this.socketService.socket!.on('userLeftDrawing', (data: any) => {
       const dataMod: { drawingId: number; userId: string } = JSON.parse(data);
-      const mapEntries = userColorMap.entries();
-      for (const entry of mapEntries) {
+      // let mapEntries = userColorMap.entries();
+      for (const entry of userColorMap) {
         if (entry[1] === dataMod.userId) {
           userColorMap.set(entry[0], undefined);
           break;
@@ -68,5 +71,13 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
         }
       });
     });
+  }
+
+  decodeAvatar(avatarEncoded: string) {
+    console.log(avatarEncoded);
+    if (avatarEncoded === undefined) {
+      return '';
+    }
+    return this.avatarService.decodeAvatar(avatarEncoded);
   }
 }
