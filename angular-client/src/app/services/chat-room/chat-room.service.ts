@@ -24,7 +24,7 @@ export class ChatRoomService {
       let newChatHistory: ChatHistory = {from: message.from, date: message.date, message: message.message};
       chatHistories.forEach((chatHistory: ChatHistory)=>{
         if(!(chatHistory.from === newChatHistory.from && chatHistory.date === newChatHistory.date)){
-          chatHistories!.push(newChatHistory)
+          chatHistories!.unshift(newChatHistory)
         }
       })
       /*if(chatHistories.indexOf(newChatHistory) === -1)
