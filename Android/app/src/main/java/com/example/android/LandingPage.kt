@@ -170,8 +170,11 @@ class LandingPage : AppCompatActivity(){
                 }
                 if(exist){
                     ClientInfo.usersList.userList.removeAt(i)
+                    ClientInfo.usersList.userList.add(i, userUpdated)
                 }
-                ClientInfo.usersList.userList.add(userUpdated)
+                else{
+                    ClientInfo.usersList.userList.add(userUpdated)
+                }
             }
             try{
                 usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)

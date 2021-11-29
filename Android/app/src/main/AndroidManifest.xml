@@ -30,7 +30,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:logo="@mipmap/ic_launcher_foreground"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+        android:theme="@style/Theme.Android"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".profile.CameraActivity"
