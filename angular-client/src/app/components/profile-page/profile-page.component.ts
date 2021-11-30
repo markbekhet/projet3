@@ -84,6 +84,9 @@ export class ProfilePage implements OnInit {
       newPassword: formBuilder.control('', [
         Validators.pattern(ValidationService.PASSWORD_REGEX),
       ]),
+      newPasswordTwice: formBuilder.control('', [
+        Validators.pattern(ValidationService.PASSWORD_REGEX),
+      ]),
       avatar: formBuilder.control('', []),
     });
   }
@@ -111,16 +114,16 @@ export class ProfilePage implements OnInit {
       });
   }
 
-  onSubmit(formPseudo: FormGroup) {
+  onSubmit(form: FormGroup) {
     const updates: UpdateUserInformation = {
-      newPseudo: this.verifyPseudo(formPseudo.controls.pseudo.value),
+      newPseudo: this.verifyPseudo(form.controls.pseudo.value),
       newPassword: this.verifyPassword(
-        formPseudo.controls.newPassword.value
+        form.controls.newPassword.value,
+        form.controls.newPasswordTwice.value
       ),
-      oldPassword: formPseudo.controls.oldPassword.value,
-      newAvatar: formPseudo.controls.avatar.value,
+      oldPassword: form.controls.oldPassword.value,
+      newAvatar: form.controls.avatar.value,
     };
-
     this.authService.updateUserProfile(updates).subscribe(
       (response) => {
         // success
@@ -147,8 +150,9 @@ export class ProfilePage implements OnInit {
     return newPseudo;
   }
 
-  private verifyPassword(newPassword: string) {
+  private verifyPassword(newPassword: string, newPasswordConfirmation: string) {
     if (newPassword === '') return null;
+    if (newPassword !== newPasswordConfirmation) return null;
     return newPassword;
   }
 
@@ -174,10 +178,12 @@ export class ProfilePage implements OnInit {
       const NEW_PSEUDO = form.controls.newPseudo.value;
       const NEW_PASSWORD = form.controls.newPassword.value;
       const OLD_PASSWORD = form.controls.oldPassword.value;
+      const NEW_PASSWORD_TWICE = form.controls.newPasswordTwice.value;
       const NEW_AVATAR = form.controls.avatar.value;
       // pseudo & passwords both empty
       const ALL_CONTROLS_EMPTY =
-        NEW_PSEUDO === '' && NEW_PASSWORD === '' && OLD_PASSWORD === '' && NEW_AVATAR === '';
+        NEW_PSEUDO === '' && NEW_PASSWORD === '' && OLD_PASSWORD === ''
+        && NEW_PASSWORD_TWICE === '' && NEW_AVATAR === '';
       return ALL_CONTROLS_EMPTY;
     }
 
@@ -208,7 +214,7 @@ export class ProfilePage implements OnInit {
       };
       this.socketService.sendJoinDrawingRequest(joinDrawing);
       this.drawingService.drawingId$.next(collaboration.drawingId);
-    } 
+    }
     // this.router.navigate(['/home']);
   }
 

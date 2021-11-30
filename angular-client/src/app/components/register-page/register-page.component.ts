@@ -49,6 +49,10 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
+      verificationPassword: formBuilder.control('', [
+        Validators.required,
+        ValidationService.passwordValidator,
+      ]),
       avatar: formBuilder.control('', [Validators.required]),
     });
   }
@@ -59,7 +63,7 @@ export class RegisterPage implements OnInit {
   public async onSubmit(form: FormGroup) {
     console.log(form.value);
 
-    const user: UserRegistrationInfo = {
+    let user: UserRegistrationInfo = {
       firstName: form.controls.firstName.value,
       lastName: form.controls.lastName.value,
       pseudo: form.controls.username.value,
@@ -67,6 +71,11 @@ export class RegisterPage implements OnInit {
       password: form.controls.password.value,
       avatar: form.controls.avatar.value,
     };
+
+    if (form.controls.password.value !== form.controls.verificationPassword.value) {
+      user.password = '';
+      this.resetForm();
+    }
 
     try {
       this.auth.register(user).subscribe(
@@ -112,6 +121,11 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
+      verificationPassword: this.formBuilder.control('', [
+        Validators.required,
+        ValidationService.passwordValidator,
+      ]),
+
       avatar: this.formBuilder.control('', [Validators.required]),
     });
   }
