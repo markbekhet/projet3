@@ -66,7 +66,7 @@ class Chat(var name:String) : Fragment() {
 
 
         button.setOnClickListener {
-            val data = ServerMessage(from= ClientInfo.username,
+            val data = ServerMessage(from= ClientInfo.userId,
                 message= textField.text.toString(),roomName = name)
             SocketHandler.getChatSocket().emit("msgToServer", data.toJson())
             textField.text.clear()
@@ -109,7 +109,8 @@ class Chat(var name:String) : Fragment() {
 
 class UserMessage(var fragment: Chat) : Item<GroupieViewHolder>() {
     private var message = "bonjour"
-    private var author = "auteur"
+    private var authorId = "auteur"
+    private var author = ""
     private var date = "date"
     private var avatar = ""
     override fun getLayout(): Int {
@@ -118,8 +119,9 @@ class UserMessage(var fragment: Chat) : Item<GroupieViewHolder>() {
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         for(user in ClientInfo.usersList.userList){
-            if(user.pseudo == author){
+            if(user.id == authorId){
                 avatar = user.avatar
+                author = user.pseudo.toString()
                 break
             }
         }
@@ -137,7 +139,7 @@ class UserMessage(var fragment: Chat) : Item<GroupieViewHolder>() {
 
     fun set(message: String, user: String, date: String) {
         this.message = message
-        this.author = user
+        this.authorId = user
         this.date = date
     }
 }
