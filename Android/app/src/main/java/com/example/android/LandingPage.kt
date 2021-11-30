@@ -1,9 +1,14 @@
 package com.example.android
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.graphics.Color
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.android.chat.*
 import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ModifyDrawingDto
@@ -38,6 +43,11 @@ class LandingPage : AppCompatActivity(){
         val chatDialog = ChatDialog(this, "General")
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         chatDialog.dismiss()
+
+        createChannel(
+            getString(R.string.color_image_notification_id),
+            "colorImage"
+        )
 
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
@@ -150,6 +160,24 @@ class LandingPage : AppCompatActivity(){
                         // for the message to be unique in the array list
                     ChatRooms.chats[roomName]!!.add(messageFromServer)
                     chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                    if(messageFromServer.from != ClientInfo.userId){
+                        var username = ""
+                        for(user in ClientInfo.usersList.userList){
+                            if(messageFromServer.from == user.id){
+                                username = user.pseudo.toString()
+                                break
+                            }
+                        }
+                        val notificationManager = ContextCompat.getSystemService(
+                            this,
+                            NotificationManager::class.java
+                        ) as NotificationManager
+                        notificationManager.sendNotification(
+                            "$username a envoyé " +
+                                "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
+                            this
+                        )
+                    }
                 }
                 catch(e: Exception){}
             }
@@ -233,6 +261,24 @@ class LandingPage : AppCompatActivity(){
         ChatRooms.chats.clear()
         ChatRooms.chatRooNames.clear()
         chatSocket?.disconnect()
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        // TODO: Step 1.6 START create a channel
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Time for breakfast"
+            val notificationManager = getSystemService(
+                NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        // TODO: Step 1.6 END create a channel
+
     }
 
     override fun onDestroy() {
