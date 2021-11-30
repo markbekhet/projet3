@@ -85,7 +85,6 @@ export class ProfilePage implements OnInit {
         Validators.pattern(ValidationService.PASSWORD_REGEX),
       ]),
       newPasswordTwice: formBuilder.control('', [
-        Validators.pattern(ValidationService.PASSWORD_REGEX),
       ]),
       avatar: formBuilder.control('', []),
     });

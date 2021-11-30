@@ -55,10 +55,7 @@
                     <mat-label>Mot de passe (vérification)</mat-label>
                     <input type="password" matInput formControlName="verificationPassword" required />
                     <mat-error *ngIf="checkError('verificationPassword', 'required')">Veuillez entrer votre mot de passe encore !</mat-error>
-                    <mat-error *ngIf="checkError('verificationPassword', 'invalidPassword') && !checkError('password', 'required')">
-                        Ceci
-                        n'est pas un mot de passe valide !</mat-error>
-                </mat-form-field>
+                    </mat-form-field>
                 <br />
 
                 <button mat-icon-button [disabled]="registerForm.invalid">
