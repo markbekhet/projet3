@@ -10,8 +10,8 @@
 
             <mat-form-field class="new-team-bio-input">
                 <mat-label for="teamBio">Bio</mat-label>
-                <input matInput type="text" id="bioField" formControlName="teamBio" [value]="bio"
-                       (keydown)="blockEvent($event)" />
+                <textarea matInput type="text" placeholder="Vous pouvez écrire une description de l'équipe ici."
+                          formControlName="teamBio" [value]="bio" (keydown)="blockEvent($event)"></textarea>
             </mat-form-field>
 
             <!--<p *ngIf = "teamName.invalid" class= "warnMessage"> Une equipe de collaboration doit avoir un nom</p> -->
@@ -40,7 +40,7 @@
                  Une equipe protegee doit avoir un mot de passe
             </p>-->
             <mat-form-field class="new-team-max-collaborators">
-                <mat-label for="maxCollaborators">Nombre maximal de membres à l'équipe</mat-label>
+                <mat-label for="maxCollaborators">Nombre maximal de membres</mat-label>
                 <input matInput type="number" required formControlName="maxCollaborators" [value]="nbCollaborators" />
             </mat-form-field>
             <!--<p *ngIf= "(nbCollaborators && maxCollaborators.invalid)" class= "warnMessage">
