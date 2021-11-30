@@ -31,6 +31,11 @@
                     </mat-form-field>
                     <br>
                     <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">
+                        <mat-label for="newPasswordTwice">Entrez votre mot de passe de nouveau</mat-label>
+                        <input type="password" matInput formControlName="newPasswordTwice" />
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">
                         <mat-label for="oldPassword">Entrez votre ancien mot de passe</mat-label>
                         <input type="password" matInput formControlName="oldPassword" />
                         <mat-error *ngIf="checkError(updateForm, 'oldPassword', 'pattern')

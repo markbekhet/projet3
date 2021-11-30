@@ -20,7 +20,7 @@ import { AvatarDialogComponent } from '../avatar-dialog/avatar-dialog.component'
 export class RegisterPage implements OnInit {
   registerForm: FormGroup;
   avatarList: Avatar[];
-  selectedAvatar!: Avatar;
+  selectedAvatar!: Avatar | null;
   @ViewChild('file') file!: ElementRef;
   selected: boolean = true;
   avatarSizeTooBig!: boolean;
@@ -49,6 +49,9 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
+      verificationPassword: formBuilder.control('', [
+        Validators.required,
+      ]),
       avatar: formBuilder.control('', [Validators.required]),
     });
   }
@@ -59,7 +62,7 @@ export class RegisterPage implements OnInit {
   public async onSubmit(form: FormGroup) {
     console.log(form.value);
 
-    const user: UserRegistrationInfo = {
+    let user: UserRegistrationInfo = {
       firstName: form.controls.firstName.value,
       lastName: form.controls.lastName.value,
       pseudo: form.controls.username.value,
@@ -67,6 +70,11 @@ export class RegisterPage implements OnInit {
       password: form.controls.password.value,
       avatar: form.controls.avatar.value,
     };
+
+    if (form.controls.password.value !== form.controls.verificationPassword.value) {
+      user.password = '';
+      this.resetForm();
+    }
 
     try {
       this.auth.register(user).subscribe(
@@ -112,8 +120,13 @@ export class RegisterPage implements OnInit {
         Validators.required,
         ValidationService.passwordValidator,
       ]),
+      verificationPassword: this.formBuilder.control('', [
+        Validators.required,
+      ]),
+
       avatar: this.formBuilder.control('', [Validators.required]),
     });
+    this.selectedAvatar = null;
   }
 
   selectAvatarOption(option: string, event?: Event) {
@@ -145,7 +158,7 @@ export class RegisterPage implements OnInit {
             let base64data = reader.result as string;
             base64data = this.avatarService.removeHeader(base64data);
             this.registerForm.controls.avatar.setValue(base64data);
-            this.selectedAvatar.encoding = base64data;
+            this.selectedAvatar!.encoding = base64data;
           };
         },
         (error) => {
@@ -179,6 +192,6 @@ export class RegisterPage implements OnInit {
   }
 
   decodeAvatar() {
-    return this.avatarService.decodeAvatar(this.selectedAvatar.encoding!);
+    return this.avatarService.decodeAvatar(this.selectedAvatar!.encoding!);
   }
 }
