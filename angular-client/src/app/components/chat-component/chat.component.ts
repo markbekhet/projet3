@@ -15,6 +15,7 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ChatRoomService } from '@services/chat-room/chat-room.service';
 // import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '@services/socket/socket.service';
+import { AvatarService } from '@src/app/services/avatar/avatar.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
@@ -58,7 +59,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private socketService: SocketService,
     private chatRoomService: ChatRoomService,
-    private interactionService: InteractionService
+    private interactionService: InteractionService,
+    private avatarService: AvatarService
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.getUserToken(),
@@ -159,4 +161,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   // disconnect(): void {
   //   this.router.navigate(['/home']);
   // }
+  decodeAvatar(avatarEncoded: string) {
+    if (avatarEncoded === undefined) {
+      return '';
+    }
+    return this.avatarService.decodeAvatar(avatarEncoded);
+  }
 }
