@@ -3,18 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/rectangle_background"
-
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/chatRoomNameSwitch"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:text="nom"
+        android:background="@drawable/rectangle_background"
         android:textSize="18sp"
         android:textColor="@color/black" />
-
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
 
 </LinearLayout>
