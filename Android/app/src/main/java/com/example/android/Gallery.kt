@@ -43,8 +43,7 @@ class Gallery :  Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
-        val linearLayoutManager = GridLayoutManager(context, 3)
-        gallery_drawings?.layoutManager = linearLayoutManager
+        gallery_drawings?.layoutManager = GridLayoutManager(context, 2)
         buildGallery()
     }
 
