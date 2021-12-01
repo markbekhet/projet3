@@ -22,7 +22,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/chat"/>
         <TextView
             android:id="@+id/nom_app"
             android:layout_width="wrap_content"

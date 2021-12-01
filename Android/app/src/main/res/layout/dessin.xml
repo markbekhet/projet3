@@ -43,7 +43,8 @@
                         android:layout_gravity="right"
                         android:textColor="@color/main_color"
                         android:layout_marginStart="5dp"
-                        app:backgroundTint="@color/white" />
+                        app:backgroundTint="@color/white"
+                        android:tooltipText="@string/chat"/>
                 </LinearLayout>
 
                 <LinearLayout
