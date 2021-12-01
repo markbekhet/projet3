@@ -25,7 +25,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   @Input()
   chatroomName!: string;
 
-  messages: ChatHistory[] = [];
+  messages: {date: string, message: string, userInfo: User}[] = [];
   messageForm!: FormGroup;
 
   isExpanded: boolean = false;
@@ -71,9 +71,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
+  initMessageList(){
+    let channelMessageHistories = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
+    channelMessageHistories.forEach((chatHistory: ChatHistory)=>{
+      this.messages.unshift(this.createShownMessage(chatHistory));
+    })
+  }
 
+  createShownMessage(chatHistory: ChatHistory):{date: string, message: string, userInfo: User}{
+    let user = this.socketService.users$.value.get(chatHistory.from!)!;
+    let newShownMessage:{date: string, message: string, userInfo: User} = 
+          {date: chatHistory.date!, message: chatHistory.message!, userInfo: user};
+    return newShownMessage;
+  }
+
+  ngOnInit(): void {
+    //this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
+    this.initMessageList()
     this.socketService.socket!.on('msgToClient', (data: any) => {
       const message: ClientMessage = JSON.parse(data);
       if (message.from) {
@@ -82,10 +96,11 @@ export class ChatComponent implements OnInit, OnDestroy {
           date: message.date,
           message: message.message,
         };
-        const index = this.messages.indexOf(newChatHistory);
+        let newMessage = this.createShownMessage(newChatHistory);
+        const index = this.messages.indexOf(newMessage);
         if (index === -1)
           if(this.chatroomName === message.roomName){
-            this.messages.unshift(newChatHistory);
+            this.messages.unshift(newMessage);
           }
       }
       console.log(this.messages);
@@ -109,7 +124,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   onSubmit() {
     const MESSAGE = this.messageForm.controls.message.value;
     const messageToSend: ServerMessage = {
-      from: this.user.pseudo!,
+      from: this.auth.getUserToken(),
       message: MESSAGE,
       roomName: this.chatroomName,
     };

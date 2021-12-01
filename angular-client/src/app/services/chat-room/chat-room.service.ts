@@ -12,7 +12,7 @@ export class ChatRoomService {
   addChatRoom(roomName: string, chatHistories: ChatHistory[]) {
     const temp: ChatHistory[] = [];
     chatHistories.forEach((chatHistory: ChatHistory) => {
-      temp.unshift(chatHistory);
+      temp.push(chatHistory);
     });
     this.chatRooms.set(roomName, temp);
     console.log(this.chatRooms);
@@ -34,7 +34,7 @@ export class ChatRoomService {
             chatHistory.date === newChatHistory.date
           )
         ) {
-          chatHistories!.unshift(newChatHistory);
+          chatHistories!.push(newChatHistory);
         }
       });
       /* if(chatHistories.indexOf(newChatHistory) === -1)

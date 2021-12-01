@@ -4,9 +4,9 @@
     <div class="chat__expanded" [hidden]="!isExpanded">
 
         <div class="chat__expanded__messages">
-            <div *ngFor="let msg of messages" [ngStyle]="{'align-self': self(msg.from!) ? 'flex-end' : 'flex-start' }"
+            <div *ngFor="let msg of messages" [ngStyle]="{'align-self': self(msg.userInfo.pseudo!) ? 'flex-end' : 'flex-start' }"
                  class="message-bubble">
-                <span class="username">{{ msg.from }} dit :</span>
+                <span class="username">{{ msg.userInfo.pseudo }} dit :</span>
                 <span class="date">{{ msg.date }}</span>
                 <p class="message">{{ msg.message }}</p>
             </div>
