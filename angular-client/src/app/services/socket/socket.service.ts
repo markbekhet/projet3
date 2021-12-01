@@ -15,6 +15,7 @@ import {
 } from '@models/UserMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+import { InteractionService } from '../interaction/interaction.service';
 // import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
@@ -34,6 +35,8 @@ export class SocketService {
 
   users$ = new BehaviorSubject<Map<string, User>>(new Map());
   teams$ = new BehaviorSubject<Map<string, Team>>(new Map());
+
+  userUpdated$ = new BehaviorSubject<User>({});
 
   message$ = new BehaviorSubject<ClientMessage>({
     from: '',
@@ -62,6 +65,8 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  constructor(private interactionService: InteractionService){
+  }
   connect(): void {
     this.socket = io(PATH);
   }
@@ -217,7 +222,10 @@ export class SocketService {
     this.socket!.on('userUpdate', (data: any) => {
       const dataMod: User = JSON.parse(data);
       this.users$.value.set(dataMod.id!, dataMod);
+      this.interactionService.emitUpdateChatHistory();
+      console.log(this.users$);
+      this.userUpdated$.next(dataMod);
     });
-    return this.users$;
+    return this.userUpdated$;
   };
 }

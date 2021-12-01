@@ -114,6 +114,13 @@ export class ProfilePage implements OnInit {
   }
 
   onSubmit(form: FormGroup) {
+    let newAvatar: string| null;
+    if(form.controls.avatar.value === ""){
+      newAvatar = null;
+    }
+    else(
+      newAvatar = form.controls.avatar.value
+    )
     const updates: UpdateUserInformation = {
       newPseudo: this.verifyPseudo(form.controls.pseudo.value),
       newPassword: this.verifyPassword(
@@ -121,7 +128,7 @@ export class ProfilePage implements OnInit {
         form.controls.newPasswordTwice.value
       ),
       oldPassword: form.controls.oldPassword.value,
-      newAvatar: form.controls.avatar.value,
+      newAvatar: newAvatar,
     };
     this.authService.updateUserProfile(updates).subscribe(
       (response) => {

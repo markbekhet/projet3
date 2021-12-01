@@ -4,10 +4,10 @@
         <mat-list-item *ngFor="let user of users">
             <div *ngIf="user.id !== authenticatedUserId">
                 <img matListAvatar [src]="decodeAvatar(user.avatar!)" alt="User avatar" class="avatar">
-                <span>{{user.pseudo}}</span>
-                <span *ngIf="user.status === 0">En ligne</span>
-                <span *ngIf="user.status === 1">Occupé</span>
-                <span *ngIf="user.status === 2">Hors ligne</span>
+                <span> {{user.pseudo}}</span>
+                <span *ngIf="user.status === 0"> En ligne</span>
+                <span *ngIf="user.status === 1"> Occupé</span>
+                <span *ngIf="user.status === 2"> Hors ligne</span>
                 <button (click)="viewUserProfile(user)">Consulter son profil</button>
             </div>
         </mat-list-item>

@@ -97,11 +97,19 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // user update
-    this.socketService.getUserUpdate().subscribe((userMap) => {
-      this.users = [];
-      userMap.forEach((user: User) => {
-        this.users.push(user);
+    this.socketService.getUserUpdate().subscribe((userModified: User) => {
+      let found: boolean = false;
+      this.users.forEach((user: User) => {
+        if(userModified.id! === user.id!){
+          found = true;
+          user.pseudo = userModified.pseudo;
+          user.status = userModified.status;
+          user.avatar = userModified.avatar;
+        }
       });
+      if(!found){
+        this.users.push(userModified);
+      }
     });
 
     // newTeamCreated

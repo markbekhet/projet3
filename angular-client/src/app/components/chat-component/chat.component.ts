@@ -15,6 +15,7 @@ import { AuthService } from '@services/authentication/auth.service';
 import { ChatRoomService } from '@services/chat-room/chat-room.service';
 // import { InteractionService } from '@services/interaction/interaction.service';
 import { SocketService } from '@services/socket/socket.service';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
 
 @Component({
   selector: 'app-chat',
@@ -56,7 +57,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private formBuilder: FormBuilder,
     private socketService: SocketService,
-    private chatRoomService: ChatRoomService // private interactionService: InteractionService
+    private chatRoomService: ChatRoomService,
+    private interactionService: InteractionService
   ) {
     this.socketService.getUserProfile({
       userId: this.auth.getUserToken(),
@@ -88,6 +90,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     //this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
     this.initMessageList()
+
+    this.interactionService.$updateChatHistorySignal.subscribe((sig)=>{
+      if(sig)
+        this.initMessageList();
+    })
     this.socketService.socket!.on('msgToClient', (data: any) => {
       const message: ClientMessage = JSON.parse(data);
       if (message.from) {
