@@ -18,7 +18,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:layout_width="100dp"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:tooltipText="@string/chat"/>
 
         <TextView
             android:id="@+id/joinProtectedLabel"

@@ -26,7 +26,8 @@
             android:visibility="visible"
             android:textColor="@color/main_color"
             android:textSize="20sp"
-            app:backgroundTint="@color/white" />
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/createTeam"/>
 
         <ImageButton
             android:id="@+id/createDrawingHomeButton"
@@ -36,7 +37,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/createDrawing"/>
         <ImageButton
             android:id="@+id/profileButton"
             android:layout_width="100dp"
@@ -45,7 +47,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/profile"/>
 
         <ImageButton
             android:id="@+id/showChat"
@@ -55,7 +58,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:textColor="@color/main_color"
-            app:backgroundTint="@color/white"/>
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/chat"/>
 
         <ImageButton
             android:id="@+id/disconnect"
@@ -65,7 +69,8 @@
             android:scaleType="fitXY"
             android:visibility="visible"
             android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
+            app:backgroundTint="@color/white"
+            android:tooltipText="@string/disconnect"/>
 
     </LinearLayout>
 <LinearLayout
@@ -93,7 +98,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@drawable/rectangle_background"
         android:orientation="vertical"

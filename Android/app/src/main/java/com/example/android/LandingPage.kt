@@ -49,6 +49,16 @@ class LandingPage : AppCompatActivity(){
             "colorImage"
         )
 
+        val notificationManager = ContextCompat.getSystemService(
+            this,
+            NotificationManager::class.java
+        ) as NotificationManager
+        notificationManager.sendNotification(
+            "Au besoin, " +
+                "cliquez longtemps sur une image afin de voir la fonctionnalité reliée.",
+            this
+        )
+
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
         val galleryFragmentTransaction = manager.beginTransaction()
