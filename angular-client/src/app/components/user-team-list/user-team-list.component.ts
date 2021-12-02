@@ -184,6 +184,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
     this.chatInsert.clear();
   }
+  
+  isTeamChannel(roomName: string): boolean{
+    let team = this.teamService.activeTeams.value.get(roomName);
+    if(team !== undefined){
+      return true;
+    }
+    return false;
+  }
 
   joinTeam(team: Team) {
     if (team.visibility === TeamVisibilityLevel.PROTECTED) {
