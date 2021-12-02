@@ -24,6 +24,7 @@
                 android:visibility="visible"
                 android:textColor="@color/main_color"
                 app:backgroundTint="@color/white"
+                android:tooltipText="@string/chat"
                 />
             <EditText
                 android:id="@+id/modifyDrawingName"

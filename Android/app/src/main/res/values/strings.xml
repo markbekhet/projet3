@@ -31,5 +31,11 @@
     <string name="color_image_notification_id"> ColorImage_channel</string>
     <string name="notification_title">Color Image</string>
 
-
+    <string name="chat">Le clavardage</string>
+    <string name="statsAndHistories">Historiques et statistiques</string>
+    <string name="disconnect"> Déconnexion</string>
+    <string name="createTeam"> créer une équipe</string>
+    <string name="createDrawing">créer un dessin</string>
+    <string name="profile"> profile de l\'utilisateur</string>
+    <string name="modifyProfile">Modifier le profile</string>
 </resources>

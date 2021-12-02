@@ -25,7 +25,7 @@
             android:textStyle="bold"
         />
         <LinearLayout
-            android:layout_height="match_parent"
+            android:layout_height="90dp"
             android:layout_width="wrap_content"
             android:gravity="right">
             <ImageButton
@@ -38,7 +38,8 @@
                 android:visibility="visible"
                 android:textColor="@color/main_color"
                 android:textSize="20sp"
-                app:backgroundTint="@color/white" />
+                app:backgroundTint="@color/white"
+                android:tooltipText="@string/createTeam"/>
             <ImageButton
                 android:id="@+id/createDrawingTeamButton"
                 android:layout_width="100dp"
@@ -48,7 +49,8 @@
                 android:visibility="visible"
                 android:textColor="@color/main_color"
                 android:textSize="20sp"
-                app:backgroundTint="@color/white" />
+                app:backgroundTint="@color/white"
+                android:tooltipText="@string/createDrawing"/>
             <ImageButton
                 android:id="@+id/profileButtonTeamPage"
                 android:layout_width="100dp"
@@ -57,7 +59,8 @@
                 android:scaleType="fitXY"
                 android:visibility="visible"
                 android:textColor="@color/main_color"
-                app:backgroundTint="@color/white" />
+                app:backgroundTint="@color/white"
+                android:tooltipText="@string/profile"/>
             <ImageButton
                 android:id="@+id/showChatTeamPage"
                 android:layout_width="100sp"
@@ -68,10 +71,10 @@
                 android:textColor="@color/main_color"
                 android:textSize="20sp"
                 app:backgroundTint="@color/white"
-                />
+                android:tooltipText="@string/chat"/>
             <Button
                 android:id="@+id/showBio"
-                android:layout_width="200sp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Afficher le bio"
                 android:textColor="@color/main_color"
@@ -99,7 +102,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/rectangle_background"
                 android:orientation="vertical"

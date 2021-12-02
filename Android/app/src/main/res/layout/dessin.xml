@@ -43,7 +43,8 @@
                         android:layout_gravity="right"
                         android:textColor="@color/main_color"
                         android:layout_marginStart="5dp"
-                        app:backgroundTint="@color/white" />
+                        app:backgroundTint="@color/white"
+                        android:tooltipText="@string/chat"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -205,7 +206,7 @@
                         </LinearLayout>
                     <FrameLayout
                         android:id="@+id/usersAndTeamsFrameDrawingPage"
-                        android:layout_width="300dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent">
 
                     </FrameLayout>
