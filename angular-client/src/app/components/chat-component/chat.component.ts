@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ChatHistory, ClientMessage, ServerMessage } from '@models/MessageMeta';
+import { ChatHistory,ServerMessage } from '@models/MessageMeta';
 import { Status, User } from '@models/UserMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
@@ -97,24 +97,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       if(sig)
         this.initMessageList();
     })
-    this.socketService.socket!.on('msgToClient', (data: any) => {
-      const message: ClientMessage = JSON.parse(data);
-      if (message.from) {
-        const newChatHistory: ChatHistory = {
-          from: message.from,
-          date: message.date,
-          message: message.message,
-        };
-        let newMessage = this.createShownMessage(newChatHistory);
-        const index = this.messages.indexOf(newMessage);
-        if (index === -1)
-          if(this.chatroomName === message.roomName){
-            this.messages.unshift(newMessage);
-          }
-      }
-      console.log(this.messages);
-      console.log(`client received: ${message.message}`);
-    });
 
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
       this.user = profile;

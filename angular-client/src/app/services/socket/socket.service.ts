@@ -16,6 +16,7 @@ import {
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
 import { InteractionService } from '../interaction/interaction.service';
+import { ChatRoomService } from '../chat-room/chat-room.service';
 // import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
@@ -65,7 +66,7 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
-  constructor(private interactionService: InteractionService){
+  constructor(private interactionService: InteractionService, private chatRoomService: ChatRoomService){
   }
   connect(): void {
     this.socket = io(PATH);
@@ -94,6 +95,7 @@ export class SocketService {
   public getNewMessage = () => {
     this.socket!.on('msgToClient', (messageString: any) => {
       const message: ClientMessage = JSON.parse(messageString);
+      this.chatRoomService.addChatHistory(message);
       console.log(`chat service received: ${message.message}`);
       // this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
@@ -228,4 +230,5 @@ export class SocketService {
     });
     return this.userUpdated$;
   };
+
 }
