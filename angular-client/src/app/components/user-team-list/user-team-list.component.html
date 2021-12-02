@@ -38,7 +38,7 @@
                 <mat-chip color="accent" selected matTooltip="Joindre le canal" (click)="joinChat(room)">
                     {{room}}
                 </mat-chip>
-                <button *ngIf="isTeamChannel(room)" mat-icon-button matTooltip="Informations de l'equipe">
+                <button *ngIf="isTeamChannel(room)" mat-icon-button matTooltip="Informations de l'equipe" (click)="openTeamInformations(room)">
                     <mat-icon>info</mat-icon>
                 </button>
                 <button (click)="leaveTeam(room)">Quitter l'équipe</button>

@@ -10,6 +10,7 @@ import { ModifyDrawingComponent } from '@components/gallery-component/modify-dra
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import { TeamMembersListComponent } from '@src/app/components/user-team-list/team-members-list/team-members-list.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
@@ -19,6 +20,7 @@ type Component = ComponentType<
   | NewTeamDialogComponent
   | UserProfileDialogComponent
   | AvatarDialogComponent
+  | TeamMembersListComponent
 >;
 
 @Injectable({
@@ -32,6 +34,7 @@ export class ModalWindowService {
   newTeamConfig = new MatDialogConfig();
   userProfileConfig = new MatDialogConfig();
   avatarConfig = new MatDialogConfig();
+  teamMemberListDialogConfig = new MatDialogConfig();
 
   constructor(private dialog: MatDialog) {
     this.initNewDrawingDialogConfig();
@@ -41,6 +44,19 @@ export class ModalWindowService {
     this.initNewTeamDialogConfig();
     this.initUserProfileDialogConfig();
     this.initAvatarDialogConfig();
+    this.initTeamMeembersListDialogConfig();
+  }
+
+  initTeamMeembersListDialogConfig(){
+    this.teamMemberListDialogConfig.id = "teamMemberListDisalog";
+    this.teamMemberListDialogConfig.height= "50vh";
+    this.teamMemberListDialogConfig.width = "35vw";
+    this.teamMemberListDialogConfig.minWidth = '470px';
+    this.teamMemberListDialogConfig.maxWidth = '480px';
+    this.teamMemberListDialogConfig.maxHeight = '720px';
+    this.teamMemberListDialogConfig.disableClose = false;
+    this.teamMemberListDialogConfig.hasBackdrop = true;
+    this.teamMemberListDialogConfig.restoreFocus = false;
   }
 
   initNewDrawingDialogConfig() {
@@ -151,6 +167,12 @@ export class ModalWindowService {
         this.closeDialogs();
         const ref = this.dialog.open(AvatarDialogComponent, this.avatarConfig);
         return ref;
+      
+        case TeamMembersListComponent:
+          this.closeDialogs();
+          this.teamMemberListDialogConfig.data = data;
+          this.dialog.open(TeamMembersListComponent, this.teamMemberListDialogConfig);
+          break;
       default:
         break;
     }
