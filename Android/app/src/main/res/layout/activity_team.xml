@@ -87,7 +87,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="940dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/rectangle_background"
                 android:orientation="vertical"
