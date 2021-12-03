@@ -21,12 +21,29 @@
             android:textSize="18sp"
             android:textColor="@color/black" />
         <ImageView
-            android:id="@+id/deleteBin"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/toolTipTeam"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:contentDescription="image"
             android:scaleType="fitXY"
-            android:layout_marginTop="5dp"
+            android:src="@drawable/tool_tip"
+            android:tag="@color/white"
+            android:layout_marginStart="10dp"/>
+
+        <Button
+            android:id="@+id/joinTeam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:text="Joindre" />
+
+        <ImageView
+            android:id="@+id/deleteBin"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:contentDescription="image"
+            android:scaleType="fitXY"
             android:src="@drawable/trash"
             android:tag="@color/white"
             android:layout_marginStart="10dp"/>

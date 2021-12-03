@@ -300,7 +300,8 @@ class TeamItem(var clientService: ClientService,
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.teamName.text = team!!.name
         //the block to join a team
-        viewHolder.itemView.teamName.setOnClickListener {
+        viewHolder.itemView.toolTipTeam.tooltipText = team!!.bio
+        viewHolder.itemView.joinTeam.setOnClickListener {
             if(team!!.visibility != Visibility.protectedVisibility.int){
                 fragment.startTeamActivity(team!!)
             }
