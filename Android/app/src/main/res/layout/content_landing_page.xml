@@ -88,7 +88,7 @@
         <FrameLayout
             android:id="@+id/gallery_frame"
             layout="@layout/activity_gallery"
-            android:layout_width="wrap_content"
+            android:layout_width="940dp"
             android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
