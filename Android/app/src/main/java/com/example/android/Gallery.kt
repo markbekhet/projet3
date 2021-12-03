@@ -98,7 +98,8 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         var canModify = false
         for(entry in ClientInfo.possibleOwners){
             val value = entry.value
-            if(value.first == information!!.ownerId){
+            if(value.first == information!!.ownerId ||
+                information!!.ownerId == ClientInfo.userId){
                 canModify = true
                 break
             }
