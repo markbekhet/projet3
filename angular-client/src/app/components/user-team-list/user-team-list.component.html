@@ -16,7 +16,7 @@
     <mat-list class="teamsList">
         <h2>Équipes de collaboration</h2>
         <mat-list-item *ngFor="let team of teams">
-            <span>{{team.name}}</span>
+            <span [matTooltip]="team.bio!">{{team.name}}</span>
             <!-- <div class="buttons-wrapper"> -->
             <button (click)="joinTeam(team)">Joindre</button>
             <button *ngIf="authenticatedUserId === team.ownerId" (click)="deleteTeam(team)">Supprimer</button>
@@ -32,12 +32,15 @@
             <mat-chip color="primary" selected matTooltip="Joindre le canal" (click)="joinChat('General')">
                 {{'General'}}
             </mat-chip>
-
+            
             <!-- Teams chatrooms -->
             <div *ngFor="let room of chatrooms">
                 <mat-chip color="accent" selected matTooltip="Joindre le canal" (click)="joinChat(room)">
                     {{room}}
                 </mat-chip>
+                <button *ngIf="isTeamChannel(room)" mat-icon-button matTooltip="Informations de l'equipe" (click)="openTeamInformations(room)">
+                    <mat-icon>info</mat-icon>
+                </button>
                 <button (click)="leaveTeam(room)">Quitter l'équipe</button>
             </div>
         </mat-chip-list>

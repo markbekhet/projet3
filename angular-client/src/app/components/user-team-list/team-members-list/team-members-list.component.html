@@ -1,0 +1,19 @@
+<div>
+    <div>
+        <h2>Bio de l'equipe:</h2>
+        <span> {{bio}}</span>
+    </div>
+    <hr>
+    <div>
+        <div>Liste des membres dans l'equipe</div>
+        <mat-list class="usersList">
+            <mat-list-item *ngFor="let user of users">
+                <img matListAvatar [src]="decodeAvatar(user.avatar!)" alt="User avatar" class="avatar">
+                <span> {{user.pseudo}}</span>
+                <span *ngIf="user.status === 0"> En ligne</span>
+                <span *ngIf="user.status === 1"> Occupé</span>
+                <span *ngIf="user.status === 2"> Hors ligne</span>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>

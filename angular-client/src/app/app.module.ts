@@ -56,6 +56,7 @@ import {
 } from './components/user-team-list/user-team-list.component';
 import { AvatarDialogComponent } from './components/avatar-dialog/avatar-dialog.component';
 import { UserListSideNavComponent } from './components/drawing-view/user-list-side-nav/user-list-side-nav.component';
+import { TeamMembersListComponent } from './components/user-team-list/team-members-list/team-members-list.component';
 
 @NgModule({
   declarations: [
@@ -87,6 +88,7 @@ import { UserListSideNavComponent } from './components/drawing-view/user-list-si
     TeamPasswordBottomSheet,
     AvatarDialogComponent,
     UserListSideNavComponent,
+    TeamMembersListComponent,
   ],
   imports: [
     BrowserModule,
