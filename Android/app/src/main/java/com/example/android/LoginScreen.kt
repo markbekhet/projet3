@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
+import android.content.Context
+import android.media.MediaPlayer
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
@@ -19,6 +21,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
+import android.os.Vibrator
+
+
+
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
@@ -26,14 +32,21 @@ class LoginScreen : AppCompatActivity() {
     private var texte: Button? = null
     var userdata : LoginInfo ?= null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
         clientService = ClientService()
-
+        val mediaPlayer = MediaPlayer.create(this, R.drawable.loginnsound)
         supportActionBar!!.setDisplayShowHomeEnabled(true);
         supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
         supportActionBar!!.setDisplayUseLogoEnabled(true);
+        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+// Vibrate for 400 milliseconds
+
+// Vibrate for 400 milliseconds
+
 
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
@@ -87,6 +100,8 @@ class LoginScreen : AppCompatActivity() {
 
         var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
+            mediaPlayer.start()
+            v.vibrate(400)
             runBlocking {
                 async{
                     launch {

@@ -15,10 +15,6 @@
         android:id="@+id/viewKonfetti2"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <nl.dionsegijn.konfetti.KonfettiView
-        android:id="@+id/viewKonfetti3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <nl.dionsegijn.konfetti.KonfettiView
         android:id="@+id/viewKonfetti4"
@@ -226,6 +222,11 @@
             android:text="Voulez vous creer un compte"
             android:gravity="center">
         </TextView>
+
+        <nl.dionsegijn.konfetti.KonfettiView
+            android:id="@+id/viewKonfetti3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
