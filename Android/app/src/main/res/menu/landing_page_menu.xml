@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/add_group"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:textColor="@color/main_color"
+        android:textSize="20sp"
+        android:title="@string/createTeam"/>
+
+    <item
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/add"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:textColor="@color/main_color"
+        android:title="@string/createDrawing"/>
+    <item
+        android:icon="@drawable/ic_baseline_account_circle_24"
+        android:title="@string/profile"/>
+
+    <item
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/chat"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:textColor="@color/main_color"
+        android:title="@string/chat"/>
+
+    <item
+        android:id="@+id/disconnect"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/exit"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:textColor="@color/main_color"
+        android:title="@string/disconnect"/>
+</menu>

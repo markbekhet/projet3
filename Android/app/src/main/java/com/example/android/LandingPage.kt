@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.android.chat.*
@@ -30,6 +32,11 @@ class LandingPage : AppCompatActivity(){
     private var chatSocket: Socket? = null
     var response: Response<ResponseBody>?=null
     private val galleryDraws = Gallery()
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.landing_page_menu, menu)
+        return true
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_landing_page)
