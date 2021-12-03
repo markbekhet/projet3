@@ -56,6 +56,10 @@ export class LandingPage implements OnInit, AfterViewInit {
       );
       this.interactionService.emitUpdateChatListSignal();
     });
+
+    this.socketService.getNewMessage().subscribe((message)=>{
+      this.interactionService.emitUpdateChatHistory();
+    })
   }
 
   @HostListener('window:beforeunload')

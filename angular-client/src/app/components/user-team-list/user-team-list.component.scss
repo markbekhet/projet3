@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Calistoga&display=swap");
+
 $base-color-dark: #403d39;
 
 *,
@@ -15,8 +18,23 @@ $base-color-dark: #403d39;
     "teamsList"
     "chat";
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+    margin-bottom: 0.3em;
+    padding: 0.7em 0 0.7em;
+    box-shadow: 0 2px 5px white;
+    // font-family: "Calistoga", cursive;
+    // font-weight: 400;
+  }
+
   mat-list {
-    padding: 1em;
+    padding: 0 1em 1em;
     border-left: 2px solid $base-color-dark;
     border-bottom: 2px solid $base-color-dark;
     overflow: auto;

@@ -55,7 +55,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   chatrooms: string[] = [];
 
   joinedChatrooms = new Map<string, boolean>();
-  // mainChatroomName: string = 'General';
 
   @Output()
   chatroomName = new EventEmitter<string>();
@@ -98,11 +97,19 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // user update
-    this.socketService.getUserUpdate().subscribe((userMap) => {
-      this.users = [];
-      userMap.forEach((user: User) => {
-        this.users.push(user);
+    this.socketService.getUserUpdate().subscribe((userModified: User) => {
+      let found: boolean = false;
+      this.users.forEach((user: User) => {
+        if(userModified.id! === user.id!){
+          found = true;
+          user.pseudo = userModified.pseudo;
+          user.status = userModified.status;
+          user.avatar = userModified.avatar;
+        }
       });
+      if(!found){
+        this.users.push(userModified);
+      }
     });
 
     // newTeamCreated
@@ -138,7 +145,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         for (const key of this.chatRoomService.chatRooms.keys()) {
           this.chatrooms.push(key);
         }
-        // const [mainChatroomName] = this.chatrooms;
         this.chatrooms.shift();
 
         // let teamFound = false;
@@ -170,6 +176,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     // dont on fait déjà parti. Faque on rejoint des équipes mais si on les quitte pas pendant le flow, si on se reco entre temps,
     // on fera toujours parti de l'équipe, mais il faut soit reset les équipes d'un user du côté serveur, soit binder proprement
     // au client
+    // Mais apparemment ça fonctionne côté serveur maintenant,
     this.socketService.socket!.on('cantJoinTeam', (data: any) => {
       const error: { message: string } = JSON.parse(data);
       this.errorDialog.open(ErrorDialogComponent, { data: error.message });

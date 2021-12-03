@@ -10,7 +10,8 @@
 
 .chat {
   position: relative;
-  width: 15vw;
+  width: 20vw;
+  min-width: 250px;
   padding: 0.8em;
   background-color: rgba(#3fb0ab, 1);
   border-top: 1px solid black;
@@ -22,6 +23,7 @@
     text-align: center;
     color: white;
     cursor: pointer;
+    z-index: 1;
 
     &:hover {
       opacity: 0.8;
@@ -32,42 +34,78 @@
   &__expanded {
     position: absolute;
     top: -35vh;
-    left: 0;
+    left: -1px;
     width: inherit;
+    min-width: inherit;
     height: 35vh;
     max-height: 350px;
     border-top: 1px solid black;
     border-left: 1px solid black;
     border-right: 1px solid black;
+    background-color: white;
 
     &__messages {
       display: flex;
       flex-direction: column-reverse;
+      flex-wrap: nowrap;
+      height: 31vh;
       overflow: auto;
-      width: 80%;
-      // border: solid black;
-      // margin: auto auto;
-      // vertical-align: middle;
 
       .message-bubble {
-        border: solid rgb(136, 205, 218);
-        border-radius: 20px;
-        background-color: rgb(192, 235, 243);
-        padding: 5px;
-        font-size: 0.8rem;
         display: inline-flex;
+        position: relative;
+        width: 80%;
+        font-size: 0.8rem;
+        margin-bottom: 0.7em;
+        padding: 5px;
+        border: solid rgb(136, 205, 218);
+        background-color: rgb(192, 235, 243);
+        border-radius: 20px;
+        word-break: break-all;
+
+        // p {
+        //   margin: 0;
+        // }
+
+        .message {
+          margin: 1.5em 0;
+        }
+
+        .username {
+          position: absolute;
+          top: 0;
+          left: 5px;
+          font-style: italic;
+        }
+
+        .date {
+          position: absolute;
+          bottom: 0;
+          right: 5px;
+          font-size: 0.8em;
+        }
       }
     }
 
     &__content {
+      background-color: white;
+      // width: inherit;
       .form-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
         position: absolute;
         bottom: 0;
+        box-shadow: 0 -3px 6px white;
+        input {
+          width: 100%;
+        }
       }
-      .message-input {
-        width: 75%;
-        margin: auto auto;
-      }
+
+      // .message-input {
+      //   // width: 75%;
+      //   // margin: auto auto;
+      // }
     }
   }
 }
