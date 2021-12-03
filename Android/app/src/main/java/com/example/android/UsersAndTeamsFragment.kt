@@ -278,6 +278,10 @@ class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
             decodedModifiedString,0, decodedModifiedString.size)
         Glide.with(fragment.requireActivity()).load(decodedModifiedByte)
             .fitCenter().into(viewHolder.itemView.avatarUserFragment)
+
+        viewHolder.itemView.avatarUserFragment.setOnClickListener {
+            fragment.startUserActivity(id!!)
+        }
     }
 
     override fun getLayout(): Int {
