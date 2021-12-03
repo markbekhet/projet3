@@ -109,11 +109,19 @@ class CanvasView(private var drawingId: Int,context: Context): View(context) {
                                 totalScaling.plus(scalingFactor)
                             }
                         }
-                        else -> tool!!.touchMove(context,event.x, event.y)
+                        else -> {
+                            if(tool != null){
+                                tool!!.touchMove(context,event.x, event.y)
+                            }
+                        }
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> tool!!.touchUp()
+            MotionEvent.ACTION_UP -> {
+                if(tool != null){
+                    tool!!.touchUp()
+                }
+            }
         }
 
         return true
