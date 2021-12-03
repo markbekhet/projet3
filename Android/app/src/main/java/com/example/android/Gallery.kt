@@ -95,14 +95,19 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        var canModify = false
-        for(entry in ClientInfo.possibleOwners){
-            val value = entry.value
-            if(value.first == information!!.ownerId){
-                canModify = true
-                break
+        var canModify = information!!.ownerId == ClientInfo.userId
+
+        //owner is not the user maybe a team
+        if(!canModify){
+            for(entry in ClientInfo.possibleOwners){
+                val value = entry.value
+                if(value.first == information!!.ownerId){
+                    canModify = true
+                    break
+                }
             }
         }
+
         if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
@@ -159,6 +164,25 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             }
         }
 
+        var visibilityIcon = 0
+        var visibilityText = ""
+        when(information!!.visibility){
+            Visibility.publicVisibility.int ->{
+                visibilityIcon = R.drawable.earth_globe
+                visibilityText = "Public"
+            }
+            Visibility.protectedVisibility.int ->{
+                visibilityIcon = R.drawable.lock
+                visibilityText = "Protégé"
+            }
+            Visibility.privateVisibility.int ->{
+                visibilityIcon = R.drawable.resource_private
+                visibilityText = "Privé"
+            }
+        }
+
+        viewHolder.itemView.visibilityText.text = visibilityText
+        viewHolder.itemView.visibilityIcon.setImageResource(visibilityIcon)
         viewHolder.itemView.drawingsAuthorName.text = authorName
         println(authorName)
         viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()
