@@ -95,15 +95,19 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        var canModify = false
-        for(entry in ClientInfo.possibleOwners){
-            val value = entry.value
-            if(value.first == information!!.ownerId ||
-                information!!.ownerId == ClientInfo.userId){
-                canModify = true
-                break
+        var canModify = information!!.ownerId == ClientInfo.userId
+
+        //owner is not the user maybe a team
+        if(!canModify){
+            for(entry in ClientInfo.possibleOwners){
+                val value = entry.value
+                if(value.first == information!!.ownerId){
+                    canModify = true
+                    break
+                }
             }
         }
+
         if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
