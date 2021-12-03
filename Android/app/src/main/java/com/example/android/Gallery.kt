@@ -160,6 +160,25 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             }
         }
 
+        var visibilityIcon = 0
+        var visibilityText = ""
+        when(information!!.visibility){
+            Visibility.publicVisibility.int ->{
+                visibilityIcon = R.drawable.earth_globe
+                visibilityText = "Public"
+            }
+            Visibility.protectedVisibility.int ->{
+                visibilityIcon = R.drawable.lock
+                visibilityText = "Protégé"
+            }
+            Visibility.privateVisibility.int ->{
+                visibilityIcon = R.drawable.resource_private
+                visibilityText = "Privé"
+            }
+        }
+
+        viewHolder.itemView.visibilityText.text = visibilityText
+        viewHolder.itemView.visibilityIcon.setImageResource(visibilityIcon)
         viewHolder.itemView.drawingsAuthorName.text = authorName
         println(authorName)
         viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()
