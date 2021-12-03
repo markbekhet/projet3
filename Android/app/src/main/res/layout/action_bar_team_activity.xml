@@ -8,7 +8,6 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:gravity="fill">
-
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -18,34 +17,33 @@
             android:textColor="@color/main_color"
             android:textSize="20sp" />
         <LinearLayout
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="right">
-
+            android:layout_width="match_parent"
+            android:gravity="right"
+            android:orientation="horizontal">
             <ImageButton
-                android:id="@+id/createDrawingHomeButton"
+                android:id="@+id/createDrawingTeamButton"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_baseline_add_circle_24"
                 android:scaleType="fitXY"
                 android:visibility="visible"
                 android:textColor="@color/main_color"
+                android:textSize="20sp"
                 android:tooltipText="@string/createDrawing"/>
-
             <ImageButton
-                android:id="@+id/createTeamHomeButton"
+                android:id="@+id/createTeamTeamButton"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
+                android:text="Créer un Salon"
                 android:src="@drawable/ic_baseline_group_add_24"
                 android:scaleType="fitXY"
                 android:visibility="visible"
                 android:textColor="@color/main_color"
                 android:textSize="20sp"
                 android:tooltipText="@string/createTeam"/>
-
             <ImageButton
-                android:id="@+id/profileButton"
+                android:id="@+id/profileButtonTeamPage"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_baseline_account_circle_24"
@@ -53,27 +51,25 @@
                 android:visibility="visible"
                 android:textColor="@color/main_color"
                 android:tooltipText="@string/profile"/>
-
             <ImageButton
-                android:id="@+id/showChat"
+                android:id="@+id/showChatTeamPage"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_baseline_message_24"
                 android:scaleType="fitXY"
                 android:visibility="visible"
                 android:textColor="@color/main_color"
+                android:textSize="20sp"
                 android:tooltipText="@string/chat"/>
-
             <ImageButton
-                android:id="@+id/disconnect"
+                android:id="@+id/showBio"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_baseline_exit_to_app_24"
+                android:text="Afficher le bio"
+                android:src="@drawable/ic_baseline_info_24"
                 android:scaleType="fitXY"
                 android:visibility="visible"
-                android:textColor="@color/main_color"
-                android:tooltipText="@string/disconnect"/>
-
+                android:textColor="@color/main_color"/>
         </LinearLayout>
     </LinearLayout>
 
