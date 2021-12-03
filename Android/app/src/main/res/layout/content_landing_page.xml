@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-    <!--
-        <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:gravity="right"
@@ -74,7 +73,6 @@
             android:tooltipText="@string/disconnect"/>
 
     </LinearLayout>
-    -->
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
