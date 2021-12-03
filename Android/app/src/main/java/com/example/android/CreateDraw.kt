@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
@@ -35,8 +36,12 @@ class CreateDraw : AppCompatActivity() {
         setContentView(R.layout.createdraw)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatCreateDrawing: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val chatDialog = ChatDialog(this)
         chatCreateDrawing.setOnClickListener {

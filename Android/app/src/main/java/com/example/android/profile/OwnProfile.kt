@@ -7,10 +7,8 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.example.android.R
@@ -36,8 +34,12 @@ class OwnProfile : AppCompatActivity() {
         val data = intent.extras?.getString("profileInformation")
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatOwnerProfile: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val chatDialog= ChatDialog(this)
         showChatOwnerProfile.setOnClickListener {

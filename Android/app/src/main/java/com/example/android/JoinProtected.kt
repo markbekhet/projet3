@@ -3,7 +3,9 @@ package com.example.android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.JoinDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
@@ -22,8 +24,12 @@ class JoinProtected : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_protected)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatJoinProtected: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val drawingData = intent.extras!!.getString("drawingInformation")
         val teamData = intent.extras!!.getString("teamInformation")
