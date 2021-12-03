@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.android.chat.*
@@ -14,10 +16,12 @@ import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.client.*
+import com.example.android.disconnect
 import com.example.android.profile.OwnProfile
 import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.android.synthetic.main.action_bar_landing_page.*
 import kotlinx.android.synthetic.main.content_landing_page.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -36,9 +40,12 @@ class LandingPage : AppCompatActivity(){
         val clientService = ClientService()
         //Initialize chat socket
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_landing_page)
+        val customActionBar = supportActionBar!!.customView
 
+        val profileButton: ImageView = customActionBar.findViewById(R.id.profileButton)
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)
