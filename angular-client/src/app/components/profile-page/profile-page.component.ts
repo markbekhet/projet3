@@ -87,7 +87,9 @@ export class ProfilePage implements OnInit {
       newPasswordTwice: formBuilder.control('', [
       ]),
       avatar: formBuilder.control('', []),
-    });
+    }, { validators: Validators.compose([
+      ValidationService.matchingPasswordValidator('newPassword', 'newPasswordTwice'),
+    ])});
   }
 
   @HostListener('window:beforeunload')
@@ -269,6 +271,13 @@ export class ProfilePage implements OnInit {
         console.log(error);
       })
     });
+  }
+
+  checkPasswords() {
+    if (this.updateForm.controls.newPassword.value !== '') {
+      return this.updateForm.controls.newPassword.value === this.updateForm.controls.newPasswordTwice.value;
+    }
+    return true;
   }
 
   handleClick() {
