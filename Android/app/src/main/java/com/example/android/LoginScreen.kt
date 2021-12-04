@@ -40,6 +40,7 @@ class LoginScreen : AppCompatActivity() {
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0)
         val mediaPlayer = MediaPlayer.create(this, R.raw.login)
+
         supportActionBar!!.setDisplayShowHomeEnabled(true);
         supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
         supportActionBar!!.setDisplayUseLogoEnabled(true);
