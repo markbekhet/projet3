@@ -42,7 +42,7 @@
 					">Ceci n'est pas un mot de passe valide !</mat-error>
                     </mat-form-field>
                     <br>
-                    <button mat-icon-button>Soumettre</button>
+                    <button mat-icon-button [disabled]="!checkPasswords()">Soumettre</button>
                 </form>
 
                 <div class="avatar">

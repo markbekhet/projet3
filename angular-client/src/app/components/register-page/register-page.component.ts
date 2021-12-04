@@ -52,7 +52,9 @@ export class RegisterPage implements OnInit {
       verificationPassword: formBuilder.control('', [
         Validators.required,
       ]),
-      avatar: formBuilder.control('', [Validators.required]),
+      avatar: formBuilder.control('', [
+        Validators.required,
+      ]),
     });
   }
 
@@ -104,6 +106,10 @@ export class RegisterPage implements OnInit {
     );
   }
 
+  public checkPasswords() {
+    return this.registerForm.controls.password.value === this.registerForm.controls.verificationPassword.value;
+  }
+
   private resetForm() {
     this.registerForm = this.formBuilder.group({
       firstName: this.formBuilder.control('', [Validators.required]),
@@ -123,8 +129,9 @@ export class RegisterPage implements OnInit {
       verificationPassword: this.formBuilder.control('', [
         Validators.required,
       ]),
-
-      avatar: this.formBuilder.control('', [Validators.required]),
+      avatar: this.formBuilder.control('', [
+        Validators.required
+      ]),
     });
     this.selectedAvatar = null;
   }

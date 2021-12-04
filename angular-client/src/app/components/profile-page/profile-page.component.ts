@@ -271,6 +271,13 @@ export class ProfilePage implements OnInit {
     });
   }
 
+  checkPasswords() {
+    if (this.updateForm.controls.newPassword.value !== '') {
+      return this.updateForm.controls.newPassword.value === this.updateForm.controls.newPasswordTwice.value;
+    }
+    return true;
+  }
+
   handleClick() {
     this.file.nativeElement.click();
   }
