@@ -76,6 +76,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   initMessageList(){
+    this.messages = [];
     let channelMessageHistories = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
     channelMessageHistories.forEach((chatHistory: ChatHistory)=>{
       this.messages.unshift(this.createShownMessage(chatHistory));
