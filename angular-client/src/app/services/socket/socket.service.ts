@@ -20,8 +20,8 @@ import { ChatRoomService } from '../chat-room/chat-room.service';
 // import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
-// const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-const PATH = 'http://localhost:3000';
+ const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
+//const PATH = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root',
