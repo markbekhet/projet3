@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
+import android.graphics.Color.alpha
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
@@ -15,6 +16,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
+import androidx.core.graphics.rotationMatrix
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
@@ -45,13 +47,6 @@ class LoginScreen : AppCompatActivity() {
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
         mediaPlayer.start()
-        val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-        if (vibrator.hasVibrator()) {
-            vibration_on.visibility= View.VISIBLE
-        }
-        else{
-            vibration_off.visibility= View.VISIBLE
-        }
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
         }
@@ -70,6 +65,15 @@ class LoginScreen : AppCompatActivity() {
                 }
             }
         }
+        nom_app.animate().apply(){
+            duration=10000
+            rotationYBy(360f)
+        }.withEndAction{
+            nom_app.animate().apply(){
+                duration=10000
+                rotationYBy(360f)
+            }
+        }.start()
 
         username.doAfterTextChanged {
             if(username.text.isNotEmpty() && password.text.isNotEmpty()){
@@ -121,14 +125,6 @@ class LoginScreen : AppCompatActivity() {
                 print(username.toString())
 
             } else {
-                if (Build.VERSION.SDK_INT >= 26) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    vibrator.vibrate(200);
-                }
-                val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
-                showError(cantJoin.message)
-            }
             password.text.clear()
             username.text.clear()
         }
