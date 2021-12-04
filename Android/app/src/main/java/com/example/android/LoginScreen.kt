@@ -23,6 +23,8 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import android.os.Vibrator
 import android.media.AudioManager
+import android.os.Build
+import android.os.VibrationEffect
 import android.view.View
 
 
@@ -122,7 +124,11 @@ class LoginScreen : AppCompatActivity() {
                 print(username.toString())
 
             } else {
-                vibrator.vibrate(400) // for 500 ms
+                if (Build.VERSION.SDK_INT >= 26) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    vibrator.vibrate(200);
+                }
                 val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
                 showError(cantJoin.message)
             }

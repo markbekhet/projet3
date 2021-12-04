@@ -104,7 +104,7 @@
         android:layout_width="229dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:text="Votre application supporte les vibrations!"
+        android:text="Votre appareil supporte les vibrations!"
         android:gravity="center"
         />
     <TextView
@@ -113,7 +113,7 @@
         android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:text="Votre application ne supporte pas les vibrations!"
+        android:text="Votre appareil ne supporte pas les vibrations!"
         android:gravity="center"
         />
     <FrameLayout
