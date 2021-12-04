@@ -8,6 +8,7 @@ import android.app.Dialog
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
@@ -31,9 +32,10 @@ class LoginScreen : AppCompatActivity() {
         setContentView(R.layout.activity_login_screen)
         clientService = ClientService()
 
-        supportActionBar!!.setDisplayShowHomeEnabled(true);
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
-        supportActionBar!!.setDisplayUseLogoEnabled(true);
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
 
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
