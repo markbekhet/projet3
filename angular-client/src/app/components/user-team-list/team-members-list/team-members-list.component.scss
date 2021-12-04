@@ -1,0 +1,13 @@
+
+mat-list {
+    padding: 0 1em 1em;
+    overflow: auto;
+
+    mat-list-item {
+      display: block;
+      margin-bottom: 1em;
+      .avatar{
+        width: 20px;
+        }
+    }
+}

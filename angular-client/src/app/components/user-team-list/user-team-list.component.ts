@@ -41,6 +41,8 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { ChatComponent } from '@components/chat-component/chat.component';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import { ActiveUser } from '@src/app/models/active-user';
+import { TeamMembersListComponent } from './team-members-list/team-members-list.component';
 
 @Component({
   selector: 'app-user-team-list',
@@ -55,7 +57,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   chatrooms: string[] = [];
 
   joinedChatrooms = new Map<string, boolean>();
-  // mainChatroomName: string = 'General';
 
   @Output()
   chatroomName = new EventEmitter<string>();
@@ -98,11 +99,19 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // user update
-    this.socketService.getUserUpdate().subscribe((userMap) => {
-      this.users = [];
-      userMap.forEach((user: User) => {
-        this.users.push(user);
+    this.socketService.getUserUpdate().subscribe((userModified: User) => {
+      let found: boolean = false;
+      this.users.forEach((user: User) => {
+        if(userModified.id! === user.id!){
+          found = true;
+          user.pseudo = userModified.pseudo;
+          user.status = userModified.status;
+          user.avatar = userModified.avatar;
+        }
       });
+      if(!found){
+        this.users.push(userModified);
+      }
     });
 
     // newTeamCreated
@@ -121,6 +130,25 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       }
     });
 
+    this.socketService.socket!.on("newJoinToTeam", (data: any)=>{
+      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
+      let activeUsers = this.teamService.activeTeams.value.get(dataMod.teamName)!.activeUsers;
+      activeUsers.push({userId: dataMod.userId});
+    })
+
+    this.socketService.socket!.on("userLeftTeam", (data: any)=>{
+      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
+      let team = this.teamService.activeTeams.value.get(dataMod.teamName)
+      if(team!== undefined){
+        team.activeUsers.forEach((activeUser: ActiveUser)=>{
+          if(activeUser.userId === dataMod.userId){
+            team!.activeUsers.splice(team!.activeUsers.indexOf(activeUser), 1)
+          }
+        })
+      }
+    })
+
+
     this.socketService.socket!.on('teamDeleted', (data: any) => {
       const deletedTeam: Team = JSON.parse(data);
       this.teams.forEach((team) => {
@@ -138,7 +166,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         for (const key of this.chatRoomService.chatRooms.keys()) {
           this.chatrooms.push(key);
         }
-        // const [mainChatroomName] = this.chatrooms;
         this.chatrooms.shift();
 
         // let teamFound = false;
@@ -170,12 +197,21 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     // dont on fait déjà parti. Faque on rejoint des équipes mais si on les quitte pas pendant le flow, si on se reco entre temps,
     // on fera toujours parti de l'équipe, mais il faut soit reset les équipes d'un user du côté serveur, soit binder proprement
     // au client
+    // Mais apparemment ça fonctionne côté serveur maintenant,
     this.socketService.socket!.on('cantJoinTeam', (data: any) => {
       const error: { message: string } = JSON.parse(data);
       this.errorDialog.open(ErrorDialogComponent, { data: error.message });
     });
 
     this.chatInsert.clear();
+  }
+  
+  isTeamChannel(roomName: string): boolean{
+    let team = this.teamService.activeTeams.value.get(roomName);
+    if(team !== undefined){
+      return true;
+    }
+    return false;
   }
 
   joinTeam(team: Team) {
@@ -260,6 +296,10 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       return '';
     }
     return this.avatarService.decodeAvatar(avatarEncoded);
+  }
+
+  openTeamInformations(teamName: string){
+    this.windowService.openDialog(TeamMembersListComponent, teamName);
   }
 }
 

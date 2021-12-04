@@ -43,12 +43,6 @@ export const homeHeaderItems: FeatureItem[] = [
     icon: 'account_circle',
   },
   {
-    name: 'Chat',
-    shortcutName: 'Chat',
-    description: ``,
-    icon: 'camera',
-  },
-  {
     name: 'Se déconnecter',
     shortcutName: 'Déconnexion',
     description: 'Ce bouton vous permet de vous déconnecter.',
@@ -57,25 +51,25 @@ export const homeHeaderItems: FeatureItem[] = [
 ];
 
 export const drawingHeaderItems: FeatureItem[] = [
-  {
-    name: 'Créer un nouveau dessin',
-    shortcutName: 'Créer dessin',
-    description:
-      "Cette option vous permet d'ouvrir un nouvel espace de dessin selon la taille et la couleur de fond de votre choix.",
-    icon: 'add_circle',
-  },
-  {
-    name: 'Ouvrir la galerie de dessins',
-    shortcutName: 'Ouvrir galerie',
-    description: `Cette option permet de visualiser la galerie de dessins sauvegardés dans la base de données`,
-    icon: 'camera',
-  },
-  {
-    name: 'Consulter votre profil',
-    shortcutName: 'Profil',
-    description: `Ce bouton vous permet de consulter votre page de profil.`,
-    icon: 'account_circle',
-  },
+  // {
+  //   name: 'Créer un nouveau dessin',
+  //   shortcutName: 'Créer dessin',
+  //   description:
+  //     "Cette option vous permet d'ouvrir un nouvel espace de dessin selon la taille et la couleur de fond de votre choix.",
+  //   icon: 'add_circle',
+  // },
+  // {
+  //   name: 'Ouvrir la galerie de dessins',
+  //   shortcutName: 'Ouvrir galerie',
+  //   description: `Cette option permet de visualiser la galerie de dessins sauvegardés dans la base de données`,
+  //   icon: 'camera',
+  // },
+  // {
+  //   name: 'Consulter votre profil',
+  //   shortcutName: 'Profil',
+  //   description: `Ce bouton vous permet de consulter votre page de profil.`,
+  //   icon: 'account_circle',
+  // },
   {
     name: 'Quitter le dessin',
     shortcutName: 'Quitter dessin',
@@ -83,13 +77,13 @@ export const drawingHeaderItems: FeatureItem[] = [
       "Ce bouton vous permet de quitter le dessin en cours et de revenir à l'accueil.",
     icon: 'arrow_back',
   },
-  {
-    name: 'Se déconnecter',
-    shortcutName: 'Déconnexion',
-    description:
-      "Ce bouton vous permet de vous déconnecter de l'application et renvoie à la page de connexion.",
-    icon: 'exit-to-app',
-  },
+  // {
+  //   name: 'Se déconnecter',
+  //   shortcutName: 'Déconnexion',
+  //   description:
+  //     "Ce bouton vous permet de vous déconnecter de l'application et renvoie à la page de connexion.",
+  //   icon: 'exit-to-app',
+  // },
 ];
 
 export const toolItems: ToolItem[] = [
