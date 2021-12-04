@@ -55,7 +55,9 @@ export class RegisterPage implements OnInit {
       avatar: formBuilder.control('', [
         Validators.required,
       ]),
-    });
+    }, { validators: Validators.compose([
+      ValidationService.matchingPasswordValidator('password', 'verificationPassword'),
+    ])});
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
@@ -107,7 +109,11 @@ export class RegisterPage implements OnInit {
   }
 
   public checkPasswords() {
-    return this.registerForm.controls.password.value === this.registerForm.controls.verificationPassword.value;
+    console.log(this.registerForm.controls.password.value);
+    console.log(this.registerForm.controls.verificationPassword.value);
+    const DIRTY = this.registerForm.controls.password.dirty && this.registerForm.controls.verificationPassword.dirty;
+    const SAME = this.registerForm.controls.password.value === this.registerForm.controls.verificationPassword.value;
+    return DIRTY && SAME;
   }
 
   private resetForm() {
@@ -132,7 +138,9 @@ export class RegisterPage implements OnInit {
       avatar: this.formBuilder.control('', [
         Validators.required
       ]),
-    });
+    }, { validators: Validators.compose([
+      ValidationService.matchingPasswordValidator('password', 'verificationPassword'),
+    ])});
     this.selectedAvatar = null;
   }
 

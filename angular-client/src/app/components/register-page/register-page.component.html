@@ -56,6 +56,9 @@
                     <input type="password" matInput formControlName="verificationPassword" required />
                     <mat-error *ngIf="checkError('verificationPassword', 'required')">Veuillez entrer votre mot de passe
                         encore !</mat-error>
+                    <mat-error *ngIf="checkError('verificationPassword', 'fieldsMismatched')">Les deux mots de passe
+                        ne sont pas identiques !</mat-error>
+
                 </mat-form-field>
                 <br />
 
