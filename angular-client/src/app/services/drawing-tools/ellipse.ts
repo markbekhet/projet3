@@ -217,7 +217,7 @@ export class Ellipse implements DrawingTool {
     let newRx = parseFloat(this.element.getAttribute("rx")!)
     let newRY = parseFloat(this.element.getAttribute("ry")!)
     this.renderer.setAttribute(this.element,"cx", (Math.min(maxPoint.x, minPoint.x) + newRx).toString())
-    this.renderer.setAttribute(this.element,"cy", (Math.min(maxPoint.x, minPoint.x) + newRY).toString())
+    this.renderer.setAttribute(this.element,"cy", (Math.min(maxPoint.y, minPoint.y) + newRY).toString())
     this.sendProgressToServer(DrawingStatus.Selected)
   }
   getSelectionString(): void {
