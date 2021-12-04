@@ -61,7 +61,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   currentToolName = PENCIL_COMP_TOOL_NAME;
   drawingId!: number;
   userId!: string;
-  scalingPoint: [Point, Point] | null | undefined;
+  scalingPoint: [Point, Point]| undefined;
   mode: string = '';
   totalScaling: Point = new Point(0.0, 0.0);
   mouseIsDown: boolean = false;
@@ -134,7 +134,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       );
       this.totalScaling.makeEqualTo(new Point(0, 0));
     }
-    if (this.scalingPoint !== null && this.scalingPoint !== undefined) {
+    if (this.scalingPoint !== undefined) {
       this.mode = 'scaling';
       console.log(this.mode);
     } else if (this.isInsideTheSelection(e)) {
@@ -253,6 +253,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
               position.y - this.scalingPoint![0].y - this.totalScaling.y
             );
             this.currentTool.scale(scalingFactor, this.scalingPoint![1]);
+            this.totalScaling.plus(scalingFactor)
             break;
           default:
             this.currentTool.onMouseMove(e);
@@ -342,7 +343,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
         this.toolsList.get(drawingContent.id)!.selected =
           drawingContent.status === DrawingStatus.Selected;
         this.toolsList.get(drawingContent.id)!.userId = drawingContent.userId;
-        if (drawingContent.status === DrawingStatus.Deleted.valueOf()) {
+        if (drawingContent.status === DrawingStatus.Deleted) {
           this.toolsList.delete(drawingContent.id);
           if (this.currentTool instanceof Selection) {
             console.log('here deleting');

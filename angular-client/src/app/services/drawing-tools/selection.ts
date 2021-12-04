@@ -112,11 +112,11 @@ export class Selection implements DrawingTool {
         }
  
     }
-    getScalingPoint(point: Point): [Point, Point] | null {
+    getScalingPoint(point: Point): [Point, Point] | undefined {
         if(this.selectedTool!== undefined){
             return this.selectedTool.getScalingPoint(point);
         }
-        return null;
+        return undefined;
 
     }
     getScalingPositionsString(): void {

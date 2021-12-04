@@ -281,7 +281,7 @@ export class Ellipse implements DrawingTool {
     this.scalingPositions.set(eighthPos, new Point(-1.0, 0.0))
   }
 
-  getScalingPoint(point: Point): [Point, Point] | null {
+  getScalingPoint(point: Point): [Point, Point] | undefined {
     //throw new Error('Method not implemented.');
     for(let item of this.scalingPositions){
       let position = item[0]
@@ -295,7 +295,7 @@ export class Ellipse implements DrawingTool {
         return item;
       }
     }
-    return null
+    return undefined
   }
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');

@@ -51,7 +51,7 @@ export interface DrawingTool {
 
   calculateScalingPositions(): void;
 
-  getScalingPoint(point: Point): [Point, Point] | null;
+  getScalingPoint(point: Point): [Point, Point] | undefined;
 
   getScalingPositionsString(): void;
 
