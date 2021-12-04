@@ -195,7 +195,7 @@ class RegisterScreen : AppCompatActivity() {
 
 
         button.setOnClickListener {
-            mediaPlayer.start()
+
             val user = UserRegistrationInfo(
                 firstName.text.toString(),
                 lastName.text.toString(), pseudo.text.toString(),
@@ -234,6 +234,7 @@ class RegisterScreen : AppCompatActivity() {
                     }
                 }
                 if (response?.isSuccessful == true) {
+                    mediaPlayer.start()
                     ClientInfo.userId = response?.body()?.string().toString()
                     runBlocking {
                         async {

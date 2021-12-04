@@ -104,7 +104,7 @@ class LoginScreen : AppCompatActivity() {
 
         var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
-            vibrator.vibrate(400) // for 500 ms
+
             runBlocking {
                 async{
                     launch {
@@ -115,6 +115,7 @@ class LoginScreen : AppCompatActivity() {
             }
 
             if (response!!.isSuccessful) {
+                vibrator.vibrate(400) // for 500 ms
                 println(clientService!!.authentify)
                 ClientInfo.userId = response?.body()?.string().toString()
                 println("Client id: ${ClientInfo.userId}")
