@@ -115,7 +115,6 @@ class LoginScreen : AppCompatActivity() {
             }
 
             if (response!!.isSuccessful) {
-                vibrator.vibrate(400) // for 500 ms
                 println(clientService!!.authentify)
                 ClientInfo.userId = response?.body()?.string().toString()
                 println("Client id: ${ClientInfo.userId}")
@@ -123,6 +122,7 @@ class LoginScreen : AppCompatActivity() {
                 print(username.toString())
 
             } else {
+                vibrator.vibrate(400) // for 500 ms
                 val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
                 showError(cantJoin.message)
             }

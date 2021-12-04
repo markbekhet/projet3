@@ -234,7 +234,6 @@ class RegisterScreen : AppCompatActivity() {
                     }
                 }
                 if (response?.isSuccessful == true) {
-                    mediaPlayer.start()
                     ClientInfo.userId = response?.body()?.string().toString()
                     runBlocking {
                         async {
@@ -308,6 +307,7 @@ class RegisterScreen : AppCompatActivity() {
                     startActivity(Intent(this, LandingPage::class.java))
                     finish()
                 } else {
+                    mediaPlayer.start()
                     val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
                     errorPassword.text = errorMessage.message
                 }
