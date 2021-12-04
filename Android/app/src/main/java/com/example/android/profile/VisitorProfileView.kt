@@ -4,6 +4,8 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBar
 import com.bumptech.glide.Glide
 import com.example.android.R
 import kotlinx.android.synthetic.main.avatar.*
@@ -22,8 +24,12 @@ class VisitorProfileView : AppCompatActivity() {
         setContentView(R.layout.activity_vistor_profile_view)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatVisitorProfile: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val bundle = intent.extras
         val data = bundle!!.getString("profileInformation")

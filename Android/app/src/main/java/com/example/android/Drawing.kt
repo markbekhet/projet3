@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBar
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
@@ -30,8 +32,13 @@ class Drawing : AppCompatActivity() {
         setContentView(R.layout.dessin)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatDrawing: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
+
         DrawingUtils.currentTool = pencilString
         val selectedColor = "#0000FF"
         val unselectedColor = "#FFFFFF"

@@ -33,18 +33,6 @@
                         android:textColor="@color/main_color"
                         android:textSize="32dp"
                         android:textStyle="bold" />
-                    <ImageButton
-                        android:id="@+id/chatDrawing"
-                        android:layout_width="100dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/chat"
-                        android:scaleType="fitXY"
-                        android:visibility="visible"
-                        android:layout_gravity="right"
-                        android:textColor="@color/main_color"
-                        android:layout_marginStart="5dp"
-                        app:backgroundTint="@color/white"
-                        android:tooltipText="@string/chat"/>
                 </LinearLayout>
 
                 <LinearLayout

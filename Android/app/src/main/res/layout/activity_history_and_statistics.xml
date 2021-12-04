@@ -23,15 +23,6 @@
                 android:text="Statistques"
                 android:textSize="36sp"
                 android:textStyle="bold"/>
-            <ImageButton
-                android:id="@+id/showChatStatisticsPage"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:src="@drawable/chat"
-                android:scaleType="fitXY"
-                android:visibility="visible"
-                android:layout_marginStart="10dp"
-                android:tooltipText="@string/chat"/>
         </LinearLayout>
 
         <Spinner
