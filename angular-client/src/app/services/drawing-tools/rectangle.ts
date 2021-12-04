@@ -252,7 +252,7 @@ export class Rectangle implements  DrawingTool{
 
     let fifthPos = new Point(x + width + this.totalTranslation.x,
         y + height + this.totalTranslation.y)
-    this.scalingPositions.set(fifthPos, new Point(1.0, 0.0))
+    this.scalingPositions.set(fifthPos, new Point(1.0, 1.0))
 
     let sixthPos = new Point(x + (width/2) + this.totalTranslation.x
         , y + height + this.totalTranslation.y)
@@ -266,7 +266,7 @@ export class Rectangle implements  DrawingTool{
         y + (height/2) + this.totalTranslation.y)
     this.scalingPositions.set(eighthPos, new Point(-1.0, 0.0))
   }
-  getScalingPoint(point: Point): [Point, Point] | null {
+  getScalingPoint(point: Point): [Point, Point] | undefined {
     //throw new Error('Method not implemented.');
     for(let item of this.scalingPositions){
       let position = item[0]
@@ -280,7 +280,7 @@ export class Rectangle implements  DrawingTool{
         return item;
       }
     }
-    return null
+    return undefined;
   }
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');

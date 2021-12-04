@@ -267,7 +267,7 @@ export class Pencil implements DrawingTool {
         y + (height/2) + this.totalTranslation.y)
     this.scalingPositions.set(eighthPos, new Point(-1.0, 0.0))
   }
-  getScalingPoint(point: Point): [Point, Point] | null{
+  getScalingPoint(point: Point): [Point, Point] | undefined{
     for(let item of this.scalingPositions){
       let position = item[0]
       let x = position.x - RADUIS
@@ -280,8 +280,9 @@ export class Pencil implements DrawingTool {
         return item;
       }
     }
-    return null
+    return undefined
   }
+  
   getScalingPositionsString(): void {
     let color: string = "";
     let mapEntries = userColorMap.entries();

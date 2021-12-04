@@ -217,7 +217,7 @@ export class Ellipse implements DrawingTool {
     let newRx = parseFloat(this.element.getAttribute("rx")!)
     let newRY = parseFloat(this.element.getAttribute("ry")!)
     this.renderer.setAttribute(this.element,"cx", (Math.min(maxPoint.x, minPoint.x) + newRx).toString())
-    this.renderer.setAttribute(this.element,"cy", (Math.min(maxPoint.x, minPoint.x) + newRY).toString())
+    this.renderer.setAttribute(this.element,"cy", (Math.min(maxPoint.y, minPoint.y) + newRY).toString())
     this.sendProgressToServer(DrawingStatus.Selected)
   }
   getSelectionString(): void {
@@ -266,7 +266,7 @@ export class Ellipse implements DrawingTool {
 
     let fifthPos = new Point(cx + rx + this.totalTranslation.x,
         cy + ry + this.totalTranslation.y)
-    this.scalingPositions.set(fifthPos, new Point(1.0, 0.0))
+    this.scalingPositions.set(fifthPos, new Point(1.0, 1.0))
 
     let sixthPos = new Point(cx + this.totalTranslation.x
         , cy + ry + this.totalTranslation.y)
@@ -281,7 +281,7 @@ export class Ellipse implements DrawingTool {
     this.scalingPositions.set(eighthPos, new Point(-1.0, 0.0))
   }
 
-  getScalingPoint(point: Point): [Point, Point] | null {
+  getScalingPoint(point: Point): [Point, Point] | undefined {
     //throw new Error('Method not implemented.');
     for(let item of this.scalingPositions){
       let position = item[0]
@@ -295,7 +295,7 @@ export class Ellipse implements DrawingTool {
         return item;
       }
     }
-    return null
+    return undefined
   }
   getScalingPositionsString(): void {
     //throw new Error('Method not implemented.');
