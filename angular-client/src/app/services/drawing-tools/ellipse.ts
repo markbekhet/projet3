@@ -266,7 +266,7 @@ export class Ellipse implements DrawingTool {
 
     let fifthPos = new Point(cx + rx + this.totalTranslation.x,
         cy + ry + this.totalTranslation.y)
-    this.scalingPositions.set(fifthPos, new Point(1.0, 0.0))
+    this.scalingPositions.set(fifthPos, new Point(1.0, 1.0))
 
     let sixthPos = new Point(cx + this.totalTranslation.x
         , cy + ry + this.totalTranslation.y)

@@ -252,7 +252,7 @@ export class Rectangle implements  DrawingTool{
 
     let fifthPos = new Point(x + width + this.totalTranslation.x,
         y + height + this.totalTranslation.y)
-    this.scalingPositions.set(fifthPos, new Point(1.0, 0.0))
+    this.scalingPositions.set(fifthPos, new Point(1.0, 1.0))
 
     let sixthPos = new Point(x + (width/2) + this.totalTranslation.x
         , y + height + this.totalTranslation.y)
