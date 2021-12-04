@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
-import android.content.Context
-import android.media.MediaPlayer
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
@@ -21,14 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
-import android.os.Vibrator
-import android.media.AudioManager
-
-
-
-
-
-
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
@@ -36,18 +26,14 @@ class LoginScreen : AppCompatActivity() {
     private var texte: Button? = null
     var userdata : LoginInfo ?= null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_screen)
         clientService = ClientService()
-        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0)
-        val mediaPlayer = MediaPlayer.create(this, R.raw.login)
+
         supportActionBar!!.setDisplayShowHomeEnabled(true);
         supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
         supportActionBar!!.setDisplayUseLogoEnabled(true);
-        mediaPlayer.start()
 
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
@@ -101,10 +87,6 @@ class LoginScreen : AppCompatActivity() {
 
         var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
-            val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-            if (vibrator.hasVibrator()) {
-                vibrator.vibrate(400) // for 500 ms
-            }
             runBlocking {
                 async{
                     launch {
