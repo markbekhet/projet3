@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
@@ -32,8 +34,12 @@ class ModifyDrawingParams : AppCompatActivity(){
         setContentView(R.layout.activity_modify_drawing_params)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatModifyDrawingPage: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         socket = SocketHandler.getChatSocket()
         val data = intent.extras!!.getString("drawingInformation")

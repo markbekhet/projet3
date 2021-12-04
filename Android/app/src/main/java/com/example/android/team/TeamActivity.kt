@@ -5,7 +5,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.fragment.app.FragmentManager
 import com.example.android.*
 import com.example.android.canvas.GalleryDrawing
@@ -36,9 +38,19 @@ class TeamActivity : AppCompatActivity() {
         //The extra data will be needed for the gallery and for the chat
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_team_activity)
+        val customActionBar = supportActionBar!!.customView
 
+        val profileButton: ImageView = customActionBar.
+        findViewById(R.id.profileButtonTeamPage)
+        val showBio: ImageView = customActionBar.findViewById(R.id.showBio)
+        val createTeamTeamButton: ImageView = customActionBar.
+        findViewById(R.id.createTeamTeamButton)
+        val createDrawingTeamButton: ImageView = customActionBar.
+                findViewById(R.id.createDrawingTeamButton)
+        val showChatTeamPage:ImageView = customActionBar.findViewById(R.id.showChatTeamPage)
         /*===============Get the team information from the bundle==================*/
         val data = intent.extras!!.getString("teamInformation")
         val teamChatAndActiveUsers = TeamChatAndActiveUsers().fromJson(data!!)
@@ -109,7 +121,7 @@ class TeamActivity : AppCompatActivity() {
             createTeamDialog.show()
         }
 
-        profileButtonTeamPage.setOnClickListener {
+        profileButton.setOnClickListener {
             val profileRequest = UserProfileRequest(ClientInfo.userId, ClientInfo.userId)
             socket.emit("getUserProfileRequest", profileRequest.toJson())
             var i = 0
