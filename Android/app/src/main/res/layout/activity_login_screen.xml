@@ -21,8 +21,8 @@
 
     <ImageView
         android:id="@+id/nom_app"
-        android:layout_width="162dp"
-        android:layout_height="100dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_marginLeft="5sp"
         android:layout_marginRight="5sp"
         android:layout_marginBottom="50sp"
@@ -39,7 +39,7 @@
 
     <EditText
         android:id="@+id/username"
-        android:layout_width="229dp"
+        android:layout_width="300dp"
         android:layout_height="43dp"
         android:layout_marginBottom="10dp"
         android:width="40sp"
@@ -63,7 +63,7 @@
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="229dp"
+        android:layout_width="300dp"
         android:layout_height="43dp"
         android:layout_marginBottom="20dp"
         android:width="40sp"
@@ -85,7 +85,7 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="229dp"
+        android:layout_width="300dp"
         android:layout_height="50dp"
         android:text="Connexion"
         android:enabled="false"
@@ -95,6 +95,7 @@
     <TextView
         android:id="@+id/register"
         android:layout_width="229dp"
+
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Voulez vous creer un compte"
