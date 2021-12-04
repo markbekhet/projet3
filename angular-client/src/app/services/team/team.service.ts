@@ -5,7 +5,7 @@ import { TeamVisibilityLevel } from '@models/VisibilityMeta';
 import { BehaviorSubject } from 'rxjs';
 
 //const PATH = 'http://localhost:3000';
-const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
 @Injectable({
   providedIn: 'root',
 })

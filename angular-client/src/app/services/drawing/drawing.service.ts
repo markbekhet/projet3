@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { DrawingVisibilityLevel } from '@src/app/models/VisibilityMeta';
 
- const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+ const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
 // const PATH = 'http://localhost:3000';
 
 export var userColorMap: Map<string, string| undefined> = new Map<string, string| undefined>([
