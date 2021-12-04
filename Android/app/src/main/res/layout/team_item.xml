@@ -22,11 +22,11 @@
             android:textColor="@color/black" />
         <ImageView
             android:id="@+id/toolTipTeam"
-            android:layout_width="30dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:contentDescription="image"
             android:scaleType="fitXY"
-            android:src="@drawable/tool_tip"
+            android:src="@drawable/ic_baseline_info_24"
             android:tag="@color/white"
             android:layout_marginStart="10dp"/>
 
