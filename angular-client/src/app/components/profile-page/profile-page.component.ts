@@ -87,7 +87,9 @@ export class ProfilePage implements OnInit {
       newPasswordTwice: formBuilder.control('', [
       ]),
       avatar: formBuilder.control('', []),
-    });
+    }, { validators: Validators.compose([
+      ValidationService.matchingPasswordValidator('newPassword', 'newPasswordTwice'),
+    ])});
   }
 
   @HostListener('window:beforeunload')

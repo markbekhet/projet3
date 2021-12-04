@@ -33,6 +33,9 @@
                     <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">
                         <mat-label for="newPasswordTwice">Entrez votre mot de passe de nouveau</mat-label>
                         <input type="password" matInput formControlName="newPasswordTwice" />
+                        <mat-error *ngIf="checkError(updateForm, 'newPasswordTwice', 'fieldsMismatched')">Les deux mots
+                            de passe
+                            ne sont pas identiques !</mat-error>
                     </mat-form-field>
                     <br>
                     <mat-form-field *ngIf="updateForm.controls.newPassword.value !== ''" class="new-password-field">

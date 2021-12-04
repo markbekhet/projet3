@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AbstractControl, FormControl } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -36,10 +36,14 @@ export class ValidationService {
     return { invalidPassword: true };
   }
 
-  static testValidator(control: FormControl) {
-    if (control.value !== null) {
-      return null;
+  static matchingPasswordValidator(password: string, verificationPassword: string) {
+    return (control: AbstractControl) => {
+      const passwordValue = control.get(password)!.value;
+      const verificationPasswordValue = control.get(verificationPassword)!.value;
+
+      if (passwordValue !== verificationPasswordValue) {
+        control.get(verificationPassword)!.setErrors({ fieldsMismatched: true });
+      } return null;
     }
-    return { testValidator: true };
   }
 }
