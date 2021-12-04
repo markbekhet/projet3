@@ -96,10 +96,26 @@
         android:id="@+id/register"
         android:layout_width="229dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Voulez vous creer un compte"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/vibration_on"
+        android:layout_width="229dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="Votre application supporte les vibrations!"
         android:gravity="center"
         />
-
+    <TextView
+        android:id="@+id/vibration_off"
+        android:layout_width="229dp"
+        android:layout_marginTop="5dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:text="Votre application ne supporte pas les vibrations!"
+        android:gravity="center"
+        />
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
