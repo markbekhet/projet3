@@ -112,7 +112,7 @@
         android:layout_width="229dp"
         android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         android:text="Votre application ne supporte pas les vibrations!"
         android:gravity="center"
         />

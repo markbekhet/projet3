@@ -23,11 +23,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import android.os.Vibrator
 import android.media.AudioManager
-
-
-
-
-
+import android.view.View
 
 
 class LoginScreen : AppCompatActivity() {
@@ -48,7 +44,13 @@ class LoginScreen : AppCompatActivity() {
         supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
         supportActionBar!!.setDisplayUseLogoEnabled(true);
         mediaPlayer.start()
-
+        val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            vibration_on.visibility= View.VISIBLE
+        }
+        else{
+            vibration_off.visibility= View.VISIBLE
+        }
         register.setOnClickListener(){
             startActivity(Intent(this, RegisterScreen::class.java))
         }
@@ -101,10 +103,7 @@ class LoginScreen : AppCompatActivity() {
 
         var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
-            val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-            if (vibrator.hasVibrator()) {
-                vibrator.vibrate(400) // for 500 ms
-            }
+            vibrator.vibrate(400) // for 500 ms
             runBlocking {
                 async{
                     launch {
