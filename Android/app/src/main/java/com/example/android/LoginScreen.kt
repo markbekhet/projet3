@@ -5,11 +5,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login_screen.*
 import android.app.Dialog
-import android.content.Context
+import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.KeyEvent
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
@@ -21,19 +26,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
-import android.os.Vibrator
-import android.media.AudioManager
-import android.os.Build
-import android.os.VibrationEffect
-import android.view.View
-
 
 class LoginScreen : AppCompatActivity() {
     private var ErrorLogIn: Dialog? = null
     private var clientService: ClientService? = null
     private var texte: Button? = null
     var userdata : LoginInfo ?= null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +40,10 @@ class LoginScreen : AppCompatActivity() {
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0)
         val mediaPlayer = MediaPlayer.create(this, R.raw.login)
-
-        supportActionBar!!.setDisplayShowHomeEnabled(true);
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
-        supportActionBar!!.setDisplayUseLogoEnabled(true);
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
         mediaPlayer.start()
         val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         if (vibrator.hasVibrator()) {
@@ -106,7 +104,6 @@ class LoginScreen : AppCompatActivity() {
 
         var response: Response<ResponseBody> ?= null
         button.setOnClickListener() {
-
             runBlocking {
                 async{
                     launch {

@@ -48,6 +48,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.SystemClock.sleep
 import android.util.Log
+import androidx.appcompat.app.ActionBar
 import com.example.android.client.*
 import com.example.android.profile.CameraActivity
 import nl.dionsegijn.konfetti.models.Shape
@@ -63,9 +64,10 @@ class RegisterScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
 
-        supportActionBar!!.setDisplayShowHomeEnabled(true);
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
-        supportActionBar!!.setDisplayUseLogoEnabled(true);
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
 
         val firstName: EditText = findViewById(R.id.longueur)
         val lastName: EditText = findViewById(R.id.largeur)
