@@ -11,8 +11,8 @@ import { DrawingService } from '../drawing/drawing.service';
 import { TeamService } from '../team/team.service';
 import { TeamInformations } from '@src/app/models/teamsMeta';
 
-// const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-const PATH = 'http://localhost:3000/';
+const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
+//const PATH = 'http://localhost:3000/';
 const LOGIN = 'login/';
 const REGISTER = 'register/';
 const PROFILE = 'user/profile/';
