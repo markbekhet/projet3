@@ -15,7 +15,7 @@ var notification_ID = 0
 fun NotificationManager.sendNotification(messageBody: String, applicationContext: AppCompatActivity){
     val builder = NotificationCompat.Builder(applicationContext,
         applicationContext.getString(R.string.color_image_notification_id) )
-        .setSmallIcon(R.drawable.logo)
+        .setSmallIcon(R.mipmap.ic_launcher_round)
         .setContentTitle(applicationContext.getString(R.string.notification_title))
         .setContentText(messageBody)
         .setAutoCancel(true)
