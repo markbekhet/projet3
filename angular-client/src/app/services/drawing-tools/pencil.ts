@@ -62,7 +62,7 @@ export class Pencil implements DrawingTool {
     //this.updateThickness();
     //this.updatePrimaryColor();
     this.userId = userId;
-    this.primaryColor = DEFPRIM;
+    this.primaryColor = colorPick.cData.primaryColor;
   }
   onMouseDown(event: MouseEvent): void {
     this.pointsArray.push(Point.rpositionMouse(event, this.canvas.nativeElement));
@@ -81,7 +81,7 @@ export class Pencil implements DrawingTool {
     })
     this.rendrer.setAttribute(this.element,'points', this.pointsToString())
     this.totalTranslation = new Point(0,0);
-    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)"); 
+    this.rendrer.setAttribute(this.element, "transform", "translate(0,0)");
     this.setCriticalValues()
     this.calculateScalingPositions()
     this.select()
@@ -206,7 +206,7 @@ export class Pencil implements DrawingTool {
   }
   getSelectionString(): void {
     //this.stringToPointsArray();
-    
+
     this.setCriticalValues();
     this.str += "<rect "
     let x = this.minPoint.x
@@ -282,7 +282,7 @@ export class Pencil implements DrawingTool {
     }
     return undefined
   }
-  
+
   getScalingPositionsString(): void {
     let color: string = "";
     let mapEntries = userColorMap.entries();
@@ -377,7 +377,7 @@ export class Pencil implements DrawingTool {
     this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {
-    
+
     this.colorPick.colorSubject.subscribe((color:ChosenColors)=>{
       if(color === undefined){
         this.primaryColor = DEFPRIM;
@@ -420,7 +420,7 @@ export class Pencil implements DrawingTool {
   sendProgressToServer(drawingStatus: DrawingStatus){
     let drawingContent: DrawingContent = {drawingId: this.drawingId, userId: this.userId,
                                   id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
-    this.socketService.sendDrawingToServer(drawingContent);                              
+    this.socketService.sendDrawingToServer(drawingContent);
   }
 
 }
