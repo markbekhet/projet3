@@ -17,6 +17,7 @@ import com.example.android.chat.ChatDialog
 import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.*
+import com.example.android.team.CantJoin
 import kotlinx.android.synthetic.main.activity_own_profile.*
 import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.popup_modify_parameters.*
@@ -307,9 +308,9 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
                     dismiss()
                 }
                 else{
-                    println(response!!.errorBody()!!.string())
                     passwordErrors.text = ""
-                    passwordErrors.append(response!!.errorBody()!!.string())
+                    val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    passwordErrors.text = cantJoin.message
                 }
             }
         }
