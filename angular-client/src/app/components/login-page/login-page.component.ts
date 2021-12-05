@@ -15,7 +15,8 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 })
 export class LoginPage implements OnInit {
   inputForm: FormGroup;
-  usernameExists = false;
+  usernameExists: boolean = false;
+  isAuthentified: boolean = false;
 
   constructor(
     private auth: AuthService,
@@ -45,7 +46,10 @@ export class LoginPage implements OnInit {
       this.auth.login(user).subscribe(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (accepted) => {
-          this.router.navigate(['/home']);
+          this.isAuthentified = true;
+          setTimeout(() => {
+            this.router.navigate(['/home']);
+          }, 150);
           form.reset();
         },
         (error) => {

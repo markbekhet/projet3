@@ -42,9 +42,6 @@ $base-color-dark: #403d39;
     mat-list-item {
       display: block;
       margin-bottom: 1em;
-      // span {
-      //   vertical-align: baseline;
-      // }
 
       // .buttons-wrapper {
       //   display: flex; inline-flex ??????
@@ -55,7 +52,6 @@ $base-color-dark: #403d39;
       button {
         margin: 0 0.5em;
       }
-      // }
     }
     .avatar {
       width: 40px;
@@ -75,7 +71,7 @@ $base-color-dark: #403d39;
     flex-wrap: nowrap;
     gap: 1em;
 
-    // & > :first-child {
+    // & > #chatInsert > :first-child {
     //   margin-right: 3px;
     // }
   }

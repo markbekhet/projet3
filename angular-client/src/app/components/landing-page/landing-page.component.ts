@@ -34,7 +34,7 @@ export class LandingPage implements OnInit, AfterViewInit {
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
-    this.isLoggedIn = true;
+    // this.isLoggedIn = true;
     userColorMap.set('#CBCB28', this.authService.token$.value);
   }
 
@@ -69,7 +69,7 @@ export class LandingPage implements OnInit, AfterViewInit {
     const CONFIG = new MatSnackBarConfig();
     const DURATION = 2000;
     CONFIG.duration = DURATION;
-    this.snackBar.open('Bienvenue !', undefined, CONFIG);
+    this.snackBar.open('Bienvenue sur ColorImage !', undefined, CONFIG);
   }
 
   execute(shortcutName: string) {

@@ -54,10 +54,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   teams: Team[] = [];
   chatrooms: string[] = [];
 
+  removable: boolean = true;
+
   joinedChatrooms = new Map<string, boolean>();
 
   @Output()
   chatroomName = new EventEmitter<string>();
+  @Output()
+  isExpanded: boolean = true;
 
   @ViewChild('chatInsert', { read: ViewContainerRef })
   chatInsert!: ViewContainerRef;
@@ -137,6 +141,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         for (const key of this.chatRoomService.chatRooms.keys()) {
           this.chatrooms.push(key);
         }
+        // (Note-Paul) : I don't keep channel General in the array, it's easier that way
         this.chatrooms.shift();
 
         // let teamFound = false;
@@ -238,6 +243,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   joinChat(roomName: string) {
     console.log(roomName);
+    // Si la chatbox n'est pas déjà ouverte
     if (
       this.joinedChatrooms.get(roomName) === false ||
       this.joinedChatrooms.get(roomName) === undefined
@@ -247,13 +253,27 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         this.chatInsert.createComponent(this.chatComponentFactory).instance
       );
       chatComponent.chatroomName = roomName;
+      chatComponent.isExpanded = true;
       this.joinedChatrooms.set(roomName, true);
+    }
+
+    // Sinon si la chatbox est déjà ouverte
+    else {
+    }
+  }
+
+  remove(chatroom: string): void {
+    const index = this.chatrooms.indexOf(chatroom);
+
+    if (index >= 0) {
+      this.chatrooms.splice(index, 1);
     }
   }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
+
   decodeAvatar(avatarEncoded: string) {
     if (avatarEncoded === undefined) {
       return '';

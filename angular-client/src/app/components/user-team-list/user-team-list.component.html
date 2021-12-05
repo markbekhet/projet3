@@ -29,17 +29,19 @@
         <h2>Canaux de discussion</h2>
 
         <mat-chip-list aria-label="Liste des canaux de clavardage">
-            <mat-chip color="primary" selected matTooltip="Joindre le canal" (click)="joinChat('General')">
+            <mat-chip color="primary" matTooltip="Joindre le canal" (click)="joinChat('General')" selected>
                 {{'General'}}
             </mat-chip>
+            <!-- [selectable]="selectable" -->
 
             <!-- Teams chatrooms -->
-            <div *ngFor="let room of chatrooms">
-                <mat-chip color="accent" selected matTooltip="Joindre le canal" (click)="joinChat(room)">
-                    {{room}}
-                </mat-chip>
-                <button (click)="leaveTeam(room)">Quitter l'équipe</button>
-            </div>
+            <mat-chip *ngFor="let room of chatrooms" color="accent" matTooltip="Joindre le canal"
+                      [removable]="removable" (removed)="remove(room)" (click)="joinChat(room)" selected>
+                {{room}}
+                <button matChipRemove *ngIf="removable" (click)="leaveTeam(room)">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip>
         </mat-chip-list>
     </mat-list>
 
