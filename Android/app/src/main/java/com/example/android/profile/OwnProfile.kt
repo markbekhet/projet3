@@ -182,6 +182,9 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(oldPassword.text.isEmpty()){
                 passwordErrors.append("Veuillez entrer votre ancienne mot de passe")
             }
+            if(oldPassword.text == newPassword.text && oldPassword.text == confirmNewPassword.text){
+                passwordErrors.append("Veuillez entrer un nouveau mot de passe different de l'ancien.")
+            }
 
             if(newPassword.text.isEmpty() &&
                 confirmNewPassword.text.isEmpty() &&
@@ -211,6 +214,7 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(oldPassword.text == newPassword.text && oldPassword.text == confirmNewPassword.text){
                 passwordErrors.append("Veuillez entrer un nouveau mot de passe different de l'ancien.")
             }
+
             if(newPassword.text.isEmpty() &&
                 confirmNewPassword.text.isEmpty() &&
                 oldPassword.text.isEmpty() && newNickname.text.isEmpty()){
@@ -236,6 +240,9 @@ class ModifyParams(var context: OwnProfile) : Dialog(context){
             if(confirmNewPassword.text.isEmpty()){
                 passwordErrors.append("Veuillez confirmer votre nouveau mot de passe.")
 
+            }
+            if(oldPassword.text == newPassword.text && oldPassword.text == confirmNewPassword.text){
+                passwordErrors.append("Veuillez entrer un nouveau mot de passe different de l'ancien.")
             }
             if(newPassword.text.isEmpty() &&
                 confirmNewPassword.text.isEmpty() &&
