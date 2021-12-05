@@ -12,6 +12,7 @@ import { colorData } from './color-data';
 export class ColorPickerComponent implements OnInit {
   cData = colorData;
   colorSubsc!: Subscription;
+  tooltip: string = 'Clic droit pour sélectionner la couleur primaire.\nClic gauche pour sélectionner la couleur secondaire.';
 
   constructor(public colorPicking: ColorPickingService) {}
 

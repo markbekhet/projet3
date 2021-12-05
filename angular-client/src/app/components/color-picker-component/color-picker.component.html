@@ -1,36 +1,29 @@
 <table>
     <tr>
         <td>
-            <svg
-                height="100"
-                width="200"
-                (contextmenu)="onContextMenu($event)"
-                (mouseup)="colorSelectOnMouseUp()"
-                (mousemove)="selectorOnMouseLeave($event)"
-            >
+            <svg height="100" width="200" (contextmenu)="onContextMenu($event)" (mouseup)="colorSelectOnMouseUp()"
+                 (mousemove)="selectorOnMouseLeave($event)">
                 <defs>
                     <clipPath id="clip">
                         <rect x="0" y="0" width="100" height="100"></rect>
                     </clipPath>
                     <linearGradient id="grad1" x1="70%" y1="0%" x2="00%" y2="00%">
-                        <stop
-                            offset="0%"
-                            style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;"
-                            [style.stop-color]="'hsl(' + this.cData.currentHue + ', 100%, 50% )'"
-                        ></stop>
-                        <stop
-                            offset="100%"
-                            style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;"
-                            [style.stop-color]="'hsl(' + this.cData.currentHue + ', 100%, 50% )'"
-                        ></stop>
+                        <stop offset="0%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;"
+                              [style.stop-color]="'hsl(' + this.cData.currentHue + ', 100%, 50% )'"></stop>
+                        <stop offset="100%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;"
+                              [style.stop-color]="'hsl(' + this.cData.currentHue + ', 100%, 50% )'"></stop>
                     </linearGradient>
                     <linearGradient id="gradS" x1="00%" y1="50%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;" [style.stop-color]="cData.secondaryColor"></stop>
-                        <stop offset="100%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;" [style.stop-color]="cData.secondaryColor"></stop>
+                        <stop offset="0%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;"
+                              [style.stop-color]="cData.secondaryColor"></stop>
+                        <stop offset="100%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;"
+                              [style.stop-color]="cData.secondaryColor"></stop>
                     </linearGradient>
                     <linearGradient id="gradP" x1="00%" y1="50%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;" [style.stop-color]="cData.primaryColor"></stop>
-                        <stop offset="100%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;" [style.stop-color]="cData.primaryColor"></stop>
+                        <stop offset="0%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 1;"
+                              [style.stop-color]="cData.primaryColor"></stop>
+                        <stop offset="100%" style="stop-color:rgb( 255, 0, 0 );stop-opacity: 0;"
+                              [style.stop-color]="cData.primaryColor"></stop>
                     </linearGradient>
                     <linearGradient id="grad2" x1="0%" y1="100%" x2="0%" y2="0%">
                         <stop offset="0%" style="stop-color:rgb( 255, 255, 255 );stop-opacity: 1;"></stop>
@@ -65,204 +58,107 @@
                         <stop offset="100%" style="stop-color:hsl( 360, 100%, 50% );stop-opacity: 1;"></stop>
                     </linearGradient>
                 </defs>
-                <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad1);stroke:black;stroke-width:1"></polygon>
-                <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad2);stroke:black;stroke-width:1"></polygon>
-                <polygon
-                    points="25,25 25,75 75,75 75,25 25,25"
-                    style="fill: url(#grad3);stroke:black;stroke-width:1"
-                    (mouseleave)="selectorOnMouseLeave($event)"
-                    (mousedown)="slSelectorOnMouseDown($event)"
-                    (mousemove)="slSelector($event)"
-                ></polygon>
-                <polygon points="0,90 00,75 5,85 15,95 25,100 10,100" style="fill: url(#gradP);stroke:black;stroke-width:1"></polygon>
-                <polygon points="100,90 100,75 95,85 85,95 75,100 90,100" style="fill: url(#gradS);stroke:black;stroke-width:1"></polygon>
+                <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad1);stroke:black;stroke-width:1">
+                </polygon>
+                <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad2);stroke:black;stroke-width:1">
+                </polygon>
+                <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad3);stroke:black;stroke-width:1"
+                         (mouseleave)="selectorOnMouseLeave($event)" (mousedown)="slSelectorOnMouseDown($event)"
+                         (mousemove)="slSelector($event)" matTooltip={{tooltip}}></polygon>
+                <polygon points="0,90 00,75 5,85 15,95 25,100 10,100"
+                         style="fill: url(#gradP);stroke:black;stroke-width:1"></polygon>
+                <polygon points="100,90 100,75 95,85 85,95 75,100 90,100"
+                         style="fill: url(#gradS);stroke:black;stroke-width:1"></polygon>
                 <path d="M95 50 a45 45 0 0 1 -45 45" fill="none" stroke="url(#linearColors1)" stroke-width="5" />
                 <path d="M50 95 a45 45 0 0 1 -45 -45" fill="none" stroke="url(#linearColors2)" stroke-width="5" />
                 <path d="M5 50 a45 45 0 0 1 45 -45" fill="none" stroke="url(#linearColors3)" stroke-width="5" />
                 <path d="M50 5 a45 45 0 0 1 45 45" fill="none" stroke="url(#linearColors4)" stroke-width="5" />
-                <polygon
-                    points="90,49 90,51 93,52 97,52 100,51 100,49 97,48 92,48 "
-                    stroke-width="1"
-                    stroke="black"
-                    fill="none"
-                    [ngStyle]="svgStyles"
-                ></polygon>
-                <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    stroke-width="5"
-                    stroke="white"
-                    style="stroke-opacity: .1;"
-                    fill="none"
-                    clip-path="url(#clip)"
-                    (mouseleave)="selectorOnMouseLeave($event)"
-                    (mousedown)="hueSelectorOnMouseDown($event)"
-                    (mousemove)="hueSelector($event)"
-                ></circle>
-                <circle cx="25" cy="25" r="2" stroke-width="1" stroke="white" fill="none" [ngStyle]="cursorStyles"></circle>
-                <rect
-                    x="0"
-                    y="0"
-                    height="100"
-                    width="100"
-                    (mouseup)="colorSelectOnMouseUp()"
-                    fill-opacity="0"
-                    (mousemove)="selectorOnMouseLeave($event)"
-                    [style.fill]="cData.rectOffsetFill"
-                ></rect>
-                <circle
-                    *ngFor="let rect of cData.lastColorRects"
-                    [style.cx]="rect.x"
-                    [style.cy]="rect.y"
-                    [style.r]="10"
-                    style="stroke-width: 1px;"
-                    [style.stroke]="rect.stroke"
-                    [style.fill]="rect.fill"
-                    (mousedown)="lastColorSelector($event, rect.fill)"
-                ></circle>
-                <polyline
-                    points="120,90 170,90 175,85 175,90 175,85 170,85"
-                    stroke-width="1"
-                    [style.stroke]="cData.swapStrokeStyle"
-                    style="font-size : 10;font-style: italic"
-                    fill="none"
-                ></polyline>
-                <polyline
-                    points="175,70 125,70 120,75 120,70 120,75 125,75"
-                    stroke-width="1"
-                    [style.stroke]="cData.swapStrokeStyle"
-                    style="font-size : 10;font-style: italic"
-                    fill="none"
-                ></polyline>
-                <text x="122" y="83" [style.stroke]="cData.swapStrokeStyle" style="font-size : 10;font-style: italic">PERMUTER</text>
-                <rect
-                    x="119"
-                    y="70"
-                    width="42"
-                    height="20"
-                    style="fill-opacity: .1;"
-                    fill="black"
-                    (click)="swapPrimarySecondary()"
-                    (mouseover)="onSwapSVGMouseOver()"
-                    (mouseup)="onSwapSVGMouseUp()"
-                    (mousedown)="onSwapSVGMouseDown()"
-                    (mouseleave)="onSwapSVGMouseLeave()"
-                ></rect>
+                <polygon points="90,49 90,51 93,52 97,52 100,51 100,49 97,48 92,48 " stroke-width="1" stroke="black"
+                         fill="none" [ngStyle]="svgStyles"></polygon>
+                <circle cx="50" cy="50" r="45" stroke-width="5" stroke="white" style="stroke-opacity: .1;" fill="none"
+                        clip-path="url(#clip)" (mouseleave)="selectorOnMouseLeave($event)"
+                        (mousedown)="hueSelectorOnMouseDown($event)" (mousemove)="hueSelector($event)"></circle>
+                <circle cx="25" cy="25" r="2" stroke-width="1" stroke="white" fill="none" [ngStyle]="cursorStyles">
+                </circle>
+                <rect x="0" y="0" height="100" width="100" (mouseup)="colorSelectOnMouseUp()" fill-opacity="0"
+                      (mousemove)="selectorOnMouseLeave($event)" [style.fill]="cData.rectOffsetFill"></rect>
+                <circle *ngFor="let rect of cData.lastColorRects" [style.cx]="rect.x" [style.cy]="rect.y" [style.r]="10"
+                        style="stroke-width: 1px;" [style.stroke]="rect.stroke" [style.fill]="rect.fill"
+                        (mousedown)="lastColorSelector($event, rect.fill)"></circle>
+                <polyline points="120,90 170,90 175,85 175,90 175,85 170,85" stroke-width="1"
+                          [style.stroke]="cData.swapStrokeStyle" style="font-size : 10;font-style: italic" fill="none">
+                </polyline>
+                <polyline points="175,70 125,70 120,75 120,70 120,75 125,75" stroke-width="1"
+                          [style.stroke]="cData.swapStrokeStyle" style="font-size : 10;font-style: italic" fill="none">
+                </polyline>
+                <text x="122" y="83" [style.stroke]="cData.swapStrokeStyle"
+                      style="font-size : 10;font-style: italic">PERMUTER</text>
+                <rect x="119" y="70" width="42" height="20" style="fill-opacity: .1;" fill="black"
+                      (click)="swapPrimarySecondary()" (mouseover)="onSwapSVGMouseOver()" (mouseup)="onSwapSVGMouseUp()"
+                      (mousedown)="onSwapSVGMouseDown()" (mouseleave)="onSwapSVGMouseLeave()"></rect>
             </svg>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="radiocontainer"
-                >Primaire
-                <input
-                    type="radio"
-                    [checked]="cData.colorMode === cData.PRIMARY_COLOR_MODE"
-                    name="radio"
-                    (change)="onRadioButtonChange(cData.PRIMARY_COLOR_MODE)"
-                />
+            <label class="radiocontainer">Primaire
+                <input type="radio" [checked]="cData.colorMode === cData.PRIMARY_COLOR_MODE" name="radio"
+                       (change)="onRadioButtonChange(cData.PRIMARY_COLOR_MODE)" />
                 <span class="radiocheckmark"></span>
             </label>
-            <label class="radiocontainer"
-                >Secondaire
-                <input
-                    type="radio"
-                    [checked]="cData.colorMode === cData.SECONDARY_COLOR_MODE"
-                    name="radio"
-                    (change)="onRadioButtonChange(cData.SECONDARY_COLOR_MODE)"
-                />
+            <label class="radiocontainer">Secondaire
+                <input type="radio" [checked]="cData.colorMode === cData.SECONDARY_COLOR_MODE" name="radio"
+                       (change)="onRadioButtonChange(cData.SECONDARY_COLOR_MODE)" />
                 <span class="radiocheckmark"></span>
             </label>
-            <label class="radiocontainer"
-                >Fond
-                <input
-                    type="radio"
-                    [checked]="cData.colorMode === cData.BACKGROUND_COLOR_MODE"
-                    name="radio"
-                    (change)="onRadioButtonChange(cData.BACKGROUND_COLOR_MODE)"
-                />
-                <span class="radiocheckmark"></span> </label
-            ><br />
-            <label class="namelabel" style="width: 20px;padding-top: 5px;">Hex </label
-            ><label class="numberlabel" style="width: 7px;padding-top: 5px;">#</label>
-            <input
-                class="hexInput"
-                type="text"
-                maxlength="cData.HEX_COLOR_INPUT_MAX_LENGTH"
-                [(ngModel)]="cData.hexColorInput"
-                (keydown)="validateHexInput($event, cData.HEX_COLOR_INPUT_MAX_LENGTH, cData.hexColorInput)"
-                (keyup)="onHexInput(cData.HEX_COLOR_INPUT_MAX_LENGTH, cData.hexColorInput, cData.COLOR_HEX_INPUT_FIELD)"
-            />
-            <label class="rgbnamelabel"
-                ><font color="#054dc2">Bleu</font>
-                <input
-                    class="rgbInput"
-                    type="text"
-                    maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
-                    [(ngModel)]="cData.blueHexInput"
-                    (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.blueHexInput)"
-                    (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.blueHexInput, cData.BLUE_INPUT_FIELD)"
-                />
+            <label class="radiocontainer">Fond
+                <input type="radio" [checked]="cData.colorMode === cData.BACKGROUND_COLOR_MODE" name="radio"
+                       (change)="onRadioButtonChange(cData.BACKGROUND_COLOR_MODE)" />
+                <span class="radiocheckmark"></span> </label><br />
+            <label class="namelabel" style="width: 20px;padding-top: 5px;">Hex </label><label class="numberlabel"
+                   style="width: 7px;padding-top: 5px;">#</label>
+            <input class="hexInput" type="text" maxlength="cData.HEX_COLOR_INPUT_MAX_LENGTH"
+                   [(ngModel)]="cData.hexColorInput"
+                   (keydown)="validateHexInput($event, cData.HEX_COLOR_INPUT_MAX_LENGTH, cData.hexColorInput)"
+                   (keyup)="onHexInput(cData.HEX_COLOR_INPUT_MAX_LENGTH, cData.hexColorInput, cData.COLOR_HEX_INPUT_FIELD)" />
+            <label class="rgbnamelabel">
+                <font color="#054dc2">Bleu</font>
+                <input class="rgbInput" type="text" maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
+                       [(ngModel)]="cData.blueHexInput"
+                       (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.blueHexInput)"
+                       (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.blueHexInput, cData.BLUE_INPUT_FIELD)" />
             </label>
-            <label class="rgbnamelabel"
-                ><font color="green">Vert</font>
-                <input
-                    class="rgbInput"
-                    type="text"
-                    maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
-                    [(ngModel)]="cData.greenHexInput"
-                    (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.greenHexInput)"
-                    (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.greenHexInput, cData.GREEN_INPUT_FIELD)"
-                />
+            <label class="rgbnamelabel">
+                <font color="green">Vert</font>
+                <input class="rgbInput" type="text" maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
+                       [(ngModel)]="cData.greenHexInput"
+                       (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.greenHexInput)"
+                       (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.greenHexInput, cData.GREEN_INPUT_FIELD)" />
             </label>
-            <label class="rgbnamelabel"
-                ><font color="red">Rouge</font>
-                <input
-                    class="rgbInput"
-                    type="text"
-                    maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
-                    [(ngModel)]="cData.redHexInput"
-                    (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.redHexInput)"
-                    (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.redHexInput, cData.RED_INPUT_FIELD)"
-                />
+            <label class="rgbnamelabel">
+                <font color="red">Rouge</font>
+                <input class="rgbInput" type="text" maxlength="cData.HEX_RGB_INPUT_MAX_LENGTH"
+                       [(ngModel)]="cData.redHexInput"
+                       (keydown)="validateHexInput($event, cData.HEX_RGB_INPUT_MAX_LENGTH, cData.redHexInput)"
+                       (keyup)="onHexInput(cData.HEX_RGB_INPUT_MAX_LENGTH, cData.redHexInput, cData.RED_INPUT_FIELD)" />
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="namelabel">Saturation</label><label class="numberlabel">{{ cData.saturationSliderInput }}%</label>
-            <input
-                class="colorSlider"
-                type="range"
-                min="0"
-                step="1"
-                max="100"
-                [(ngModel)]="cData.saturationSliderInput"
-                (change)="onSLSliderInput()"
-            />
-            <label class="namelabel">Luminosité</label><label class="numberlabel">{{ cData.lightnessSliderInput }}%</label>
-            <input
-                class="colorSlider"
-                type="range"
-                min="0"
-                step="1"
-                max="100"
-                [(ngModel)]="cData.lightnessSliderInput"
-                (change)="onSLSliderInput()"
-            />
+            <label class="namelabel">Saturation</label><label class="numberlabel">{{ cData.saturationSliderInput
+                }}%</label>
+            <input class="colorSlider" type="range" min="0" step="1" max="100" [(ngModel)]="cData.saturationSliderInput"
+                   (change)="onSLSliderInput()" />
+            <label class="namelabel">Luminosité</label><label class="numberlabel">{{ cData.lightnessSliderInput
+                }}%</label>
+            <input class="colorSlider" type="range" min="0" step="1" max="100" [(ngModel)]="cData.lightnessSliderInput"
+                   (change)="onSLSliderInput()" />
             <label class="namelabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">Transparence</label>
-            <label class="numberlabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">{{ cData.opacitySliderInput }}%</label>
-            <input
-                class="colorSlider"
-                type="range"
-                min="0"
-                step="1"
-                max="100"
-                [(ngModel)]="cData.opacitySliderInput"
-                (change)="sliderAlphaChange()"
-                *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE"
-            />
+            <label class="numberlabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">{{
+                cData.opacitySliderInput }}%</label>
+            <input class="colorSlider" type="range" min="0" step="1" max="100" [(ngModel)]="cData.opacitySliderInput"
+                   (change)="sliderAlphaChange()" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE" />
         </td>
     </tr>
 </table>
