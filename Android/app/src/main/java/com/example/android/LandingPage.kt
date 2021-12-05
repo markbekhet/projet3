@@ -106,6 +106,8 @@ class LandingPage : AppCompatActivity(){
                 val data = args[0] as String
                 ClientInfo.usersList = Gson().fromJson(data, UsersArrayList::class.java)
                 usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
+                //In case the names are received after receiving the gallery
+                galleryDraws.set(ClientInfo.gallery.drawingList)
             }
         }
 

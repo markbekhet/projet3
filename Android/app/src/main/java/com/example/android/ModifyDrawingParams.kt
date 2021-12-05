@@ -83,7 +83,6 @@ class ModifyDrawingParams : AppCompatActivity(){
         spOptionModifyDrawing.setSelection(information.visibility!!)
         spOptionModifyDrawing.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                resultModifyDrawingVisibility.text = options[p2]
                 modifyDrawing.newVisibility = p2
                 if (p2 == 1) {
                     modifyDrawingPassword.visibility = View.VISIBLE
@@ -102,7 +101,6 @@ class ModifyDrawingParams : AppCompatActivity(){
 
             @SuppressLint("SetTextI18n")
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                resultModifyDrawingVisibility.text = options[information.visibility!!]
             }
         }
 

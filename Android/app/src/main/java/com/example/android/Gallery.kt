@@ -168,15 +168,15 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
         var visibilityText = ""
         when(information!!.visibility){
             Visibility.publicVisibility.int ->{
-                visibilityIcon = R.drawable.earth_globe
+                visibilityIcon = R.drawable.ic_baseline_public_24
                 visibilityText = "Public"
             }
             Visibility.protectedVisibility.int ->{
-                visibilityIcon = R.drawable.lock
+                visibilityIcon = R.drawable.ic_baseline_lock_24
                 visibilityText = "Protégé"
             }
             Visibility.privateVisibility.int ->{
-                visibilityIcon = R.drawable.resource_private
+                visibilityIcon = R.drawable.ic_baseline_person_24
                 visibilityText = "Privé"
             }
         }

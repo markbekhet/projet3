@@ -3,7 +3,9 @@ package com.example.android.chat
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -82,3 +84,5 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
 
     }
 }
+
+

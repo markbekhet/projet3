@@ -45,8 +45,10 @@ import java.io.ByteArrayOutputStream
 import android.R.attr.data
 import android.content.DialogInterface
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.SystemClock.sleep
 import android.util.Log
+import androidx.appcompat.app.ActionBar
 import com.example.android.client.*
 import com.example.android.profile.CameraActivity
 import nl.dionsegijn.konfetti.models.Shape
@@ -62,9 +64,10 @@ class RegisterScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_screen)
 
-        supportActionBar!!.setDisplayShowHomeEnabled(true);
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round);
-        supportActionBar!!.setDisplayUseLogoEnabled(true);
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
 
         val firstName: EditText = findViewById(R.id.longueur)
         val lastName: EditText = findViewById(R.id.largeur)
@@ -78,7 +81,7 @@ class RegisterScreen : AppCompatActivity() {
         var clientService = ClientService()
         val REQUEST_IMAGE_CAPTURE = 1
         val r: Resources = this.resources
-
+        val mediaPlayer = MediaPlayer.create(this, R.raw.login)
         AvatarClientInfo.avatarClientString = createImageStringFromBitmap()
         val decodedString = Base64.decode(AvatarClientInfo.avatarClientString, Base64.DEFAULT)
         val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
@@ -194,6 +197,7 @@ class RegisterScreen : AppCompatActivity() {
 
 
         button.setOnClickListener {
+
             val user = UserRegistrationInfo(
                 firstName.text.toString(),
                 lastName.text.toString(), pseudo.text.toString(),
@@ -305,6 +309,7 @@ class RegisterScreen : AppCompatActivity() {
                     startActivity(Intent(this, LandingPage::class.java))
                     finish()
                 } else {
+                    mediaPlayer.start()
                     val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
                     errorPassword.text = errorMessage.message
                 }
