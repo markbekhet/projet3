@@ -67,8 +67,8 @@ export class Ellipse implements DrawingTool {
     //this.updatePrimaryColor();
     //this.updateSecondaryColor();
     this.userId = userId;
-    this.primaryColor = DEFPRIM;
-    this.secondaryColor = DEFSEC;
+    this.primaryColor = colorPick.cData.primaryColor;
+    this.secondaryColor = colorPick.cData.secondaryColor;
   }
   onMouseDown(event: MouseEvent): void {
     //throw new Error('Method not implemented.');
@@ -450,7 +450,7 @@ export class Ellipse implements DrawingTool {
         this.secondaryColor = color.secColor;
         if(this.attr.shapeType !== undefined){
           if(this.attr.shapeType === ShapeTypes.OUTLINE){
-            this.renderer.setAttribute(this.element, "fill", DEFSEC)      
+            this.renderer.setAttribute(this.element, "fill", DEFSEC)
           }
           else{
             this.renderer.setAttribute(this.element, "fill", this.secondaryColor)

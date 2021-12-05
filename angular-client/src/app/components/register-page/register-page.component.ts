@@ -109,8 +109,6 @@ export class RegisterPage implements OnInit {
   }
 
   public checkPasswords() {
-    console.log(this.registerForm.controls.password.value);
-    console.log(this.registerForm.controls.verificationPassword.value);
     const DIRTY = this.registerForm.controls.password.dirty && this.registerForm.controls.verificationPassword.dirty;
     const SAME = this.registerForm.controls.password.value === this.registerForm.controls.verificationPassword.value;
     return DIRTY && SAME;

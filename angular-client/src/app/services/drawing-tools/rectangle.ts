@@ -60,8 +60,8 @@ export class Rectangle implements  DrawingTool{
     this.element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
     this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
     this.userId = userId;
-    this.primaryColor = DEFPRIM;
-    this.secondaryColor = DEFSEC;
+    this.primaryColor = colorPick.cData.primaryColor;
+    this.secondaryColor = colorPick.cData.secondaryColor;
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -114,7 +114,7 @@ export class Rectangle implements  DrawingTool{
   }
   sendProgressToServer(drawingStatus: DrawingStatus){
     let drawingContent: DrawingContent = {drawingId: this.drawingId, userId: this.userId,
-                                  id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
+      id: this.contentId, content: this.getOriginalString(), status: drawingStatus, toolName: this.toolName}
     this.socketService.sendDrawingToServer(drawingContent);
   }
   getString(): string {
@@ -147,7 +147,7 @@ export class Rectangle implements  DrawingTool{
     result += `stroke="${stroke}" `;
     result += `stroke-width="${strokeWidth}" `;
     result += `fill="${fill}"`;
-    result += "/>\n"
+    result += "/>\n";
     return result;
   }
   inTranslationZone(event: MouseEvent): boolean {
@@ -436,7 +436,7 @@ export class Rectangle implements  DrawingTool{
         this.secondaryColor = color.secColor;
         if(this.attr.shapeType !== undefined){
           if(this.attr.shapeType === ShapeTypes.OUTLINE){
-            this.renderer.setAttribute(this.element, "fill", DEFSEC)      
+            this.renderer.setAttribute(this.element, "fill", DEFSEC)
           }
           else{
             this.renderer.setAttribute(this.element, "fill", this.secondaryColor)
