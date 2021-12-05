@@ -83,13 +83,11 @@ class CreateDraw : AppCompatActivity() {
 
         //switch=findViewById(R.id.visible) as Switch
         option = findViewById(R.id.sp_option) as Spinner
-        result = findViewById(R.id.result) as TextView
 
         val options = arrayOf("public", "protegé", "privé")
         option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
                 newDrawing.visibility = p2
                 if (p2 == 1) {
                     drawingPassword.visibility = View.VISIBLE
