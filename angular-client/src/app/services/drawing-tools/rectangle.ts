@@ -18,7 +18,6 @@ import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 const DEFPRIM = '#000000ff'
 const DEFSEC =  '#ffffffff'
 const RADUIS = 10;
-const DEF_LINE_THICKNESS = 5;
 const X_REGEX = new RegExp(`x="([-?0-9.?]*)"`);
 const Y_REGEX = new RegExp(`y="([-?0-9.?]*)"`);
 const WIDTH_REGEX = new RegExp(`width="([-?0-9.?]*)"`);
@@ -58,7 +57,9 @@ export class Rectangle implements  DrawingTool{
     private canvas: ElementRef,
   ) {
     this.element = this.renderer.createElement('rect', 'svg') as SVGRectElement;
-    this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
+    //this.attr= {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
+    let attr = this.interactionService.toolsAttributes$.value;
+    this.attr = {shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType}
     this.userId = userId;
     this.primaryColor = colorPick.cData.primaryColor;
     this.secondaryColor = colorPick.cData.secondaryColor;
@@ -73,11 +74,24 @@ export class Rectangle implements  DrawingTool{
     this.renderer.setAttribute(this.element, "width", "0");
     this.renderer.setAttribute(this.element, "height", "0")
     this.renderer.setAttribute(this.element, "transform", "translate(0,0)");
-    this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+    //this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
     this.renderer.setAttribute(this.element, "stroke-width", this.attr.shapeLineThickness!.toString())
-    this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    //this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    if(this.attr.shapeType === ShapeTypes.OUTLINE){
+      this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+      this.renderer.setAttribute(this.element, "fill", "none");  
+    }
+    else if(this.attr.shapeType === ShapeTypes.FULL){
+      this.renderer.setAttribute(this.element, "stroke", "none");
+      this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    }
+    else{
+      this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+      this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    }
     this.requestCreation()
   }
+
   requestCreation(){
     this.socketService.createDrawingContentRequest({drawingId: this.drawingId});
   }
@@ -381,30 +395,21 @@ export class Rectangle implements  DrawingTool{
     }
   }
   updateThickness(): void {
-    //throw new Error('Method not implemented.');
-    this.interactionService.$toolsAttributes.subscribe(
-      (attr: ToolsAttributes) => {
-        if (attr) {
-          this.attr = { shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType };
-          if(attr.shapeType === ShapeTypes.OUTLINE){
-            this.renderer.setAttribute(this.element, "fill", DEFSEC);
-            this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
-          }
-          else if(attr.shapeType === ShapeTypes.FULL){
-            this.renderer.setAttribute(this.element, "stroke", DEFSEC);
-            this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
-          }
-          else{
-            this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
-            this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
-          }
-          this.renderer.setAttribute(this.element, "stroke-width", attr.shapeLineThickness!.toString())
-        }
-        else{
-          this.attr = {shapeLineThickness: DEF_LINE_THICKNESS, shapeType: ShapeTypes.BOTH};
-        }
-      }
-    )
+    let attr = this.interactionService.toolsAttributes$.value;
+    this.attr = {shapeLineThickness: attr.shapeLineThickness, shapeType: attr.shapeType}
+    if(this.attr.shapeType === ShapeTypes.OUTLINE){
+      this.renderer.setAttribute(this.element, "fill", "none");
+      this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+    }
+    else if(this.attr.shapeType === ShapeTypes.FULL){
+      this.renderer.setAttribute(this.element, "stroke", "none");
+      this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    }
+    else{
+      this.renderer.setAttribute(this.element, "stroke", this.primaryColor);
+      this.renderer.setAttribute(this.element, "fill", this.secondaryColor);
+    }
+    this.renderer.setAttribute(this.element, "stroke-width", attr.shapeLineThickness!.toString())
     this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {

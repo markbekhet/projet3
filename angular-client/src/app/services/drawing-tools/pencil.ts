@@ -10,7 +10,7 @@ import { Point } from './point';
 import { PENCIL_TOOL_NAME } from './tool-names';
 import { ToolsAttributes } from './tools-attributes';
 
-const DEF_LINE_THICKNESS = 5;
+//const DEF_LINE_THICKNESS = 5;
 const RADUIS = 10;
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`);
 const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`);
@@ -58,7 +58,8 @@ export class Pencil implements DrawingTool {
     this.startTransformPoint = new Point(0,0)
     this.pointsArray = []
     this.element = this.rendrer.createElement("polyline", "svg") as SVGPolylineElement;
-    this.attr = {pencilLineThickness:DEF_LINE_THICKNESS};
+    let attr = this.interactionService.toolsAttributes$.value;
+    this.attr = {pencilLineThickness:attr.pencilLineThickness};
     //this.updateThickness();
     //this.updatePrimaryColor();
     this.userId = userId;
@@ -362,7 +363,7 @@ export class Pencil implements DrawingTool {
     }
   }
   updateThickness(): void {
-    this.interactionService.$toolsAttributes.subscribe(
+    /*this.interactionService.$toolsAttributes.subscribe(
       (attr: ToolsAttributes) => {
         if (attr) {
           console.log(attr);
@@ -373,7 +374,10 @@ export class Pencil implements DrawingTool {
           this.attr = {pencilLineThickness: DEF_LINE_THICKNESS};
         }
       }
-    )
+    )*/
+    let attr = this.interactionService.toolsAttributes$.value
+    this.attr = {pencilLineThickness: attr.pencilLineThickness}
+    this.rendrer.setAttribute(this.element, "stroke-width", this.attr.pencilLineThickness!.toString())
     this.sendProgressToServer(DrawingStatus.Selected);
   }
   updatePrimaryColor(): void {
