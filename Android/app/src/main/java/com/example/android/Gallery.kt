@@ -112,7 +112,17 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
             viewHolder.itemView.modify.setOnClickListener {
-                fragment.startModifyingActivity(information!!)
+                if(information!!.nbCollaborators == 0){
+                    fragment.startModifyingActivity(information!!)
+                }
+                else{
+                    fragment.requireActivity().runOnUiThread {
+                        Toast.makeText(fragment.context, "Vous ne pouvez pas modifier" +
+                            " le dessin présentement ${information!!.nbCollaborators} " +
+                            "collaborateurs sont en train de dessiner", Toast.LENGTH_LONG).show()
+                    }
+                }
+
             }
 
             viewHolder.itemView.delete.setOnClickListener{
