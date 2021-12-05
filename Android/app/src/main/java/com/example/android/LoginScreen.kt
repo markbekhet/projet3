@@ -122,6 +122,9 @@ class LoginScreen : AppCompatActivity() {
                 startActivity(Intent(this, LandingPage::class.java))
                 print(username.toString())
 
+            }else{
+                val cantJoin = CantJoin().fromJson(response!!.errorBody()!!.string())
+                showError(cantJoin.message)
             }
 
             password.text.clear()
