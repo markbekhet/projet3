@@ -122,10 +122,10 @@ class LoginScreen : AppCompatActivity() {
                 startActivity(Intent(this, LandingPage::class.java))
                 print(username.toString())
 
-            } else {
-                password.text.clear()
-                username.text.clear()
             }
+
+            password.text.clear()
+            username.text.clear()
         }
     }
 }
