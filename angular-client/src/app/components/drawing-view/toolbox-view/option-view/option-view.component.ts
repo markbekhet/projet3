@@ -30,6 +30,9 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
     this.pencilLineThickness = DEF_THICK;
     this.shapeLineThickness = DEF_THICK;
     this.shapeType = DEF_SHAPE_TYPE;
+    this.interaction.toolsAttributes$.next({pencilLineThickness: this.pencilLineThickness,
+     shapeLineThickness: this.shapeLineThickness,
+    shapeType: this.shapeType})
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
@@ -53,11 +56,14 @@ export class OptionViewComponent implements OnInit, AfterViewInit {
   }
 
   updateTools() {
-    this.interaction.emitToolsAttributes({
+    /*this.interaction.emitToolsAttributes({
       pencilLineThickness: this.pencilLineThickness,
       shapeLineThickness: this.shapeLineThickness,
       shapeType: this.shapeType,
-    });
+    });*/
+    this.interaction.toolsAttributes$.next({pencilLineThickness: this.pencilLineThickness,
+       shapeLineThickness: this.shapeLineThickness,
+        shapeType: this.shapeType});
     this.interaction.emitUpdateToolSignal();
   }
 

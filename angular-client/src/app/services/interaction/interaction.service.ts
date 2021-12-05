@@ -23,6 +23,8 @@ export class InteractionService {
   toolsAttributes = new Subject<ToolsAttributes>();
   $toolsAttributes = this.toolsAttributes.asObservable();
 
+  toolsAttributes$ = new BehaviorSubject<ToolsAttributes>({});
+
   deleteDrawing = new Subject<boolean>();
   $deleteDrawing = this.deleteDrawing.asObservable();
 
