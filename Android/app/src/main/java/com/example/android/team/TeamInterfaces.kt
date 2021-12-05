@@ -9,7 +9,8 @@ class CreateTeamDto(var name: String?= null,
                     var visibility: Int?= null,
                     var ownerId: String?= null,
                     var password: String?= null,
-                    var nbCollaborators: Int?= null)
+                    var nbCollaborators: Int?= null,
+                    var bio:String= "")
 {
     fun toJson(): String{
         return Gson().toJson(this)
@@ -21,7 +22,8 @@ class TeamGeneralInformation(
     var visibility: Int?= null,
     var name: String?= null,
     var password: String?= null,
-    var ownerId: String?= null
+    var ownerId: String?= null,
+    var bio: String= ""
 ){
     fun fromJson(json: String): TeamGeneralInformation{
         return Gson().fromJson(json, TeamGeneralInformation::class.java)
@@ -72,6 +74,12 @@ class CantJoin(
 ){
     fun fromJson(json: String): CantJoin{
         return Gson().fromJson(json, CantJoin::class.java)
+    }
+}
+
+class GetGalleryTeam(var teamName: String){
+    fun toJson(): String{
+        return Gson().toJson(this)
     }
 }
 

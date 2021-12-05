@@ -4,15 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.colorpicker.*
-import kotlinx.android.synthetic.main.colorpicker.colorA
-import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
@@ -20,8 +16,7 @@ import com.example.android.chat.ChatRooms
 import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import kotlinx.android.synthetic.main.chatfragment.view.*
-import kotlinx.android.synthetic.main.dessin.*
+import com.example.android.team.CantJoin
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -36,11 +31,17 @@ class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option: Spinner
         lateinit var result: TextView
-        lateinit var switch: Switch
         val clientService = ClientService()
-        var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatCreateDrawing: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val chatDialog = ChatDialog(this)
         chatCreateDrawing.setOnClickListener {
@@ -82,13 +83,11 @@ class CreateDraw : AppCompatActivity() {
 
         //switch=findViewById(R.id.visible) as Switch
         option = findViewById(R.id.sp_option) as Spinner
-        result = findViewById(R.id.result) as TextView
 
         val options = arrayOf("public", "protegé", "privé")
         option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
                 newDrawing.visibility = p2
                 if (p2 == 1) {
                     drawingPassword.visibility = View.VISIBLE
@@ -195,7 +194,8 @@ class CreateDraw : AppCompatActivity() {
                         }
                     }
                 } else {
-                    error.text = response!!.errorBody()!!.string()
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    error.text = errorMessage.message
                 }
 
             }

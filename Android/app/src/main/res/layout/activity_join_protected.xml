@@ -19,13 +19,6 @@
             android:text="Joindre une équipe protégé" />
 
 
-        <Button
-            android:id="@+id/chatJoinProtected"
-            android:layout_marginTop="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Afficher le chat" />
-
         <EditText
             android:id="@+id/joinProtectedTextPassword"
             android:layout_width="wrap_content"

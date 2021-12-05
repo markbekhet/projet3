@@ -1,4 +1,4 @@
 export interface ActiveUser{
-    id: string;
+    id?: string;
     userId: string;
 }

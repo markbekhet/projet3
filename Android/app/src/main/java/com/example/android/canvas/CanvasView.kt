@@ -94,26 +94,34 @@ class CanvasView(private var drawingId: Int,context: Context): View(context) {
                 else{
                     when(mode){
                         "translation" ->{
-                            val translation:Point = tool!!.startTransformPoint
-                                .difference(Point(event.x, event.y))
                             if(tool!= null){
+                                val translation:Point = tool!!.startTransformPoint
+                                    .difference(Point(event.x, event.y))
                                 tool!!.translate(this, translation)
                             }
                         }
                         "scaling" ->{
-                            val scalingFactor =
-                                Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
-                                    event.y - scalingPoint!!.key.y - totalScaling.y)
                             if(tool != null){
+                                val scalingFactor =
+                                    Point(event.x - scalingPoint!!.key.x - totalScaling.x ,
+                                        event.y - scalingPoint!!.key.y - totalScaling.y)
                                 tool!!.scale(this, scalingFactor, scalingPoint!!.value)
                                 totalScaling.plus(scalingFactor)
                             }
                         }
-                        else -> tool!!.touchMove(context,event.x, event.y)
+                        else -> {
+                            if(tool != null){
+                                tool!!.touchMove(context,event.x, event.y)
+                            }
+                        }
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> tool!!.touchUp()
+            MotionEvent.ACTION_UP -> {
+                if(tool != null){
+                    tool!!.touchUp()
+                }
+            }
         }
 
         return true
@@ -129,7 +137,10 @@ class CanvasView(private var drawingId: Int,context: Context): View(context) {
 
     fun receiveContentID(json: String){
         val getContentId = GetContentId(0).fromJson(json)
-        tool!!.contentID = getContentId.contentId
+        //putting a not null here just for safety but I highly doubt it
+        if(tool != null){
+            tool!!.contentID = getContentId.contentId
+        }
     }
 
     fun onReceivedDrawing(drawingContent: ContentDrawingSocket){

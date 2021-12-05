@@ -23,12 +23,6 @@
                 android:text="Statistques"
                 android:textSize="36sp"
                 android:textStyle="bold"/>
-            <Button
-                android:id="@+id/showChatStatisticsPage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Afficher le clavardage"
-                android:layout_marginStart="10dp"/>
         </LinearLayout>
 
         <Spinner

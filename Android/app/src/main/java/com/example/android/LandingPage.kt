@@ -1,19 +1,16 @@
 package com.example.android
 
-import android.annotation.SuppressLint
-import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
-import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.canvas.GalleryDrawing
 import com.example.android.canvas.ModifyDrawingDto
@@ -24,7 +21,6 @@ import com.example.android.team.*
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.content_landing_page.*
-import kotlinx.android.synthetic.main.popup_create_collaboration_team.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -34,7 +30,6 @@ import retrofit2.Response
 class LandingPage : AppCompatActivity(){
     private var clientService = ClientService()
     private var chatSocket: Socket? = null
-
     var response: Response<ResponseBody>?=null
     private val galleryDraws = Gallery()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,10 +37,39 @@ class LandingPage : AppCompatActivity(){
         setContentView(R.layout.content_landing_page)
         val clientService = ClientService()
         //Initialize chat socket
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_landing_page)
+        val customActionBar = supportActionBar!!.customView
+        val profileButton: ImageView = customActionBar
+            .findViewById(R.id.profileButton)
+        val createDrawingHomeButton: ImageView = customActionBar
+            .findViewById(R.id.createDrawingHomeButton)
+        val createTeamHomeButton: ImageView = customActionBar
+            .findViewById(R.id.createTeamHomeButton)
+        val showChat: ImageView = customActionBar.findViewById(R.id.showChat)
+        val disconnect: ImageView = customActionBar.findViewById(R.id.disconnect)
+
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
         chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         chatDialog.dismiss()
+
+        createChannel(
+            getString(R.string.color_image_notification_id),
+            "colorImage"
+        )
+
+        val notificationManager = ContextCompat.getSystemService(
+            this,
+            NotificationManager::class.java
+        ) as NotificationManager
+        notificationManager.sendNotification(
+            "Au besoin, " +
+                "cliquez longtemps sur une image afin de voir la fonctionnalité reliée.",
+            this
+        )
 
         SocketHandler.setChatSocket()
         SocketHandler.establishChatSocketConnection()
@@ -81,7 +105,9 @@ class LandingPage : AppCompatActivity(){
             if(args[0] != null){
                 val data = args[0] as String
                 ClientInfo.usersList = Gson().fromJson(data, UsersArrayList::class.java)
-                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
+                //In case the names are received after receiving the gallery
+                galleryDraws.set(ClientInfo.gallery.drawingList)
             }
         }
 
@@ -158,6 +184,24 @@ class LandingPage : AppCompatActivity(){
                         // for the message to be unique in the array list
                     ChatRooms.chats[roomName]!!.add(messageFromServer)
                     chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                    if(messageFromServer.from != ClientInfo.userId){
+                        var username = ""
+                        for(user in ClientInfo.usersList.userList){
+                            if(messageFromServer.from == user.id){
+                                username = user.pseudo.toString()
+                                break
+                            }
+                        }
+                        val notificationManager = ContextCompat.getSystemService(
+                            this,
+                            NotificationManager::class.java
+                        ) as NotificationManager
+                        notificationManager.sendNotification(
+                            "$username a envoyé " +
+                                "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
+                            this
+                        )
+                    }
                 }
                 catch(e: Exception){}
             }
@@ -167,26 +211,26 @@ class LandingPage : AppCompatActivity(){
         chatSocket?.on("userUpdate"){ args ->
             if(args[0]!= null){
                 val userUpdated = User().fromJson(args[0] as String)
-                if(ClientInfo.usersList.userList != null){
-                    var exist = false
-                    var i = 0
-                    for(existingUser in ClientInfo.usersList.userList!!){
-                        if(existingUser.id == userUpdated.id){
-                            exist = true
-                            break
-                        }
-                        i++
+                var exist = false
+                var i = 0
+                for(existingUser in ClientInfo.usersList.userList){
+                    if(existingUser.id == userUpdated.id){
+                        exist = true
+                        break
                     }
-                    if(exist){
-                        ClientInfo.usersList.userList!!.removeAt(i)
-                    }
-                    ClientInfo.usersList.userList!!.add(userUpdated)
+                    i++
                 }
-                try{
-                    usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList!!)
-                }catch(e: Exception){}
+                if(exist){
+                    ClientInfo.usersList.userList.removeAt(i)
+                    ClientInfo.usersList.userList.add(i, userUpdated)
+                }
+                else{
+                    ClientInfo.usersList.userList.add(userUpdated)
+                }
             }
-
+            try{
+                usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
+            }catch(e: Exception){}
         }
 
 
@@ -243,8 +287,21 @@ class LandingPage : AppCompatActivity(){
         chatSocket?.disconnect()
     }
 
-    fun startTeamActivity(teamsGeneralInformation: TeamGeneralInformation,data:String){
-
+    private fun createChannel(channelId: String, channelName: String) {
+        // TODO: Step 1.6 START create a channel
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Time for breakfast"
+            val notificationManager = getSystemService(
+                NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        // TODO: Step 1.6 END create a channel
 
     }
 
@@ -270,31 +327,22 @@ class LandingPage : AppCompatActivity(){
         super.onBackPressed()
     }
 
-    override fun onResume() {
-        galleryDraws.set(ClientInfo.gallery.drawingList)
-        super.onResume()
-    }
-
-    /*override fun onPause(){
-        SocketHandler.getChatSocket().on("msgToClient"){ args ->
-            if(args[0] != null) {
-                val data = args[0] as String
-                val messageFromServer = ClientMessage().fromJson(data)
-                try {
-                    val notificationManager = ContextCompat.getSystemService(
-                        this,
-                        NotificationManager::class.java
-                    ) as NotificationManager
-                    notificationManager.sendNotification(
-                        messageFromServer.message!!,
-                        this
-                    )
-                } catch (e: Exception) {
+    override fun onRestart() {
+        runBlocking {
+            async{
+                launch {
+                    response = clientService.getUserGallery()
                 }
             }
         }
-        super.onPause()
-    }*/
+        if(response!!.isSuccessful){
+            val data = response!!.body()!!.string()
+            ClientInfo.gallery = GalleryDrawing().fromJson(data)
+
+            galleryDraws.set(ClientInfo.gallery.drawingList)
+        }
+        super.onRestart()
+    }
 }
 
 //To add a similar method for the gallery

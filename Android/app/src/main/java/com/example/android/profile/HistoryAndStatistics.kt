@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.*
@@ -45,6 +46,15 @@ class HistoryAndStatistics : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history_and_statistics)
         val chatDialog = ChatDialog(this)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatStatisticsPage: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
+
         showChatStatisticsPage.setOnClickListener {
             chatDialog.show(supportFragmentManager, ChatDialog.TAG)
         }

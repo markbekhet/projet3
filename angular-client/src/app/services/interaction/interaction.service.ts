@@ -55,6 +55,9 @@ export class InteractionService {
   updateGallerySignal = new Subject<boolean>();
   $updateGallerySignal = this.updateGallerySignal.asObservable();
 
+  updateChatHistorySignal = new Subject<boolean>();
+  $updateChatHistorySignal = this.updateChatHistorySignal.asObservable()
+
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
   }
@@ -105,5 +108,8 @@ export class InteractionService {
 
   emitUpdateChatListSignal() {
     this.updateChatListSignal.next(true);
+  }
+  emitUpdateChatHistory(){
+    this.updateChatHistorySignal.next(true);
   }
 }

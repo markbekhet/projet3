@@ -1,9 +1,7 @@
 package com.example.android
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.*
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,30 +10,20 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.Drawing
-import com.example.android.R
-import com.example.android.SocketHandler
 import com.example.android.canvas.*
-import com.example.android.chat.ServerMessage
-import com.example.android.chat.UserMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import com.example.android.delete
 import com.example.android.team.CantJoin
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.activity_login_screen.*
-import kotlinx.android.synthetic.main.dessin.*
 import kotlinx.android.synthetic.main.draw.view.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Response
 
 class Gallery :  Fragment() {
@@ -55,8 +43,7 @@ class Gallery :  Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         displayDrawingGallery = view.findViewById(R.id.gallery_drawings)
-        val linearLayoutManager = GridLayoutManager(context, 3)
-        gallery_drawings?.layoutManager = linearLayoutManager
+        gallery_drawings?.layoutManager = GridLayoutManager(context, 2)
         buildGallery()
     }
 
@@ -108,14 +95,19 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        var canModify = false
-        for(entry in ClientInfo.possibleOwners){
-            val value = entry.value
-            if(value.first == information!!.ownerId){
-                canModify = true
-                break
+        var canModify = information!!.ownerId == ClientInfo.userId
+
+        //owner is not the user maybe a team
+        if(!canModify){
+            for(entry in ClientInfo.possibleOwners){
+                val value = entry.value
+                if(value.first == information!!.ownerId){
+                    canModify = true
+                    break
+                }
             }
         }
+
         if(canModify){
             viewHolder.itemView.modify.isVisible= true
             viewHolder.itemView.delete.isVisible= true
@@ -136,6 +128,13 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
                 if (response!!.isSuccessful) {
                     fragment.requireActivity().runOnUiThread{
                         Toast.makeText(fragment.context, "Dessin supprimée avec succès",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    fragment.requireActivity().runOnUiThread{
+                        Toast.makeText(fragment.context, error.message,
                             Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -165,6 +164,25 @@ class GalleryItem(var fragment: Gallery) : Item<GroupieViewHolder>() {
             }
         }
 
+        var visibilityIcon = 0
+        var visibilityText = ""
+        when(information!!.visibility){
+            Visibility.publicVisibility.int ->{
+                visibilityIcon = R.drawable.ic_baseline_public_24
+                visibilityText = "Public"
+            }
+            Visibility.protectedVisibility.int ->{
+                visibilityIcon = R.drawable.ic_baseline_lock_24
+                visibilityText = "Protégé"
+            }
+            Visibility.privateVisibility.int ->{
+                visibilityIcon = R.drawable.ic_baseline_person_24
+                visibilityText = "Privé"
+            }
+        }
+
+        viewHolder.itemView.visibilityText.text = visibilityText
+        viewHolder.itemView.visibilityIcon.setImageResource(visibilityIcon)
         viewHolder.itemView.drawingsAuthorName.text = authorName
         println(authorName)
         viewHolder.itemView.nbCollaboratorsDrawing.text = information!!.nbCollaborators.toString()

@@ -24,7 +24,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
                     <TextView
                         android:id="@+id/nom"
                         android:layout_width="wrap_content"
@@ -33,15 +34,6 @@
                         android:textColor="@color/main_color"
                         android:textSize="32dp"
                         android:textStyle="bold" />
-                    <Button
-                        android:id="@+id/chatDrawing"
-                        android:layout_width="200sp"
-                        android:layout_height="wrap_content"
-                        android:text="Afficher le clavardage"
-                        android:textColor="@color/main_color"
-                        android:layout_marginStart="5dp"
-                        android:textSize="10sp"
-                        app:backgroundTint="@color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -122,8 +114,7 @@
                             android:valueFrom="1f"
                             android:layout_marginTop="5dp"
                             android:valueTo="36f"
-                            android:stepSize="1"
-                            />
+                            android:stepSize="1" />
 
 
                         <TextView
@@ -179,13 +170,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:layout_marginStart="10dp">
 
                         <FrameLayout
                             android:id="@+id/fl_drawing_view_container"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
+                            android:layout_margin="20dp"
                             android:background="@drawable/background"
                             android:padding="1dp">
 
@@ -204,8 +196,9 @@
                         </LinearLayout>
                     <FrameLayout
                         android:id="@+id/usersAndTeamsFrameDrawingPage"
-                        android:layout_width="300dp"
-                        android:layout_height="match_parent">
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="20dp">
 
                     </FrameLayout>
                 </LinearLayout>

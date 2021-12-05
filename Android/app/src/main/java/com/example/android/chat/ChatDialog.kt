@@ -1,18 +1,13 @@
 package com.example.android.chat
 
-import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Canvas
+import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.Drawable
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.text.TextPaint
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +19,6 @@ import androidx.lifecycle.Lifecycle
 import com.example.android.R
 import com.example.android.SocketHandler
 import com.example.android.client.ClientInfo
-import kotlinx.android.synthetic.main.sample_chat_dialog.*
 
 
 class ChatDialog(var content: AppCompatActivity, var room: String = "General") : DialogFragment(), ChatRoomSwitcher {
@@ -43,10 +37,6 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        createChannel(
-            getString(R.string.color_image_notification_id),
-            room
-        )
         return inflater.inflate(R.layout.sample_chat_dialog, container, false)
     }
 
@@ -77,50 +67,6 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
 
     }
 
-    private fun createChannel(channelId: String, channelName: String) {
-        // TODO: Step 1.6 START create a channel
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notificationChannel = NotificationChannel(
-                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
-            )
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.enableVibration(true)
-            notificationChannel.description = "Time for breakfast"
-            val notificationManager = requireActivity().getSystemService(
-                NotificationManager::class.java)
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-        // TODO: Step 1.6 END create a channel
-
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        if(content.lifecycle.currentState == Lifecycle.State.RESUMED ||
-            content.lifecycle.currentState == Lifecycle.State.CREATED
-        ){
-            SocketHandler.getChatSocket().on("msgToClient"){ args ->
-                if(args[0] != null) {
-                    val data = args[0] as String
-                    val messageFromServer = ClientMessage().fromJson(data)
-                    if(messageFromServer.from != ClientInfo.username){
-                        val notificationManager = ContextCompat.getSystemService(
-                            content,
-                            NotificationManager::class.java
-                        ) as NotificationManager
-                        notificationManager.sendNotification(
-                            "${messageFromServer.from} a envoyé" +
-                                "${messageFromServer.message!!} sur ${messageFromServer.roomName!!}",
-                            content
-                        )
-                    }
-                }
-
-            }
-        }
-        super.onDismiss(dialog)
-    }
-
     companion object {
             const val TAG = "ChatDialog"
     }
@@ -138,3 +84,5 @@ class ChatDialog(var content: AppCompatActivity, var room: String = "General") :
 
     }
 }
+
+

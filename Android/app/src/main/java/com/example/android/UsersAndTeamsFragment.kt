@@ -2,8 +2,10 @@ package com.example.android
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.android.canvas.DrawingStatus
 import com.example.android.canvas.Visibility
 import com.example.android.client.*
@@ -20,6 +23,7 @@ import com.example.android.team.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.connection_disconnection_item.view.*
 import kotlinx.android.synthetic.main.fragment_users_and_teams.*
 import kotlinx.android.synthetic.main.team_item.view.*
@@ -208,10 +212,9 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
                 usersAdapter?.add(newUserItem)
             }
             else{
-
                 ClientInfo.username = user.pseudo
                 val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
-                ClientInfo.possibleOwners[ClientInfo.indexPossibleOwners]= firstPair
+                ClientInfo.possibleOwners[0]= firstPair
 
             }
         }
@@ -222,7 +225,22 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
 
     fun updateTeamsRecycleView(){
         teamsAdapter = GroupAdapter<GroupieViewHolder>()
-        for(team in ClientInfo.teamsList.teamList!!){
+        val teamsList = ArrayList<TeamGeneralInformation>()
+        for(team in ClientInfo.teamsList.teamList){
+            var alreadyJoined = false
+            for(possibleOwner in ClientInfo.possibleOwners){
+                val owner = possibleOwner.value
+                if(team.name == owner.second){
+                    alreadyJoined = true
+                    break
+                }
+            }
+            if(!alreadyJoined){
+                teamsList.add(team)
+            }
+        }
+
+        for(team in teamsList){
             val newTeamItem = TeamItem(clientService,this)
             newTeamItem.set(team)
             teamsAdapter?.add(newTeamItem)
@@ -255,6 +273,7 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
 
 class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
 
+    var avatar: String?= null
     var username: String? =null
     var id: String?= null
     var status: String?= null
@@ -267,6 +286,17 @@ class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
         }
         viewHolder.itemView.userColor.setBackgroundColor(
             Color.parseColor(color))
+
+        val decodedModifiedString = Base64.decode(
+            avatar, Base64.DEFAULT)
+        val decodedModifiedByte = BitmapFactory.decodeByteArray(
+            decodedModifiedString,0, decodedModifiedString.size)
+        Glide.with(fragment.requireActivity()).load(decodedModifiedByte)
+            .fitCenter().into(viewHolder.itemView.avatarUserFragment)
+
+        viewHolder.itemView.avatarUserFragment.setOnClickListener {
+            fragment.startUserActivity(id!!)
+        }
     }
 
     override fun getLayout(): Int {
@@ -278,6 +308,7 @@ class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
         this.id = user.id
         this.status = clientStatusFroInt(user.status!!).string
         this.color = color
+        this.avatar = user.avatar
     }
 
 }
@@ -288,7 +319,8 @@ class TeamItem(var clientService: ClientService,
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.teamName.text = team!!.name
         //the block to join a team
-        viewHolder.itemView.teamName.setOnClickListener {
+        viewHolder.itemView.toolTipTeam.tooltipText = team!!.bio
+        viewHolder.itemView.joinTeam.setOnClickListener {
             if(team!!.visibility != Visibility.protectedVisibility.int){
                 fragment.startTeamActivity(team!!)
             }
@@ -324,9 +356,9 @@ class TeamItem(var clientService: ClientService,
                     }
                 }
                 else{
-                    val error = response!!.errorBody()!!.string()
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
                     fragment.requireActivity().runOnUiThread{
-                        Toast.makeText(fragment.context, error,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(fragment.context, error.message,Toast.LENGTH_SHORT).show()
                     }
                 }
             }

@@ -2,38 +2,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:background="@drawable/rectangle_background"
-
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <View
-        android:id="@+id/userColor"
-        android:layout_width="5dp"
-        android:layout_height="match_parent"/>
-    <TextView
-        android:id="@+id/foreignUserName"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="200sp"
         android:layout_height="wrap_content"
+        android:background="@drawable/rectangle_background"
+        android:orientation="horizontal">
+        <View
+            android:id="@+id/userColor"
+            android:layout_width="15dp"
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/avatarUserFragment"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/avatar" />
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp">
+            <TextView
+                android:id="@+id/foreignUserName"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="nom"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:paddingStart="5dp"
+                />
+            <TextView
+                android:id="@+id/foreignUserStatus"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="status"
+                android:textSize="18sp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/black"
+                android:paddingEnd="5dp"
+
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <Space
         android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="nom"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:paddingStart="5dp"
-        />
-    <TextView
-        android:id="@+id/foreignUserStatus"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="status"
-        android:textSize="18sp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/black"
-        android:paddingEnd="5dp"
-
-        />
-
-
+        android:layout_height="10dp" />
 </LinearLayout>

@@ -6,17 +6,18 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.FragmentTransaction
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
 import com.example.android.canvas.Visibility
 import com.example.android.chat.*
 import com.example.android.client.ClientService
+import com.example.android.team.CantJoin
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_modify_drawing_params.*
-import kotlinx.android.synthetic.main.createdraw.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -25,14 +26,21 @@ import retrofit2.Response
 
 class ModifyDrawingParams : AppCompatActivity(){
 
-    private val chatRoomsFragmentMap = HashMap<String, Chat>()
-    private var chatFragmentTransaction: FragmentTransaction? = null
     private var socket: Socket?=null
     private var modifyDrawing = ModifyDrawingDto()
     private var information = ReceiveDrawingInformation()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_modify_drawing_params)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatModifyDrawingPage: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
+
         socket = SocketHandler.getChatSocket()
         val data = intent.extras!!.getString("drawingInformation")
         information = ReceiveDrawingInformation().fromJson(data!!)
@@ -75,7 +83,6 @@ class ModifyDrawingParams : AppCompatActivity(){
         spOptionModifyDrawing.setSelection(information.visibility!!)
         spOptionModifyDrawing.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                resultModifyDrawingVisibility.text = options[p2]
                 modifyDrawing.newVisibility = p2
                 if (p2 == 1) {
                     modifyDrawingPassword.visibility = View.VISIBLE
@@ -94,7 +101,6 @@ class ModifyDrawingParams : AppCompatActivity(){
 
             @SuppressLint("SetTextI18n")
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                resultModifyDrawingVisibility.text = options[information.visibility!!]
             }
         }
 
@@ -135,7 +141,8 @@ class ModifyDrawingParams : AppCompatActivity(){
                     finish()
                 }
                 else{
-                    Toast.makeText(this, response!!.errorBody()!!.string(),
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    Toast.makeText(this, errorMessage.message,
                         Toast.LENGTH_SHORT).show()
                 }
             }
@@ -154,7 +161,7 @@ class ModifyDrawingParams : AppCompatActivity(){
             (modifyDrawing.newVisibility == information.visibility
                 || modifyDrawing.newVisibility == null)
             ){
-           return true;
+           return true
         }
 
         return false
