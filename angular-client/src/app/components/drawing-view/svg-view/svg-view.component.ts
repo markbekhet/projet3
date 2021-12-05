@@ -56,7 +56,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   width!: number;
   backColor: string = '#FFFFFF';
 
-  currentTool!: DrawingTool;
+  currentTool: DrawingTool | undefined;
   toolsList: Map<number, DrawingTool>;
   currentToolName = PENCIL_COMP_TOOL_NAME;
   drawingId!: number;
@@ -189,7 +189,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.userId,
         );
       }
-      this.currentTool.onMouseDown(e);
+      this.currentTool!.onMouseDown(e);
       this.mode = '';
     }
     // this.currentTool.mouseIsDown = true;
@@ -288,7 +288,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
       this.socketService
         .getDrawingContentId()
         .subscribe((data: { contentId: number }) => {
-          this.currentTool.contentId = data.contentId;
+          this.currentTool!.contentId = data.contentId;
         });
       this.socketService
         .getDrawingContent()

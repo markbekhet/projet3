@@ -31,7 +31,6 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
     const activeUsers = this.interactionService.currentDrawingActiveUsers.value;
     activeUsers.forEach((activeUser) => {
       const user = this.socketService.users$.value.get(activeUser.userId);
-      console.log(user);
       for (const entry of userColorMap) {
         if (entry[1] === undefined) {
           this.users.push({ color: entry[0], info: user! });
@@ -46,7 +45,6 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
       const dataMod: { drawingId: number; userId: string } = JSON.parse(data);
       // let mapEntries = userColorMap.entries();
       const user = this.socketService.users$.value.get(dataMod.userId);
-      console.log(user);
       for (const entry of userColorMap) {
         if (entry[1] === undefined) {
           this.users.push({ color: entry[0], info: user! });
@@ -74,7 +72,6 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
   }
 
   decodeAvatar(avatarEncoded: string) {
-    console.log(avatarEncoded);
     if (avatarEncoded === undefined) {
       return '';
     }

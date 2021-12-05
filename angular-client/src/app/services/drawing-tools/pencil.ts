@@ -407,7 +407,12 @@ export class Pencil implements DrawingTool {
       this.maxPoint.x = Math.max(point.x, this.maxPoint.x)
       this.maxPoint.y = Math.max(point.y, this.maxPoint.y)
     })
-    this.startTransformPoint = this.pointsArray[this.pointsArray.length/2];
+    if(this.pointsArray.length %2 === 0){
+      this.startTransformPoint = new Point(this.pointsArray[this.pointsArray.length/2].x, this.pointsArray[this.pointsArray.length/2].y);
+    }
+    else{
+      this.startTransformPoint = new Point(this.pointsArray[(this.pointsArray.length-1)/2].x, this.pointsArray[(this.pointsArray.length-1)/2].y)
+    }
   }
   requestCreation(): void{
     this.socketService.createDrawingContentRequest({drawingId: this.drawingId});
