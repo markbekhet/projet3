@@ -391,12 +391,17 @@ export class DatabaseService {
             if(dto.newVisibility === DrawingVisibility.PROTECTED)
                 hashedPassword = await bcrypt.hash(dto.password, 10)
             await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: hashedPassword});
+            if(editionHistories !== undefined){
+                for(let editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingVisibility: dto.newVisibility});
+                }
+            }
         }
         else if(updateName && updateVisibility){
             await this.chatRoomRepo.update(chatRoom.id, {name: dto.newName})
             if(editionHistories!== undefined){
                 for(let editionHistory of editionHistories){
-                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName, drawingVisibility: dto.newVisibility});
                 }
             }
             let hashedPassword = null;
