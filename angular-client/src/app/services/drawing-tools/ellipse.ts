@@ -20,7 +20,7 @@ import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 //const DEF_LINE_THICKNESS = 5;
 const DEFPRIM = '#000000ff'
 const DEFSEC =  '#ffffffff'
-const RADUIS = 10;
+const RADUIS = 5;
 const FILL_REGEX = new RegExp(`fill="([#a-zA-Z0-9]+| none)"`);
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`)
 const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`)

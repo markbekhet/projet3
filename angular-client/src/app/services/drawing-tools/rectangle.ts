@@ -17,7 +17,7 @@ import { ShapeTypes, ToolsAttributes } from './tools-attributes';
 
 const DEFPRIM = '#000000ff'
 const DEFSEC =  '#ffffffff'
-const RADUIS = 10;
+const RADUIS = 5;
 const X_REGEX = new RegExp(`x="([-?0-9.?]*)"`);
 const Y_REGEX = new RegExp(`y="([-?0-9.?]*)"`);
 const WIDTH_REGEX = new RegExp(`width="([-?0-9.?]*)"`);

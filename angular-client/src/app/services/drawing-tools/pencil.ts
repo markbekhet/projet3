@@ -11,7 +11,7 @@ import { PENCIL_TOOL_NAME } from './tool-names';
 import { ToolsAttributes } from './tools-attributes';
 
 //const DEF_LINE_THICKNESS = 5;
-const RADUIS = 10;
+const RADUIS = 5;
 const STROKE_WIDTH_REGEX = new RegExp(`stroke-width="([0-9]+)"`);
 const STROKE_REGEX = new RegExp(`stroke="([#a-zA-Z0-9]+)"`);
 
