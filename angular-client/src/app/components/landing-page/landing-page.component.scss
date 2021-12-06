@@ -1,81 +1,121 @@
 $base-color-dark: #403d39;
+
 $base-color-medium: #ccc5b9;
+$base-color-medium-light: #ccc5b978;
+
 $base-color-light1: #fffcf2;
 $base-color-light2: #fff1e6;
+
 $gray: #d9d9d9;
+
 $blue-graphite: #223b4b;
 $blue-graphite-faded: rgba(34, 59, 75, 0.8);
 
+$dark-brown: rgba(36, 36, 36, 0.85);
+$dark-blue: #363440;
+$base-color-light1-light: #fffcf231;
+
 .landing-page {
-  display: grid;
-  grid-template-rows: 9vh 91vh;
-  grid-template-columns: 80vw 20vw;
-  grid-template-areas:
-    "header header-buttons"
-    "gallery teams";
-  overflow: hidden;
+    height: 100vh;
+    overflow: hidden;
 
-  .header {
-    position: relative;
-    background-color: $base-color-dark;
-    border-bottom: 1px solid $base-color-dark;
-    .logo {
-      position: absolute;
-      height: 8vh;
-      top: 50%;
-      transform: translate(0, -50%);
-      margin: 0 1em;
-      border-radius: 3%;
+    .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: 9vh;
+        width: 100%;
+        border-bottom: 2px solid $dark-blue;
+        // background-color: $base-color-dark;
+
+        background: rgb(70, 63, 198);
+        background: linear-gradient(
+            90deg,
+            rgba(70, 63, 198, 1) 0%,
+            rgba(228, 228, 228, 1) 100%
+        );
+
+        // Autre version du gradient
+        // background: rgb(51, 44, 161);
+        // background: linear-gradient(
+        //     133deg,
+        //     rgba(51, 44, 161, 1) 0%,
+        //     rgba(132, 52, 181, 1) 32%,
+        //     rgba(173, 109, 49, 1) 61%,
+        //     rgba(228, 228, 228, 1) 100%
+        // );
+
+        &__logo {
+            width: auto;
+            height: 9vh;
+            // border-radius: 3%;
+        }
+
+        &__buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .button-container {
+            margin-right: 1em;
+            opacity: 1;
+            transition: all 250ms ease;
+            button {
+                width: 45px;
+                height: 45px;
+            }
+            &:hover {
+                opacity: 0.8;
+            }
+        }
     }
-  }
 
-  .header-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    background-color: $base-color-dark;
-    .button-container {
-      margin-right: 1em;
-      button {
-        width: 45px;
-        height: 45px;
-      }
+    .body {
+        display: grid;
+        grid-template-rows: 91vh;
+        grid-template-columns: 80vw 20vw;
+        grid-template-areas: "gallery users_teams_chat";
+
+        background-color: $base-color-light1-light;
+
+        .gallery {
+            grid-area: "gallery";
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .users_teams_chat {
+            grid-area: "users_teams_chat";
+            border-left: 3px solid $dark-brown;
+        }
     }
-  }
-
-  .gallery {
-    position: relative;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  // .teams {
-
-  // }
 }
 
 .footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  margin-right: 20px;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-right: 20px;
 }
 
 @media (max-width: 750px) {
-  #title {
-    font-size: 10vw;
-  }
+    #title {
+        font-size: 10vw;
+    }
 
-  div.buttons-container > div {
-    margin: 25px;
-  }
+    div.buttons-container > div {
+        margin: 25px;
+    }
 
-  br {
-    display: none;
-  }
+    br {
+        display: none;
+    }
 
-  .footer {
-    font-size: 3vw;
-  }
+    .footer {
+        font-size: 3vw;
+    }
 }

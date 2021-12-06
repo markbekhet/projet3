@@ -22,7 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { JoinTeam, LeaveTeam } from '@models/joinTeam';
 // import { ChatHistory } from '@models/MessageMeta';
 import { Team } from '@models/teamsMeta';
-import { User } from '@models/UserMeta';
+import { User, Status } from '@models/UserMeta';
 import {
   MatBottomSheet,
   MatBottomSheetRef,
@@ -57,10 +57,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   teams: Team[] = [];
   chatrooms: string[] = [];
 
+  removable: boolean = true;
+
   joinedChatrooms = new Map<string, boolean>();
 
   @Output()
   chatroomName = new EventEmitter<string>();
+  @Output()
+  isExpanded: boolean = true;
 
   @ViewChild('chatInsert', { read: ViewContainerRef })
   chatInsert!: ViewContainerRef;
@@ -82,6 +86,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.authenticatedUserId = this.authService.getUserToken();
     this.chatComponentFactory =
       this.componentFactoryResolver.resolveComponentFactory(ChatComponent);
+      for(let room of this.chatRoomService.chatRooms.keys()){
+        if(room!== "General"){
+          this.chatrooms.push(room);
+        }
+      }
   }
 
   ngOnInit(): void {
@@ -93,7 +102,8 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
     this.socketService.getAllTeams().subscribe((teamsMap) => {
       teamsMap.forEach((team) => {
-        this.teams.push(team);
+        if(!this.chatrooms.includes(team.name))
+          this.teams.push(team);
       });
     });
   }
@@ -103,14 +113,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.socketService.getUserUpdate().subscribe((userModified: User) => {
       let found: boolean = false;
       this.users.forEach((user: User) => {
-        if(userModified.id! === user.id!){
+        if (userModified.id! === user.id!) {
           found = true;
           user.pseudo = userModified.pseudo;
           user.status = userModified.status;
           user.avatar = userModified.avatar;
         }
       });
-      if(!found){
+      if (!found) {
         this.users.push(userModified);
       }
     });
@@ -131,24 +141,25 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.socketService.socket!.on("newJoinToTeam", (data: any)=>{
-      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
-      let activeUsers = this.teamService.activeTeams.value.get(dataMod.teamName)!.activeUsers;
-      activeUsers.push({userId: dataMod.userId});
-    })
+    this.socketService.socket!.on('newJoinToTeam', (data: any) => {
+      const dataMod: { teamName: string; userId: string } = JSON.parse(data);
+      const { activeUsers } = this.teamService.activeTeams.value.get(
+        dataMod.teamName
+      )!;
+      activeUsers.push({ userId: dataMod.userId });
+    });
 
-    this.socketService.socket!.on("userLeftTeam", (data: any)=>{
-      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
-      let team = this.teamService.activeTeams.value.get(dataMod.teamName)
-      if(team!== undefined){
-        team.activeUsers.forEach((activeUser: ActiveUser)=>{
-          if(activeUser.userId === dataMod.userId){
-            team!.activeUsers.splice(team!.activeUsers.indexOf(activeUser), 1)
+    this.socketService.socket!.on('userLeftTeam', (data: any) => {
+      const dataMod: { teamName: string; userId: string } = JSON.parse(data);
+      const team = this.teamService.activeTeams.value.get(dataMod.teamName);
+      if (team !== undefined) {
+        team.activeUsers.forEach((activeUser: ActiveUser) => {
+          if (activeUser.userId === dataMod.userId) {
+            team!.activeUsers.splice(team!.activeUsers.indexOf(activeUser), 1);
           }
-        })
+        });
       }
-    })
-
+    });
 
     this.socketService.socket!.on('teamDeleted', (data: any) => {
       const deletedTeam: Team = JSON.parse(data);
@@ -167,6 +178,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         for (const key of this.chatRoomService.chatRooms.keys()) {
           this.chatrooms.push(key);
         }
+        // (Note-Paul) : I don't keep channel General in the array, it's easier that way
         this.chatrooms.shift();
 
         // let teamFound = false;
@@ -204,12 +216,15 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       this.errorDialog.open(ErrorDialogComponent, { data: error.message });
     });
 
+    this.users.shift();
+    console.log('TURBO 🚀 line 99 - UserTeamListComponent - users', this.users);
+
     this.chatInsert.clear();
   }
-  
-  isTeamChannel(roomName: string): boolean{
-    let team = this.teamService.activeTeams.value.get(roomName);
-    if(team !== undefined){
+
+  isTeamChannel(roomName: string): boolean {
+    const team = this.teamService.activeTeams.value.get(roomName);
+    if (team !== undefined) {
       return true;
     }
     return false;
@@ -278,6 +293,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   joinChat(roomName: string) {
     console.log(roomName);
+    // Si la chatbox n'est pas déjà ouverte
     if (
       this.joinedChatrooms.get(roomName) === false ||
       this.joinedChatrooms.get(roomName) === undefined
@@ -287,21 +303,48 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         this.chatInsert.createComponent(this.chatComponentFactory).instance
       );
       chatComponent.chatroomName = roomName;
+      chatComponent.isExpanded = true;
       this.joinedChatrooms.set(roomName, true);
+    }
+
+    // Sinon si la chatbox est déjà ouverte
+    else {
+    }
+  }
+
+  removeChat(chatroom: string): void {
+    const index = this.chatrooms.indexOf(chatroom);
+
+    if (index >= 0) {
+      this.chatrooms.splice(index, 1);
+    }
+  }
+
+  displayUserOnlineStatus(userStatus?: Status): string {
+    switch (userStatus) {
+      case Status.ONLINE:
+        return 'En ligne';
+      case Status.BUSY:
+        return 'Occupé';
+      case Status.OFFLINE:
+        return 'Hors ligne';
+      default:
+        return '';
     }
   }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
-  decodeAvatar(avatarEncoded: string) {
+
+  decodeAvatar(avatarEncoded?: string) {
     if (avatarEncoded === undefined) {
       return '';
     }
     return this.avatarService.decodeAvatar(avatarEncoded);
   }
 
-  openTeamInformations(teamName: string){
+  openTeamInformations(teamName: string) {
     this.windowService.openDialog(TeamMembersListComponent, teamName);
   }
 }

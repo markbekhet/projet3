@@ -30,7 +30,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   messages: {date: string, message: string, userInfo: User}[] = [];
   messageForm!: FormGroup;
 
-  isExpanded: boolean = false;
+  @Input()
+  isExpanded: boolean = true;
 
   readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
 

@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.ModifyDrawingDto
 import com.example.android.canvas.ReceiveDrawingInformation
@@ -32,8 +34,12 @@ class ModifyDrawingParams : AppCompatActivity(){
         setContentView(R.layout.activity_modify_drawing_params)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val showChatModifyDrawingPage: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         socket = SocketHandler.getChatSocket()
         val data = intent.extras!!.getString("drawingInformation")
@@ -77,7 +83,6 @@ class ModifyDrawingParams : AppCompatActivity(){
         spOptionModifyDrawing.setSelection(information.visibility!!)
         spOptionModifyDrawing.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                resultModifyDrawingVisibility.text = options[p2]
                 modifyDrawing.newVisibility = p2
                 if (p2 == 1) {
                     modifyDrawingPassword.visibility = View.VISIBLE
@@ -96,7 +101,6 @@ class ModifyDrawingParams : AppCompatActivity(){
 
             @SuppressLint("SetTextI18n")
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                resultModifyDrawingVisibility.text = options[information.visibility!!]
             }
         }
 

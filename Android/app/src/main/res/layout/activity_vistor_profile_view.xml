@@ -20,17 +20,6 @@
             android:textStyle="bold"
             />
 
-        <ImageButton
-            android:id="@+id/showChatVisitorProfile"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:src="@drawable/chat"
-            android:scaleType="fitXY"
-            android:visibility="visible"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white"
-            android:tooltipText="@string/chat"/>
-
         <ImageView
             android:id="@+id/avatarVisitor"
             android:layout_width="323dp"

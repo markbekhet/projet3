@@ -28,14 +28,12 @@ internal class CreateCollaborationTeamDialog(var content: AppCompatActivity): Di
         super.onCreate(savedInstanceState)
         setContentView(R.layout.popup_create_collaboration_team)
         val option: Spinner = findViewById(R.id.spOptionTeam)
-        val result: TextView = findViewById(R.id.resultTeamVisibility)
         val clientService = ClientService()
 
         val options = arrayOf("publique", "protegée")
         option.adapter = ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
                 createTeamDto.visibility = p2
                 if (p2 == 1) {
                     teamPassword.visibility = View.VISIBLE
@@ -46,7 +44,6 @@ internal class CreateCollaborationTeamDialog(var content: AppCompatActivity): Di
 
             @SuppressLint("SetTextI18n")
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                resultTeamVisibility.text = options[0]
                 createTeamDto.visibility = 0
             }
         }

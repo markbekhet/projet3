@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
 import com.example.android.chat.ChatDialog
@@ -35,8 +36,12 @@ class CreateDraw : AppCompatActivity() {
         setContentView(R.layout.createdraw)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatCreateDrawing: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
 
         val chatDialog = ChatDialog(this)
         chatCreateDrawing.setOnClickListener {
@@ -78,13 +83,11 @@ class CreateDraw : AppCompatActivity() {
 
         //switch=findViewById(R.id.visible) as Switch
         option = findViewById(R.id.sp_option) as Spinner
-        result = findViewById(R.id.result) as TextView
 
         val options = arrayOf("public", "protegé", "privé")
         option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
                 newDrawing.visibility = p2
                 if (p2 == 1) {
                     drawingPassword.visibility = View.VISIBLE

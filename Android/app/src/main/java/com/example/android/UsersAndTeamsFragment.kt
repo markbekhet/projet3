@@ -225,7 +225,22 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
 
     fun updateTeamsRecycleView(){
         teamsAdapter = GroupAdapter<GroupieViewHolder>()
-        for(team in ClientInfo.teamsList.teamList!!){
+        val teamsList = ArrayList<TeamGeneralInformation>()
+        for(team in ClientInfo.teamsList.teamList){
+            var alreadyJoined = false
+            for(possibleOwner in ClientInfo.possibleOwners){
+                val owner = possibleOwner.value
+                if(team.name == owner.second){
+                    alreadyJoined = true
+                    break
+                }
+            }
+            if(!alreadyJoined){
+                teamsList.add(team)
+            }
+        }
+
+        for(team in teamsList){
             val newTeamItem = TeamItem(clientService,this)
             newTeamItem.set(team)
             teamsAdapter?.add(newTeamItem)

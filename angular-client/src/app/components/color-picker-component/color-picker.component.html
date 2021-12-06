@@ -157,7 +157,7 @@
                 }}%</label>
             <input class="colorSlider" type="range" min="0" step="1" max="100" [(ngModel)]="cData.lightnessSliderInput"
                    (change)="onSLSliderInput()" />
-            <label class="namelabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">Transparence</label>
+            <label class="namelabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">Opacité</label>
             <label class="numberlabel" *ngIf="cData.colorMode !== cData.BACKGROUND_COLOR_MODE">{{
                 cData.opacitySliderInput }}%</label>
             <input class="colorSlider" type="range" min="0" step="1" max="100" [(ngModel)]="cData.opacitySliderInput"

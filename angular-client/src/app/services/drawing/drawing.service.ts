@@ -10,18 +10,17 @@ import { DrawingVisibilityLevel } from '@src/app/models/VisibilityMeta';
  const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
 // const PATH = 'http://localhost:3000';
 
-export var userColorMap: Map<string, string| undefined> = new Map<string, string| undefined>([
-  ["#CBCB28", undefined],
-  ["#0000FF", undefined],
-  ["#00FF00", undefined],
-  ["#0000FF", undefined],
-])
+export const userColorMap = new Map<string, string | undefined>([
+  ['#CBCB28', undefined],
+  ['#0000FF', undefined],
+  ['#00FF00', undefined],
+  ['#0000FF', undefined],
+]);
 @Injectable({
   providedIn: 'root',
 })
 export class DrawingService {
-  constructor(private httpClient: HttpClient) {
-  }
+  constructor(private httpClient: HttpClient) {}
 
   drawingId$ = new BehaviorSubject<number>(0);
   drawingName$ = new BehaviorSubject<string>('');
