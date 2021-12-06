@@ -4,6 +4,7 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -17,6 +18,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -27,6 +29,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatGridListModule,
@@ -40,6 +43,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatRadioModule,
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
@@ -48,6 +52,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatGridListModule,
@@ -60,6 +66,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatRadioModule,
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
@@ -71,7 +78,5 @@ export class AngularMaterialModule {}
 // Note (Paul) : Modules Material utilisés en Projet 2 et pouvant être utiles
 // CommonModule
 // MatButtonToggleModule
-// MatChipsModule
-// MatCheckboxModule
 // MatProgressSpinnerModule
 // MatPaginatorModule

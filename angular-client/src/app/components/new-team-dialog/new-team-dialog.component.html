@@ -1,28 +1,30 @@
-<div class= "form-container">
-    <h1> Nouvelle équipe de collaboration</h1>
+<div class="form-container">
+    <h1>Nouvelle équipe de collaboration</h1>
     <div class="new-team-form">
-        <form [formGroup]= "newTeamForm" (ngSubmit)="onSubmit()">
+        <form [formGroup]="newTeamForm" (ngSubmit)="onSubmit()">
             <mat-form-field class="new-team-form-input">
                 <mat-label for="teamName">Nom</mat-label>
                 <input matInput type="text" required formControlName="teamName" [value]="name"
-                (keydown)="blockEvent($event)"/>
+                       (keydown)="blockEvent($event)" />
             </mat-form-field>
 
-            <mat-form-field class= "new-team-bio-input">
+            <mat-form-field class="new-team-bio-input">
                 <mat-label for="teamBio">Bio</mat-label>
-                <input matInput type ="text" id = "bioField" formControlName = "teamBio" [value]="bio" (keydown)="blockEvent($event)"/>
+                <textarea matInput type="text" placeholder="Vous pouvez écrire une description de l'équipe ici."
+                          formControlName="teamBio" [value]="bio" (keydown)="blockEvent($event)"></textarea>
             </mat-form-field>
+
             <!--<p *ngIf = "teamName.invalid" class= "warnMessage"> Une equipe de collaboration doit avoir un nom</p> -->
             <mat-form-field class="new-team-form-input-visibility">
                 <mat-label for="teamVisibility">Niveau de visibilité</mat-label>
-                <mat-select formControlName="teamVisibility" [(value)]= "visibility" required>
+                <mat-select formControlName="teamVisibility" [(value)]="visibility" required>
                     <mat-option>--</mat-option>
                     <mat-option *ngFor="let teamVisibilityItem of teamVisibilityItems"
-                        [value] = "teamVisibilityItem.value"> {{teamVisibilityItem.name}}
+                                [value]="teamVisibilityItem.value"> {{teamVisibilityItem.name}}
                     </mat-option>
                 </mat-select>
                 <mat-error *ngIf="teamVisibility.hasError('required')">Veuillez sélectionner un niveau de visibilité
-                    pour votre equipe</mat-error>
+                    pour votre équipe</mat-error>
                 <mat-hint class="new-team-form-hint">{{ showVisibilityHint() }}</mat-hint>
             </mat-form-field>
 
@@ -30,16 +32,16 @@
                 <mat-form-field>
                     <mat-label for="teamPassword">Mot de passe</mat-label>
                     <input matInput type="password" placeholder="Saisir votre mot de passe" autocomplete="off"
-                        formControlName="teamPassword" [value]="password" (keydown)="blockEvent($event)" />
+                           formControlName="teamPassword" [value]="password" (keydown)="blockEvent($event)" />
                     <mat-error *ngIf="showPasswordRequired">Un mot de passe est requis</mat-error>
                 </mat-form-field>
             </div>
             <!--<p *ngIf = "teamPassword.invalid" class= "warnMessage">
                  Une equipe protegee doit avoir un mot de passe
             </p>-->
-            <mat-form-field class= "new-team-max-collaborators">
-                <mat-label for= "maxCollaborators"> nombre maximal de collaborateurs</mat-label>
-                <input matInput type="number" required formControlName="maxCollaborators" [value]="nbCollaborators"/>
+            <mat-form-field class="new-team-max-collaborators">
+                <mat-label for="maxCollaborators">Nombre maximal de membres</mat-label>
+                <input matInput type="number" required formControlName="maxCollaborators" [value]="nbCollaborators" />
             </mat-form-field>
             <!--<p *ngIf= "(nbCollaborators && maxCollaborators.invalid)" class= "warnMessage">
                 Une equipe de collaboration doit contenir au moins quatre collaborateurs
@@ -47,7 +49,7 @@
 
             <button mat-raised-button color="primary" id="submitButton" type="submit"
                     [disabled]="newTeamForm.invalid">C'est parti !</button>
-        
+
         </form>
     </div>
 </div>

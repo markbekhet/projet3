@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/dialogName"
@@ -20,7 +21,8 @@
             android:text="création d'équipe de collaboration"
             android:textColor="@color/black"
             android:textSize="30sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/errorTeam"
@@ -53,21 +55,27 @@
             android:textColor="#808080"
             android:textSize="20sp" />
 
+        <EditText
+            android:id="@+id/bioFieldEntry"
+            android:layout_width="229dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:hint="bio de l'équipe"/>
+
         <LinearLayout
             android:orientation="vertical"
             android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
             <Spinner
                 android:id="@+id/spOptionTeam"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+                android:layout_width="229dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"/>
 
-            <TextView
-                android:id="@+id/resultTeamVisibility"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
 
             <EditText
                 android:id="@+id/teamPassword"

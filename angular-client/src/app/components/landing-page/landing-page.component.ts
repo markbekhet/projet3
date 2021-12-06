@@ -1,34 +1,41 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 import { homeHeaderItems, FeatureItem } from '@models/FeatureMeta';
+import { ChatHistory } from '@models/MessageMeta';
 import { AuthService } from '@services/authentication/auth.service';
+import { ChatRoomService } from '@services/chat-room/chat-room.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { SocketService } from '@services/socket/socket.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
+import { InteractionService } from '@src/app/services/interaction/interaction.service';
+import { userColorMap } from '@src/app/services/drawing/drawing.service';
 
 @Component({
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
-export class LandingPage implements OnInit {
+export class LandingPage implements OnInit, AfterViewInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
   isLoggedIn = false;
 
   constructor(
+    private interactionService: InteractionService,
     private authService: AuthService,
+    private chatRoomService: ChatRoomService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private readonly socketService: SocketService
+    private socketService: SocketService
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
     this.isLoggedIn = true;
+    userColorMap.set('#CBCB28', this.authService.token$.value);
   }
 
   ngOnInit(): void {
@@ -38,17 +45,57 @@ export class LandingPage implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    this.socketService.socket!.on('RoomChatHistories', (data: string) => {
+      const chatHistories: { chatHistoryList: ChatHistory[] } =
+        JSON.parse(data);
+      console.log(chatHistories);
+      this.chatRoomService.addChatRoom(
+        'General',
+        chatHistories.chatHistoryList
+      );
+      this.interactionService.emitUpdateChatListSignal();
+    });
+
+    this.socketService.getNewMessage().subscribe((message)=>{
+      this.interactionService.emitUpdateChatHistory();
+    })
+  }
+
   @HostListener('window:beforeunload')
   disconnectX() {
-    if (this.authService.token$.value !== '') {
+    if (this.authService.getUserToken() !== '') {
       this.authService.disconnect();
     }
   }
+
   showWelcomeMsg(): void {
     const CONFIG = new MatSnackBarConfig();
     const DURATION = 2000;
     CONFIG.duration = DURATION;
     this.snackBar.open('Bienvenue !', undefined, CONFIG);
+  }
+
+  execute(shortcutName: string) {
+    switch (shortcutName) {
+      case 'Créer dessin':
+        this.openCreateNewDrawing();
+        break;
+      case 'Créer équipe':
+        this.openCreateNewTeam();
+        break;
+      case 'Profil':
+        this.profile();
+        break;
+      case 'Chat':
+        this.chat();
+        break;
+      case 'Déconnexion':
+        this.disconnect();
+        break;
+      default:
+        break;
+    }
   }
 
   openCreateNewDrawing() {
@@ -58,7 +105,7 @@ export class LandingPage implements OnInit {
     this.windowService.openDialog(NewDrawingComponent);
   }
 
-  openCraeteNewTeam() {
+  openCreateNewTeam() {
     this.windowService.openDialog(NewTeamDialogComponent);
   }
 
@@ -68,27 +115,6 @@ export class LandingPage implements OnInit {
     });
   }
 
-  execute(shortcutName: string) {
-    switch (shortcutName) {
-      case 'Créer':
-        this.openCreateNewDrawing();
-        break;
-      case 'Déconnexion':
-        this.disconnect();
-        break;
-      case 'Profile':
-        this.profile();
-        break;
-      case 'Chat':
-        this.chat();
-        break;
-      case 'equipe':
-        this.openCraeteNewTeam();
-        break;
-      default:
-        break;
-    }
-  }
   profile() {
     this.router.navigate(['/profile']);
   }

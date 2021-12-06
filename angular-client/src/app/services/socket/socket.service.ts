@@ -15,6 +15,10 @@ import {
 } from '@models/UserMeta';
 import { Team } from '@src/app/models/teamsMeta';
 import { JoinTeam, LeaveTeam } from '@src/app/models/joinTeam';
+import { InteractionService } from '../interaction/interaction.service';
+import { ChatRoomService } from '../chat-room/chat-room.service';
+// import { userColorMap } from '../drawing/drawing.service';
+// import { ChatRoomService } from '../chat-room/chat-room.service';
 
 // const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 const PATH = 'http://localhost:3000';
@@ -33,6 +37,8 @@ export class SocketService {
   users$ = new BehaviorSubject<Map<string, User>>(new Map());
   teams$ = new BehaviorSubject<Map<string, Team>>(new Map());
 
+  userUpdated$ = new BehaviorSubject<User>({});
+
   message$ = new BehaviorSubject<ClientMessage>({
     from: '',
     message: '',
@@ -40,7 +46,7 @@ export class SocketService {
     roomName: '',
   });
 
-  profile$: BehaviorSubject<User> = new BehaviorSubject<User>({
+  profile$ = new BehaviorSubject<User>({
     id: '',
     firstName: '',
     lastName: '',
@@ -60,6 +66,8 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  constructor(private interactionService: InteractionService, private chatRoomService: ChatRoomService){
+  }
   connect(): void {
     this.socket = io(PATH);
   }
@@ -87,7 +95,9 @@ export class SocketService {
   public getNewMessage = () => {
     this.socket!.on('msgToClient', (messageString: any) => {
       const message: ClientMessage = JSON.parse(messageString);
+      this.chatRoomService.addChatHistory(message);
       console.log(`chat service received: ${message.message}`);
+      // this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
     });
 
@@ -114,6 +124,9 @@ export class SocketService {
     }
     if (updates.newPassword) {
       this.profile$.value.password = updates.newPassword;
+    }
+    if (updates.newAvatar) {
+      this.profile$.value.avatar = updates.newAvatar;
     }
     this.profile$.next(this.profile$.value);
   }
@@ -202,4 +215,20 @@ export class SocketService {
     const leaveTeamString = JSON.stringify(leaveTeam);
     this.socket!.emit('leaveTeam', leaveTeamString);
   }
+
+  getTeamGallery(data: { teamName: string }) {
+    this.socket!.emit('getTeamGallery', JSON.stringify(data));
+  }
+
+  getUserUpdate = () => {
+    this.socket!.on('userUpdate', (data: any) => {
+      const dataMod: User = JSON.parse(data);
+      this.users$.value.set(dataMod.id!, dataMod);
+      this.interactionService.emitUpdateChatHistory();
+      console.log(this.users$);
+      this.userUpdated$.next(dataMod);
+    });
+    return this.userUpdated$;
+  };
+
 }

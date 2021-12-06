@@ -15,7 +15,7 @@
     <div *ngSwitchCase="'Crayon'">
         <label>Épaisseur du trait : {{ pencilLineThickness }} px</label>
         <mat-slider thumbLabel type="range" min="1" max="50" [(ngModel)]="pencilLineThickness"
-                    (ngModelChange)="updateTools()"></mat-slider> <br />
+                    (change)="updateTools()"></mat-slider> <br />
     </div>
     <div *ngSwitchCase="'Efface'" (ngModelChange)="updateTools()">
         <label>Épaisseur du trait : {{ pencilLineThickness }} px</label>

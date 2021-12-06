@@ -1,0 +1,8 @@
+<div class='profile-wrapper'>
+    <img [src]="decodeAvatar()" alt="User avatar" class="avatar">
+    <br>
+    <h1> {{ visitedUser.pseudo }}</h1>
+    <h1 *ngIf="visitedUser.status === 0">En ligne</h1>
+    <h1 *ngIf="visitedUser.status === 1">En collaboration</h1>
+    <h1 *ngIf="visitedUser.status === 2">Hors ligne</h1>
+</div>

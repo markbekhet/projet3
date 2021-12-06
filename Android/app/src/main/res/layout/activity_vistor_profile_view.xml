@@ -19,6 +19,7 @@
             android:textSize="72sp"
             android:textStyle="bold"
             />
+
         <ImageView
             android:id="@+id/avatarVisitor"
             android:layout_width="323dp"
@@ -64,7 +65,7 @@
 
 
                 <TextView
-                    android:id="@+id/nicknameValue"
+                    android:id="@+id/nicknameForeignValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"

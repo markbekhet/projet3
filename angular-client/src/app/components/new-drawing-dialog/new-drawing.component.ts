@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
+//import { Router } from '@angular/router';
 
 import { Drawing, JoinDrawing } from '@models/DrawingMeta';
 import { Team } from '@models/teamsMeta';
@@ -25,6 +25,9 @@ import { DrawingService } from '@services/drawing/drawing.service';
 import { SocketService } from '@services/socket/socket.service';
 import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
 @Component({
   templateUrl: './new-drawing.component.html',
@@ -65,7 +68,7 @@ export class NewDrawingComponent implements OnInit {
     private canvasBuilder: CanvasBuilderService,
     private drawingService: DrawingService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    private errorDialog: MatDialog,
     private teamService: TeamService,
     private windowService: ModalWindowService,
     private readonly socketService: SocketService,
@@ -109,14 +112,6 @@ export class NewDrawingComponent implements OnInit {
       drawingName: ['', [Validators.required]],
       drawingVisibility: [null, [Validators.required]],
       drawingPassword: ['', []],
-      canvWidth: [
-        '',
-        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
-      ], // accepts only positive integers
-      canvHeight: [
-        '',
-        [Validators.pattern(/^\d+$/), Validators.min(1), Validators.required],
-      ],
       canvColor: ['', [Validators.pattern(/^[a-fA-F0-9]{6}$/)]], // only accepts 6-chars strings made of hex characters
       teamAssignation: [null, []],
     });
@@ -124,8 +119,6 @@ export class NewDrawingComponent implements OnInit {
       drawingName: this.name,
       drawingVisibility: this.visibility,
       drawingPassword: this.password,
-      canvWidth: this.canvasBuilder.getDefWidth(),
-      canvHeight: this.canvasBuilder.getDefHeight(),
       canvColor: this.canvasBuilder.getDefColor(),
       teamAssignation: this.assignedTeam,
     });
@@ -159,8 +152,8 @@ export class NewDrawingComponent implements OnInit {
       name: VALUES.drawingName,
       visibility: VALUES.drawingVisibility,
       password: VALUES.drawingPassword,
-      width: VALUES.canvWidth,
-      height: VALUES.canvHeight,
+      width: 900,
+      height: 900,
       color: VALUES.canvColor,
       ownerId: this.userId,
     };
@@ -187,17 +180,21 @@ export class NewDrawingComponent implements OnInit {
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
             userId: this.userId,
-            password: this.password,
+            password: VALUES.drawingPassword,
           };
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
           this.interactionService.emitWipeSignal();
-          this.router.navigate(['/draw']);
+          //this.router.navigate(['/draw']);
 
           const LOAD_TIME = 15;
           setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
           }, LOAD_TIME);
+        },
+        (error)=>{
+          const errorMessage = JSON.parse((error as HttpErrorResponse).error).message;
+          this.errorDialog.open(ErrorDialogComponent, {data: errorMessage});
         });
     } catch (err: any) {
       this.showPasswordRequired = true;
@@ -233,8 +230,8 @@ export class NewDrawingComponent implements OnInit {
     }
   }
 
-  assignationStatusChange(event: Event) {
-    if ((event as unknown as MatCheckboxChange).checked) {
+  assignationStatusChange(event: MatCheckboxChange) {
+    if (event.checked) {
       this.assignedToTeam = true;
     } else {
       this.assignedToTeam = false;

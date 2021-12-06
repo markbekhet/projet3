@@ -1,6 +1,8 @@
 package com.example.android.chat
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.android.*
 import com.example.android.client.ClientInfo
 import com.xwray.groupie.GroupAdapter
@@ -16,6 +19,7 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.chatfragment.*
 import kotlinx.android.synthetic.main.message.view.*
+import kotlinx.android.synthetic.main.user_item.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -62,7 +66,7 @@ class Chat(var name:String) : Fragment() {
 
 
         button.setOnClickListener {
-            val data = ServerMessage(from= ClientInfo.username,
+            val data = ServerMessage(from= ClientInfo.userId,
                 message= textField.text.toString(),roomName = name)
             SocketHandler.getChatSocket().emit("msgToServer", data.toJson())
             textField.text.clear()
@@ -83,7 +87,7 @@ class Chat(var name:String) : Fragment() {
     fun showMessages(){
         messageDisplay = GroupAdapter<GroupieViewHolder>()
         for(serverMessage in serverMessagesArray){
-            val userMessage = UserMessage()
+            val userMessage = UserMessage(this)
             serverMessage.message?.let { serverMessage.from?.let { it1 ->
                 userMessage.set(it,
                     it1, serverMessage.date.toString())
@@ -93,22 +97,40 @@ class Chat(var name:String) : Fragment() {
         try{
             requireActivity().runOnUiThread {
                 messageListView?.adapter = messageDisplay
+                if(serverMessagesArray.size > 0 && messageListView!= null){
+                    messageListView.smoothScrollToPosition(serverMessagesArray.size-1)
+                }
             }
         }catch(e: Exception){
             println("cannot show the information right now")
         }
     }
-
 }
-class UserMessage : Item<GroupieViewHolder>() {
+
+class UserMessage(var fragment: Chat) : Item<GroupieViewHolder>() {
     private var message = "bonjour"
-    private var author = "auteur"
+    private var authorId = "auteur"
+    private var author = ""
     private var date = "date"
+    private var avatar = ""
     override fun getLayout(): Int {
         return R.layout.message
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        for(user in ClientInfo.usersList.userList){
+            if(user.id == authorId){
+                avatar = user.avatar
+                author = user.pseudo.toString()
+                break
+            }
+        }
+        val decodedModifiedString = Base64.decode(
+            avatar, Base64.DEFAULT)
+        val decodedModifiedByte = BitmapFactory.decodeByteArray(
+            decodedModifiedString,0, decodedModifiedString.size)
+        Glide.with(fragment.requireActivity()).load(decodedModifiedByte)
+            .fitCenter().into(viewHolder.itemView.avatarChatFragment)
         viewHolder.itemView.message.text = message
         viewHolder.itemView.date.text = date
         viewHolder.itemView.user.text = author
@@ -117,7 +139,7 @@ class UserMessage : Item<GroupieViewHolder>() {
 
     fun set(message: String, user: String, date: String) {
         this.message = message
-        this.author = user
+        this.authorId = user
         this.date = date
     }
 }

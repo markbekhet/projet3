@@ -11,31 +11,45 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/statisticsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Statistques"
-            android:textSize="36sp"
-            android:textStyle="bold"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:orientation="horizontal">
-            <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/statisticsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Statistques"
+                android:textSize="36sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spinnerOptionsStatisticsPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/statistics"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Temps moyen de collaboration"
+                    android:text="Temps moyen de collaboration en minutes"
                     android:textSize="18sp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Temps total de collaboration"
+                    android:text="Temps total de collaboration en minutes"
                     android:textSize="18sp"/>
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,14 +64,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nombre de dessins auxquela vous avez collaboré"
+                    android:text="Nombre de dessins auxquels vous avez collaboré"
                     android:textSize="18sp"/>
 
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:layout_marginStart="20dp"
                 >
                 <TextView
                     android:id="@+id/meanCollaborationTime"
@@ -65,8 +80,7 @@
                     android:layout_height="wrap_content"
                     android:text="1.5h"
                     android:textSize="18sp"
-                    android:textColor="@color/design_default_color_secondary"
-                    android:layout_marginStart="20dp"/>
+                    android:textColor="@color/design_default_color_secondary" />
 
                 <TextView
                     android:id="@+id/totalCollaborationTime"
@@ -74,16 +88,14 @@
                     android:layout_height="wrap_content"
                     android:text="5h"
                     android:textSize="18sp"
-                    android:textColor="@color/design_default_color_secondary"
-                    android:layout_marginStart="20dp"/>
+                    android:textColor="@color/design_default_color_secondary" />
                 <TextView
                     android:id="@+id/teamCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5"
                     android:textSize="18sp"
-                    android:textColor="@color/design_default_color_secondary"
-                    android:layout_marginStart="20dp"/>
+                    android:textColor="@color/design_default_color_secondary" />
 
                 <TextView
                     android:id="@+id/drawingAuthorCount"
@@ -91,22 +103,22 @@
                     android:layout_height="wrap_content"
                     android:text="20"
                     android:textSize="18sp"
-                    android:textColor="@color/design_default_color_secondary"
-                    android:layout_marginStart="20dp"/>
+                    android:textColor="@color/design_default_color_secondary" />
                 <TextView
                     android:id="@+id/drawingCollaborationCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="20"
                     android:textSize="18sp"
-                    android:textColor="@color/design_default_color_secondary"
-                    android:layout_marginStart="20dp"/>
+                    android:textColor="@color/design_default_color_secondary" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/connectionAndDisconnectionHistories"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
             <LinearLayout
                 android:layout_width="600dp"
                 android:layout_height="wrap_content"
@@ -122,7 +134,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_view_connection"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp" />
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <LinearLayout
@@ -141,23 +153,29 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_view_disconnection"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp" />
+                    android:layout_height="match_parent" />
                 </LinearLayout>
         </LinearLayout>
-        <TextView
-            android:id="@+id/collaborationHistory"
+        <LinearLayout
+            android:id="@+id/editionHistories"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Historique de collaboration"
-            android:textSize="36sp"
-            android:textStyle="bold"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/collaborationHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Historique de collaboration"
+                android:textSize="36sp"
+                android:textStyle="bold"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycle_view_collaborations"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycle_view_collaborations"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

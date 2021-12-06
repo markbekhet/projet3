@@ -1,19 +1,26 @@
+/* eslint-disable no-case-declarations */
 import { Injectable } from '@angular/core';
 import { ComponentType } from '@angular/cdk/portal';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
+import { AvatarDialogComponent } from '@components/avatar-dialog/avatar-dialog.component';
 import { DeleteDrawingComponent } from '@components/gallery-component/delete-drawing/delete-drawing.component';
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
 import { ModifyDrawingComponent } from '@components/gallery-component/modify-drawing/modify-drawing.component';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
-import { NewTeamDialogComponent } from '@src/app/components/new-team-dialog/new-team-dialog.component';
+import { NewTeamDialogComponent } from '@components/new-team-dialog/new-team-dialog.component';
+import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import { TeamMembersListComponent } from '@src/app/components/user-team-list/team-members-list/team-members-list.component';
 
 type Component = ComponentType<
   | NewDrawingComponent
   | GalleryComponent
-  | DeleteDrawingComponent
   | ModifyDrawingComponent
+  | DeleteDrawingComponent
   | NewTeamDialogComponent
+  | UserProfileDialogComponent
+  | AvatarDialogComponent
+  | TeamMembersListComponent
 >;
 
 @Injectable({
@@ -21,17 +28,35 @@ type Component = ComponentType<
 })
 export class ModalWindowService {
   newDrawingConfig = new MatDialogConfig();
-  newTeamConfig = new MatDialogConfig();
-  deleteDrawingConfig = new MatDialogConfig();
-  modifyDrawingConfig = new MatDialogConfig();
   galleryConfig = new MatDialogConfig();
+  modifyDrawingConfig = new MatDialogConfig();
+  deleteDrawingConfig = new MatDialogConfig();
+  newTeamConfig = new MatDialogConfig();
+  userProfileConfig = new MatDialogConfig();
+  avatarConfig = new MatDialogConfig();
+  teamMemberListDialogConfig = new MatDialogConfig();
 
   constructor(private dialog: MatDialog) {
     this.initNewDrawingDialogConfig();
-    this.initDeleteDrawingDialogConfig();
-    this.initModifyDrawingDialogConfig();
     this.initGalleryDialogConfig();
+    this.initModifyDrawingDialogConfig();
+    this.initDeleteDrawingDialogConfig();
     this.initNewTeamDialogConfig();
+    this.initUserProfileDialogConfig();
+    this.initAvatarDialogConfig();
+    this.initTeamMeembersListDialogConfig();
+  }
+
+  initTeamMeembersListDialogConfig(){
+    this.teamMemberListDialogConfig.id = "teamMemberListDisalog";
+    this.teamMemberListDialogConfig.height= "50vh";
+    this.teamMemberListDialogConfig.width = "35vw";
+    this.teamMemberListDialogConfig.minWidth = '470px';
+    this.teamMemberListDialogConfig.maxWidth = '480px';
+    this.teamMemberListDialogConfig.maxHeight = '720px';
+    this.teamMemberListDialogConfig.disableClose = false;
+    this.teamMemberListDialogConfig.hasBackdrop = true;
+    this.teamMemberListDialogConfig.restoreFocus = false;
   }
 
   initNewDrawingDialogConfig() {
@@ -46,27 +71,14 @@ export class ModalWindowService {
     this.newDrawingConfig.restoreFocus = false;
   }
 
-  initNewTeamDialogConfig() {
-    this.newTeamConfig.id = 'newTeamConfig';
-    this.newTeamConfig.height = '86vh';
-    this.newTeamConfig.width = '35vw';
-    this.newTeamConfig.minWidth = '470px';
-    this.newTeamConfig.maxWidth = '480px';
-    this.newTeamConfig.maxHeight = '720px';
-    this.newTeamConfig.disableClose = false;
-    this.newTeamConfig.hasBackdrop = true;
-    this.newTeamConfig.restoreFocus = false;
-  }
-
-  initDeleteDrawingDialogConfig() {
-    this.deleteDrawingConfig.id = 'deleteDrawingDialog';
-    this.deleteDrawingConfig.height = '30vh';
-    this.deleteDrawingConfig.width = '50vw';
-    this.deleteDrawingConfig.minWidth = '600px';
-    this.deleteDrawingConfig.disableClose = false;
-    this.deleteDrawingConfig.hasBackdrop = true;
-    this.deleteDrawingConfig.restoreFocus = false;
-    this.deleteDrawingConfig.data = undefined;
+  initGalleryDialogConfig() {
+    this.galleryConfig.id = 'galleryDialog';
+    this.galleryConfig.height = '90vh';
+    this.galleryConfig.width = '85vw';
+    this.galleryConfig.minWidth = '600px';
+    this.galleryConfig.disableClose = false;
+    this.galleryConfig.hasBackdrop = true;
+    this.galleryConfig.restoreFocus = false;
   }
 
   initModifyDrawingDialogConfig() {
@@ -80,14 +92,48 @@ export class ModalWindowService {
     this.modifyDrawingConfig.data = undefined;
   }
 
-  initGalleryDialogConfig() {
-    this.galleryConfig.id = 'galleryDialog';
-    this.galleryConfig.height = '90vh';
-    this.galleryConfig.width = '85vw';
-    this.galleryConfig.minWidth = '600px';
-    this.galleryConfig.disableClose = false;
-    this.galleryConfig.hasBackdrop = true;
-    this.galleryConfig.restoreFocus = false;
+  initDeleteDrawingDialogConfig() {
+    this.deleteDrawingConfig.id = 'deleteDrawingDialog';
+    this.deleteDrawingConfig.height = '30vh';
+    this.deleteDrawingConfig.width = '50vw';
+    this.deleteDrawingConfig.minWidth = '600px';
+    this.deleteDrawingConfig.disableClose = false;
+    this.deleteDrawingConfig.hasBackdrop = true;
+    this.deleteDrawingConfig.restoreFocus = false;
+    this.deleteDrawingConfig.data = undefined;
+  }
+
+  initNewTeamDialogConfig() {
+    this.newTeamConfig.id = 'newTeamConfig';
+    this.newTeamConfig.height = '50vh';
+    this.newTeamConfig.width = '35vw';
+    this.newTeamConfig.minWidth = '470px';
+    this.newTeamConfig.maxWidth = '480px';
+    this.newTeamConfig.maxHeight = '720px';
+    this.newTeamConfig.disableClose = false;
+    this.newTeamConfig.hasBackdrop = true;
+    this.newTeamConfig.restoreFocus = false;
+  }
+
+  initUserProfileDialogConfig() {
+    this.userProfileConfig.id = 'userProfileDialog';
+    this.userProfileConfig.height = '50vh';
+    this.userProfileConfig.width = '50vw';
+    this.userProfileConfig.minWidth = '600px';
+    this.userProfileConfig.disableClose = false;
+    this.userProfileConfig.hasBackdrop = true;
+    this.userProfileConfig.restoreFocus = false;
+    this.userProfileConfig.data = undefined;
+  }
+
+  initAvatarDialogConfig() {
+    this.avatarConfig.id = 'avatarDialog';
+    this.avatarConfig.height = '52vh';
+    this.avatarConfig.width = '44vw';
+    this.avatarConfig.minWidth = '700px';
+    this.avatarConfig.disableClose = false;
+    this.avatarConfig.hasBackdrop = true;
+    this.avatarConfig.restoreFocus = false;
   }
 
   openDialog(component: Component, data?: any) {
@@ -96,25 +142,41 @@ export class ModalWindowService {
         this.closeDialogs();
         this.dialog.open(NewDrawingComponent, this.newDrawingConfig);
         break;
-      case NewTeamDialogComponent:
+      case GalleryComponent:
         this.closeDialogs();
-        this.dialog.open(NewTeamDialogComponent, this.newTeamConfig);
-        break;
-      case DeleteDrawingComponent:
-        this.deleteDrawingConfig.data = data;
-        this.dialog.open(DeleteDrawingComponent, this.deleteDrawingConfig);
+        this.dialog.open(GalleryComponent, this.galleryConfig);
         break;
       case ModifyDrawingComponent:
         this.modifyDrawingConfig.data = data;
         this.dialog.open(ModifyDrawingComponent, this.modifyDrawingConfig);
         break;
-      case GalleryComponent:
-        this.closeDialogs();
-        this.dialog.open(GalleryComponent, this.galleryConfig);
+      case DeleteDrawingComponent:
+        this.deleteDrawingConfig.data = data;
+        this.dialog.open(DeleteDrawingComponent, this.deleteDrawingConfig);
         break;
+      case NewTeamDialogComponent:
+        this.closeDialogs();
+        this.dialog.open(NewTeamDialogComponent, this.newTeamConfig);
+        break;
+      case UserProfileDialogComponent:
+        this.closeDialogs();
+        this.userProfileConfig.data = data;
+        this.dialog.open(UserProfileDialogComponent, this.userProfileConfig);
+        break;
+      case AvatarDialogComponent:
+        this.closeDialogs();
+        const ref = this.dialog.open(AvatarDialogComponent, this.avatarConfig);
+        return ref;
+      
+        case TeamMembersListComponent:
+          this.closeDialogs();
+          this.teamMemberListDialogConfig.data = data;
+          this.dialog.open(TeamMembersListComponent, this.teamMemberListDialogConfig);
+          break;
       default:
         break;
     }
+    return null;
   }
 
   closeDialogs() {

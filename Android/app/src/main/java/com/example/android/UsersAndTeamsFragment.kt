@@ -2,7 +2,10 @@ package com.example.android
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.android.canvas.DrawingStatus
 import com.example.android.canvas.Visibility
 import com.example.android.client.*
@@ -19,6 +23,7 @@ import com.example.android.team.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import kotlinx.android.synthetic.main.avatar.*
 import kotlinx.android.synthetic.main.connection_disconnection_item.view.*
 import kotlinx.android.synthetic.main.fragment_users_and_teams.*
 import kotlinx.android.synthetic.main.team_item.view.*
@@ -39,11 +44,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [UsersAndTeamsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class UsersAndTeamsFragment() : Fragment() {
+class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
     private var usersAdapter : GroupAdapter<GroupieViewHolder>? = null
     private var teamsAdapter: GroupAdapter<GroupieViewHolder>?= null
     private var usersList= ArrayList<User>()
     private var clientService = ClientService()
+    private var colorsMap: HashMap<String, String?>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         /*arguments?.let {
@@ -65,11 +72,18 @@ class UsersAndTeamsFragment() : Fragment() {
                 val data = args[0] as String
                 val bundle = Bundle()
                 bundle.putString("teamInformation", data)
-                //ToComplete: Collect the rest of information concerning
-                // the team like the gallery and the list of users
                 bundle.putString("teamGeneralInformation", createTeamDto.toJson())
                 startActivity(Intent(context, TeamActivity::class.java).putExtras(bundle))
                 i++
+            }
+        }
+        SocketHandler.getChatSocket().on("cantJoinTeam"){ args ->
+            if(args[0]!= null){
+                val data = args[0] as String
+                val cantJoin = CantJoin().fromJson(data)
+                requireActivity().runOnUiThread{
+                    Toast.makeText(context, cantJoin.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -94,58 +108,55 @@ class UsersAndTeamsFragment() : Fragment() {
         updateTeamsRecycleView()
     }
     fun setUsersList(usersList: ArrayList<User>) {
-        if(usersList!= null){
-            this.usersList = usersList
-        }
+        this.usersList = usersList
         updateUsersRecycleView()
     }
 
     fun updateUserListInformation(user: User){
-        if(usersList != null){
-            var exist = false
-            var i = 0
-            for(existingUser in usersList!!){
-                if(existingUser.id == user.id){
-                    exist = true
-                    break
-                }
-                i++
+
+        var exist = false
+        var i = 0
+        for(existingUser in usersList){
+            if(existingUser.id == user.id){
+                exist = true
+                break
             }
-            if(exist){
-                usersList!!.removeAt(i)
-            }
-            usersList!!.add(user)
+            i++
         }
+        if(exist){
+            usersList.removeAt(i)
+        }
+        usersList.add(user)
         updateUsersRecycleView()
     }
 
+    fun setColorsMap(colorsMap: HashMap<String, String?>){
+        this.colorsMap = colorsMap
+    }
+
     fun addTeam(team: TeamGeneralInformation){
-        if(ClientInfo.teamsList.teamList != null){
-            var alreadyExist = false
-            for(existingTeam in ClientInfo.teamsList.teamList!!){
-                if(existingTeam.id == team.id){
-                    alreadyExist = true
-                }
+        var alreadyExist = false
+        for(existingTeam in ClientInfo.teamsList.teamList){
+            if(existingTeam.id == team.id){
+                alreadyExist = true
             }
-            if(!alreadyExist){
-                ClientInfo.teamsList.teamList!!.add(team)
-            }
+        }
+        if(!alreadyExist){
+            ClientInfo.teamsList.teamList.add(team)
         }
         updateTeamsRecycleView()
     }
 
     fun removeTeam(team: TeamGeneralInformation){
-        if(ClientInfo.teamsList.teamList != null){
-            var i = 0
-            for(existingTeam in ClientInfo.teamsList.teamList!!){
-                if(existingTeam.id == team.id){
-                    break
-                }
-                i++
+        var i = 0
+        for(existingTeam in ClientInfo.teamsList.teamList!!){
+            if(existingTeam.id == team.id){
+                break
             }
-            ClientInfo.teamsList.teamList!!.removeAt(i)
-            updateTeamsRecycleView()
+            i++
         }
+        ClientInfo.teamsList.teamList!!.removeAt(i)
+        updateTeamsRecycleView()
     }
 
     override fun onCreateView(
@@ -159,10 +170,16 @@ class UsersAndTeamsFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val teamsLayoutManager = LinearLayoutManager(context)
-        teamsLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        teamsRecycleView?.layoutManager = teamsLayoutManager
-        updateTeamsRecycleView()
+        if(showTeams){
+            val teamsLayoutManager = LinearLayoutManager(context)
+            teamsLayoutManager.orientation = LinearLayoutManager.VERTICAL
+            teamsRecycleView?.layoutManager = teamsLayoutManager
+            updateTeamsRecycleView()
+        }
+        else{
+          teamsLabelFragment.visibility = View.INVISIBLE
+          teamsRecycleView.visibility = View.INVISIBLE
+        }
 
         val usersLayoutManager = LinearLayoutManager(context)
         usersLayoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -170,30 +187,60 @@ class UsersAndTeamsFragment() : Fragment() {
         updateUsersRecycleView()
     }
 
+    fun startJoinProtectedActivity(data: String){
+        val bundle = Bundle()
+        bundle.putString("teamInformation",data)
+        startActivity(Intent(context, JoinProtected::class.java).putExtras(bundle))
+    }
+
     fun updateUsersRecycleView(){
         usersAdapter = GroupAdapter<GroupieViewHolder>()
         for(user in usersList){
             if(user.id != ClientInfo.userId){
                 val newUserItem = UserItem(this)
-                newUserItem.set(user)
+                var color = "#FFFFFFFF"
+                if(colorsMap != null){
+                    for(aColor in colorsMap!!){
+                        if(aColor.value == user.id){
+                            color = aColor.key
+                            break
+                        }
+                    }
+                    color = "#FF$color"
+                }
+                newUserItem.set(user, color)
                 usersAdapter?.add(newUserItem)
             }
             else{
-                if(ClientInfo.username == null){
-                    ClientInfo.username = user.pseudo
-                }
+                ClientInfo.username = user.pseudo
+                val firstPair = Pair<String, String>(ClientInfo.userId, ClientInfo.username!!)
+                ClientInfo.possibleOwners[0]= firstPair
+
             }
         }
-        try{
-            activity?.runOnUiThread{
-                usersRecycleView.adapter = usersAdapter
-            }
-        } catch(e: Exception){}
+        activity?.runOnUiThread{
+            usersRecycleView.adapter = usersAdapter
+        }
     }
 
     fun updateTeamsRecycleView(){
         teamsAdapter = GroupAdapter<GroupieViewHolder>()
-        for(team in ClientInfo.teamsList.teamList!!){
+        val teamsList = ArrayList<TeamGeneralInformation>()
+        for(team in ClientInfo.teamsList.teamList){
+            var alreadyJoined = false
+            for(possibleOwner in ClientInfo.possibleOwners){
+                val owner = possibleOwner.value
+                if(team.name == owner.second){
+                    alreadyJoined = true
+                    break
+                }
+            }
+            if(!alreadyJoined){
+                teamsList.add(team)
+            }
+        }
+
+        for(team in teamsList){
             val newTeamItem = TeamItem(clientService,this)
             newTeamItem.set(team)
             teamsAdapter?.add(newTeamItem)
@@ -226,13 +273,28 @@ class UsersAndTeamsFragment() : Fragment() {
 
 class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
 
+    var avatar: String?= null
     var username: String? =null
     var id: String?= null
     var status: String?= null
+    var color: String = "#FFFFFFFF"
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.foreignUserName.text = username
         viewHolder.itemView.foreignUserStatus.text = status
         viewHolder.itemView.foreignUserName.setOnClickListener {
+            fragment.startUserActivity(id!!)
+        }
+        viewHolder.itemView.userColor.setBackgroundColor(
+            Color.parseColor(color))
+
+        val decodedModifiedString = Base64.decode(
+            avatar, Base64.DEFAULT)
+        val decodedModifiedByte = BitmapFactory.decodeByteArray(
+            decodedModifiedString,0, decodedModifiedString.size)
+        Glide.with(fragment.requireActivity()).load(decodedModifiedByte)
+            .fitCenter().into(viewHolder.itemView.avatarUserFragment)
+
+        viewHolder.itemView.avatarUserFragment.setOnClickListener {
             fragment.startUserActivity(id!!)
         }
     }
@@ -241,10 +303,12 @@ class UserItem(var fragment:UsersAndTeamsFragment) : Item<GroupieViewHolder>() {
         return R.layout.user_item
     }
 
-    fun set(user:User){
+    fun set(user:User, color: String){
         this.username = user.pseudo
         this.id = user.id
         this.status = clientStatusFroInt(user.status!!).string
+        this.color = color
+        this.avatar = user.avatar
     }
 
 }
@@ -255,9 +319,13 @@ class TeamItem(var clientService: ClientService,
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.teamName.text = team!!.name
         //the block to join a team
-        viewHolder.itemView.teamName.setOnClickListener {
+        viewHolder.itemView.toolTipTeam.tooltipText = team!!.bio
+        viewHolder.itemView.joinTeam.setOnClickListener {
             if(team!!.visibility != Visibility.protectedVisibility.int){
                 fragment.startTeamActivity(team!!)
+            }
+            else{
+                fragment.startJoinProtectedActivity(team!!.toJson())
             }
         }
         if(team!!.ownerId != ClientInfo.userId){
@@ -288,9 +356,9 @@ class TeamItem(var clientService: ClientService,
                     }
                 }
                 else{
-                    val error = response!!.errorBody()!!.string()
+                    val error = CantJoin().fromJson(response!!.errorBody()!!.string())
                     fragment.requireActivity().runOnUiThread{
-                        Toast.makeText(fragment.context, error,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(fragment.context, error.message,Toast.LENGTH_SHORT).show()
                     }
                 }
             }

@@ -1,61 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/rectangle_background">
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:ignore="MissingConstraints">
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="name"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
+        android:orientation="horizontal">
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <FrameLayout
-                android:id="@+id/fl_drawing_view_gallery"
-                android:background="@drawable/rectangle_background"
-                android:layout_width="300px"
-                android:layout_height="300px">
-
-                <!-- In FrameLayout the component which are
-               added below are in foreground and added above are in Background.-->
-
-            </FrameLayout>
-
+            android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="450dp"
+            android:layout_height="400dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:background="@drawable/rectangle_background">
+            <ImageView
+                android:id="@+id/visibilityIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:srcCompat="@drawable/trash" />
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
             <LinearLayout
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Visibilité"
+                        android:textColor="@color/black" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nom du créateur"
+                        android:textColor="@color/black" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="nombre de collaborateurs actuel"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date de création"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginStart="5dp">
+                    <TextView
+                        android:id="@+id/visibilityText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="public"
+                        android:textColor="@color/black" />
+                    <TextView
+                        android:id="@+id/drawingsAuthorName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="name"
+                        android:textColor="@color/black" />
+                    <TextView
+                        android:id="@+id/nbCollaboratorsDrawing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="nombre de collaborateur"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/creationDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date de création"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="5dp">
 
-                <ImageView
-                    android:id="@+id/delete"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/trash" />
+                <FrameLayout
+                    android:id="@+id/fl_drawing_view_gallery"
+                    android:background="@drawable/rectangle_background"
+                    android:layout_width="300px"
+                    android:layout_height="300px">
 
-                <ImageView
-                    android:id="@+id/modify"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/modify" />
+                    <!-- In FrameLayout the component which are
+                   added below are in foreground and added above are in Background.-->
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp">
+
+                    <ImageView
+                        android:id="@+id/delete"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/trash" />
+
+                    <ImageView
+                        android:id="@+id/modify"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_baseline_settings_24" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10sp" />
+        </LinearLayout>
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
-</RelativeLayout>

@@ -4,41 +4,57 @@
     android:layout_width="200dp"
     android:layout_height="230dp"
     android:layout_marginHorizontal="3dp"
-    android:layout_marginVertical="3dp"
-    android:layout_marginTop="50dp"
-    android:background="@drawable/rectangle_background"
-    android:backgroundTint="#7FD3D3D3">
+    android:layout_marginVertical="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        tools:ignore="MissingConstraints">
 
 
-    <include
-        android:id="@+id/avatarItem"
-        layout="@layout/fragment_avatar"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/img_save"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-    <Button
-        android:id="@+id/change_avatar3"
+        <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="170dp"
-        android:fontFamily="sans-serif"
-        android:text="changer d'avatar"
-        android:textAllCaps="true"
-        android:textColor="@color/main_color"
-        android:textSize="14sp"
-        app:backgroundTint="#F4F4F4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
 
+        <Button
+            android:id="@+id/gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif"
+            android:text="galerie"
+            android:textAllCaps="true"
+            android:textColor="@color/main_color"
+            android:textSize="14sp"
+            app:backgroundTint="#F4F4F4"
+            android:layout_marginRight="2dp"
+            tools:ignore="MissingConstraints" />
 
-
+        <Button
+            android:id="@+id/camera"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif"
+            android:text="camera"
+            android:textAllCaps="true"
+            android:textColor="@color/main_color"
+            android:textSize="14sp"
+            app:backgroundTint="#F4F4F4"
+            tools:ignore="MissingConstraints" />
+    </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

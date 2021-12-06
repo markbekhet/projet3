@@ -1,13 +1,27 @@
 <h2 mat-dialog-title>Modifier les informations du dessin</h2>
 
-<mat-dialog-content>
-    <mat-label>Nom du dessin : </mat-label>
-    <input matInput type="text">
+<mat-dialog-content class="modifyDrawingContent">
+    <mat-label>Nouveau nom du dessin : </mat-label>
+    <input matInput type="text" [(ngModel)]= "newName">
+
+    <mat-label>Nouvelle visibilité: </mat-label>
+    <mat-select [(ngModel)]="newVisibility">
+        <mat-option>--</mat-option>
+        <mat-option *ngFor="let drawingVisibilityItem of drawingVisibilityItems"
+                    [value]="drawingVisibilityItem.value">{{drawingVisibilityItem.name}}
+        </mat-option>
+    </mat-select>
+    <div *ngIf="newVisibility === 1">
+        <mat-label>Mot de passe: </mat-label>
+        <input matInput type="text" [(ngModel)]="password" required>
+    </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-raised-button mat-dialog-close>Annuler</button>
-    <button mat-raised-button color="primary">Confirmer</button>
+    <button mat-raised-button color="primary" mat-dialog-close (click)="modifyDrawing()" [disabled]= "errorInForm()">
+        Confirmer
+    </button>
 </mat-dialog-actions>
 
 <!-- Sur le bouton confirmer, pour lancer la requête -->

@@ -8,111 +8,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:gravity="fill"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="16dp">
 
-        <Button
-            android:id="@+id/createTeamHomeButton"
-            android:layout_width="200sp"
-            android:layout_height="match_parent"
-            android:text="Créer un Salon"
-            android:textColor="@color/main_color"
-            android:textSize="20sp"
-            app:backgroundTint="@color/white" />
-
-        <Button
-            android:id="@+id/createDrawingHomeButton"
-            android:layout_width="200sp"
-            android:layout_height="match_parent"
-            android:text="Créer un dessin"
-            android:textColor="@color/main_color"
-            android:textSize="20sp"
-            app:backgroundTint="@color/white" />
-        <Button
-            android:id="@+id/profileButton"
-            android:layout_width="150sp"
-            android:layout_height="match_parent"
-            android:text="profil"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
-
-        <Button
-            android:id="@+id/disconnect"
-            android:layout_width="150sp"
-            android:layout_height="match_parent"
-            android:text="Deconnexion"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white" />
-
-
-    </LinearLayout>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <LinearLayout
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/rectangle_background"
-        android:orientation="vertical"
-        android:backgroundTint="@color/white">
-
-        <FrameLayout
-            android:id="@+id/usersAndTeamsFrameLandingPage"
-            android:layout_width="match_parent"
-            android:layout_height="500dp">
-
-        </FrameLayout>
-        <FrameLayout
-            android:id="@+id/landingPageChatSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="500dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/rectangle_background"
-        android:orientation="vertical"
-        android:backgroundTint="@color/white">
-
-        <FrameLayout
-            android:id="@+id/gallery_frame"
-            layout="@layout/activity_gallery"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="horizontal">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/rectangle_background"
+                android:orientation="vertical"
+                android:backgroundTint="@color/white">
+
+                <FrameLayout
+                    android:id="@+id/gallery_frame"
+                    layout="@layout/activity_gallery"
+                    android:layout_width="940dp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/rectangle_background"
+            android:orientation="vertical"
+            android:backgroundTint="@color/white">
+
+            <FrameLayout
+                android:id="@+id/usersAndTeamsFrameLandingPage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
 
     </LinearLayout>
 
 
 
-    <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/rectangle_background"
-        android:orientation="vertical"
-        android:backgroundTint="@color/white">
-
-        <FrameLayout
-            android:id="@+id/landingPageChatsFrame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
 
 
-    </LinearLayout>
-</LinearLayout>
+
+
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

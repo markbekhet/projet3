@@ -15,6 +15,10 @@
       width: 270px;
       left: 50%;
       margin: 20px 0 0 -135px;
+      .hidden {
+        visibility: hidden;
+        width: 0px;
+      }
     }
     .information {
       position: absolute;

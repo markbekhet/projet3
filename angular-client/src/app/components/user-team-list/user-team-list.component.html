@@ -1,23 +1,53 @@
-<div>
-    <mat-list class= "usersList">
-        <mat-list-item *ngFor="let user of userList">
-            <div *ngIf= "user.id !== userId && user.status !== 2">
-                <h3> {{user.pseudo}}</h3>
-                <button> Consulter son profile</button>
+<div class="component-grid">
+    <mat-list class="usersList">
+        <h2>Liste des utilisateurs</h2>
+        <mat-list-item *ngFor="let user of users">
+            <div *ngIf="user.id !== authenticatedUserId">
+                <img matListAvatar [src]="decodeAvatar(user.avatar!)" alt="User avatar" class="avatar">
+                <span> {{user.pseudo}}</span>
+                <span *ngIf="user.status === 0"> En ligne</span>
+                <span *ngIf="user.status === 1"> Occupé</span>
+                <span *ngIf="user.status === 2"> Hors ligne</span>
+                <button (click)="viewUserProfile(user)">Consulter son profil</button>
             </div>
         </mat-list-item>
     </mat-list>
-    <mat-list class= "teamsList">
-        <mat-list-item *ngFor="let team of teamList">
-            <h3> {{team.name}}</h3>
-            <button (click)="joinTeam(team)"> joindre</button>
-            <button *ngIf= "userId === team.ownerId" (click)="deleteTeam(team)"> Supprimer</button>
+
+    <mat-list class="teamsList">
+        <h2>Équipes de collaboration</h2>
+        <mat-list-item *ngFor="let team of teams">
+            <span [matTooltip]="team.bio!">{{team.name}}</span>
+            <!-- <div class="buttons-wrapper"> -->
+            <button (click)="joinTeam(team)">Joindre</button>
+            <button *ngIf="authenticatedUserId === team.ownerId" (click)="deleteTeam(team)">Supprimer</button>
+            <!-- </div> -->
+
         </mat-list-item>
     </mat-list>
-    <mat-list class="chatRoomList">
-        <mat-list-item *ngFor="let room of chatRoomList">
-            <h3> {{room.name}}</h3>
-            <button (click)="leaveTeam(room)"> quitter equipe</button>
-        </mat-list-item>
+
+    <mat-list class="chatroomsList">
+        <h2>Canaux de discussion</h2>
+
+        <mat-chip-list aria-label="Liste des canaux de clavardage">
+            <mat-chip color="primary" selected matTooltip="Joindre le canal" (click)="joinChat('General')">
+                {{'General'}}
+            </mat-chip>
+            
+            <!-- Teams chatrooms -->
+            <div *ngFor="let room of chatrooms">
+                <mat-chip color="accent" selected matTooltip="Joindre le canal" (click)="joinChat(room)">
+                    {{room}}
+                </mat-chip>
+                <button *ngIf="isTeamChannel(room)" mat-icon-button matTooltip="Informations de l'equipe" (click)="openTeamInformations(room)">
+                    <mat-icon>info</mat-icon>
+                </button>
+                <button (click)="leaveTeam(room)">Quitter l'équipe</button>
+            </div>
+        </mat-chip-list>
     </mat-list>
+
+    <div class="chatrooms-selected">
+        <ng-template #chatInsert>
+        </ng-template>
+    </div>
 </div>

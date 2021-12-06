@@ -25,31 +25,39 @@
             android:textStyle="bold"
             />
 
-        <ImageView
-            android:id="@+id/avatarOwner"
-            android:layout_width="323dp"
-            android:layout_height="229dp"
-            app:cardCornerRadius="45dp"
-            app:srcCompat="@drawable/ic_user"
-            />
+        <include
+            layout="@layout/avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
-            <Button
+            <ImageButton
                 android:id="@+id/modifyParams"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/modifyParams"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_baseline_settings_24"
+                android:scaleType="fitXY"
+                android:visibility="visible"
                 android:clickable="true"
-                android:enabled="true"/>
-            <Button
+                android:enabled="true"
+                android:tooltipText="@string/modifyProfile"/>
+            <ImageButton
                 android:id="@+id/viewHistory"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_baseline_history_24"
+                android:scaleType="fitXY"
+                android:visibility="visible"
                 android:text="@string/viewHistoryAndStatistics"
-                android:layout_marginStart="20dp" />
+                android:layout_marginStart="20dp"
+                android:tooltipText="@string/statsAndHistories"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

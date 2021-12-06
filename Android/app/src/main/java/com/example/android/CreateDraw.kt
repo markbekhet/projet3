@@ -4,21 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.colorpicker.*
-import kotlinx.android.synthetic.main.colorpicker.colorA
-import kotlinx.android.synthetic.main.colorpicker.strColor
 import kotlinx.android.synthetic.main.createdraw.*
 import android.widget.*
+import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
 import com.example.android.canvas.*
+import com.example.android.chat.ChatDialog
+import com.example.android.chat.ChatRooms
+import com.example.android.chat.ClientMessage
 import com.example.android.client.ClientInfo
 import com.example.android.client.ClientService
-import kotlinx.android.synthetic.main.chatfragment.view.*
-import kotlinx.android.synthetic.main.dessin.*
+import com.example.android.team.CantJoin
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -26,27 +24,70 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import top.defaults.colorpicker.ColorPickerPopup
 import java.util.*
+import kotlin.collections.ArrayList
 
 var newDrawing = DrawingInformation(color="FFFFFF")
 class CreateDraw : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         lateinit var option: Spinner
         lateinit var result: TextView
-        lateinit var switch: Switch
         val clientService = ClientService()
-        var color: String = "#FFFFFF"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createdraw)
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_general)
+        val customActionBar = supportActionBar!!.customView
+        val chatCreateDrawing: ImageView = customActionBar
+            .findViewById(R.id.showChatGeneral)
+
+        val chatDialog = ChatDialog(this)
+        chatCreateDrawing.setOnClickListener {
+            chatDialog.show(supportFragmentManager, ChatDialog.TAG)
+        }
+
+        SocketHandler.getChatSocket().on("msgToClient"){ args ->
+            if(args[0] != null){
+                val messageData = args[0] as String
+                val messageFromServer = ClientMessage().fromJson(messageData)
+                val roomName = messageFromServer.roomName
+                try{
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
+                }
+                catch(e: Exception){}
+            }
+        }
+
+        val ownerPossible = ArrayList<String>()
+        for(item in ClientInfo.possibleOwners){
+            val itemValue = item.value
+            ownerPossible.add(itemValue.second)
+        }
+
+        var ownerPositionSelected = 0
+        ownerOptions.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
+            ownerPossible)
+
+        ownerOptions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                ownerPositionSelected = p2
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+        }
+
         //switch=findViewById(R.id.visible) as Switch
         option = findViewById(R.id.sp_option) as Spinner
-        result = findViewById(R.id.result) as TextView
 
-        val options = arrayOf("public", "proteger", "privee")
+        val options = arrayOf("public", "protegé", "privé")
         option.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, options)
         option.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                result.text = options[p2]
                 newDrawing.visibility = p2
                 if (p2 == 1) {
                     drawingPassword.visibility = View.VISIBLE
@@ -91,25 +132,7 @@ class CreateDraw : AppCompatActivity() {
             }
             error.text = ""
         }
-        height.doAfterTextChanged {
-            if (!isNotBlank()) {
-                create.isEnabled = false
-                create.isClickable = false
-            } else {
-                create.isEnabled = true
-                create.isClickable = true
-            }
-        }
 
-        width.doAfterTextChanged {
-            if (!isNotBlank()) {
-                create.isEnabled = false
-                create.isClickable = false
-            } else {
-                create.isEnabled = true
-                create.isClickable = true
-            }
-        }
         create?.setOnClickListener() {
             var canProcessQuery = true
             if (newDrawing.visibility == Visibility.protectedVisibility.int) {
@@ -125,14 +148,19 @@ class CreateDraw : AppCompatActivity() {
                 newDrawing.password = null
             }
 
-            newDrawing.height = height.text.toString().toInt()
-            newDrawing.width = width.text.toString().toInt()
+            newDrawing.height = 900
+            newDrawing.width = 900
             newDrawing.name = drawingName.text.toString()
-            newDrawing.ownerId = ClientInfo.userId
+
+            // in case of an error
+            try{
+                newDrawing.ownerId = ClientInfo.possibleOwners[ownerPositionSelected]!!.first
+            } catch(e: Exception){
+                newDrawing.ownerId = ClientInfo.userId
+            }
+
             newDrawing.color = btnColorSelected.tooltipText as String?
             println(newDrawing.color)
-            height.text.clear()
-            width.text.clear()
             drawingName.text.clear()
             btnColorSelected.tooltipText = "FFFFFF"
             btnColorSelected.setBackgroundColor(Color.WHITE)
@@ -146,11 +174,10 @@ class CreateDraw : AppCompatActivity() {
                     }
                 }
                 if (response!!.isSuccessful) {
-                    DrawingUtils.currentDrawingId = response?.body()!!.string().toInt()
-                    println(DrawingUtils.currentDrawingId)
+                    val drawingID = response?.body()!!.string().toInt()
                     //join the drawing
-                    val joinRequest = JoinDrawingDto(DrawingUtils.currentDrawingId,
-                        ClientInfo.userId)
+                    val joinRequest = JoinDrawingDto(drawingID, ClientInfo.userId,
+                        password = newDrawing.password)
 
 
                     var i = 0
@@ -158,15 +185,17 @@ class CreateDraw : AppCompatActivity() {
                     SocketHandler.getChatSocket().on("drawingInformations"){ args ->
                         if(args[0]!=null && i == 0){
                             val data = args[0] as String
-                            DrawingUtils.drawingInformation =
-                                AllDrawingInformation().fromJson(data)
-                            startActivity(Intent(this, Drawing::class.java))
+                            val bundle = Bundle()
+                            bundle.putString("drawingInformation", data)
+                            bundle.putInt("drawingID", drawingID)
+                            startActivity(Intent(this, Drawing::class.java).putExtras(bundle))
                             i++
+                            finish()
                         }
                     }
                 } else {
-                    error.text = "Une erreur est arrivée lors de la création du dessin." +
-                        " Un autre dessin a possiblement le même nom. Veuillez essayer un autre nom."
+                    val errorMessage = CantJoin().fromJson(response!!.errorBody()!!.string())
+                    error.text = errorMessage.message
                 }
 
             }
@@ -272,7 +301,7 @@ class CreateDraw : AppCompatActivity() {
     }*/
     }
     private fun isNotBlank(): Boolean{
-        if(height.text.isBlank() || width.text.isBlank() || drawingName.text.isBlank()){
+        if(drawingName.text.isBlank()){
             return false
         }
         return true

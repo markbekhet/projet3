@@ -9,28 +9,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Utilisateurs"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Utilisateurs"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textStyle="bold"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/usersRecycleView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/usersRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp" />
+        </LinearLayout>
         <TextView
+            android:id="@+id/teamsLabelFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Les équipes"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/teamsRecycleView"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="250dp" />
     </LinearLayout>
 
 </FrameLayout>

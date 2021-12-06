@@ -4,10 +4,19 @@
     <div class="gallery-grid">
         <mat-card *ngFor="let drawing of shownDrawings" class="drawing-card">
             <mat-card-header>
-                <img mat-card-avatar src="../../../assets/thumbnails/avatar_placeholder.png"
-                     alt="Avatar du propriétaire" class="avatar-image" />
+                <mat-icon mat-card-avatar>{{ displayVisibilityIcon(drawing.infos.visibility) }}</mat-icon>
+
+                <!-- <img mat-card-avatar src="../../../assets/thumbnails/avatar_placeholder.png"
+                     alt="Avatar du propriétaire" class="avatar-image" /> -->
                 <mat-card-title><span>Nom : </span>{{ drawing.infos.name }}</mat-card-title>
                 <mat-card-subtitle>{{ displayVisibilityLevel(drawing.infos.visibility) }}</mat-card-subtitle>
+                <mat-card-subtitle><span>Auteur</span> : {{drawing.infos.authorName}}</mat-card-subtitle>
+                <mat-card-subtitle><span>Date de création</span> : {{ drawing.infos.creationDate }}</mat-card-subtitle>
+                <mat-card-subtitle><span>Nombre de collaborateurs actifs</span> : {{drawing.infos.nbCollaborators}}
+                </mat-card-subtitle>
+                <mat-card-subtitle *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >=1">Ce
+                    dessin est en cours de collaboration, vous ne pouvez pas le supprimer ni le modifier pour le moment.
+                </mat-card-subtitle>
             </mat-card-header>
 
             <!-- <img mat-card-image src="../../../assets/thumbnails/drawing_placeholder.jpg" alt="Image de dessin" /> -->
@@ -15,16 +24,18 @@
                            [svgHeight]="drawing.infos.height"></app-thumbnail>
 
             <mat-card-actions>
-                <!-- mettre le bouton modifier en haut à droite dans le header -->
-                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId" mat-flat-button color="warn"
-                        matTooltip="Supprimer" (click)="openDeleteDrawingDialog(drawing.infos)">
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0"
+                        mat-flat-button color="warn" matTooltip="Supprimer"
+                        (click)="openDeleteDrawingDialog(drawing.infos)">
                     <mat-icon>delete</mat-icon>
                 </button>
-                <button *ngIf="getAuthenticatedUserID()===drawing.infos.ownerId" mat-flat-button color="accent"
-                        matTooltip="Modifier les informations" (click)="openModifyDrawingDialog(drawing.infos)">
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0"
+                        mat-flat-button color="accent" matTooltip="Modifier les informations"
+                        (click)="openModifyDrawingDialog(drawing.infos)">
                     <mat-icon>settings</mat-icon>
                 </button>
-                <button mat-flat-button color="primary" matTooltip="Éditer" (click)="editDrawing(drawing.infos)">
+                <button *ngIf="drawing.infos.nbCollaborators < 4" mat-flat-button color="primary" matTooltip="Éditer"
+                        (click)="editDrawing(drawing.infos)">
                     <mat-icon>edit</mat-icon>
                 </button>
             </mat-card-actions>

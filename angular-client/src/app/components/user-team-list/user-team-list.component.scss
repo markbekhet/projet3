@@ -1,8 +1,82 @@
-.userList {
-    width: auto;
-    height: 250px;
-    border: thick;
-    float: left;
-    padding-bottom: 1vh;
-    margin-left: 0;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Calistoga&display=swap");
+
+$base-color-dark: #403d39;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.component-grid {
+  display: grid;
+  position: relative;
+  grid-template-rows: 30vh 31vh 30vh;
+  grid-template-areas:
+    "usersList"
+    "teamsList"
+    "chat";
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+    margin-bottom: 0.3em;
+    padding: 0.7em 0 0.7em;
+    box-shadow: 0 2px 5px white;
+    // font-family: "Calistoga", cursive;
+    // font-weight: 400;
+  }
+
+  mat-list {
+    padding: 0 1em 1em;
+    border-left: 2px solid $base-color-dark;
+    border-bottom: 2px solid $base-color-dark;
+    overflow: auto;
+
+    mat-list-item {
+      display: block;
+      margin-bottom: 1em;
+      // span {
+      //   vertical-align: baseline;
+      // }
+
+      // .buttons-wrapper {
+      //   display: flex; inline-flex ??????
+      //   flex-direction: row;
+      //   justify-content: flex-end;
+      //   align-items: center;
+
+      button {
+        margin: 0 0.5em;
+      }
+      // }
+    }
+    .avatar {
+      width: 40px;
+    }
+  }
+
+  .chatroomsList {
+    border-bottom: 0px;
+  }
+
+  .chatrooms-selected {
+    position: absolute;
+    bottom: 0;
+    right: 20vw;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    gap: 1em;
+
+    // & > :first-child {
+    //   margin-right: 3px;
+    // }
+  }
 }
