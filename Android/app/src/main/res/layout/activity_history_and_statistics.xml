@@ -20,15 +20,22 @@
                 android:id="@+id/statisticsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Statistques"
+                android:text="Historiques et Statistiques"
                 android:textSize="36sp"
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinnerOptionsStatisticsPage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle_background">
+            <Spinner
+                android:id="@+id/spinnerOptionsStatisticsPage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statistics"
