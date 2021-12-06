@@ -85,6 +85,11 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.authenticatedUserId = this.authService.getUserToken();
     this.chatComponentFactory =
       this.componentFactoryResolver.resolveComponentFactory(ChatComponent);
+      for(let room of this.chatRoomService.chatRooms.keys()){
+        if(room!== "General"){
+          this.chatrooms.push(room);
+        }
+      }
   }
 
   ngOnInit(): void {
@@ -96,7 +101,8 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
     this.socketService.getAllTeams().subscribe((teamsMap) => {
       teamsMap.forEach((team) => {
-        this.teams.push(team);
+        if(!this.chatrooms.includes(team.name))
+          this.teams.push(team);
       });
     });
   }

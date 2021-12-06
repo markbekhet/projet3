@@ -67,6 +67,11 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
     this.users = [];
+    for(let room of this.chatRoomService.chatRooms.keys()){
+      if(room!== "General"){
+        this.chatrooms.push(room);
+      }
+    }
 
     this.chatComponentFactory =
       this.componentFactoryResolver.resolveComponentFactory(ChatComponent);
