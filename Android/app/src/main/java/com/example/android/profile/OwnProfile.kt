@@ -10,6 +10,7 @@ import android.util.Base64
 import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Lifecycle
 import com.bumptech.glide.Glide
 import com.example.android.R
 import com.example.android.SocketHandler
@@ -123,6 +124,7 @@ class OwnProfile : AppCompatActivity() {
     fun updateUI(userInformation: UserProfileInformation) {
 
         //getProfile()
+
         runOnUiThread {
             emailValue.text = userInformation.emailAddress
             lastNameValue.text = userInformation.lastName
@@ -130,7 +132,11 @@ class OwnProfile : AppCompatActivity() {
             firstNameValue.text = userInformation.firstName
             val decodedString: ByteArray = Base64.decode(userInformation.avatar, Base64.DEFAULT)
             val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-            Glide.with(this).load(decodedByte).fitCenter().into(img_save)
+            try {
+                if(this.lifecycle.currentState != Lifecycle.State.DESTROYED){
+                    Glide.with(this).load(decodedByte).fitCenter().into(img_save)
+                }
+            } catch(e: Exception){}
         }
         //avatarClientInfo.avatarClient = userInformation!!.avatar!!.toInt()
     }
