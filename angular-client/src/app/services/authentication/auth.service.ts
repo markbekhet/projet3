@@ -10,6 +10,7 @@ import { SocketService } from '@services/socket/socket.service';
 import { DrawingService } from '../drawing/drawing.service';
 import { TeamService } from '../team/team.service';
 import { TeamInformations } from '@src/app/models/teamsMeta';
+import { ChatRoomService } from '../chat-room/chat-room.service';
 
 const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
 //const PATH = 'http://localhost:3000/';
@@ -47,6 +48,7 @@ export class AuthService {
     private socketService: SocketService,
     private drawingService: DrawingService,
     private teamService: TeamService,
+    private chatRoomService: ChatRoomService
   ) {}
 
   getUserToken() {
@@ -95,6 +97,7 @@ export class AuthService {
           this.userDrawings$.next(this.NULL_DRAWINGS);
           this.socketService.teams$.value.clear();
           this.socketService.users$.value.clear();
+          this.chatRoomService.chatRooms.clear();
           this.socketService.disconnect();
         })
       );
