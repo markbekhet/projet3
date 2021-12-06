@@ -16,7 +16,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+//import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 
 import { JoinTeam, LeaveTeam } from '@models/joinTeam';
@@ -43,6 +43,7 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
 import { ActiveUser } from '@src/app/models/active-user';
 import { TeamMembersListComponent } from './team-members-list/team-members-list.component';
+//import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
 
 @Component({
   selector: 'app-user-team-list',
@@ -236,10 +237,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         // this.teams.splice(this.teams.indexOf(team), 1)
       },
       (error) => {
-        const errorCode = JSON.parse(
-          (error as HttpErrorResponse).error
-        ).message;
-        this.errorDialog.open(ErrorDialogComponent, { data: errorCode });
+        /*const errorCode: HttpErrorResponse = JSON.parse(
+          (error ).error
+        ).message;*/
+        //console.log(errorCode)
+        console.log(error.error.message)
+        this.errorDialog.open(ErrorDialogComponent, { data: error.error.message });
       }
     );
   }
