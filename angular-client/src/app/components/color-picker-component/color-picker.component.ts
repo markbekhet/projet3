@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { TooltipPosition } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
+
 import { ChosenColors } from '@models/ChosenColors';
 import { ColorPickingService } from '@services/color-picker/color-picking.service';
 import { colorData } from './color-data';
@@ -12,6 +14,8 @@ import { colorData } from './color-data';
 export class ColorPickerComponent implements OnInit {
   cData = colorData;
   colorSubsc!: Subscription;
+  tooltipText: string = `Clic droit pour sélectionner la couleur primaire.\n Clic gauche pour sélectionner la couleur secondaire.`;
+  tooltipPosition: TooltipPosition = 'right';
 
   constructor(public colorPicking: ColorPickingService) {}
 
