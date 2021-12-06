@@ -1,17 +1,38 @@
+$primary-color: #0a008c;
+
 tr {
-    //max-height: 75px;
-    font-size: 0px;
+  //max-height: 75px;
+  font-size: 0px;
 }
 td {
-    font-size: 0px;
+  font-size: 0px;
+}
+
+table:first-child {
+  td {
+    position: relative;
+  }
+
+  .info-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: whitesmoke;
+    font-size: 20px;
+
+    &:hover {
+      opacity: 0.60;
+      transition: opacity 900ms ease;
+    }
+  }
 }
 
 button {
-    height: 10px;
-    width: 5px;
-    border-radius: 100px;
-    border-color: black;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  height: 10px;
+  width: 5px;
+  border-radius: 100px;
+  border-color: black;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
 
 .colortypelabel {
@@ -24,13 +45,13 @@ button {
   padding: 0px;
 }
 .namelabel {
-    font-size: 9px;
-    color: white;
-    float: left;
-    width: 65px;
-    height: 8px;
-    font-weight: bold;
-    padding: 0px;
+  font-size: 9px;
+  color: white;
+  float: left;
+  width: 65px;
+  height: 8px;
+  font-weight: bold;
+  padding: 0px;
 }
 .rgbnamelabel {
   font-size: 9px;
@@ -42,24 +63,24 @@ button {
   padding: 0px;
 }
 .numberlabel {
-    font-size: 9px;
-    float: left;
-    color: white;
-    width: 30px;
-    height: 8px;
-    padding: 0px;
-    font-weight: bold;
+  font-size: 9px;
+  float: left;
+  color: white;
+  width: 30px;
+  height: 8px;
+  padding: 0px;
+  font-weight: bold;
 }
 .hexInput {
-    position: relative;
-    width: 40px;
-    font-size: 10px;
-    border: none;
-    border-bottom: 1px solid white;
-    caret-color: white;
-    color: white;
-    background:transparent;
-    padding-top: 4px;
+  position: relative;
+  width: 40px;
+  font-size: 10px;
+  border: none;
+  border-bottom: 1px solid white;
+  caret-color: white;
+  color: white;
+  background: transparent;
+  padding-top: 4px;
 }
 .rgbInput {
   width: 25px;
@@ -69,12 +90,12 @@ button {
   border-bottom-width: 10px;
   border-bottom: 1px solid white;
   caret-color: white;
-  background:transparent;
+  background: transparent;
 }
 svg {
-    position: relative;
-    top: 0px;
-    left: 0px;
+  position: relative;
+  top: 0px;
+  left: 0px;
 }
 .radiocontainer {
   position: relative;
@@ -112,20 +133,20 @@ svg {
   display: none;
 }
 .colorSlider {
-    width: 80px;
+  width: 80px;
 }
 //-------------------
 //from STERN, Daniel. 2017. Styling Cross-Browser Compatible Range Inputs with CSS. URL:
 // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
-input[type=range] {
+input[type="range"] {
   -webkit-appearance: none;
 
   width: 50%;
 }
-input[type=range]:focus {
+input[type="range"]:focus {
   outline: none;
 }
-input[type=range]::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 5px;
   cursor: pointer;
@@ -135,7 +156,7 @@ input[type=range]::-webkit-slider-runnable-track {
   border-radius: 1.3px;
   border: 0.2px solid #010101;
 }
-input[type=range]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
   height: 8px;
@@ -146,10 +167,10 @@ input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-top: -2px;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #CCC;
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: #ccc;
 }
-input[type=range]::-moz-range-track {
+input[type="range"]::-moz-range-track {
   width: 100%;
   height: 5px;
   cursor: pointer;
@@ -159,7 +180,7 @@ input[type=range]::-moz-range-track {
   border-radius: 1.3px;
   border: 0.2px solid #010101;
 }
-input[type=range]::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
   height: 10px;
@@ -168,7 +189,7 @@ input[type=range]::-moz-range-thumb {
   background: #ffffff;
   cursor: pointer;
 }
-input[type=range]::-ms-track {
+input[type="range"]::-ms-track {
   width: 100%;
   height: 5px;
   cursor: pointer;
@@ -178,19 +199,19 @@ input[type=range]::-ms-track {
   border-width: 16px 0;
   color: transparent;
 }
-input[type=range]::-ms-fill-lower {
+input[type="range"]::-ms-fill-lower {
   background: #ccc;
   border: 0.2px solid #010101;
   border-radius: 2.6px;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
-input[type=range]::-ms-fill-upper {
+input[type="range"]::-ms-fill-upper {
   background: #ccc;
   border: 0.2px solid #010101;
   border-radius: 2.6px;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
-input[type=range]::-ms-thumb {
+input[type="range"]::-ms-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
   height: 10px;
@@ -199,10 +220,10 @@ input[type=range]::-ms-thumb {
   background: #ffffff;
   cursor: pointer;
 }
-input[type=range]:focus::-ms-fill-lower {
+input[type="range"]:focus::-ms-fill-lower {
   background: #ccc;
 }
-input[type=range]:focus::-ms-fill-upper {
+input[type="range"]:focus::-ms-fill-upper {
   background: #ccc;
 }
 //from https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/

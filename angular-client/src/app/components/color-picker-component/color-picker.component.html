@@ -64,7 +64,7 @@
                 </polygon>
                 <polygon points="25,25 25,75 75,75 75,25 25,25" style="fill: url(#grad3);stroke:black;stroke-width:1"
                          (mouseleave)="selectorOnMouseLeave($event)" (mousedown)="slSelectorOnMouseDown($event)"
-                         (mousemove)="slSelector($event)" matTooltip={{tooltip}}></polygon>
+                         (mousemove)="slSelector($event)"></polygon>
                 <polygon points="0,90 00,75 5,85 15,95 25,100 10,100"
                          style="fill: url(#gradP);stroke:black;stroke-width:1"></polygon>
                 <polygon points="100,90 100,75 95,85 85,95 75,100 90,100"
@@ -97,6 +97,9 @@
                       (click)="swapPrimarySecondary()" (mouseover)="onSwapSVGMouseOver()" (mouseup)="onSwapSVGMouseUp()"
                       (mousedown)="onSwapSVGMouseDown()" (mouseleave)="onSwapSVGMouseLeave()"></rect>
             </svg>
+
+            <mat-icon class="info-icon" matTooltip={{tooltipText}} [matTooltipPosition]="tooltipPosition">info
+            </mat-icon>
         </td>
     </tr>
     <tr>
