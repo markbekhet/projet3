@@ -7,68 +7,97 @@
     //width: 100%;
     //border-style: solid;
 }*/
-.drawingTools{
+
+.drawingTools {
     width: auto;
     border-right: thick;
     float: left;
-    padding-bottom: 1vh; 
+    padding-bottom: 1vh;
     margin-left: 0;
-  }
-  
-  .toolsSideBar{
+}
+
+.toolsSideBar {
     width: 4vw;
-    height : auto;
-  }
-  .selected {
+    height: auto;
+}
+
+.selected {
     background: #ff4081;
-  }
-  .notSelected{
-    background:white;
-  }
-  .toolIcon {
-    height: 3vh;
-    width: 3vh;
+}
+
+.notSelected {
+    background: white;
+}
+
+.iconsGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+.toolIcon {
+    height: 50px;
+    width: 50px;
     // alignement des icônes avec les boutons respectifs
-    position:absolute;
-    top: 50%;
-     left:50%;
-    transform: translate(-50%, -50%);
-    filter: invert(100%); // inversion des couleurs afin d'obtenir des icônes blancs
-  }
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%);
+    // filter: invert(100%); // inversion des couleurs afin d'obtenir des icônes blancs
+}
+
+.toolBtn {
+    font-size: 1.5em;
+}
+
+.delete-element-container {
+    display: grid;
+    place-items: center;
+    margin-left: -10px;
+    margin-bottom: 20px;
+
+    .delete-element-button {
+        padding: 0.5rem;
+    }
+}
+
 mat-button-toggle {
-  width: inherit;
-  height: 2em;
-  box-sizing: border-box;
-  align-items: center;
-  flex-direction: row;
-  display: flex;
+    width: inherit;
+    height: 2em;
+    box-sizing: border-box;
+    align-items: center;
+    flex-direction: row;
+    display: flex;
 }
 
 .mat-icon-button {
-  height: 2em;
-  font-size: 16px;
-  align-items: center;
+    height: 2em;
+    font-size: 16px;
+    align-items: center;
 }
 
-.mat-icon-button::ng-deep .mat-button-wrapper>* {
-  vertical-align: baseline;
-  padding-top: 0.2em;
+.mat-icon-button::ng-deep .mat-button-wrapper > * {
+    vertical-align: baseline;
+    padding-top: 0.2em;
 }
 
 .icons {
-  align-items: center;
-  padding: 5px;
+    align-items: center;
+    padding: 5px;
 }
 
 .mat-button-toggle-label {
-  flex: 1 1 100%;
-  box-sizing: border-box;
-  align-items: center;
-  flex-direction: row;
-  display: flex;
+    flex: 1 1 100%;
+    box-sizing: border-box;
+    align-items: center;
+    flex-direction: row;
+    display: flex;
 
-  .mat-button-toggle-label-content {
-      text-align: center;
-      flex: 1 1 100%;
-  }
+    .mat-button-toggle-label-content {
+        text-align: center;
+        flex: 1 1 100%;
+    }
 }

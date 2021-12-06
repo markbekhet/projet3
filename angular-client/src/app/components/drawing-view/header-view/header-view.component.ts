@@ -2,14 +2,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-//import { drawingHeaderItems, FeatureItem } from '@models/FeatureMeta';
+// import { drawingHeaderItems, FeatureItem } from '@models/FeatureMeta';
 import { Canvas } from '@models/CanvasInfo';
 // import { InteractionService } from '@services/interaction-service/interaction.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
 import { GalleryComponent } from '@components/gallery-component/gallery.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
-import { DrawingService, userColorMap } from '@src/app/services/drawing/drawing.service';
+import {
+  DrawingService,
+  userColorMap,
+} from '@src/app/services/drawing/drawing.service';
 import { SocketService } from '@src/app/services/socket/socket.service';
 import { InteractionService } from '@src/app/services/interaction/interaction.service';
 import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
@@ -20,7 +23,7 @@ import { ChatRoomService } from '@src/app/services/chat-room/chat-room.service';
   styleUrls: ['./header-view.component.scss'],
 })
 export class HeaderViewComponent implements OnInit {
-  //menuItems: FeatureItem[];
+  // menuItems: FeatureItem[];
   canvasSub!: Subscription;
   currentCanvas!: Canvas;
 
@@ -30,9 +33,9 @@ export class HeaderViewComponent implements OnInit {
     private drawingService: DrawingService,
     private socketService: SocketService,
     private interactionService: InteractionService,
-    private chatRoomService: ChatRoomService,
+    private chatRoomService: ChatRoomService
   ) {
-    //this.menuItems = drawingHeaderItems;
+    // this.menuItems = drawingHeaderItems;
   }
 
   openNewDrawingForm() {
@@ -61,17 +64,19 @@ export class HeaderViewComponent implements OnInit {
   }
 
   leaveDrawing() {
-    this.interactionService.emitLeaveDrawingSignal()
+    this.interactionService.emitLeaveDrawingSignal();
     this.socketService.leaveDrawing({
       drawingId: this.drawingService.getActiveDrawingID(),
       userId: this.authService.getUserToken(),
     });
-    this.chatRoomService.chatRooms.delete(this.drawingService.drawingName$.value);
+    this.chatRoomService.chatRooms.delete(
+      this.drawingService.drawingName$.value
+    );
     this.interactionService.emitUpdateChatListSignal();
-    this.drawingService.drawingName$.next("");
-    userColorMap.set("#0000FF",undefined);
-    userColorMap.set("#00FF00",undefined);
-    userColorMap.set("#0000FF",undefined);
+    this.drawingService.drawingName$.next('');
+    userColorMap.set('#0000FF', undefined);
+    userColorMap.set('#00FF00', undefined);
+    userColorMap.set('#0000FF', undefined);
   }
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method

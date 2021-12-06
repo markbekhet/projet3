@@ -17,7 +17,7 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 // }
 
 // Paul DB
-export const typeormConfigDevDB: TypeOrmModuleOptions = {
+export const typeormConfigProdDB: TypeOrmModuleOptions = {
     type: 'postgres',
     // host: 'projet3-101.eastus.cloudapp.azure.com',
     host: 'localhost',

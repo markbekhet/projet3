@@ -66,8 +66,10 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
-  constructor(private interactionService: InteractionService, private chatRoomService: ChatRoomService){
-  }
+  constructor(
+    private interactionService: InteractionService,
+    private chatRoomService: ChatRoomService
+  ) {}
   connect(): void {
     this.socket = io(PATH);
   }
@@ -230,5 +232,4 @@ export class SocketService {
     });
     return this.userUpdated$;
   };
-
 }

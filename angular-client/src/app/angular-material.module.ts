@@ -79,4 +79,3 @@ export class AngularMaterialModule {}
 // CommonModule
 // MatButtonToggleModule
 // MatProgressSpinnerModule
-// MatPaginatorModule

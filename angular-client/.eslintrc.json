@@ -46,6 +46,7 @@
             "suffixes": ["Component", "Page", "Dialog"]
           }
         ],
+        // "max-len": ["error", { "code": 110 }],
         "class-methods-use-this": "off",
         "import/prefer-default-export": "off",
         "max-classes-per-file": "off",

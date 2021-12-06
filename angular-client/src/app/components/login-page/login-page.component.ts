@@ -49,7 +49,7 @@ export class LoginPage implements OnInit {
           this.isAuthentified = true;
           setTimeout(() => {
             this.router.navigate(['/home']);
-          }, 150);
+          }, 300);
           form.reset();
         },
         (error) => {

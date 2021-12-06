@@ -1,14 +1,71 @@
-<div class="component-wrapper">
-    <mat-list class="userList">
+<div class="component-grid">
+    <mat-list class="users">
         <h2>Utilisateurs dans le dessin</h2>
+
         <mat-list-item *ngFor="let user of users">
-            <div *ngIf="user.info.id !== authenticatedUserId">
+            <div class="user">
+
                 <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="20" [attr.height]="20">
-                    <rect width="100%" height="100%" [style.fill]="user.color"/>
+                    <rect width="100%" height="100%" [style.fill]="user.color" />
                 </svg>
-                <img matListAvatar [src]="decodeAvatar(user.info.avatar!)" alt="User avatar" class="avatar">
-                <span>{{user.info.pseudo}}</span>
+
+                <img class="user__avatar" matListAvatar [src]="decodeAvatar(user.info.avatar!)" alt="User avatar">
+
+                <span class="user__pseudo">
+                    {{user.info.pseudo}}
+                    <span *ngIf="user.info.id === authenticatedUserId">(vous)</span>
+                </span>
+
+                <span [ngClass]="{
+                    'user__online': user.info.status === 0,
+                    'user__busy': user.info.status === 1,
+                    'user__offline': user.info.status === 2
+                }" matTooltip="{{displayUserOnlineStatus(user.info.status)}}"></span>
             </div>
         </mat-list-item>
     </mat-list>
+
+    <!-- <mat-list-item *ngFor="let user of users">
+                <div class="user" *ngIf="user.id !== authenticatedUserId">
+                    <img *ngIf="user.id !== authenticatedUserId" class="user__avatar" matListAvatar
+                         [src]="decodeAvatar(user.avatar)" alt="User avatar"
+                         matTooltip="Consulter le profil de l'utilisateur" (click)="viewUserProfile(user)" />
+
+                </div>
+    </mat-list-item> -->
+
+    <mat-list class="chatrooms">
+        <h2>Canaux de discussion</h2>
+
+        <div class="chatrooms__list">
+            <mat-chip-list aria-label="Liste des canaux de clavardage">
+
+                <!-- General chatroom -->
+                <mat-chip color="primary" matTooltip="Joindre le canal" (click)="joinChat('General')" selected>
+                    {{'General'}}
+                </mat-chip>
+                <!-- [selectable]="selectable" -->
+
+                <!-- Teams chatrooms -->
+                <mat-chip *ngFor="let room of chatrooms" color="accent" matTooltip="Joindre le canal"
+                          [removable]="removable" (removed)="removeChat(room)" (click)="joinChat(room)" selected>
+                    {{room}}
+                    <button *ngIf="isTeamChannel(room)" mat-icon-button matTooltip="Informations de l'équipe"
+                            (click)="openTeamInformations(room)">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                    <button matChipRemove *ngIf="removable" (click)="leaveTeam(room)">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+
+            </mat-chip-list>
+        </div>
+    </mat-list>
+
+    <div class="chatrooms-selected">
+        <ng-template #chatInsert>
+        </ng-template>
+    </div>
+
 </div>
