@@ -5,7 +5,7 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 export const typeormConfigProdDB: TypeOrmModuleOptions = {
     type: 'postgres',
     host: 'projet3-101.eastus.cloudapp.azure.com',
-    port: 5432,
+    port: 5000,
     username: 'postgres',
     password: '1234',
     database: 'postgres',
