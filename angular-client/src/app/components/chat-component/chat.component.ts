@@ -34,6 +34,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   @Input()
   isExpanded: boolean = true;
 
+  audioReceived = new Audio();
+
   readonly MESSAGE_REGEX: RegExp = new RegExp(/.*\S.*/);
 
   user: User = {
@@ -68,6 +70,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       userId: this.auth.getUserToken(),
       visitedId: this.auth.getUserToken(),
     });
+
+    this.audioReceived.src = '../../../assets/audio/message_received.mp3';
 
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [
@@ -127,6 +131,11 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.messages.unshift(
             this.createShownMessage(messages[messages.length - 1])
           );
+
+          if (messages[messages.length - 1].from !== this.auth.getUserToken()) {
+            this.audioReceived.load();
+            this.audioReceived.play();
+          }
         }
       }
     });

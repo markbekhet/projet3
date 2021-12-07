@@ -20,8 +20,8 @@ import { ChatRoomService } from '../chat-room/chat-room.service';
 // import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
- const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
-//const PATH = 'http://localhost:3000';
+const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
+// const PATH = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root',
@@ -66,10 +66,17 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
+  audioSent = new Audio();
+  // audioReceived = new Audio();
+
   constructor(
     private interactionService: InteractionService,
     private chatRoomService: ChatRoomService
-  ) {}
+  ) {
+    this.audioSent.src = '../../../assets/audio/message_sent.mp3';
+    // this.audioReceived.src = '../../../assets/audio/message_received.mp3';
+  }
+
   connect(): void {
     this.socket = io(PATH);
   }
@@ -92,6 +99,8 @@ export class SocketService {
   public sendMessage(message: ServerMessage) {
     console.log(`chat service sent: ${message.message}`);
     this.socket!.emit('msgToServer', JSON.stringify(message));
+    this.audioSent.load();
+    this.audioSent.play();
   }
 
   public getNewMessage = () => {
@@ -101,6 +110,11 @@ export class SocketService {
       console.log(`chat service received: ${message.message}`);
       // this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
+
+      // if (message.from !== this.authService.getUserToken()) {
+      //   this.audioReceived.load();
+      //   this.audioReceived.play();
+      // }
     });
 
     return this.message$.asObservable();

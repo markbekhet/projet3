@@ -7,13 +7,13 @@ import { UserRegistrationInfo, UserCredentials } from '@common/user';
 import { /* Drawing, */ DrawingInfosForGallery } from '@models/DrawingMeta';
 import { UpdateUserInformation } from '@models/UserMeta';
 import { SocketService } from '@services/socket/socket.service';
+import { TeamInformations } from '@src/app/models/teamsMeta';
 import { DrawingService } from '../drawing/drawing.service';
 import { TeamService } from '../team/team.service';
-import { TeamInformations } from '@src/app/models/teamsMeta';
 import { ChatRoomService } from '../chat-room/chat-room.service';
 
 const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000/';
-//const PATH = 'http://localhost:3000/';
+// const PATH = 'http://localhost:3000/';
 const LOGIN = 'login/';
 const REGISTER = 'register/';
 const PROFILE = 'user/profile/';
@@ -86,13 +86,21 @@ export class AuthService {
       })
       .pipe(
         tap(() => {
-          if(this.drawingService.drawingName$.value !== ""){
-            this.socketService.leaveDrawing({drawingId: this.drawingService.drawingId$.value, userId: this.token$.value})
+          if (this.drawingService.drawingName$.value !== '') {
+            this.socketService.leaveDrawing({
+              drawingId: this.drawingService.drawingId$.value,
+              userId: this.token$.value,
+            });
           }
-          this.teamService.activeTeams.value.forEach((team: TeamInformations)=>{
-            this.socketService.leaveTeam({teamName: team.name, userId: this.token$.value})
-            this.teamService.activeTeams.value.delete(team.name);
-          })
+          this.teamService.activeTeams.value.forEach(
+            (team: TeamInformations) => {
+              this.socketService.leaveTeam({
+                teamName: team.name,
+                userId: this.token$.value,
+              });
+              this.teamService.activeTeams.value.delete(team.name);
+            }
+          );
           this.token$.next('');
           this.userDrawings$.next(this.NULL_DRAWINGS);
           this.socketService.teams$.value.clear();
