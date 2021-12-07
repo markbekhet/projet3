@@ -19,13 +19,14 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 // Paul DB
 export const typeormConfigProdDB: TypeOrmModuleOptions = {
     type: 'postgres',
-    // host: 'projet3-101.eastus.cloudapp.azure.com',
-    host: 'localhost',
-    port: 5432,
-    username: 'admin',
-    password: 'password',
-    database: 'colorimage',
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    host: 'projet3-101.eastus.cloudapp.azure.com',
+    port: 5000,
+    username: 'postgres',
+    password: '1234',
+    database: 'postgres',
+    entities: [
+        __dirname + '/../**/*.entity{.ts,.js}',
+    ],
     synchronize: true,
     uuidExtension: 'pgcrypto',
   };

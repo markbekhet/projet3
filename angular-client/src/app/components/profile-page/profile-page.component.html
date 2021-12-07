@@ -25,7 +25,8 @@
                     <br>
                     <mat-form-field class="old-password-field">
                         <mat-label>Nouveau mot de passe</mat-label>
-                        <input type="password" matInput formControlName="newPassword" />
+                        <input type="password" matInput formControlName="newPassword" matTooltip="Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre
+                        minuscule et un chiffre !" />
                         <mat-error *ngIf="checkError(updateForm, 'newPassword', 'pattern')
 					">Ceci n'est pas un mot de passe valide !</mat-error>
                     </mat-form-field>

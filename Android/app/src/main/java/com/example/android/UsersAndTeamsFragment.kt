@@ -198,7 +198,7 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
         for(user in usersList){
             if(user.id != ClientInfo.userId){
                 val newUserItem = UserItem(this)
-                var color = "#FFFFFFFF"
+                var color = "FFFFFF"
                 if(colorsMap != null){
                     for(aColor in colorsMap!!){
                         if(aColor.value == user.id){
@@ -206,8 +206,8 @@ class UsersAndTeamsFragment(var showTeams:Boolean=true) : Fragment() {
                             break
                         }
                     }
-                    color = "#FF$color"
                 }
+                color = "#FF$color"
                 newUserItem.set(user, color)
                 usersAdapter?.add(newUserItem)
             }
