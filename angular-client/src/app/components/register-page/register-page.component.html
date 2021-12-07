@@ -44,7 +44,8 @@
 
                 <mat-form-field class="password-field">
                     <mat-label>Mot de passe</mat-label>
-                    <input type="password" matInput formControlName="password" required />
+                    <input type="password" matInput formControlName="password" required matTooltip="Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre
+                    minuscule et un chiffre !" />
                     <mat-error *ngIf="checkError('password', 'required')">Un mot de passe est requis !</mat-error>
                     <mat-error *ngIf="checkError('password', 'invalidPassword') && !checkError('password', 'required')">
                         Ceci
