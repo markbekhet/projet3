@@ -1,16 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital@0;1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap");
+
+$dark-blue: #363440;
+
 /*header {
     padding: 20px;
     //background-color: skyblue;
     //border-style: solid;
 }*/
+
 .topToolBar {
-    height: 9vh; //risque d'être changé pour un %
+    height: 9vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .drawing-infos {
+        h1 {
+            display: inline-block;
+            font-family: "PT Serif", serif;
+            // font-weight: 600;
+            color: $dark-blue;
+            text-decoration: underline;
+        }
+
+        span {
+            font-family: 'Quicksand', sans-serif;
+        }
+    }
+
+    .actions > button {
+        opacity: 1;
+        transition: opacity 250ms ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
 }
 
-.topBtn {
-    margin-right: 3px;
-}
-#roots-container{
-    margin-left: 75%;
-    margin-top: 2%;
-}
+// .topBtn {
+//     margin-right: 3px;
+// }
+
+// #roots-container{
+//     margin-left: 75%;
+//     margin-top: 2%;
+// }

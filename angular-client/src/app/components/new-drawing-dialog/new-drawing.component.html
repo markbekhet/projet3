@@ -31,14 +31,15 @@
             </mat-form-field>
 
             <mat-checkbox id="teamAssignationCheckbox" (change)="assignationStatusChange($event)"
-                          *ngIf="currentTeams.length > 0"> Assigner a une equipe </mat-checkbox>
-            <div *ngIf="assignedToTeam">
-                <mat-label for="teamAssignation"> Equipe assignee</mat-label>
-                <mat-select formControlName="teamAssignation" [(value)]="assignedTeam" rquired>
+                          *ngIf="currentTeams.length > 0">Assigner à une équipe</mat-checkbox>
+
+            <mat-form-field class="team-assignation" *ngIf="assignedToTeam">
+                <mat-label for="teamAssignation">Équipe assignée</mat-label>
+                <mat-select formControlName="teamAssignation" [(value)]="assignedTeam" required>
                     <mat-option>--</mat-option>
                     <mat-option *ngFor="let team of currentTeams" [value]="team">{{team.name}}</mat-option>
                 </mat-select>
-            </div>
+            </mat-form-field>
 
             <!--<mat-form-field class="new-drawing-form-input">
                 <mat-label for="canvWidth">Largeur (px)</mat-label>
@@ -52,7 +53,7 @@
                        (keydown)="blockEvent($event)" />
             </mat-form-field>
         -->
-            <mat-form-field class="new-drawing-form-input">
+            <mat-form-field class="new-drawing-form-input color-picker-mat-form-field">
                 <mat-label for="canvColor">Couleur (hex)</mat-label>
                 <input matInput type="text" formControlName="canvColor" [value]="bgColor" (input)="onInput()"
                        (keydown)="blockEvent($event)" />
@@ -67,7 +68,9 @@
                 Valeur hexadécimale invalide !
             </p>
 
-            <app-mini-color-picker [color]="bgColor" (colorToEmit)="updateColor($event)"></app-mini-color-picker>
+            <div class="mini-color-picker__container">
+                <app-mini-color-picker [color]="bgColor" (colorToEmit)="updateColor($event)"></app-mini-color-picker>
+            </div>
 
             <button mat-raised-button color="primary" id="submitButton" type="submit"
                     [disabled]="newDrawingForm.invalid">C'est parti !</button>

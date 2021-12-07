@@ -1,11 +1,14 @@
 <div class="gallery-component">
     <h1>Galerie de dessins</h1>
 
-    <div #galleryStateText class="gallery-state" *ngIf="shownDrawings.length === 0">
-        Oops ! Aucun dessin ne se trouve dans la base de données. Commencez par créer un dessin ! ↗️
+    <!-- #galleryStateText -->
+    <div class="gallery-state" *ngIf="shownDrawings.length === 0">
+        ℹ️ Oops ! Nous n'avons trouvé aucun dessin dans la base de données.<br /><br />Créez un nouveau dessin pour voir
+        votre galerie se remplir ! ✌️
     </div>
 
-    <div #galleryGrid class=" gallery-grid">
+    <!-- #galleryGrid -->
+    <div class=" gallery-grid">
 
         <mat-card *ngFor="let drawing of shownDrawings" class="drawing-card">
             <mat-card-header>
@@ -26,7 +29,7 @@
                 </mat-card-subtitle>
 
                 <mat-card-subtitle>
-                    <span>Date de création</span> : {{ drawing.infos.creationDate }}
+                    <span>Créé le</span> : {{ drawing.infos.creationDate }}
                 </mat-card-subtitle>
 
                 <mat-card-subtitle>
@@ -38,8 +41,7 @@
                  class="placeholder-thumbnail" src="../../../assets/thumbnails/drawing_placeholder.jpg"
                  alt="Image de dessin" /> -->
 
-            <app-thumbnail *ngIf="drawing.infos.visibility !== 1 || isAuthorized(drawing.infos.ownerId!)"
-                           [drawing]="drawing.thumbnail" [svgWidth]="drawing.infos.width"
+            <app-thumbnail [drawing]="drawing.thumbnail" [svgWidth]="drawing.infos.width"
                            [svgHeight]="drawing.infos.height"></app-thumbnail>
 
             <!-- *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0" -->
@@ -66,8 +68,13 @@
             <div class="card-info" *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >= 1">
                 <p class="card-info__text">Ce dessin est en cours de collaboration, vous ne pouvez ni le supprimer ni
                     le modifier pour le moment.<br /><br />Par contre, vous pouvez toujours l'éditer, tant qu'il y a
-                    moins de
-                    4 utilisateurs simultanément sur le dessin.
+                    moins de 4 utilisateurs simultanément sur le dessin.
+                </p>
+            </div>
+
+            <div class="card-info" *ngIf="!isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >= 4">
+                <p class="card-info__text">Vous ne pouvez pas éditer le dessin car le nombre maximal de collaborateurs
+                    simultanés (4) a été atteint. Vous devez attendre qu'une place se libère.
                 </p>
             </div>
 

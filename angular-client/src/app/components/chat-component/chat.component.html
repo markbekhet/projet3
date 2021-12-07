@@ -1,7 +1,9 @@
 <div class="chat">
     <div class="chat__name" (click)="toggleExpansion()">
         {{chatroomName}}
-        <mat-icon>cancel</mat-icon>
+        <div class="chat__name__quit-icon">
+            <mat-icon>cancel</mat-icon>
+        </div>
     </div>
 
     <div class="chat__expanded" [hidden]="!isExpanded">

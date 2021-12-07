@@ -6,8 +6,8 @@
             <mat-list-item *ngFor="let user of users">
                 <div class="user" *ngIf="user.id !== authenticatedUserId">
                     <img class="user__avatar" *ngIf="user.id !== authenticatedUserId" matListAvatar
-                         [src]="decodeAvatar(user.avatar)" alt="User avatar"
-                         matTooltip="Consulter le profil de l'utilisateur" (click)="viewUserProfile(user)" />
+                         [src]="decodeAvatar(user.avatar)" alt="User avatar" matTooltip="Consulter le profil"
+                         (click)="viewUserProfile(user)" />
 
                     <span class="user__pseudo">{{user.pseudo}}</span>
 
@@ -27,12 +27,20 @@
         <h2>Équipes de collaboration</h2>
 
         <div class="teams__list">
-            <mat-list-item *ngFor="let team of teams">
-                <span [matTooltip]="team.bio!">{{team.name}}</span>
-                <button (click)="joinTeam(team)">Joindre</button>
-                <button *ngIf="authenticatedUserId === team.ownerId" (click)="deleteTeam(team)">Supprimer</button>
+            <mat-chip-list class="teams__list__chiplist" aria-label="Liste des équipes de collaboration">
 
-            </mat-list-item>
+                <mat-chip *ngFor="let team of teams" color="accent" matTooltip="Joindre l'équipe"
+                          [removable]="removable" (removed)="removeTeam(team)" (click)="joinTeam(team)" selected>
+                    {{team.name}}
+
+                    <button *ngIf="authenticatedUserId === team.ownerId && removable" class="chip-delete-icon"
+                            matChipRemove matTooltip="Supprimer l'équipe" [matTooltipPosition]="abovePosition"
+                            (click)="deleteTeam(team)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-chip>
+
+            </mat-chip-list>
         </div>
 
     </mat-list>
@@ -47,7 +55,6 @@
                 <mat-chip color="primary" matTooltip="Joindre le canal" (click)="joinChat('General')" selected>
                     {{'General'}}
                 </mat-chip>
-                <!-- [selectable]="selectable" -->
 
                 <!-- Teams chatrooms -->
                 <mat-chip *ngFor="let room of chatrooms" color="accent" matTooltip="Joindre le canal"
@@ -55,11 +62,13 @@
                     {{room}}
 
                     <button class="chip-info-icon" *ngIf="isTeamChannel(room)" mat-icon-button
+                            matTooltip="Informations de l'équipe" [matTooltipPosition]="abovePosition"
                             (click)="openTeamInformations(room)">
                         <mat-icon>info</mat-icon>
                     </button>
 
-                    <button class="chip-delete-icon" matChipRemove *ngIf="removable" (click)="leaveTeam(room)">
+                    <button class="chip-delete-icon" matChipRemove *ngIf="removable" matTooltip="Quitter l'équipe"
+                            [matTooltipPosition]="abovePosition" (click)="leaveTeam(room)">
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-chip>

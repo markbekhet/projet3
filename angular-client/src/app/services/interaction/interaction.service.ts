@@ -58,7 +58,9 @@ export class InteractionService {
   $updateGallerySignal = this.updateGallerySignal.asObservable();
 
   updateChatHistorySignal = new Subject<boolean>();
-  $updateChatHistorySignal = this.updateChatHistorySignal.asObservable()
+  $updateChatHistorySignal = this.updateChatHistorySignal.asObservable();
+
+  snackbarAlreadyOpened = new BehaviorSubject<boolean>(false);
 
   emitDrawingContent(content: DrawingContent) {
     this.drawing.next(content);
@@ -111,7 +113,12 @@ export class InteractionService {
   emitUpdateChatListSignal() {
     this.updateChatListSignal.next(true);
   }
-  emitUpdateChatHistory(){
+
+  emitUpdateChatHistory() {
     this.updateChatHistorySignal.next(true);
+  }
+
+  emitSnackbarAlreadyOpened() {
+    this.snackbarAlreadyOpened.next(true);
   }
 }

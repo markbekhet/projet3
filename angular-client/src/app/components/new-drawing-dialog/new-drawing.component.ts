@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-//import { Router } from '@angular/router';
 
 import { Drawing, JoinDrawing } from '@models/DrawingMeta';
 import { Team } from '@models/teamsMeta';
@@ -144,6 +143,13 @@ export class NewDrawingComponent implements OnInit {
   onSubmit() {
     const VALUES = this.newDrawingForm.value;
 
+    if (VALUES.drawingPassword === '' && VALUES.drawingVisibility === 1) {
+      const errorMessage =
+        'Un mot de passe est requis si vous choisissez le mode protégé.';
+      this.errorDialog.open(ErrorDialogComponent, { data: errorMessage });
+      return;
+    }
+
     if (VALUES.drawingPassword === '') {
       VALUES.drawingPassword = null;
     }
@@ -173,9 +179,8 @@ export class NewDrawingComponent implements OnInit {
         }
         console.log(this.assignedTeam!.id);
       }
-      this.drawingService
-        .createDrawing(this.newDrawing)
-        .subscribe((drawingIdFromServer: number) => {
+      this.drawingService.createDrawing(this.newDrawing).subscribe(
+        (drawingIdFromServer: number) => {
           console.log(drawingIdFromServer);
           const joinDrawing: JoinDrawing = {
             drawingId: drawingIdFromServer,
@@ -185,17 +190,20 @@ export class NewDrawingComponent implements OnInit {
           this.socketService.sendJoinDrawingRequest(joinDrawing);
           this.closeModalForm();
           this.interactionService.emitWipeSignal();
-          //this.router.navigate(['/draw']);
+          // this.router.navigate(['/draw']);
 
           const LOAD_TIME = 15;
           setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
           }, LOAD_TIME);
         },
-        (error)=>{
-          const errorMessage = JSON.parse((error as HttpErrorResponse).error).message;
-          this.errorDialog.open(ErrorDialogComponent, {data: errorMessage});
-        });
+        (error) => {
+          const errorMessage = JSON.parse(
+            (error as HttpErrorResponse).error
+          ).message;
+          this.errorDialog.open(ErrorDialogComponent, { data: errorMessage });
+        }
+      );
     } catch (err: any) {
       this.showPasswordRequired = true;
       console.error(err.message);
