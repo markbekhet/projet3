@@ -109,6 +109,7 @@ export class LandingPage implements OnInit, AfterViewInit {
 
   disconnect() {
     this.authService.disconnect().subscribe(() => {
+      this.chatRoomService.refs.clear();
       this.router.navigate(['/login']);
     });
   }

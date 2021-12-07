@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -144,6 +145,10 @@ export class GalleryComponent implements OnInit, AfterViewInit {
         );
         this.interactionService.emitUpdateChatListSignal();
         this.closeModalForm();
+        for (const chatroom of this.chatRoomService.refs) {
+          chatroom[1].destroy();
+        }
+        this.chatRoomService.refs.clear();
         this.router.navigate(['/draw']);
       });
 

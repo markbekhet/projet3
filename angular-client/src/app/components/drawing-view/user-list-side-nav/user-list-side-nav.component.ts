@@ -13,8 +13,6 @@ import {
 } from '@angular/core';
 
 import { Status, User } from '@models/UserMeta';
-import { LeaveTeam } from '@models/joinTeam';
-import { Team } from '@models/teamsMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
 import { AvatarService } from '@services/avatar/avatar.service';
@@ -26,6 +24,8 @@ import { TeamService } from '@services/team/team.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 
 import { ChatComponent } from '@components/chat-component/chat.component';
+import { TooltipPosition } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TeamMembersListComponent } from '../../user-team-list/team-members-list/team-members-list.component';
 
 @Component({
@@ -54,11 +54,13 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
 
   chatComponentFactory: ComponentFactory<ChatComponent>;
 
+  abovePosition: TooltipPosition = 'above';
+
   constructor(
     private authService: AuthService,
     private avatarService: AvatarService,
     private chatRoomService: ChatRoomService,
-
+    private snackbar: MatSnackBar,
     private componentFactoryResolver: ComponentFactoryResolver,
     private interactionService: InteractionService,
     private socketService: SocketService,
@@ -67,8 +69,8 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
     this.users = [];
-    for(let room of this.chatRoomService.chatRooms.keys()){
-      if(room!== "General"){
+    for (const room of this.chatRoomService.chatRooms.keys()) {
+      if (room !== 'General') {
         this.chatrooms.push(room);
       }
     }
@@ -122,53 +124,42 @@ export class UserListSideNavComponent implements OnInit, AfterViewInit {
     });
   }
 
-  leaveTeam(teamName: string) {
-    const leaveTeamBodyRequest: LeaveTeam = {
-      teamName,
-      userId: this.authenticatedUserId,
-    };
-    this.socketService.leaveTeam(leaveTeamBodyRequest);
-
-    const index = this.chatrooms.indexOf(teamName);
-    this.chatrooms.splice(index, 1);
-    this.joinedChatrooms.set(teamName, false);
-
-    const activeTeam = this.teamService.activeTeams.value.get(teamName)!;
-    const team: Team = {
-      id: activeTeam.id,
-      name: activeTeam.name,
-      visibility: activeTeam.visibility,
-      bio: activeTeam.bio,
-      ownerId: activeTeam.ownerId,
-    };
-    this.teams.push(team);
-
-    this.teamService.leftTeamId.next(
-      this.teamService.activeTeams.value.get(teamName)!.id
-    );
-    this.teamService.activeTeams.value.delete(teamName);
-    this.chatRoomService.chatRooms.delete(teamName);
-    this.interactionService.emitUpdateGallerySignal();
-  }
-
   joinChat(roomName: string) {
     console.log(roomName);
     // Si la chatbox n'est pas déjà ouverte
+    // if (
+    //   this.joinedChatrooms.get(roomName) === false ||
+    //   this.joinedChatrooms.get(roomName) === undefined
+    // ) {
+
     if (
-      this.joinedChatrooms.get(roomName) === false ||
-      this.joinedChatrooms.get(roomName) === undefined
+      this.chatRoomService.refs.get(roomName) === undefined &&
+      this.chatRoomService.refs.size < 3
     ) {
       this.interactionService.chatRoomName.next(roomName);
-      const chatComponent = <ChatComponent>(
-        this.chatInsert.createComponent(this.chatComponentFactory).instance
+      const componentRef = this.chatInsert.createComponent(
+        this.chatComponentFactory
       );
+
+      this.chatRoomService.refs.set(roomName, componentRef);
+
+      const chatComponent = <ChatComponent>componentRef.instance;
       chatComponent.chatroomName = roomName;
       chatComponent.isExpanded = true;
-      this.joinedChatrooms.set(roomName, true);
-    }
-
-    // Sinon si la chatbox est déjà ouverte
-    else {
+    } else if (this.chatRoomService.refs.size >= 3) {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 4000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open(
+        'Vous ne pouvez pas ouvrir plus de 3 canaux à la fois.',
+        undefined,
+        CONFIG
+      );
+    } else {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 2000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open('Ce canal est déjà ouvert.', undefined, CONFIG);
     }
   }
 

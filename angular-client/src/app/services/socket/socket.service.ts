@@ -74,7 +74,6 @@ export class SocketService {
     private chatRoomService: ChatRoomService
   ) {
     this.audioSent.src = '../../../assets/audio/message_sent.mp3';
-    // this.audioReceived.src = '../../../assets/audio/message_received.mp3';
   }
 
   connect(): void {
@@ -110,11 +109,6 @@ export class SocketService {
       console.log(`chat service received: ${message.message}`);
       // this.chatRoomService.addChatHistory(message);
       this.message$.next(message);
-
-      // if (message.from !== this.authService.getUserToken()) {
-      //   this.audioReceived.load();
-      //   this.audioReceived.play();
-      // }
     });
 
     return this.message$.asObservable();

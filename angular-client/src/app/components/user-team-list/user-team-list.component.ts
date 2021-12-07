@@ -327,7 +327,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       const chatComponent = <ChatComponent>componentRef.instance;
       chatComponent.chatroomName = roomName;
       chatComponent.isExpanded = true;
-    } else {
+    } else if (this.chatRoomService.refs.size >= 3) {
       const CONFIG = new MatSnackBarConfig();
       const DURATION = 4000;
       CONFIG.duration = DURATION;
@@ -336,14 +336,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         undefined,
         CONFIG
       );
+    } else {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 2000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open('Ce canal est déjà ouvert.', undefined, CONFIG);
     }
-
-    // this.joinedChatrooms.set(roomName, true);
-    // }
-
-    // Sinon si la chatbox est déjà ouverte
-    // else {
-    // }
   }
 
   removeChat(chatroom: string) {
