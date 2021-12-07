@@ -96,8 +96,21 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.initMessageList()
 
     this.interactionService.$updateChatHistorySignal.subscribe((sig)=>{
-      if(sig)
-        this.initMessageList();
+      if(sig){
+        let messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!
+        let newShownMessage = this.createShownMessage(messages[messages.length-1]);
+        let exists = false
+        this.messages.forEach((shownMessage)=>{
+          if(shownMessage.date === newShownMessage.date &&
+             shownMessage.message === shownMessage.message &&
+              shownMessage.userInfo.id === newShownMessage.userInfo.id){
+                exists = true;
+              }
+        })
+        if(!exists){
+          this.messages.unshift(this.createShownMessage(messages[messages.length-1]))
+        }
+      }
     })
 
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
