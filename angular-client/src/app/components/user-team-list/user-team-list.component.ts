@@ -9,6 +9,7 @@ import {
   Component,
   ComponentFactory,
   ComponentFactoryResolver,
+  // ComponentRef,
   // ElementRef,
   EventEmitter,
   Inject,
@@ -17,7 +18,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-//import { HttpErrorResponse } from '@angular/common/http';
+// import { HttpErrorResponse } from '@angular/common/http';
 
 import {
   MatBottomSheet,
@@ -45,8 +46,9 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { ChatComponent } from '@components/chat-component/chat.component';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TeamMembersListComponent } from './team-members-list/team-members-list.component';
-//import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
+// import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
 
 @Component({
   selector: 'app-user-team-list',
@@ -61,6 +63,8 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   chatrooms: string[] = [];
 
   removable: boolean = true;
+  // joinedChatrooms = new Map<name, Chatroom>();
+
   joinedChatrooms = new Map<string, boolean>();
 
   @Output()
@@ -75,15 +79,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
   abovePosition: TooltipPosition = 'above';
 
-  // @ViewChild('tooltipJoinChatroom', { static: false })
-  // tooltipJoinChatroom!: MatTooltip;
-
-  // @ViewChild('tooltipTeamInfos', { static: false })
-  // tooltipTeamInfos!: MatTooltip;
-
-  // @ViewChild('tooltipLeaveTeam', { static: false })
-  // tooltipLeaveTeam!: MatTooltip;
-
   constructor(
     private authService: AuthService,
     private avatarService: AvatarService,
@@ -93,17 +88,18 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     private errorDialog: MatDialog,
     private interactionService: InteractionService,
     private socketService: SocketService,
+    private snackbar: MatSnackBar,
     private teamService: TeamService,
     private windowService: ModalWindowService
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
     this.chatComponentFactory =
       this.componentFactoryResolver.resolveComponentFactory(ChatComponent);
-      for(let room of this.chatRoomService.chatRooms.keys()){
-        if(room!== "General"){
-          this.chatrooms.push(room);
-        }
+    for (const room of this.chatRoomService.chatRooms.keys()) {
+      if (room !== 'General') {
+        this.chatrooms.push(room);
       }
+    }
   }
 
   ngOnInit(): void {
@@ -115,8 +111,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
     this.socketService.getAllTeams().subscribe((teamsMap) => {
       teamsMap.forEach((team) => {
-        if(!this.chatrooms.includes(team.name))
-          this.teams.push(team);
+        if (!this.chatrooms.includes(team.name)) this.teams.push(team);
       });
     });
   }
@@ -265,12 +260,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         // this.teams.splice(this.teams.indexOf(team), 1)
       },
       (error) => {
-        /*const errorCode: HttpErrorResponse = JSON.parse(
+        /* const errorCode: HttpErrorResponse = JSON.parse(
           (error ).error
-        ).message;*/
-        //console.log(errorCode)
-        console.log(error.error.message)
-        this.errorDialog.open(ErrorDialogComponent, { data: error.error.message });
+        ).message; */
+        // console.log(errorCode)
+        console.log(error.error.message);
+        this.errorDialog.open(ErrorDialogComponent, {
+          data: error.error.message,
+        });
       }
     );
   }
@@ -282,9 +279,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
 
-    //const index = this.chatrooms.indexOf(teamName);
-    //this.chatrooms.splice(index, 1);
+    // const index = this.chatrooms.indexOf(teamName);
+    // this.chatrooms.splice(index, 1);
     this.joinedChatrooms.set(teamName, false);
+
+    this.chatRoomService.refs.get(teamName)!.destroy();
+    this.chatRoomService.refs.delete(teamName);
 
     const activeTeam = this.teamService.activeTeams.value.get(teamName)!;
     const team: Team = {
@@ -301,29 +301,49 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     );
     this.teamService.activeTeams.value.delete(teamName);
     this.chatRoomService.chatRooms.delete(teamName);
-    this.interactionService.emitUpdateChatListSignal()
+    this.interactionService.emitUpdateChatListSignal();
     this.interactionService.emitUpdateGallerySignal();
   }
 
   joinChat(roomName: string) {
     console.log(roomName);
     // Si la chatbox n'est pas déjà ouverte
+    // if (
+    //   this.joinedChatrooms.get(roomName) === false ||
+    //   this.joinedChatrooms.get(roomName) === undefined
+    // ) {
+
     if (
-      this.joinedChatrooms.get(roomName) === false ||
-      this.joinedChatrooms.get(roomName) === undefined
+      this.chatRoomService.refs.get(roomName) === undefined &&
+      this.chatRoomService.refs.size < 3
     ) {
       this.interactionService.chatRoomName.next(roomName);
-      const chatComponent = <ChatComponent>(
-        this.chatInsert.createComponent(this.chatComponentFactory).instance
+      const componentRef = this.chatInsert.createComponent(
+        this.chatComponentFactory
       );
+
+      this.chatRoomService.refs.set(roomName, componentRef);
+
+      const chatComponent = <ChatComponent>componentRef.instance;
       chatComponent.chatroomName = roomName;
       chatComponent.isExpanded = true;
-      this.joinedChatrooms.set(roomName, true);
+    } else {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 4000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open(
+        'Vous ne pouvez pas ouvrir plus de 3 canaux à la fois.',
+        undefined,
+        CONFIG
+      );
     }
 
+    // this.joinedChatrooms.set(roomName, true);
+    // }
+
     // Sinon si la chatbox est déjà ouverte
-    else {
-    }
+    // else {
+    // }
   }
 
   removeChat(chatroom: string) {
@@ -354,16 +374,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         return '';
     }
   }
-
-  // turnOffTooltipsExceptTeamInfos() {
-  //   this.tooltipJoinChatroom.hide();
-  //   this.tooltipTeamInfos.show();
-  // }
-
-  // turnOffTooltipsExceptLeaveTeam() {
-  //   this.tooltipJoinChatroom.hide();
-  //   this.tooltipLeaveTeam.show();
-  // }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);

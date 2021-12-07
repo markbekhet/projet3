@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-alert */
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -67,6 +68,15 @@ export class HeaderViewComponent implements OnInit {
     );
     this.interactionService.emitUpdateChatListSignal();
     this.drawingService.drawingName$.next('');
+
+    for (const chatroom of this.chatRoomService.refs) {
+      chatroom[1].destroy();
+      this.chatRoomService.refs.delete(chatroom[0]);
+    }
+
+    // this.chatRoomService.refs.get(chatroomName)!.destroy();
+    //     this.chatRoomService.refs.delete(chatroomName);
+
     userColorMap.set('#0000FF', undefined);
     userColorMap.set('#00FF00', undefined);
     userColorMap.set('#0000FF', undefined);

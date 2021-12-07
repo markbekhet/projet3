@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable no-console */
 import {
   Component,
@@ -8,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ChatHistory,ServerMessage } from '@models/MessageMeta';
+import { ChatHistory, ServerMessage } from '@models/MessageMeta';
 import { Status, User } from '@models/UserMeta';
 
 import { AuthService } from '@services/authentication/auth.service';
@@ -27,7 +28,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   @Input()
   chatroomName!: string;
 
-  messages: {date: string, message: string, userInfo: User}[] = [];
+  messages: { date: string; message: string; userInfo: User }[] = [];
   messageForm!: FormGroup;
 
   @Input()
@@ -76,42 +77,59 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  initMessageList(){
+  initMessageList() {
     this.messages = [];
-    let channelMessageHistories = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
-    channelMessageHistories.forEach((chatHistory: ChatHistory)=>{
+    const channelMessageHistories = this.chatRoomService.getChatHistoryList(
+      this.chatroomName
+    )!;
+    channelMessageHistories.forEach((chatHistory: ChatHistory) => {
       this.messages.unshift(this.createShownMessage(chatHistory));
-    })
+    });
   }
 
-  createShownMessage(chatHistory: ChatHistory):{date: string, message: string, userInfo: User}{
-    let user = this.socketService.users$.value.get(chatHistory.from!)!;
-    let newShownMessage:{date: string, message: string, userInfo: User} = 
-          {date: chatHistory.date!, message: chatHistory.message!, userInfo: user};
+  createShownMessage(chatHistory: ChatHistory): {
+    date: string;
+    message: string;
+    userInfo: User;
+  } {
+    const user = this.socketService.users$.value.get(chatHistory.from!)!;
+    const newShownMessage: { date: string; message: string; userInfo: User } = {
+      date: chatHistory.date!,
+      message: chatHistory.message!,
+      userInfo: user,
+    };
     return newShownMessage;
   }
 
   ngOnInit(): void {
-    //this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
-    this.initMessageList()
+    // this.messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!;
+    this.initMessageList();
 
-    this.interactionService.$updateChatHistorySignal.subscribe((sig)=>{
-      if(sig){
-        let messages = this.chatRoomService.getChatHistoryList(this.chatroomName)!
-        let newShownMessage = this.createShownMessage(messages[messages.length-1]);
-        let exists = false
-        this.messages.forEach((shownMessage)=>{
-          if(shownMessage.date === newShownMessage.date &&
-             shownMessage.message === shownMessage.message &&
-              shownMessage.userInfo.id === newShownMessage.userInfo.id){
-                exists = true;
-              }
-        })
-        if(!exists){
-          this.messages.unshift(this.createShownMessage(messages[messages.length-1]))
+    this.interactionService.$updateChatHistorySignal.subscribe((sig) => {
+      if (sig) {
+        const messages = this.chatRoomService.getChatHistoryList(
+          this.chatroomName
+        )!;
+        const newShownMessage = this.createShownMessage(
+          messages[messages.length - 1]
+        );
+        let exists = false;
+        this.messages.forEach((shownMessage) => {
+          if (
+            shownMessage.date === newShownMessage.date &&
+            shownMessage.message === shownMessage.message &&
+            shownMessage.userInfo.id === newShownMessage.userInfo.id
+          ) {
+            exists = true;
+          }
+        });
+        if (!exists) {
+          this.messages.unshift(
+            this.createShownMessage(messages[messages.length - 1])
+          );
         }
       }
-    })
+    });
 
     this.socketService.receiveUserProfile().subscribe((profile: User) => {
       this.user = profile;
@@ -153,6 +171,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messages = [];
     // this.socketService.disconnect();
     // this.disconnect();
+  }
+
+  removeComponent(chatroomName: string) {
+    if (this.chatRoomService.refs.has(chatroomName)) {
+      try {
+        this.chatRoomService.refs.get(chatroomName)!.destroy();
+        this.chatRoomService.refs.delete(chatroomName);
+      } catch (e) {}
+    }
   }
 
   // disconnect(): void {
