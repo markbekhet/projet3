@@ -163,8 +163,8 @@ export class DatabaseService {
             throw new HttpException("le nouveau mot de passe ne peut pas être similaire à l'ancien mot de passe", HttpStatus.BAD_REQUEST)
         }
         if(!this.IsPasswordValide(newPassword)){
-            throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères, au moins une lettre majuscule, au moins une lettre minuscule,
-             un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
+            throw new HttpException(`le nouveau mot de passe est faible, un mot de passe doit avoir une longueur 8 caractères 
+            et ça doit être composé d'au moins: une lettre majuscule, une lettre minuscule, un chiffre et un caractère spéciale`, HttpStatus.BAD_REQUEST);
         }
 
         else{
@@ -391,12 +391,17 @@ export class DatabaseService {
             if(dto.newVisibility === DrawingVisibility.PROTECTED)
                 hashedPassword = await bcrypt.hash(dto.password, 10)
             await this.drawingRepo.update(dto.drawingId, {visibility: dto.newVisibility, password: hashedPassword});
+            if(editionHistories !== undefined){
+                for(let editionHistory of editionHistories){
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingVisibility: dto.newVisibility});
+                }
+            }
         }
         else if(updateName && updateVisibility){
             await this.chatRoomRepo.update(chatRoom.id, {name: dto.newName})
             if(editionHistories!== undefined){
                 for(let editionHistory of editionHistories){
-                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName});
+                    await this.drawingEditionRepo.update(editionHistory.id, {drawingName: dto.newName, drawingVisibility: dto.newVisibility});
                 }
             }
             let hashedPassword = null;
@@ -425,7 +430,7 @@ export class DatabaseService {
         }
         if(dto.visibility === TeamVisibility.PROTECTED){
             if(dto.password=== undefined || dto.password === null){
-                throw new HttpException("Le mot de passe est requis pour créer une équipe protégée", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Le mot de passe est requis pour créer une équipe de collaboration protégée", HttpStatus.BAD_REQUEST);
             }
         }
         else if(dto.password === undefined && dto.visibility === TeamVisibility.PUBLIC){

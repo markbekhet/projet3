@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.android.chat.*
@@ -36,8 +38,18 @@ class LandingPage : AppCompatActivity(){
         val clientService = ClientService()
         //Initialize chat socket
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_landing_page)
+        val customActionBar = supportActionBar!!.customView
+        val profileButton: ImageView = customActionBar
+            .findViewById(R.id.profileButton)
+        val createDrawingHomeButton: ImageView = customActionBar
+            .findViewById(R.id.createDrawingHomeButton)
+        val createTeamHomeButton: ImageView = customActionBar
+            .findViewById(R.id.createTeamHomeButton)
+        val showChat: ImageView = customActionBar.findViewById(R.id.showChat)
+        val disconnect: ImageView = customActionBar.findViewById(R.id.disconnect)
 
         val manager = supportFragmentManager
         val chatDialog = ChatDialog(this, "General")
@@ -94,6 +106,8 @@ class LandingPage : AppCompatActivity(){
                 val data = args[0] as String
                 ClientInfo.usersList = Gson().fromJson(data, UsersArrayList::class.java)
                 usersAndTeamsFragment.setUsersList(ClientInfo.usersList.userList)
+                //In case the names are received after receiving the gallery
+                galleryDraws.set(ClientInfo.gallery.drawingList)
             }
         }
 

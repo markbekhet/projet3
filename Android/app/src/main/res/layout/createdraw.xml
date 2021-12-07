@@ -13,17 +13,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/chatCreateDrawing"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:src="@drawable/chat"
-            android:scaleType="fitXY"
-            android:visibility="visible"
-            android:textColor="@color/main_color"
-            app:backgroundTint="@color/white"
-            android:tooltipText="@string/chat"/>
         <TextView
             android:id="@+id/nom_app"
             android:layout_width="wrap_content"
@@ -69,20 +58,18 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="propriétaire"
-                android:textSize="15sp"/>
+                android:textSize="15sp"
+                android:layout_marginBottom="10dp"/>
             <Spinner
                 android:id="@+id/ownerOptions"
                 android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"/>
             <Spinner
                 android:id="@+id/sp_option"
                 android:layout_width="200dp"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/result"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"/>
 
             <EditText
                 android:id="@+id/drawingPassword"

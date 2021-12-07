@@ -13,6 +13,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.Surface
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
@@ -48,8 +49,10 @@ class CameraActivity : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.ic_launcher_round)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        supportActionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        supportActionBar!!.setDisplayShowCustomEnabled(true)
+        supportActionBar!!.setCustomView(R.layout.action_bar_non_message_pages)
+
         try{
             request = intent.extras!!.getString("request")
         }
