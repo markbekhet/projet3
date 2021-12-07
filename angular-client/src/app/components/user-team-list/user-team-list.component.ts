@@ -269,8 +269,8 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
 
-    const index = this.chatrooms.indexOf(teamName);
-    this.chatrooms.splice(index, 1);
+    //const index = this.chatrooms.indexOf(teamName);
+    //this.chatrooms.splice(index, 1);
     this.joinedChatrooms.set(teamName, false);
 
     const activeTeam = this.teamService.activeTeams.value.get(teamName)!;
@@ -288,6 +288,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     );
     this.teamService.activeTeams.value.delete(teamName);
     this.chatRoomService.chatRooms.delete(teamName);
+    this.interactionService.emitUpdateChatListSignal()
     this.interactionService.emitUpdateGallerySignal();
   }
 
