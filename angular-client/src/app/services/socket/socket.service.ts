@@ -73,7 +73,7 @@ export class SocketService {
     private interactionService: InteractionService,
     private chatRoomService: ChatRoomService
   ) {
-    this.audioSent.src = '../../../assets/audio/message_sent.mp3';
+    this.audioSent.src = './assets/audio/message_sent.mp3';
   }
 
   connect(): void {

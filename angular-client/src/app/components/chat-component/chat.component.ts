@@ -71,7 +71,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       visitedId: this.auth.getUserToken(),
     });
 
-    this.audioReceived.src = '../../../assets/audio/message_received.mp3';
+    this.audioReceived.src = './assets/audio/message_received.mp3';
 
     this.messageForm = this.formBuilder.group({
       message: formBuilder.control('', [
