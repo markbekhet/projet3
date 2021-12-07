@@ -183,7 +183,6 @@ class LandingPage : AppCompatActivity(){
                     // This must be the only place where the add is called in order
                         // for the message to be unique in the array list
                     ChatRooms.chats[roomName]!!.add(messageFromServer)
-                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
                     if(messageFromServer.from != ClientInfo.userId){
                         var username = ""
                         for(user in ClientInfo.usersList.userList){
@@ -202,6 +201,7 @@ class LandingPage : AppCompatActivity(){
                             this
                         )
                     }
+                    chatDialog.chatRoomsFragmentMap[roomName]!!.setMessage(ChatRooms.chats[roomName]!!)
                 }
                 catch(e: Exception){}
             }
