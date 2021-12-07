@@ -25,6 +25,12 @@
     cursor: pointer;
     z-index: 1;
 
+    mat-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
     &:hover {
       opacity: 0.8;
       // background-color: rgba(#3fb0ab, 0.8);
@@ -63,31 +69,30 @@
         border-radius: 20px;
         word-break: break-all;
 
-        // p {
-        //   margin: 0;
-        // }
-
         .message {
           margin: 1.5em 0;
         }
-
         .username {
           position: absolute;
           top: 0;
-          left: 5px;
+          left: 0.5em;
           font-style: italic;
+          font-size: 0.9em;
+          & > span {
+            font-style: normal;
+          }
         }
-
         .date {
           position: absolute;
           bottom: 0;
           right: 5px;
+          font-style: italic;
           font-size: 0.8em;
         }
       }
     }
 
-    &__content {
+    &__input {
       background-color: white;
       // width: inherit;
       .form-container {
@@ -96,7 +101,7 @@
         justify-content: space-between;
         position: absolute;
         bottom: 0;
-        box-shadow: 0 -3px 6px white;
+        box-shadow: 0 -5px 10px white;
         input {
           width: 100%;
         }

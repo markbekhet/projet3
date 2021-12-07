@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import { Injectable } from '@angular/core';
+import { ComponentRef, Injectable } from '@angular/core';
 import { ChatHistory, ClientMessage } from '@models/MessageMeta';
+import { ChatComponent } from '@src/app/components/chat-component/chat.component';
 // import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -8,6 +9,8 @@ import { ChatHistory, ClientMessage } from '@models/MessageMeta';
 })
 export class ChatRoomService {
   chatRooms = new Map<string, ChatHistory[]>();
+
+  refs = new Map<string, ComponentRef<ChatComponent>>();
 
   addChatRoom(roomName: string, chatHistories: ChatHistory[]) {
     const temp: ChatHistory[] = [];
@@ -20,7 +23,7 @@ export class ChatRoomService {
 
   addChatHistory(message: ClientMessage) {
     console.log('here adding history');
-    let chatHistories = this.chatRooms.get(message.roomName);
+    const chatHistories = this.chatRooms.get(message.roomName);
     if (chatHistories !== undefined) {
       const newChatHistory: ChatHistory = {
         from: message.from,

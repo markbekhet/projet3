@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap");
+
 /*:host {
     padding:20px;
     //background-color: yellow;
@@ -9,7 +11,14 @@
 label,
 p,
 mat-radio-button {
-    color: lightgray;
+    color: whitesmoke;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 500;
+}
+
+div {
+    margin-top: 0.5em;
+    margin-left: 0.5em;
 }
 
 p {

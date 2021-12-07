@@ -1,6 +1,3 @@
-
-
-
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
@@ -79,8 +76,8 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
     this.currentToolName = PENCIL_COMP_TOOL_NAME;
     console.log(this.currentToolName);
     this.getDrawingId();
-    this.activeUsers = []
-    //this.drawingService
+    this.activeUsers = [];
+    // this.drawingService
   }
 
   getUserId() {
@@ -101,7 +98,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
 
   initDrawing() {
     this.doneDrawing.nativeElement.innerHTML = '';
-    this.toolsList = new Map()
+    this.toolsList = new Map();
     const drawingInformations =
       this.interactionService.drawingInformations.value;
     this.backColor = `#${drawingInformations.bgColor!}`;
@@ -153,7 +150,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas,
+          this.canvas
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === RECT_COMP_TOOL_NAME.valueOf()) {
@@ -163,7 +160,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas,
+          this.canvas
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === ELLIPSE_COMP_TOOL_NAME.valueOf()) {
@@ -173,7 +170,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.socketService,
           this.userId,
           this.renderer,
-          this.canvas,
+          this.canvas
         );
         this.currentTool.drawingId = this.drawingId;
       } else if (this.currentToolName === SELECT_COMP_TOOL_NAME) {
@@ -186,7 +183,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.canvas,
           this.interactionService,
           this.drawingId,
-          this.userId,
+          this.userId
         );
       }
       this.currentTool!.onMouseDown(e);
@@ -265,10 +262,9 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-
-    this.interactionService.$leaveDrawingSignal.subscribe((sig)=>{
-      if(sig && this.currentTool!== undefined) this.currentTool.unselect();
-    })
+    this.interactionService.$leaveDrawingSignal.subscribe((sig) => {
+      if (sig && this.currentTool !== undefined) this.currentTool.unselect();
+    });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.interactionService.$wipeDrawing.subscribe((signal) => {
       this.doneDrawing.nativeElement.innerHTML = '';
@@ -347,7 +343,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
           this.toolsList.delete(drawingContent.id);
           if (this.currentTool instanceof Selection) {
             console.log('here deleting');
-            (this.currentTool as Selection).toolsArray = this.toolsList
+            (this.currentTool as Selection).toolsArray = this.toolsList;
           }
         }
       } else {
@@ -361,7 +357,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.socketService,
                 drawingContent.userId!,
                 this.renderer,
-                this.canvas,
+                this.canvas
               );
               break;
 
@@ -373,7 +369,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.socketService,
                 drawingContent.userId!,
                 this.renderer,
-                this.canvas,
+                this.canvas
               );
               break;
             case ELLIPSE_TOOL_NAME:
@@ -384,7 +380,7 @@ export class SvgViewComponent implements OnInit, AfterViewInit {
                 this.socketService,
                 drawingContent.userId!,
                 this.renderer,
-                this.canvas,
+                this.canvas
               );
               break;
             default:

@@ -1,44 +1,87 @@
 <div class="gallery-component">
     <h1>Galerie de dessins</h1>
 
-    <div class="gallery-grid">
+    <div class="gallery-state" *ngIf="shownDrawings.length === 0">
+        ℹ️ Oops ! Nous n'avons trouvé aucun dessin dans la base de données.<br /><br />Créez un nouveau dessin pour voir
+        votre galerie se remplir ! ✌️
+    </div>
+
+    <div class=" gallery-grid">
+
         <mat-card *ngFor="let drawing of shownDrawings" class="drawing-card">
             <mat-card-header>
-                <mat-icon mat-card-avatar>{{ displayVisibilityIcon(drawing.infos.visibility) }}</mat-icon>
+                <mat-icon mat-card-avatar matTooltip="{{displayVisibilityLevel(drawing.infos.visibility)}}">{{
+                    displayVisibilityIcon(drawing.infos.visibility) }}</mat-icon>
 
                 <!-- <img mat-card-avatar src="../../../assets/thumbnails/avatar_placeholder.png"
                      alt="Avatar du propriétaire" class="avatar-image" /> -->
-                <mat-card-title><span>Nom : </span>{{ drawing.infos.name }}</mat-card-title>
-                <mat-card-subtitle>{{ displayVisibilityLevel(drawing.infos.visibility) }}</mat-card-subtitle>
-                <mat-card-subtitle><span>Auteur</span> : {{drawing.infos.authorName}}</mat-card-subtitle>
-                <mat-card-subtitle><span>Date de création</span> : {{ drawing.infos.creationDate }}</mat-card-subtitle>
-                <mat-card-subtitle><span>Nombre de collaborateurs actifs</span> : {{drawing.infos.nbCollaborators}}
+
+                <mat-card-title>
+                    <span>Nom : </span>{{ drawing.infos.name }}
+                </mat-card-title>
+
+                <mat-card-subtitle>
+                    <span class="author-label">Auteur</span> : {{drawing.infos.authorName}}
+                    <span class="author-label__self"
+                          *ngIf="drawing.infos.ownerId === this.getAuthenticatedUserID()">(vous)</span>
                 </mat-card-subtitle>
-                <mat-card-subtitle *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >=1">Ce
-                    dessin est en cours de collaboration, vous ne pouvez pas le supprimer ni le modifier pour le moment.
+
+                <mat-card-subtitle>
+                    <span>Créé le</span> : {{ drawing.infos.creationDate }}
+                </mat-card-subtitle>
+
+                <mat-card-subtitle>
+                    <span>Nombre de collaborateurs actifs</span> : {{drawing.infos.nbCollaborators}}
                 </mat-card-subtitle>
             </mat-card-header>
 
-            <!-- <img mat-card-image src="../../../assets/thumbnails/drawing_placeholder.jpg" alt="Image de dessin" /> -->
+            <!-- <img *ngIf="drawing.infos.visibility === 1 && !isAuthorized(drawing.infos.ownerId!)" mat-card-image
+                 class="placeholder-thumbnail" src="../../../assets/thumbnails/drawing_placeholder.jpg"
+                 alt="Image de dessin" /> -->
+
             <app-thumbnail [drawing]="drawing.thumbnail" [svgWidth]="drawing.infos.width"
                            [svgHeight]="drawing.infos.height"></app-thumbnail>
 
+            <!-- *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0" -->
+
             <mat-card-actions>
-                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0"
-                        mat-flat-button color="warn" matTooltip="Supprimer"
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!)" [disabled]="drawing.infos.nbCollaborators > 0"
+                        class="delete-button" mat-flat-button matTooltip="Supprimer"
                         (click)="openDeleteDrawingDialog(drawing.infos)">
                     <mat-icon>delete</mat-icon>
                 </button>
-                <button *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators === 0"
-                        mat-flat-button color="accent" matTooltip="Modifier les informations"
+
+                <button *ngIf="isAuthorized(drawing.infos.ownerId!)" [disabled]="drawing.infos.nbCollaborators > 0"
+                        class="modify-button" mat-flat-button matTooltip="Modifier les informations"
                         (click)="openModifyDrawingDialog(drawing.infos)">
                     <mat-icon>settings</mat-icon>
                 </button>
-                <button *ngIf="drawing.infos.nbCollaborators < 4" mat-flat-button color="primary" matTooltip="Éditer"
-                        (click)="editDrawing(drawing.infos)">
+
+                <button [disabled]="drawing.infos.nbCollaborators >= 4" class="edit-button" mat-flat-button
+                        color="primary" matTooltip="Éditer" (click)="editDrawing(drawing.infos)">
                     <mat-icon>edit</mat-icon>
                 </button>
             </mat-card-actions>
+
+            <div class="card-info" *ngIf="isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >= 1">
+                <p class="card-info__text">Ce dessin est en cours de collaboration, vous ne pouvez ni le supprimer ni
+                    le modifier pour le moment.<br /><br />Par contre, vous pouvez toujours l'éditer, tant qu'il y a
+                    moins de 4 utilisateurs simultanément sur le dessin.
+                </p>
+            </div>
+
+            <div class="card-info" *ngIf="!isAuthorized(drawing.infos.ownerId!) && drawing.infos.nbCollaborators >= 4">
+                <p class="card-info__text">Vous ne pouvez pas éditer le dessin car le nombre maximal de collaborateurs
+                    simultanés (4) a été atteint. Vous devez attendre qu'une place se libère.
+                </p>
+            </div>
+
+            <!-- <div class="card-info" *ngIf="drawing.infos.visibility === 1 && !isAuthorized(drawing.infos.ownerId!)">
+                <p class="card-info__text">Vous ne pouvez pas prévisualiser la vignette du dessin car celui-ci est
+                    protégé par un autre utilisateur.
+                </p>
+            </div> -->
+
         </mat-card>
     </div>
 

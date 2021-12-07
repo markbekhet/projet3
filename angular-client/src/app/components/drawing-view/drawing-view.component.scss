@@ -1,52 +1,65 @@
-.body {
-  margin: 0;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-// #galleryDialog {
-//   padding: 0 24px !important;
-// }
+.body {
+    margin: 0;
+}
 
-.container {
-  display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr;
-  grid-template-rows: 0fr 1fr 0fr;
-  grid-template-areas: "header header header header" "nav content content content" "nav content content content";
-  width: 100vw;
-  height: 100vh;
+.container-grid {
+    display: grid;
+    grid-template-columns: 220px 900px 30px calc(100vw - 1150px);
+    grid-template-rows: 9vh 91vh;
+    grid-template-areas:
+        "header header header header"
+        "nav content buffer sidebar";
+    height: 100vh;
+    overflow: hidden;
 }
 
 header {
-  grid-area: header;
+    grid-area: header;
 }
 
 nav {
-  grid-area: nav;
-  background-color: rgb(161, 157, 157);
+    grid-area: nav;
+    background-color: rgb(161, 157, 157);
 }
 
 main {
-  background-color: rgb(182, 179, 179);
-  grid-area: content;
+    grid-area: content;
+    background-color: rgb(182, 179, 179);
+    overflow: hidden;
+}
 
-  overflow: auto;
+.buffer {
+    grid-area: buffer;
+    background-color: rgb(182, 179, 179);
+}
+
+.users-chat-component {
+    grid-area: sidebar;
+    border-left: 1px solid black;
 }
 
 .wrapper {
-  //margin-left: auto;
-  //margin-right: auto;
+    //margin-left: auto;
+    //margin-right: auto;
 
-  width: auto;
-  height: auto;
+    width: auto;
+    height: auto;
 }
 
 #colorPicker {
-  float: left;
+    float: left;
 }
 
 #toolBox {
-  float: left;
+    float: left;
 }
 
 #toolAttributes {
-  float: left;
+    float: left;
 }

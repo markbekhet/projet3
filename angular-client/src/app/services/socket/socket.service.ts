@@ -20,8 +20,8 @@ import { ChatRoomService } from '../chat-room/chat-room.service';
 // import { userColorMap } from '../drawing/drawing.service';
 // import { ChatRoomService } from '../chat-room/chat-room.service';
 
- const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
-//const PATH = 'http://localhost:3000';
+const PATH = 'http://projet3-101.eastus.cloudapp.azure.com:3000';
+// const PATH = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root',
@@ -66,8 +66,16 @@ export class SocketService {
     drawingEditionHistories: [],
   });
 
-  constructor(private interactionService: InteractionService, private chatRoomService: ChatRoomService){
+  audioSent = new Audio();
+  // audioReceived = new Audio();
+
+  constructor(
+    private interactionService: InteractionService,
+    private chatRoomService: ChatRoomService
+  ) {
+    this.audioSent.src = './assets/audio/message_sent.mp3';
   }
+
   connect(): void {
     this.socket = io(PATH);
   }
@@ -90,6 +98,8 @@ export class SocketService {
   public sendMessage(message: ServerMessage) {
     console.log(`chat service sent: ${message.message}`);
     this.socket!.emit('msgToServer', JSON.stringify(message));
+    this.audioSent.load();
+    this.audioSent.play();
   }
 
   public getNewMessage = () => {
@@ -230,5 +240,4 @@ export class SocketService {
     });
     return this.userUpdated$;
   };
-
 }

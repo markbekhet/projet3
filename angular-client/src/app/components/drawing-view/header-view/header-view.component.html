@@ -12,8 +12,29 @@
             <mat-icon class="topIcon"> {{ menuItems[2].icon }}</mat-icon>
         </button>
     </div>-->
-    <div fxLayout='row' fxLayoutGap='20px' id='roots-container'>
-        <!--<a routerLink='/profile'>Profil</a> -->
-        <a routerLink='/home' (click)='leaveDrawing()'>Quitter dessin</a>
+
+    <div class="drawing-infos">
+        <h1>Nom du dessin</h1> :
+        <span> {{drawingName}}</span>
     </div>
+
+    <div class="actions">
+        <button mat-mini-fab (click)="leaveDrawing()" routerLink='/home' matTooltip="Quitter le dessin en cours"
+                color="primary">
+            <mat-icon>transit_enterexit</mat-icon>
+        </button>
+    </div>
+
+    <!-- <div fxLayout='row' fxLayoutGap='20px' id='roots-container'>
+
+        <button mat-mini-fab (click)="leaveDrawing()" routerLink='/home' matTooltip="Quitter le dessin en cours"
+                color="primary">
+            <mat-icon>transit_enterexit</mat-icon>
+        </button>
+
+    </div> -->
+
+    <!-- <button (click)='leaveDrawing()'></button> -->
+    <!-- <a routerLink='/home' (click)='leaveDrawing()'>Quitter dessin</a> -->
+
 </mat-toolbar>

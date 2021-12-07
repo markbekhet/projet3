@@ -21,7 +21,6 @@ import { userColorMap } from '@src/app/services/drawing/drawing.service';
 export class LandingPage implements OnInit, AfterViewInit {
   menuItems: FeatureItem[];
   windowService: ModalWindowService;
-  isLoggedIn = false;
 
   constructor(
     private interactionService: InteractionService,
@@ -34,7 +33,6 @@ export class LandingPage implements OnInit, AfterViewInit {
   ) {
     this.windowService = new ModalWindowService(this.dialog);
     this.menuItems = homeHeaderItems;
-    this.isLoggedIn = true;
     userColorMap.set('#CBCB28', this.authService.token$.value);
   }
 
@@ -57,9 +55,9 @@ export class LandingPage implements OnInit, AfterViewInit {
       this.interactionService.emitUpdateChatListSignal();
     });
 
-    this.socketService.getNewMessage().subscribe((message)=>{
+    this.socketService.getNewMessage().subscribe((message) => {
       this.interactionService.emitUpdateChatHistory();
-    })
+    });
   }
 
   @HostListener('window:beforeunload')
@@ -70,10 +68,13 @@ export class LandingPage implements OnInit, AfterViewInit {
   }
 
   showWelcomeMsg(): void {
-    const CONFIG = new MatSnackBarConfig();
-    const DURATION = 2000;
-    CONFIG.duration = DURATION;
-    this.snackBar.open('Bienvenue !', undefined, CONFIG);
+    if (!this.interactionService.snackbarAlreadyOpened.value) {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 4000;
+      CONFIG.duration = DURATION;
+      this.snackBar.open('Bienvenue sur Color Image !', undefined, CONFIG);
+      this.interactionService.emitSnackbarAlreadyOpened();
+    }
   }
 
   execute(shortcutName: string) {
@@ -86,9 +87,6 @@ export class LandingPage implements OnInit, AfterViewInit {
         break;
       case 'Profil':
         this.profile();
-        break;
-      case 'Chat':
-        this.chat();
         break;
       case 'Déconnexion':
         this.disconnect();
@@ -111,15 +109,12 @@ export class LandingPage implements OnInit, AfterViewInit {
 
   disconnect() {
     this.authService.disconnect().subscribe(() => {
+      this.chatRoomService.refs.clear();
       this.router.navigate(['/login']);
     });
   }
 
   profile() {
     this.router.navigate(['/profile']);
-  }
-
-  chat() {
-    this.router.navigate(['/chat']);
   }
 }

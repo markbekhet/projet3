@@ -21,21 +21,23 @@ export class ToolboxViewComponent implements OnInit {
     this.toolItems = toolItems;
   }
 
-  @HostListener('document: keydown', ['$event'])
-  keyDown(event: KeyboardEvent){
-    if(event.key === "Delete"){
-      this.executeDeleteCommand()
-    }
-  }
   ngOnInit(): void {
     this.interactionTool.emitSelectedTool(this.activeButton);
+  }
+
+  @HostListener('document: keydown', ['$event'])
+  keyDown(event: KeyboardEvent) {
+    if (event.key === 'Delete') {
+      this.executeDeleteCommand();
+    }
   }
 
   buttonAction(name: string) {
     this.interactionTool.emitSelectedTool(name);
     this.activeButton = name;
   }
-  executeDeleteCommand(){
-    this.interactionTool.emitDelete()
+
+  executeDeleteCommand() {
+    this.interactionTool.emitDelete();
   }
 }

@@ -9,6 +9,8 @@ import {
   Component,
   ComponentFactory,
   ComponentFactoryResolver,
+  // ComponentRef,
+  // ElementRef,
   EventEmitter,
   Inject,
   OnInit,
@@ -16,19 +18,22 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-//import { HttpErrorResponse } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+// import { HttpErrorResponse } from '@angular/common/http';
 
-import { JoinTeam, LeaveTeam } from '@models/joinTeam';
-// import { ChatHistory } from '@models/MessageMeta';
-import { Team } from '@models/teamsMeta';
-import { User } from '@models/UserMeta';
 import {
   MatBottomSheet,
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
 } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { TooltipPosition } from '@angular/material/tooltip';
+
+import { JoinTeam, LeaveTeam } from '@models/joinTeam';
+// import { ChatHistory } from '@models/MessageMeta';
+import { Team } from '@models/teamsMeta';
+import { User, Status } from '@models/UserMeta';
 import { TeamVisibilityLevel } from '@models/VisibilityMeta';
+import { ActiveUser } from '@models/active-user';
 
 import { AuthService } from '@services/authentication/auth.service';
 import { AvatarService } from '@services/avatar/avatar.service';
@@ -41,9 +46,9 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { ChatComponent } from '@components/chat-component/chat.component';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
-import { ActiveUser } from '@src/app/models/active-user';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TeamMembersListComponent } from './team-members-list/team-members-list.component';
-//import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
+// import { HttpErrorResponse } from 'Colorimage-win32-x64/resources/app/node_modules/@angular/common/http';
 
 @Component({
   selector: 'app-user-team-list',
@@ -57,15 +62,22 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   teams: Team[] = [];
   chatrooms: string[] = [];
 
+  removable: boolean = true;
+  // joinedChatrooms = new Map<name, Chatroom>();
+
   joinedChatrooms = new Map<string, boolean>();
 
   @Output()
   chatroomName = new EventEmitter<string>();
+  @Output()
+  isExpanded: boolean = true;
 
   @ViewChild('chatInsert', { read: ViewContainerRef })
   chatInsert!: ViewContainerRef;
 
   chatComponentFactory: ComponentFactory<ChatComponent>;
+
+  abovePosition: TooltipPosition = 'above';
 
   constructor(
     private authService: AuthService,
@@ -76,12 +88,18 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     private errorDialog: MatDialog,
     private interactionService: InteractionService,
     private socketService: SocketService,
+    private snackbar: MatSnackBar,
     private teamService: TeamService,
     private windowService: ModalWindowService
   ) {
     this.authenticatedUserId = this.authService.getUserToken();
     this.chatComponentFactory =
       this.componentFactoryResolver.resolveComponentFactory(ChatComponent);
+    for (const room of this.chatRoomService.chatRooms.keys()) {
+      if (room !== 'General') {
+        this.chatrooms.push(room);
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -93,7 +111,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
 
     this.socketService.getAllTeams().subscribe((teamsMap) => {
       teamsMap.forEach((team) => {
-        this.teams.push(team);
+        if (!this.chatrooms.includes(team.name)) this.teams.push(team);
       });
     });
   }
@@ -103,14 +121,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     this.socketService.getUserUpdate().subscribe((userModified: User) => {
       let found: boolean = false;
       this.users.forEach((user: User) => {
-        if(userModified.id! === user.id!){
+        if (userModified.id! === user.id!) {
           found = true;
           user.pseudo = userModified.pseudo;
           user.status = userModified.status;
           user.avatar = userModified.avatar;
         }
       });
-      if(!found){
+      if (!found) {
         this.users.push(userModified);
       }
     });
@@ -131,24 +149,25 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.socketService.socket!.on("newJoinToTeam", (data: any)=>{
-      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
-      let activeUsers = this.teamService.activeTeams.value.get(dataMod.teamName)!.activeUsers;
-      activeUsers.push({userId: dataMod.userId});
-    })
+    this.socketService.socket!.on('newJoinToTeam', (data: any) => {
+      const dataMod: { teamName: string; userId: string } = JSON.parse(data);
+      const { activeUsers } = this.teamService.activeTeams.value.get(
+        dataMod.teamName
+      )!;
+      activeUsers.push({ userId: dataMod.userId });
+    });
 
-    this.socketService.socket!.on("userLeftTeam", (data: any)=>{
-      let dataMod: {teamName: string, userId: string} = JSON.parse(data);
-      let team = this.teamService.activeTeams.value.get(dataMod.teamName)
-      if(team!== undefined){
-        team.activeUsers.forEach((activeUser: ActiveUser)=>{
-          if(activeUser.userId === dataMod.userId){
-            team!.activeUsers.splice(team!.activeUsers.indexOf(activeUser), 1)
+    this.socketService.socket!.on('userLeftTeam', (data: any) => {
+      const dataMod: { teamName: string; userId: string } = JSON.parse(data);
+      const team = this.teamService.activeTeams.value.get(dataMod.teamName);
+      if (team !== undefined) {
+        team.activeUsers.forEach((activeUser: ActiveUser) => {
+          if (activeUser.userId === dataMod.userId) {
+            team!.activeUsers.splice(team!.activeUsers.indexOf(activeUser), 1);
           }
-        })
+        });
       }
-    })
-
+    });
 
     this.socketService.socket!.on('teamDeleted', (data: any) => {
       const deletedTeam: Team = JSON.parse(data);
@@ -167,6 +186,7 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         for (const key of this.chatRoomService.chatRooms.keys()) {
           this.chatrooms.push(key);
         }
+        // (Note-Paul) : I don't keep channel General in the array, it's easier that way
         this.chatrooms.shift();
 
         // let teamFound = false;
@@ -204,12 +224,15 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
       this.errorDialog.open(ErrorDialogComponent, { data: error.message });
     });
 
+    this.users.shift();
+    console.log('TURBO 🚀 line 99 - UserTeamListComponent - users', this.users);
+
     this.chatInsert.clear();
   }
-  
-  isTeamChannel(roomName: string): boolean{
-    let team = this.teamService.activeTeams.value.get(roomName);
-    if(team !== undefined){
+
+  isTeamChannel(roomName: string): boolean {
+    const team = this.teamService.activeTeams.value.get(roomName);
+    if (team !== undefined) {
       return true;
     }
     return false;
@@ -237,12 +260,14 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         // this.teams.splice(this.teams.indexOf(team), 1)
       },
       (error) => {
-        /*const errorCode: HttpErrorResponse = JSON.parse(
+        /* const errorCode: HttpErrorResponse = JSON.parse(
           (error ).error
-        ).message;*/
-        //console.log(errorCode)
-        console.log(error.error.message)
-        this.errorDialog.open(ErrorDialogComponent, { data: error.error.message });
+        ).message; */
+        // console.log(errorCode)
+        console.log(error.error.message);
+        this.errorDialog.open(ErrorDialogComponent, {
+          data: error.error.message,
+        });
       }
     );
   }
@@ -254,9 +279,12 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     };
     this.socketService.leaveTeam(leaveTeamBodyRequest);
 
-    const index = this.chatrooms.indexOf(teamName);
-    this.chatrooms.splice(index, 1);
+    // const index = this.chatrooms.indexOf(teamName);
+    // this.chatrooms.splice(index, 1);
     this.joinedChatrooms.set(teamName, false);
+
+    this.chatRoomService.refs.get(teamName)!.destroy();
+    this.chatRoomService.refs.delete(teamName);
 
     const activeTeam = this.teamService.activeTeams.value.get(teamName)!;
     const team: Team = {
@@ -273,35 +301,90 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     );
     this.teamService.activeTeams.value.delete(teamName);
     this.chatRoomService.chatRooms.delete(teamName);
+    this.interactionService.emitUpdateChatListSignal();
     this.interactionService.emitUpdateGallerySignal();
   }
 
   joinChat(roomName: string) {
     console.log(roomName);
+    // Si la chatbox n'est pas déjà ouverte
+    // if (
+    //   this.joinedChatrooms.get(roomName) === false ||
+    //   this.joinedChatrooms.get(roomName) === undefined
+    // ) {
+
     if (
-      this.joinedChatrooms.get(roomName) === false ||
-      this.joinedChatrooms.get(roomName) === undefined
+      this.chatRoomService.refs.get(roomName) === undefined &&
+      this.chatRoomService.refs.size < 3
     ) {
       this.interactionService.chatRoomName.next(roomName);
-      const chatComponent = <ChatComponent>(
-        this.chatInsert.createComponent(this.chatComponentFactory).instance
+      const componentRef = this.chatInsert.createComponent(
+        this.chatComponentFactory
       );
+
+      this.chatRoomService.refs.set(roomName, componentRef);
+
+      const chatComponent = <ChatComponent>componentRef.instance;
       chatComponent.chatroomName = roomName;
-      this.joinedChatrooms.set(roomName, true);
+      chatComponent.isExpanded = true;
+    } else if (this.chatRoomService.refs.size >= 3) {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 4000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open(
+        'Vous ne pouvez pas ouvrir plus de 3 canaux à la fois.',
+        undefined,
+        CONFIG
+      );
+    } else {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 2000;
+      CONFIG.duration = DURATION;
+      this.snackbar.open('Ce canal est déjà ouvert.', undefined, CONFIG);
+    }
+  }
+
+  removeChat(chatroom: string) {
+    const index = this.chatrooms.indexOf(chatroom);
+
+    if (index >= 0) {
+      this.chatrooms.splice(index, 1);
+    }
+  }
+
+  removeTeam(team: Team) {
+    const index = this.teams.indexOf(team);
+
+    if (index >= 0) {
+      this.teams.splice(index, 1);
+    }
+  }
+
+  displayUserOnlineStatus(userStatus?: Status): string {
+    switch (userStatus) {
+      case Status.ONLINE:
+        return 'En ligne';
+      case Status.BUSY:
+        return 'Occupé';
+      case Status.OFFLINE:
+        return 'Hors ligne';
+      default:
+        return '';
     }
   }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);
   }
-  decodeAvatar(avatarEncoded: string) {
+
+  decodeAvatar(avatarEncoded?: string) {
     if (avatarEncoded === undefined) {
       return '';
     }
     return this.avatarService.decodeAvatar(avatarEncoded);
   }
 
-  openTeamInformations(teamName: string){
+  openTeamInformations(teamName: string) {
     this.windowService.openDialog(TeamMembersListComponent, teamName);
   }
 }

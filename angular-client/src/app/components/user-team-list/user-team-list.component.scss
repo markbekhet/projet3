@@ -1,82 +1,192 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Calistoga&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital@0;1&display=swap");
 
 $base-color-dark: #403d39;
+$dark-brown: rgba(36, 36, 36, 0.85);
+$dark-blue: #363440;
+
+$green: #3fb0ab;
+$pink: #e5007d;
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .component-grid {
-  display: grid;
-  position: relative;
-  grid-template-rows: 30vh 31vh 30vh;
-  grid-template-areas:
-    "usersList"
-    "teamsList"
-    "chat";
+    display: grid;
+    position: relative;
+    grid-template-rows: 30vh 31vh 30vh;
+    grid-template-areas:
+        "users"
+        "teams"
+        "chatrooms";
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 500;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: white;
-    margin-bottom: 0.3em;
-    padding: 0.7em 0 0.7em;
-    box-shadow: 0 2px 5px white;
-    // font-family: "Calistoga", cursive;
-    // font-weight: 400;
-  }
+    mat-list {
+        border-left: 2px solid $base-color-dark;
+        border-bottom: 2px solid $base-color-dark;
+        overflow-y: auto;
+        overflow-x: hidden;
 
-  mat-list {
-    padding: 0 1em 1em;
-    border-left: 2px solid $base-color-dark;
-    border-bottom: 2px solid $base-color-dark;
-    overflow: auto;
+        h2 {
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: 0.7em 0;
+            background-color: white;
+            border-bottom: 1px solid $dark-blue;
+            box-shadow: 0 2px 5px white;
 
-    mat-list-item {
-      display: block;
-      margin-bottom: 1em;
-      // span {
-      //   vertical-align: baseline;
-      // }
+            font-family: "Playfair Display", serif;
+            font-weight: 500;
+            font-size: 1.3em;
+            color: lighten($dark-blue, 5%);
+            // text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.6);
+            text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+        }
 
-      // .buttons-wrapper {
-      //   display: flex; inline-flex ??????
-      //   flex-direction: row;
-      //   justify-content: flex-end;
-      //   align-items: center;
+        mat-list-item {
+            max-width: 100%;
 
-      button {
-        margin: 0 0.5em;
-      }
-      // }
+            .user {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                max-width: 100%;
+                margin: 0 1.5em 0.5em;
+
+                & > * {
+                    margin-right: 1.2em;
+                }
+
+                &__avatar {
+                    width: 2.5em;
+                    cursor: pointer;
+                    opacity: 1;
+                    &:hover {
+                        opacity: 0.8;
+                        transition: opacity 300ms ease-in;
+                    }
+                }
+
+                &__pseudo {
+                    font-family: "Quicksand", sans-serif;
+                    font-size: 1.1em;
+                }
+
+                &__online {
+                    display: inline-block;
+                    width: 0.8em;
+                    height: 0.8em;
+                    border-radius: 50%;
+                    background-color: rgb(23, 160, 23);
+                    opacity: 1;
+                    box-shadow: 0 0 2px lighten(black, 10%);
+                    &:hover {
+                        opacity: 0.9;
+                        transition: opacity 200ms ease-in;
+                    }
+                }
+
+                &__busy {
+                    display: inline-block;
+                    width: 0.8em;
+                    height: 0.8em;
+                    border-radius: 50%;
+                    background-color: $pink;
+                    opacity: 1;
+                    box-shadow: 0 0 2px lighten(black, 10%);
+                    &:hover {
+                        opacity: 0.9;
+                        transition: opacity 200ms ease-in;
+                    }
+                }
+
+                &__offline {
+                    display: inline-block;
+                    width: 0.8em;
+                    height: 0.8em;
+                    border-radius: 50%;
+                    background-color: gray;
+                    opacity: 0.9;
+                    box-shadow: 0 0 2px lighten(black, 10%);
+                    &:hover {
+                        opacity: 0.8;
+                        transition: opacity 200ms ease-in;
+                    }
+                }
+            }
+        }
     }
-    .avatar {
-      width: 40px;
+
+    .users {
+        &__title {
+            margin-bottom: 0.5em;
+        }
     }
-  }
 
-  .chatroomsList {
-    border-bottom: 0px;
-  }
+    .teams {
+        &__list {
+            margin: 0 1em 1em;
+            font-family: "Quicksand", sans-serif;
+        }
 
-  .chatrooms-selected {
-    position: absolute;
-    bottom: 0;
-    right: 20vw;
-    display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: nowrap;
-    gap: 1em;
+        .mat-chip {
+            cursor: pointer;
+            vertical-align: middle;
+        }
 
-    // & > :first-child {
-    //   margin-right: 3px;
-    // }
-  }
+        .chip-info-icon {
+            width: 24px;
+            height: 24px;
+            line-height: 10px;
+            margin-left: 0.6em;
+            font-size: 18px;
+        }
+    }
+
+    .chatrooms {
+        border-bottom: 0px;
+
+        &__list {
+            margin: 0 1em 1em;
+            font-family: "Quicksand", sans-serif;
+
+            .mat-chip {
+                cursor: pointer;
+                vertical-align: middle;
+            }
+
+            .chip-info-icon {
+                width: 24px;
+                height: 24px;
+                line-height: 10px;
+                margin-left: 0.6em;
+                font-size: 18px;
+            }
+
+            // .chip-delete-icon {
+            //     margin-left: -2px;
+            // }
+        }
+    }
+
+    .chatrooms-selected {
+        position: absolute;
+        bottom: 0;
+        right: 20vw;
+        display: flex;
+        flex-direction: row-reverse;
+        flex-wrap: nowrap;
+        gap: 1em;
+
+        // & > #chatInsert > :first-child {
+        //   margin-right: 3px;
+        // }
+    }
 }

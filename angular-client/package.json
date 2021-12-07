@@ -13,7 +13,7 @@
     "lint": "ng lint",
     "electron": "ng build --base-href ./ && electron .",
     "package-windows": "npx electron-packager ./ Colorimage  --platform=win32 --arch=x64",
-    "package-mac": "npx electron-packager ./ Colorimage  --platform=darwin --arch=x64"
+    "package-mac": "npx electron-packager ./ Colorimage  --platform=darwin --arch=x64 --overwrite"
   },
   "private": true,
   "dependencies": {
