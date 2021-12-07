@@ -28,7 +28,7 @@ import { JoinedTeamRepository } from './modules/joined-teams/joined-teams.reposi
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeormConfigDevDB),
+    TypeOrmModule.forRoot(typeormConfigProdDB),
     TypeOrmModule.forFeature([
       UserRespository,
       ConnectionHistoryRespository,
