@@ -68,10 +68,13 @@ export class LandingPage implements OnInit, AfterViewInit {
   }
 
   showWelcomeMsg(): void {
-    const CONFIG = new MatSnackBarConfig();
-    const DURATION = 4000;
-    CONFIG.duration = DURATION;
-    this.snackBar.open('Bienvenue sur Color Image !', undefined, CONFIG);
+    if (!this.interactionService.snackbarAlreadyOpened.value) {
+      const CONFIG = new MatSnackBarConfig();
+      const DURATION = 4000;
+      CONFIG.duration = DURATION;
+      this.snackBar.open('Bienvenue sur Color Image !', undefined, CONFIG);
+      this.interactionService.emitSnackbarAlreadyOpened();
+    }
   }
 
   execute(shortcutName: string) {

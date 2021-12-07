@@ -25,6 +25,12 @@
     cursor: pointer;
     z-index: 1;
 
+    mat-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
     &:hover {
       opacity: 0.8;
       // background-color: rgba(#3fb0ab, 0.8);

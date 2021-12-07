@@ -60,7 +60,13 @@
     margin-bottom: 20px;
 
     .delete-element-button {
-        padding: 0.5rem;
+        vertical-align: middle;
+        opacity: 1;
+        transition: opacity 250ms ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
     }
 }
 

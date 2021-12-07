@@ -9,6 +9,7 @@ import {
   Component,
   ComponentFactory,
   ComponentFactoryResolver,
+  // ElementRef,
   EventEmitter,
   Inject,
   OnInit,
@@ -17,18 +18,21 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 
-import { JoinTeam, LeaveTeam } from '@models/joinTeam';
-// import { ChatHistory } from '@models/MessageMeta';
-import { Team } from '@models/teamsMeta';
-import { User, Status } from '@models/UserMeta';
 import {
   MatBottomSheet,
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
 } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { TooltipPosition } from '@angular/material/tooltip';
+
+import { JoinTeam, LeaveTeam } from '@models/joinTeam';
+// import { ChatHistory } from '@models/MessageMeta';
+import { Team } from '@models/teamsMeta';
+import { User, Status } from '@models/UserMeta';
 import { TeamVisibilityLevel } from '@models/VisibilityMeta';
+import { ActiveUser } from '@models/active-user';
 
 import { AuthService } from '@services/authentication/auth.service';
 import { AvatarService } from '@services/avatar/avatar.service';
@@ -41,7 +45,6 @@ import { ModalWindowService } from '@services/window-handler/modal-window.servic
 import { ChatComponent } from '@components/chat-component/chat.component';
 import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.component';
 import { UserProfileDialogComponent } from '@components/user-profile-dialog/user-profile-dialog.component';
-import { ActiveUser } from '@src/app/models/active-user';
 import { TeamMembersListComponent } from './team-members-list/team-members-list.component';
 
 @Component({
@@ -57,7 +60,6 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   chatrooms: string[] = [];
 
   removable: boolean = true;
-
   joinedChatrooms = new Map<string, boolean>();
 
   @Output()
@@ -69,6 +71,17 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
   chatInsert!: ViewContainerRef;
 
   chatComponentFactory: ComponentFactory<ChatComponent>;
+
+  abovePosition: TooltipPosition = 'above';
+
+  // @ViewChild('tooltipJoinChatroom', { static: false })
+  // tooltipJoinChatroom!: MatTooltip;
+
+  // @ViewChild('tooltipTeamInfos', { static: false })
+  // tooltipTeamInfos!: MatTooltip;
+
+  // @ViewChild('tooltipLeaveTeam', { static: false })
+  // tooltipLeaveTeam!: MatTooltip;
 
   constructor(
     private authService: AuthService,
@@ -303,11 +316,19 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  removeChat(chatroom: string): void {
+  removeChat(chatroom: string) {
     const index = this.chatrooms.indexOf(chatroom);
 
     if (index >= 0) {
       this.chatrooms.splice(index, 1);
+    }
+  }
+
+  removeTeam(team: Team) {
+    const index = this.teams.indexOf(team);
+
+    if (index >= 0) {
+      this.teams.splice(index, 1);
     }
   }
 
@@ -323,6 +344,16 @@ export class UserTeamListComponent implements OnInit, AfterViewInit {
         return '';
     }
   }
+
+  // turnOffTooltipsExceptTeamInfos() {
+  //   this.tooltipJoinChatroom.hide();
+  //   this.tooltipTeamInfos.show();
+  // }
+
+  // turnOffTooltipsExceptLeaveTeam() {
+  //   this.tooltipJoinChatroom.hide();
+  //   this.tooltipLeaveTeam.show();
+  // }
 
   viewUserProfile(user: User) {
     this.windowService.openDialog(UserProfileDialogComponent, user);

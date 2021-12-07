@@ -25,17 +25,17 @@ export const drawingVisibilityItems: DrawingVisibilityItem[] = [
   {
     name: 'Public',
     value: 0,
-    desc: 'Le dessin sera accessible par les autres utilisateurs',
+    desc: 'Le dessin sera accessible par les autres utilisateurs.',
   },
   {
     name: 'Protégé',
     value: 1,
-    desc: 'Le dessin sera accessible par quiconque connaît le mot de passe',
+    desc: 'Le dessin sera accessible par quiconque connaît le mot de passe.',
   },
   {
     name: 'Privé',
     value: 2,
-    desc: 'Le dessin sera accessible exclusivement par vous',
+    desc: 'Le dessin sera accessible exclusivement par vous.',
   },
 ];
 

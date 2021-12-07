@@ -28,18 +28,18 @@ import { ErrorDialogComponent } from '@components/error-dialog/error-dialog.comp
 })
 export class NewTeamDialogComponent implements OnInit {
   newTeamForm!: FormGroup;
+  inputEntered: boolean = false;
   teamVisibilityItems: TeamVisibilityItem[];
   teamVisibility = new FormControl(null, Validators.required);
   showPasswordRequired: boolean = false;
 
   name: string = '';
-  visibility: TeamVisibilityLevel = TeamVisibilityLevel.PUBLIC;
+  visibility: TeamVisibilityLevel | null = null;
   password?: string = '';
   nbCollaborators: number = 4;
   userId: string;
   newTeam: TeamCreation;
   bio: string = '';
-  inputEntered: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -70,7 +70,7 @@ export class NewTeamDialogComponent implements OnInit {
   initForm() {
     this.newTeamForm = this.formBuilder.group({
       teamName: ['', [Validators.required]],
-      teamVisibility: [TeamVisibilityLevel.PUBLIC, [Validators.required]],
+      teamVisibility: [null, [Validators.required]],
       teamPassword: ['', []],
       maxCollaborators: [4, [Validators.required, Validators.min(2)]],
       teamBio: ['', []],
@@ -78,15 +78,15 @@ export class NewTeamDialogComponent implements OnInit {
   }
 
   showVisibilityHint(): string {
-    /* switch(this.visibility){
+    switch (this.visibility) {
       case 0:
         return this.teamVisibilityItems[0].desc;
       case 1:
         return this.teamVisibilityItems[1].desc;
       default:
-        return "";
-    } */
-    return this.teamVisibilityItems[this.visibility].desc;
+        return '';
+    }
+    // return this.teamVisibilityItems[this.visibility].desc;
   }
 
   showPasswordInput(): boolean {
@@ -95,6 +95,13 @@ export class NewTeamDialogComponent implements OnInit {
 
   onSubmit() {
     const values = this.newTeamForm.value;
+
+    if (values.teamPassword === '' && values.teamVisibility === 1) {
+      const errorMessage =
+        'Un mot de passe est requis si vous choisissez le mode protégé.';
+      this.errorDialog.open(ErrorDialogComponent, { data: errorMessage });
+      return;
+    }
 
     if (values.teamPassword === '') {
       values.teamPassword = null;
@@ -134,9 +141,11 @@ export class NewTeamDialogComponent implements OnInit {
     console.log(this.newTeam);
     this.closeModal();
   }
+
   closeModal() {
     this.windowService.closeDialogs();
   }
+
   blockEvent(e: KeyboardEvent) {
     e.stopPropagation();
     this.inputEntered = false;

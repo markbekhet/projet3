@@ -6,11 +6,11 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
+  // ElementRef,
   Inject,
   OnInit,
   Renderer2,
-  ViewChild,
+  // ViewChild,
 } from '@angular/core';
 import {
   MatBottomSheet,
@@ -58,11 +58,11 @@ export class GalleryComponent implements OnInit, AfterViewInit {
 
   allLoaded: boolean = false;
 
-  @ViewChild('gallery-grid', { static: false })
-  galleryGrid!: ElementRef;
+  // @ViewChild('gallery-grid', { static: false })
+  // galleryGrid!: ElementRef;
 
-  @ViewChild('galleryStateText', { static: false })
-  galleryStateText!: ElementRef;
+  // @ViewChild('galleryStateText', { static: false })
+  // galleryStateText!: ElementRef;
 
   constructor(
     private authService: AuthService,

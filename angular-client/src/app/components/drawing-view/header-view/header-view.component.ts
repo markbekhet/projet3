@@ -7,7 +7,6 @@ import { Canvas } from '@models/CanvasInfo';
 // import { InteractionService } from '@services/interaction-service/interaction.service';
 import { ModalWindowService } from '@services/window-handler/modal-window.service';
 import { NewDrawingComponent } from '@components/new-drawing-dialog/new-drawing.component';
-import { GalleryComponent } from '@components/gallery-component/gallery.component';
 import { AuthService } from '@src/app/services/authentication/auth.service';
 import {
   DrawingService,
@@ -27,6 +26,8 @@ export class HeaderViewComponent implements OnInit {
   canvasSub!: Subscription;
   currentCanvas!: Canvas;
 
+  drawingName: string = '';
+
   constructor(
     private dialogService: ModalWindowService, // private interaction: InteractionService
     private authService: AuthService,
@@ -35,7 +36,7 @@ export class HeaderViewComponent implements OnInit {
     private interactionService: InteractionService,
     private chatRoomService: ChatRoomService
   ) {
-    // this.menuItems = drawingHeaderItems;
+    this.drawingName = this.drawingService.drawingName$.value;
   }
 
   openNewDrawingForm() {
@@ -43,14 +44,6 @@ export class HeaderViewComponent implements OnInit {
       window.confirm('Un dessin est déjà en cours. Voulez-vous continuer ?')
     ) {
       this.dialogService.openDialog(NewDrawingComponent);
-    }
-  }
-
-  openGallery() {
-    if (
-      window.confirm('Vous avez un dessin en cours. Voulez-vous continuer ?')
-    ) {
-      this.dialogService.openDialog(GalleryComponent);
     }
   }
 

@@ -1,39 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap");
+
+$dark-blue: #363440;
+
 .form-container {
-  padding: 15px 20px 0px;
+    padding: 15px 20px 0px;
 }
 
 .new-drawing-form > * {
-  display: flex;
-  flex-direction: column;
-  overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
 }
 
 h1 {
-  text-align: center;
+    text-align: center;
+    font-family: "Playfair Display", serif;
+    margin-bottom: 1em;
+    font-weight: 500;
+    color: $dark-blue;
 }
 
 .new-drawing-form-input {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .new-drawing-form-input-visibility {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+#teamAssignationCheckbox {
+    margin-bottom: 10px;
+}
+
+.team-assignation {
+    margin-bottom: 8px;
+}
+
+.color-picker-mat-form-field {
+    margin-top: 1.5em;
 }
 
 #submitButton {
-  margin-top: -15px;
-  margin-bottom: 12px;
+    margin-top: -15px;
+    margin-bottom: 12px;
 }
 
 .warnMessage {
-  font-size: 12px;
-  color: rgb(255, 46, 46);
-  position: absolute;
-  top: 65%;
+    font-size: 12px;
+    color: rgb(255, 46, 46);
+    position: absolute;
+    top: 65%;
+}
+
+.mini-color-picker__container {
+    display: grid;
+    place-items: center;
 }
 
 @media only screen and (max-width: 600px) {
-  h1 {
-    font-size: 20px;
-  }
+    h1 {
+        font-size: 20px;
+    }
 }
